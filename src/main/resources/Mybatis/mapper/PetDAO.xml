@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IPetDAO">
+	<select id="PetList" resultMap="dc_PetMap">
+		select *
+		from dc_pet
+		order by pet_no desc
+	</select>
+	<select id="PetView" resultMap="dc_PetMap">
+		select *
+		from dc_pet
+		where pet_no=#{pet_no}
+	</select>
+	<insert id="PetWrite">
+		<selectKey keyProperty="pet_no" resultType="integer" order="BEFORE">
+			select dc_pet_seq.NEXTVAL from dual
+		</selectKey>
+		insert into dc_pet(pet_no,pet_name,pet_birth,pet_type,pet_breed,pet_gender,pet_neuter,pet_weight,pet_image,m_no)
+		values(#{pet_no},#{pet_name},#{pet_birth},#{pet_type},#{pet_breed},#{pet_gender},#{pet_neuter},#{pet_weight},#{pet_image},#{m_no})
+	</insert>
+	<update id="PetUpdate">
+		update dc_pet
+		set pet_name=#{pet_name},pet_birth=#{pet_birth},pet_breed=#{pet_breed},pet_neuter=#{pet_neuter},pet_weight=#{pet_weight},pet_image=#{pet_image}
+		where pet_no=#{pet_no}
+	</update>
+	<delete id="PetDelete">
+		delete from dc_pet where pet_no=#{pet_no}
+	</delete>
+	<resultMap id="dc_PetMap" type="com.springboot.meongnyang_Jiphapso.dto.PetDTO">
+		<id property="pet_no" column="pet_no" />
+		<result property="pet_name" column="pet_name" />
+		<result property="pet_type" column="pet_type" />
+		<result property="pet_breed" column="pet_breed" />
+		<result property="pet_gender" column="pet_gender" />
+		<result property="pet_neuter" column="pet_neuter" />
+		<result property="pet_weight" column="pet_weight" />
+	</resultMap>
+</mapper>

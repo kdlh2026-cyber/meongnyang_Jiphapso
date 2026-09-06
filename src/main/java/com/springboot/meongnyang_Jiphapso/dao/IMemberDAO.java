@@ -11,7 +11,7 @@ public interface IMemberDAO {
 	// 회원 목록
 	public List<MemberDTO> MemberList();
 	// 회원 정보 조회
-	public MemberDTO MemberRead(String m_id);
+	public MemberDTO MemberView(String m_id);
 	// 회원 가입
 	public int MemberWrite(MemberDTO m_dto);
 	// 회원 정보 수정

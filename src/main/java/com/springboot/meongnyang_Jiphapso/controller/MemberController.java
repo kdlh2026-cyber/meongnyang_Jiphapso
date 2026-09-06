@@ -18,22 +18,21 @@ public class MemberController {
     MemberController(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
-	
-    @RequestMapping("/")
-	public String root() {
-		
-		return "redirect:/main";
-	}
     
-    @RequestMapping("/main")
-    public String main() {
-    	return "main";
+    @RequestMapping("/member/dc_mem/myPage")
+    public String myPage() {
+    	return "member/dc_mem/myPage";
     }
-	
-	@RequestMapping("/loginForm")
-	public String loginForm() {
-		return "loginForm";
-	}
+    
+    @RequestMapping("/member/dc_mem/myPetPage")
+    public String myPetPage() {
+    	return "member/dc_mem/myPetPage";
+    }
+    
+    @RequestMapping("/member/dc_mem/myPetInsertForm")
+    public String myPetInsertForm() {
+    	return "member/dc_mem/myPetInsertForm";
+    }
 	
 	@RequestMapping("/loginError")
 	public String loginError() {
@@ -48,11 +47,5 @@ public class MemberController {
 		
 		return "redirect:/main";
 	}
-	
-	@RequestMapping("/memberInsertForm")
-	public String insertForm() {
-		return "memberInsertForm";
-	}
-	
 	
 }
