@@ -15,7 +15,7 @@ public class MemberService {
 	IMemberDAO m_dao;
 	
 	@Autowired
-	DogCatMemberService m_service;
+	MemberESService m_service;
 	
 	public void write(MemberDTO m_dto) throws Exception{
 		m_dao.MemberWrite(m_dto);   // 오라클 DB에 저장
