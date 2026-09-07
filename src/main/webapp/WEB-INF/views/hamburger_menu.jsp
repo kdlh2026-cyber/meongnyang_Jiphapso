@@ -27,7 +27,7 @@
 
       <div class="pill-row">
         <a href="#" class="pill pill--solid">마이페이지</a>
-        <a href="#" class="pill pill--outline">글쓰기</a>
+        <a href="/communityCrawlingWriteForm" class="pill pill--outline">글쓰기</a>
       </div>
 
       <p class="label-sm">둘러보기</p>
@@ -38,7 +38,7 @@
         <a href="#" class="chip">쇼핑
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </a>
-        <a href="#" class="chip">커뮤니티
+        <a href="/community/commList" class="chip">커뮤니티
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </a>
       </div>
