@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.ICommentDAO">
+	<insert id="CommentWrite" parameterType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+	 	insert into dc_comment(cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no, cmt_content,
+	 							cmt_good, cmt_choice, cmt_img, cmt_date, m_no)
+	 				values(dc_comment_seq.NEXTVAL, #{cmt_answer_no},
+	 						#{cmt_writer}, #{cmt_type},
+	 						#{cmt_type_no}, #{cmt_content},
+	 						#{cmt_good}, #{cmt_choice},
+	 						#{cmt_img}, #{cmt_date}, #{m_no}
+	 	)
+	</insert>
+</mapper>

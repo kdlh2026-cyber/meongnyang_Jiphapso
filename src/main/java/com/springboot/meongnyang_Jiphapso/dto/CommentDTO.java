@@ -16,6 +16,5 @@ public class CommentDTO {
 	private String cmt_choice;
 	private String cmt_img;
 	private Date cmt_date;
-	private Date cmt_reg_date;
 	private int m_no;
 }

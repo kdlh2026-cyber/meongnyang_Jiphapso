@@ -1,6 +1,6 @@
 package com.springboot.meongnyang_Jiphapso.dto;
 
-import java.util.Date;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
 
@@ -21,6 +21,8 @@ public class MemberDTO {
 	private String m_age_upper;
 	private String m_sns;
 	private String m_authority;
+	private MultipartFile m_upload;
+	private String m_img;
 	
 	public String getM_id(){
 		return m_id;
