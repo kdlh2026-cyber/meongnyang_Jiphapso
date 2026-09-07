@@ -3,34 +3,62 @@
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.ICommunityDAO">
-	<select id="communityAllList" resultMap="CommunityMap">
+	<select id="CommunityAllList" resultMap="CommunityMap">
 		select * from dc_community order by comm_no desc
 	</select>
 	
-	<select id="communitySelectList" resultMap="CommunityMap">
-		select * from dc_community
-		<where>
-			<if test="comm_type != null and comm_type != '' and comm_type != '전체'">
-				AND comm_type = #{comm_type}
-			</if>
-			<if test="comm_pet_type != null and comm_pet_type != '' and comm_pet_type != '전체'">
-				AND comm_pet_type = #{comm_pet_type}
-			</if>
-			<if test="comm_category != null and comm_category != '' and comm_category != '전체'">
-				AND comm_category = #{comm_category}
-			</if>
-		</where>
-		order by reg_date desc
+	<select id="CommunitySelectList" resultMap="CommunityMap">
+    select * FROM (
+        select ROWNUM as rnum, A.* from (
+            select * from dc_community
+            <where>
+                <if test="comm_type != null and comm_type != '' and comm_type != '전체'">
+                    AND comm_type = #{comm_type}
+                </if>
+                <if test="comm_pet_type != null and comm_pet_type != '' and comm_pet_type != '전체'">
+                    AND comm_pet_type = #{comm_pet_type}
+                </if>
+                <if test="comm_category != null and comm_category != '' and comm_category != '전체'">
+                    AND comm_category = #{comm_category}
+                </if>
+            </where>
+            <choose>
+                <when test="sort == 'popular'">
+                    ORDER BY comm_count DESC, comm_no DESC
+                </when>
+                <otherwise>
+                    ORDER BY comm_date DESC
+                </otherwise>
+            </choose>
+	        ) A
+	        WHERE ROWNUM &lt;= #{endRow}
+	    )
+	    WHERE rnum &gt;= #{startRow}
 	</select>
 	
-	<insert id="communityWrite">
+	<select id="getTotalCount" resultType="int">
+	    select count(*) from dc_community
+	    <where>
+	        <if test="comm_type != null and comm_type != '' and comm_type != '전체'">
+	            AND comm_type = #{comm_type}
+	        </if>
+	        <if test="comm_pet_type != null and comm_pet_type != '' and comm_pet_type != '전체'">
+	            AND comm_pet_type = #{comm_pet_type}
+	        </if>
+	        <if test="comm_category != null and comm_category != '' and comm_category != '전체'">
+	            AND comm_category = #{comm_category}
+	        </if>
+	    </where>
+	</select>
+	
+	<insert id="CommunityWrite">
 		<selectKey keyProperty="comm_no" resultType="int" order="BEFORE">
         	SELECT dc_community_seq.NEXTVAL FROM DUAL
    		 </selectKey>
 	
 		insert into dc_community(comm_no, comm_type, comm_title, comm_writer, comm_content, comm_category,
 								comm_pet_type, comm_score, comm_breed, comm_img, comm_video, comm_date,
-								reg_date, comm_count, comm_view, comm_good, comm_well, comm_tag,
+								comm_count, comm_view, comm_good, comm_well, comm_tag,
 								m_no, p_no, pet_no)
 		 values(
 		 	#{comm_no, jdbcType=NUMERIC},
@@ -44,8 +72,7 @@
 	        #{comm_breed, jdbcType=VARCHAR}, 
 	        #{comm_img, jdbcType=VARCHAR}, 
 	        #{comm_video, jdbcType=VARCHAR}, 
-	        SYSDATE, 
-	        #{reg_date, jdbcType=DATE}, 
+	        SYSDATE,
 	        #{comm_count, jdbcType=NUMERIC}, 
 	        #{comm_view, jdbcType=NUMERIC}, 
 	        #{comm_good, jdbcType=NUMERIC}, 
@@ -56,6 +83,33 @@
 	        #{pet_no, jdbcType=NUMERIC}
 		 )
 	</insert>
+	
+	<insert id="CommunityImageWrite" parameterType="com.springboot.meongnyang_Jiphapso.dto.CommImageDTO">
+		insert into dc_comm_image(img_no, img_url, img_order, comm_no)
+			values(dc_comm_image_seq.NEXTVAL, #{img_url}, #{img_order}, #{comm_no})
+	</insert>
+	
+	<select id="CommunityView" resultMap="CommunityViewMap">
+		select cm.*, img.IMG_URL
+		from dc_community cm
+		left join dc_comm_image img
+		on cm.comm_no = img.comm_no
+		where cm.comm_no = #{comm_no}
+		order by img.IMG_ORDER asc
+	</select>
+	
+	<update id="CommunityHit">
+		update dc_community
+		set comm_view = comm_view + 1
+		where comm_no = #{comm_no}
+	</update>
+	
+	<resultMap id="CommunityViewMap" type="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO" extends="CommunityMap">
+		<collection property="img_url_list" ofType="string">
+	        <result column="IMG_URL" />
+	    </collection>
+	</resultMap>
+	
 	
 	<resultMap id="CommunityMap" type="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO" autoMapping="true">
 		<id property="comm_no" column="comm_no" />
@@ -68,6 +122,8 @@
 		<result property="comm_count" column="comm_count" />
 		<result property="comm_tag" column="comm_tag" />
 		<result property="comm_img" column="comm_img" />
+		<result property="comm_view" column="COMM_VIEW"/>
+		<result property="comm_date" column="COMM_DATE"/>
 	</resultMap>
 	
 </mapper>

@@ -43,7 +43,6 @@ public class CommunityESService {
 		map.put("comm_breed", dto.getComm_breed());
 		map.put("comm_img", dto.getComm_img());
 		map.put("comm_date", dto.getComm_date());
-		map.put("reg_date", dto.getReg_date());
 		map.put("comm_count", dto.getComm_count());
 		map.put("comm_view", dto.getComm_view());
 		map.put("comm_good", dto.getComm_good());
