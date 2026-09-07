@@ -35,7 +35,7 @@
         <a href="#" class="chip">콘텐츠
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </a>
-        <a href="#" class="chip">쇼핑
+        <a href="/products/ShoppingList" class="chip">쇼핑
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </a>
         <a href="#" class="chip">커뮤니티

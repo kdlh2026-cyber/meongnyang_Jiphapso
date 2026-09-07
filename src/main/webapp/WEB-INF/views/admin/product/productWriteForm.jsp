@@ -9,7 +9,7 @@
 <body>
 <div>
 	<h2>상품 등록</h2>
-	<form action="ProductWrite" name="productWriteForm" method="post" enctype="multipart/form-data">
+	<form action="productWrite" name="productWriteForm" method="post" enctype="multipart/form-data">
 	<div>
 		상품 명 :
 		<input type="text" name="p_title">

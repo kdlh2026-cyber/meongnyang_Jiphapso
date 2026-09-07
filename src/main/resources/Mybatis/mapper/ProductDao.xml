@@ -3,7 +3,6 @@
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IProductDao">
-	
 	<insert id="ProductWrite">
 		<selectKey keyProperty="p_no" resultType="integer" order="BEFORE">
 			select dc_product_seq.NEXTVAL from dual
@@ -19,13 +18,17 @@
 		values(#{o_no},#{o_price},#{o_origin_price},#{o_main_img},#{o_quantity},#{o_type_size},#{o_color},#{o_default},#{p_no})
 	</insert>
 	<insert id="ProductDetailImageWrite">
-		<selectKey keyProperty="p_no" resultType="integer" order="BEFORE">
+		<selectKey keyProperty="img_no" resultType="integer" order="BEFORE">
 			select dc_product_detail_image_seq.NEXTVAL from dual
 		</selectKey>
 		insert into dc_product_detail_image(img_no,img_url,img_content,img_sort,p_no)
-		values(#{img_no},#{img_url},#{img_content},#{img_sort},#{p_no})
+		values(#{img_no},#{img_url},#{img_content, jdbcType=VARCHAR},#{img_sort},#{p_no})
 	</insert>
-	
+
+	<delete id="ProductDelete">
+		delete from dc_product where p_no = #{p_no}
+	</delete>
+
 	<resultMap id="dc_productMap" type="com.springboot.meongnyang_Jiphapso.dto.ProductDto">
 		<id property="p_no" column="p_no" />
 		<result property="p_title" column="p_title" />

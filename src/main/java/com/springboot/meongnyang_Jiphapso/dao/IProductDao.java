@@ -7,13 +7,18 @@ import org.apache.ibatis.annotations.Mapper;
 import com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductOptionDto;
+import com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto;
+import com.springboot.meongnyang_Jiphapso.dto.ShoppingViewDto;
 
 @Mapper
 public interface IProductDao {
 	//판매목록
-	public List<ProductDto> ProductList();
+	public List<ShoppingListDto> ShoppingList();
+	
 	//판매목록 상세보기
-	public ProductDto ProductView(int p_no);
+	public ShoppingListDto ShoppingViewList(int p_no);
+	public ShoppingViewDto ShoppingView(int p_no);
+	
 	//등록
 	public int ProductWrite(ProductDto p_dto);
 	public int ProductDetailImageWrite(ProductDetailImageDto img_dto);
