@@ -25,7 +25,9 @@ public class CartController {
         this.cartService = cartService;
     }
     private Long loginMemberNo(HttpSession session) {
-        return (Long) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+        // 세션엔 MemberDTO.m_no 타입 그대로(Integer) 들어있어서 Integer로 꺼낸 다음 Long으로 변환
+        Integer mNo = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+        return (mNo != null) ? mNo.longValue() : null;
     }
     // ------------------------------------------------------------
     // 회원/비회원 공용 화면
