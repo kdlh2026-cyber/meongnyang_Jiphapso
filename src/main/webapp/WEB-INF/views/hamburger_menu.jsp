@@ -112,9 +112,9 @@
             ♥ 🛒 ♥
           </h3> <!-- 장바구니 -->
           <ul>
-            <li><a href="cart/list">장바구니</a></li>
-            <li><a href="favorite/list">관심상품</a></li>
-            <li><a href="#">등록카드 발급</a></li>
+            <li><a href="/cart/list">장바구니</a></li>
+            <li><a href="/favorite/list">관심상품</a></li>
+            <li><a href="/member/order/list">주문내역</a></li>
           </ul>
         </div>
 
