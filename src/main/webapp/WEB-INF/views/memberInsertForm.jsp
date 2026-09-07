@@ -7,7 +7,8 @@
 <title>멍냥집합소</title>
 </head>
 <body>
-	<form id="memberInsertForm" method="post" action="/memberInsert">
+<%@ include file="hamburger_menu.jsp" %>
+	<form id="memberInsertForm" method="post" action="/memberInsert" enctype="multipart/form-data">
 		<table>
 			<tr>
 				<td>아이디</td>
@@ -49,8 +50,13 @@
 				<td>생년월일</td>
 				<td><input type="date" name="m_birth"></td>
 			</tr>
+			<tr>
+				<td>프로필 사진</td>
+				<td><input type="file" name="m_upload"></td>
+			</tr>
 		</table>
 		<input type="submit" value="회원가입">
 	</form>
+<%@ include file="footer.jsp" %>
 </body>
 </html>

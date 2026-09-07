@@ -18,22 +18,26 @@
 		from dc_member
 		where m_id=#{m_id}
 	</select>
-	
+	<select id="MemberListView" resultMap="dc_memberMap">
+		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority
+		from dc_member
+		where m_authority=#{m_authority,jdbcType=VARCHAR}
+	</select>
 	<insert id="MemberWrite">
 		<selectKey keyProperty="m_no" resultType="integer" order="BEFORE">
 			select dc_member_seq.NEXTVAL from dual
 		</selectKey>
 		insert into dc_member(m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,
-								m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority)
+								m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img)
 		values(#{m_no},#{m_id},#{m_passwd},#{m_name},#{m_tel},#{m_addr},#{m_addr_detail},#{m_zipno},
-				#{m_email},#{m_introduce},#{m_birth},sysdate,#{m_age_upper,jdbcType=VARCHAR},#{m_sns,jdbcType=VARCHAR},#{m_authority,jdbcType=VARCHAR})
+				#{m_email},#{m_introduce},#{m_birth},sysdate,#{m_age_upper,jdbcType=VARCHAR},#{m_sns,jdbcType=VARCHAR},#{m_authority,jdbcType=VARCHAR},#{m_img,jdbcType=VARCHAR})
 	</insert>
 	<update id="MemberUpdate">
 		update dc_member
 		set m_passwd=#{m_passwd}, m_name=#{m_name}, m_tel=#{m_tel}, m_addr=#{m_addr},
 		m_addr_detail=#{m_addr_detail}, m_zipno=#{m_zipno}, m_email=#{m_email},
 		m_introduce=#{m_introduce}, m_birth=#{m_birth}, m_age_upper=#{m_age_upper},
-		m_sns=#{m_sns}, m_authority=#{m_authority}
+		m_sns=#{m_sns}, m_authority=#{m_authority},m_img=#{m_img,jdbcType=VARCHAR}
 		where m_id=#{m_id}
 	</update>
 	

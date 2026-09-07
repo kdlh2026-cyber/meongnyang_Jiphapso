@@ -1,5 +1,7 @@
 package com.springboot.meongnyang_Jiphapso.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 @Data
@@ -12,6 +14,7 @@ public class PetDTO {
 	private String pet_gender;
 	private String pet_neuter;
 	private float pet_weight;
+	private MultipartFile pet_upload;
 	private String pet_image;
 	private int m_no;
 	

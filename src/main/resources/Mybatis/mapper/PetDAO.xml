@@ -18,11 +18,11 @@
 			select dc_pet_seq.NEXTVAL from dual
 		</selectKey>
 		insert into dc_pet(pet_no,pet_name,pet_birth,pet_type,pet_breed,pet_gender,pet_neuter,pet_weight,pet_image,m_no)
-		values(#{pet_no},#{pet_name},#{pet_birth},#{pet_type},#{pet_breed},#{pet_gender},#{pet_neuter},#{pet_weight},#{pet_image},#{m_no})
+		values(#{pet_no},#{pet_name},TO_DATE(#{pet_birth}, 'YYYYMMDD'),#{pet_type},#{pet_breed},#{pet_gender},#{pet_neuter},#{pet_weight},#{pet_image,jdbcType=VARCHAR},#{m_no})
 	</insert>
 	<update id="PetUpdate">
 		update dc_pet
-		set pet_name=#{pet_name},pet_birth=#{pet_birth},pet_breed=#{pet_breed},pet_neuter=#{pet_neuter},pet_weight=#{pet_weight},pet_image=#{pet_image}
+		set pet_name=#{pet_name},pet_birth=TO_DATE(#{pet_birth}, 'YYYYMMDD'),pet_breed=#{pet_breed},pet_neuter=#{pet_neuter},pet_weight=#{pet_weight},pet_image=#{pet_image,jdbcType=VARCHAR}
 		where pet_no=#{pet_no}
 	</update>
 	<delete id="PetDelete">
