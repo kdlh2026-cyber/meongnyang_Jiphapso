@@ -5,7 +5,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>관심상품ㅇ</title>
+<title>관심상품</title>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 <style>
     .favorite-toolbar { margin-bottom: 12px; }
     .favorite-table { width: 100%; border-collapse: collapse; }
@@ -131,6 +132,6 @@
         });
     });
 </script>
-
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

@@ -7,6 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <title>장바구니</title>
+    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
     <link rel="stylesheet" href="/css/cart/cart_list.css">
 </head>
 <body>
@@ -167,7 +168,7 @@
             }
         });
     }
-    
+
     function goCheckout() {
         const caNoList = Array.from(document.querySelectorAll('.item-check:checked'))
             .map(chk => chk.value);
@@ -176,8 +177,9 @@
             alert('주문할 상품을 선택해주세요.');
             return;
         }
-        location.href = '/order/checkout?caNo=' + caNoList.join(',');
+        location.href = '/member/order/checkout?caNo=' + caNoList.join(',');
     }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

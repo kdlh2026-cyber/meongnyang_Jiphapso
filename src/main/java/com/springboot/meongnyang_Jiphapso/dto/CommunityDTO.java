@@ -1,6 +1,9 @@
 package com.springboot.meongnyang_Jiphapso.dto;
 
 import java.util.Date;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 
@@ -17,14 +20,22 @@ public class CommunityDTO {
 	private String comm_breed;
 	private String comm_img;
 	private String comm_video;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date comm_date;
-	private Date reg_date;
+	
 	private int comm_count;
 	private int comm_view;
-	private int comm_good;
-	private int comm_well;
+	private Integer comm_good;
+	private Integer comm_well;
 	private String comm_tag;
 	private Integer m_no;
 	private Integer p_no;
 	private Integer pet_no;
+	
+	//이미지 테이블과 연동
+	private String img_url;
+	
+	private List<String> img_url_list;
+	
 }

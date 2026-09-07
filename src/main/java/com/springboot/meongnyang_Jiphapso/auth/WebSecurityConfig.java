@@ -11,9 +11,9 @@ import jakarta.servlet.DispatcherType;
 
 @Configuration
 public class WebSecurityConfig {
-	
+
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf((csrf) -> csrf.disable()) // CSRF 보호 비활성화
 			.cors((cors) -> cors.disable()) // CORS 비활성화
 			.authorizeHttpRequests(request -> request
@@ -48,8 +48,9 @@ public class WebSecurityConfig {
 		);
 		return http.build();
 	}
+
 	@Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 }
