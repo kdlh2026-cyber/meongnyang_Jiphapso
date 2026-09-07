@@ -20,4 +20,6 @@ public interface IMemberDAO {
 	public int MemberDelete(String m_id);
 	
 	public MemberDTO MemberFindId(String m_id);
+	// 관리자용 멤버리스트 조회
+	public List<MemberDTO> MemberListView(String m_authority);
 }

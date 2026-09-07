@@ -12,7 +12,7 @@
 	<form id="" method="post" action="/myPetInsert" enctype="multipart/form-data">
 		<table>
 			<tr>
-				<td><input type="file" name="pet_image" placeholder="등록 사진은 1개만 첨부 가능합니다."></td>
+				<td><input type="file" name="pet_upload" placeholder="등록 사진은 1개만 첨부 가능합니다."></td>
 			</tr>
 			<tr>
 				<td><input type="text" name="pet_name" placeholder="이름"></td>
