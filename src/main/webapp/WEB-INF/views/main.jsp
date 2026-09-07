@@ -22,6 +22,8 @@
 		<!-- 관리자 -->
 	<sec:authorize access="hasRole('ADMIN')">
 		관리자님, 환영합니다.<br>
+		<a href="/productWriteForm">상품등록</a><br>
+		<a href="/productList">상품리스트</a>
 		<a href="/logout">로그아웃</a><br>
 	</sec:authorize>
 <%@ include file="footer.jsp" %>

@@ -1,10 +1,12 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +15,7 @@ import com.springboot.meongnyang_Jiphapso.dao.IProductDao;
 import com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductOptionDto;
+import com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto;
 
 @Controller
 public class ProductController {
@@ -29,7 +32,22 @@ public class ProductController {
 	public String productWrite(ProductDto p_dto, ProductDetailImageDto img_dto, ProductOptionDto o_dto,
 			 @RequestParam("o_img") MultipartFile o_img, @RequestParam("img_urls") List<MultipartFile> img_urls,
 			 @RequestParam(value="o_quantity", defaultValue="100") int o_quantity, @RequestParam("o_price") int o_price,
-			 @RequestParam("o_default") String o_default) throws Exception{
+			 @RequestParam("o_default") String o_default,
+			 @RequestParam("p_title") String p_title) throws Exception{
+		
+		/*
+		 * ProductDto existingProduct = p_dao.getProductByTitle(p_title);
+		 * 
+		 * int generatedPno;
+		 * 
+		 * if(existingProduct == null) { p_dao.ProductWrite(p_dto); generatedPno =
+		 * p_dto.getP_no(); } else {
+		 * 
+		 * generatedPno = existingProduct.getP_no(); }
+		 * 
+		 * 
+		 * o_dto.setP_no(generatedPno);
+		 */
 		
 		p_dao.ProductWrite(p_dto);
 		//p_service.write(p_dto);
@@ -39,6 +57,9 @@ public class ProductController {
 		
 	    if(o_price == 0) {
 	    	o_dto.setO_quantity(0);
+	    }
+	    else {
+	    	o_dto.setO_quantity(o_quantity);
 	    }
 	    
 	    if(!"Y".equals(o_default)) {
@@ -67,11 +88,14 @@ public class ProductController {
 		        ProductDetailImageDto detailDto = new ProductDetailImageDto();
 		        
 		        detailDto.setImg_url(img_url);
-		        detailDto.setSort(sortOrder); 
+		        detailDto.setImg_sort(sortOrder);
 		        detailDto.setP_no(generatedPno);
 		        
 		        if (sortOrder == 1) {
 		            detailDto.setImg_content(img_dto.getImg_content());
+		        }
+		        else {
+		        	detailDto.setImg_content(null);
 		        }
 		        
 		        sortOrder++;
@@ -81,5 +105,40 @@ public class ProductController {
 		}		
 
 		return "redirect:main";
+	}
+	
+	@RequestMapping("/products/ShoppingList")
+	public String ShoppingList(ShoppingListDto s_dto, Model model) {
+		
+		List<ShoppingListDto> allList = p_dao.ShoppingList();
+
+		List<ShoppingListDto> filtered;
+		filtered = new ArrayList<>(allList);
+		model.addAttribute("ShoppingList", filtered);
+		return "products/ShoppingList";
+	}
+	
+	@RequestMapping("/productList")
+	public String ShoppingListA(ShoppingListDto s_dto, Model model) {
+		
+		List<ShoppingListDto> allList = p_dao.ShoppingList();
+
+		List<ShoppingListDto> filtered;
+		filtered = new ArrayList<>(allList);
+		model.addAttribute("ShoppingList", filtered);
+		return "admin/product/ShoppingListA";
+	}
+	
+	@RequestMapping("/products/ShoppingView")
+	public String ShoppingView(@RequestParam("p_no") int p_no, Model model) {
+		model.addAttribute("ShoppingViewList", p_dao.ShoppingViewList(p_no));
+		model.addAttribute("ShoppingView", p_dao.ShoppingView(p_no));
+		return "products/ShoppingView";
+	}
+	
+	@RequestMapping("/productDelete")
+	public String ProductDelete(@RequestParam("p_no") int p_no) {
+		p_dao.ProductDelete(p_no);
+		return "redirect:/productList";
 	}
 }

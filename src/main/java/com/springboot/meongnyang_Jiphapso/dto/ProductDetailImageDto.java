@@ -10,6 +10,6 @@ public class ProductDetailImageDto {
 	private String img_url;
 	private MultipartFile img_urls;
 	private String img_content;
-	private int sort;
+	private int img_sort;
 	private int p_no;
 }
