@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IOrderCancelDAO">
+
+	<resultMap id="orderCancelResultMap" type="com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO">
+		<id property="ocOutNo" column="OC_OUT_NO" />
+		<result property="ocType" column="OC_TYPE" />
+		<result property="ocStatus" column="OC_STATUS" />
+		<result property="ocReason" column="OC_REASON" />
+		<result property="ocQuantity" column="OC_QUANTITY" />
+		<result property="ocRamount" column="OC_RAMOUNT" />
+		<result property="ocTurn" column="OC_TURN" />
+		<result property="ocPoint" column="OC_POINT" />
+		<result property="ocCoupon" column="OC_COUPON" />
+		<result property="ocRe" column="OC_RE" />
+		<result property="ocPr" column="OC_PR" />
+		<result property="odDetailNo" column="OD_DETAIL_NO" />
+		<result property="odProductTitle" column="OD_PRODUCT_TITLE" />
+		<result property="orNo" column="OR_NO" />
+	</resultMap>
+
+	<!-- 취소/반품/교환 신청 등록 -->
+	<insert id="insertOrderCancel" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO"
+		useGeneratedKeys="true" keyProperty="ocOutNo" keyColumn="OC_OUT_NO">
+		insert into dc_order_cancel
+			(oc_type, oc_status, oc_reason, oc_quantity, oc_ramount, oc_turn, oc_point, oc_coupon, oc_re, oc_pr, od_detail_no)
+		values
+			(#{ocType}, #{ocStatus}, #{ocReason}, #{ocQuantity}, #{ocRamount}, #{ocTurn}, #{ocPoint}, #{ocCoupon}, #{ocRe}, #{ocPr}, #{odDetailNo})
+	</insert>
+
+	<!-- 처리상태 변경 (관리자) -->
+	<update id="updateOrderCancelStatus">
+		update dc_order_cancel
+		set oc_status = #{ocStatus},
+			oc_pr = #{ocPr}
+		where oc_out_no = #{ocOutNo}
+	</update>
+
+	<!-- 단건 조회 -->
+	<select id="selectOrderCancelOne" resultMap="orderCancelResultMap">
+		select
+			oc.oc_out_no, oc.oc_type, oc.oc_status, oc.oc_reason, oc.oc_quantity,
+			oc.oc_ramount, oc.oc_turn, oc.oc_point, oc.oc_coupon, oc.oc_re, oc.oc_pr, oc.od_detail_no,
+			od.od_product_name as OD_PRODUCT_TITLE,
+			od.or_no as OR_NO
+		from dc_order_cancel oc
+		join dc_order_detail od on oc.od_detail_no = od.od_detail_no
+		where oc.oc_out_no = #{ocOutNo}
+	</select>
+
+	<!-- 주문상세 기준 취소이력 조회 -->
+	<select id="selectOrderCancelListByOrderDetail" resultMap="orderCancelResultMap">
+		select
+			oc.oc_out_no, oc.oc_type, oc.oc_status, oc.oc_reason, oc.oc_quantity,
+			oc.oc_ramount, oc.oc_turn, oc.oc_point, oc.oc_coupon, oc.oc_re, oc.oc_pr, oc.od_detail_no,
+			od.od_product_name as OD_PRODUCT_TITLE,
+			od.or_no as OR_NO
+		from dc_order_cancel oc
+		join dc_order_detail od on oc.od_detail_no = od.od_detail_no
+		where oc.od_detail_no = #{odDetailNo}
+		order by oc.oc_re desc
+	</select>
+
+	<!-- 회원 기준 취소/반품 목록 -->
+	<select id="selectOrderCancelListByMember" resultMap="orderCancelResultMap">
+		select
+			oc.oc_out_no, oc.oc_type, oc.oc_status, oc.oc_reason, oc.oc_quantity,
+			oc.oc_ramount, oc.oc_turn, oc.oc_point, oc.oc_coupon, oc.oc_re, oc.oc_pr, oc.od_detail_no,
+			od.od_product_name as OD_PRODUCT_TITLE,
+			od.or_no as OR_NO
+		from dc_order_cancel oc
+		join dc_order_detail od on oc.od_detail_no = od.od_detail_no
+		join dc_order ord on od.or_no = ord.or_no
+		where ord.m_no = #{mNo}
+		order by oc.oc_re desc
+	</select>
+
+	<!-- 관리자 - 전체 취소 목록 -->
+	<select id="selectOrderCancelListAll" resultMap="orderCancelResultMap">
+		select
+			oc.oc_out_no, oc.oc_type, oc.oc_status, oc.oc_reason, oc.oc_quantity,
+			oc.oc_ramount, oc.oc_turn, oc.oc_point, oc.oc_coupon, oc.oc_re, oc.oc_pr, oc.od_detail_no,
+			od.od_product_name as OD_PRODUCT_TITLE,
+			od.or_no as OR_NO
+		from dc_order_cancel oc
+		join dc_order_detail od on oc.od_detail_no = od.od_detail_no
+		order by oc.oc_re desc
+	</select>
+
+	<!-- 삭제 (관리자) -->
+	<delete id="deleteOrderCancel">
+		delete from dc_order_cancel
+		where oc_out_no = #{ocOutNo}
+	</delete>
+
+</mapper>
