@@ -23,7 +23,7 @@
       <a href="#">북마크 글</a>
    </li>
    <li>
-      <a href="#">쇼핑 내역</a>
+      <a href="/member/order/list">주문 내역</a>
    </li>
    <li>
       <a href="#">포인트 내역</a>
