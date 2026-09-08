@@ -32,7 +32,7 @@
 
     @media (prefers-reduced-motion: reduce){ #pageLoadingOverlay *{ animation:none !important; } }
   </style>
-
+<script src="/js/loadingfile.js"></script>
   <div class="stage">
   <div class="bubble"><p>우리 친구들이<br>열심히 달려가는 중이에요! ❤</p></div>
 
