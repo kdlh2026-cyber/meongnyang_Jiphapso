@@ -17,15 +17,15 @@
 			제목 : <input type="text" name="comm_title"> <p>
 			작성자 : <input type="text" name="comm_writer"> <p>
 			작성일 : <input type="text" name="comm_date"> <p>
-			조회수 : <input type="text" name="comm_view"> <p>
+			조회수 : <input type="text" name="comm_view" value="0"> <p>
 			<textarea rows="30" cols="50" name="comm_content"></textarea> <p>
 			동물 종류 : <input type="text" name="comm_pet_type"> <p>
 			견종 : <input type="text" name="comm_breed"> <p>
 			태그 : <input type="text" name="comm_tag"> <p>
 			썸네일 이미지 : <input type="text" id="comm_img" name="comm_img" placeholder="이미지 URL을 입력하세요"> <p>
 			본문 이미지 : <input type="text" id="img_url" name="img_url" placeholder="이미지 URL을 입력하세요"> <p>
-			도움돼요 : <input type="text" name="comm_good"><p>
-			글쎄요 : <input type="text" name="comm_well"><p>
+			도움돼요 : <input type="text" name="comm_good" value="0"><p>
+			글쎄요 : <input type="text" name="comm_well" value="0"><p>
 			<input type="submit" value="질문 등록">
 		</form>
 	</div>

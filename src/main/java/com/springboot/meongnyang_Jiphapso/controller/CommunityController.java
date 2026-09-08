@@ -55,12 +55,33 @@ public class CommunityController {
 	
 	// 크롤링한 데이터 업로드 용
 	@RequestMapping("/commWriteCrawling")
-	public String commWriteCrawling(CommunityDTO dto,
-									@RequestParam(value = "img_url", required = false) String comm_content_img) throws Exception {
-	    
-	    // 서비스 메서드 호출 (DTO만 전달)
+	public String commWriteCrawling(
+	        CommunityDTO dto,
+	        @RequestParam(value = "img_url", required = false) String comm_content_img
+	) throws Exception {
+
+		 System.out.println();
+		    System.out.println("==========================================");
+		    System.out.println("Crawling Controller DTO 확인");
+		    System.out.println("==========================================");
+
+		    System.out.println("comm_type    = " + dto.getComm_type());
+		    System.out.println("comm_title   = " + dto.getComm_title());
+		    System.out.println("comm_writer  = " + dto.getComm_writer());
+		    System.out.println("comm_date    = " + dto.getComm_date());
+		    System.out.println("comm_content = " + dto.getComm_content());
+		    System.out.println("comm_pet_type = " + dto.getComm_pet_type());
+		    System.out.println("comm_breed   = " + dto.getComm_breed());
+		    System.out.println("comm_tag     = " + dto.getComm_tag());
+		    System.out.println("comm_view    = " + dto.getComm_view());
+		    System.out.println("comm_good    = " + dto.getComm_good());
+		    System.out.println("comm_well    = " + dto.getComm_well());
+		    System.out.println("img_url      = " + comm_content_img);
+
+		    System.out.println("==========================================");
+
 	    service.writeCrawling(dto, comm_content_img);
-	    
+
 	    return "redirect:/community/commList";
 	}
 	
