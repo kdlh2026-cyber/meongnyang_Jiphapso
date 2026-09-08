@@ -22,9 +22,9 @@ public class AdminController {
 		return "admin/adminPage";
 	}
 	
-	@RequestMapping("/admin/member/memberList")
+	@RequestMapping("/admin/mem/memberList")
 	public String memberList(Model model) {
 	    model.addAttribute("memberList", m_dao.MemberListView("USER"));
-	    return "admin/member/memberList";
+	    return "admin/mem/memberList";
 	}
 }

@@ -118,27 +118,6 @@
           </ul>
         </div>
 
-        <div class="cat">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
-            반려동물 장소
-          </h3>
-          <ul>
-            <li><a href="#">동반 여행</a></li>
-          </ul>
-        </div>
-
-        <div class="cat">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><polyline points="9 12 11 14 15 10"/></svg>
-            펫보험
-          </h3>
-          <ul>
-            <li><a href="#">펫보험 찾기</a></li>
-            <li><a href="#">관심 펫보험</a></li>
-          </ul>
-        </div>
-      
       <div class="cat">
           <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -146,6 +125,16 @@
           </h3>
           <ul>
             <li><a href="#">동물병원 찾기</a></li>
+          </ul>
+        </div>
+
+        <div class="cat">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+            반려동물 장소
+          </h3>
+          <ul>
+            <li><a href="#">동반 여행</a></li>
           </ul>
         </div>
 
