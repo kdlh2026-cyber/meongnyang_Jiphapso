@@ -11,15 +11,21 @@
 <%@ include file="hamburger_menu.jsp" %>
 	<hr>
 	<h1>메인페이지</h1>
+	
+	<!-- 비회원 영역 -->
+	<sec:authorize access="isAnonymous()">
 	<img src="/images/image.png" width="300px" height="auto"/><br>
 	<a href="/loginForm">로그인</a><br>
 	<a href="/memberInsertForm">회원가입</a>
-	<!-- 일반 회원 -->
+	</sec:authorize>
+	
+	<!-- 일반 회원 영역 -->
 	<sec:authorize access="hasRole('USER')">
 			회원님, 환영합니다.<br>
 			<a href="/logout">로그아웃</a><br>
 	</sec:authorize>
-		<!-- 관리자 -->
+	
+		<!-- 관리자 영역 -->
 	<sec:authorize access="hasRole('ADMIN')">
 		관리자님, 환영합니다.<br>
 		<a href="/productWriteForm">상품등록</a><br>
