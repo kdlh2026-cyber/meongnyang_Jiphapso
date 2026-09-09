@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!-- common/loading.jsp -->
 <div id="pageLoadingOverlay" style="display:none;">
   <style>
@@ -16,7 +18,7 @@
       border:2.5px dashed #f0b94a; border-radius:24px;
       text-align:center; box-shadow:0 10px 30px -14px rgba(240,185,74,.4);
     }
-    /* ... 원본 .bubble p, .bubble::after ... */
+    /* ... ìë³¸ .bubble p, .bubble::after ... */
 
     #pageLoadingOverlay .track{ position:relative; height:190px; margin:0 auto 36px; overflow:hidden; }
     /* ... .path, .row, @keyframes travel ... */
@@ -34,7 +36,7 @@
   </style>
 <script src="/js/loadingfile.js"></script>
   <div class="stage">
-  <div class="bubble"><p>우리 친구들이<br>열심히 달려가는 중이에요! ❤</p></div>
+  <div class="bubble"><p>우리 친구들이<br>열심히 달려가는 중이에요!</p></div>
 
   <div class="track">
     <div class="path"></div>
