@@ -15,7 +15,6 @@ public class ProductService {
 	ProductESService p_service;
 	
 	public void write(ProductDto p_dto) throws Exception{
-		p_dao.ProductWrite(p_dto); 
 		p_service.save(p_dto);      // 엘라스틱 서치에 색인(저장)
 	}
 	

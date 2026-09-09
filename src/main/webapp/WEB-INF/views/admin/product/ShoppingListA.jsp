@@ -38,9 +38,6 @@
 			</c:if>
 			</c:forEach>
 		</tr>
-	</table>
-<div>
-	<button onclick="location.href='/main'">메인이동</button>
-</div>
+		</table>
 </body>
 </html>

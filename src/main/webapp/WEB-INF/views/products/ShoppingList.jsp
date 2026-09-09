@@ -13,7 +13,7 @@
 	}
 </style>
 <meta charset="UTF-8">
-<title>상품</title>
+<title>Insert title here</title>
 </head>
 <body>
 	<h3>상품리스트</h3>
@@ -31,9 +31,6 @@
 			</c:if>
 			</c:forEach>
 		</tr>
-	</table>
-<div>
-	<a href="#">뒤로가기</a>
-</div>
+		</table>
 </body>
 </html>

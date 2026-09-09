@@ -40,8 +40,8 @@
 		</div>
 		<div>
 			<div>
-				<a href="#">상품설명</a>
-				<a href="#">리뷰</a>
+				<button>상품설명</button>
+				<button>리뷰</button>
 			</div>
 			<div>
 				
