@@ -27,4 +27,6 @@ public interface IProductDao {
 	public int ProductUpdate(ProductDto p_dto);
 	//삭제
 	public int ProductDelete(int p_no);
+	
+	public ProductDto getProductByTitle(String p_title);
 }
