@@ -3,12 +3,14 @@ package com.springboot.meongnyang_Jiphapso.controller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.meongnyang_Jiphapso.dao.IProductDao;
@@ -131,7 +133,6 @@ public class ProductController {
 	
 	@RequestMapping("/products/ShoppingView")
 	public String ShoppingView(@RequestParam("p_no") int p_no, Model model) {
-		model.addAttribute("ShoppingViewList", p_dao.ShoppingViewList(p_no));
 		model.addAttribute("ShoppingView", p_dao.ShoppingView(p_no));
 		return "products/ShoppingView";
 	}
@@ -140,5 +141,18 @@ public class ProductController {
 	public String ProductDelete(@RequestParam("p_no") int p_no) {
 		p_dao.ProductDelete(p_no);
 		return "redirect:/productList";
+	}
+	
+	@RequestMapping("/search")
+	public String search(@RequestParam("keyword") String keyword, Model model) throws Exception {
+		List<ShoppingListDto> list = p_service.search(keyword);
+		model.addAttribute("ShoppingList", list);
+		return "products/ShoppingList";
+	}
+	
+	@ResponseBody
+	@RequestMapping("/autocomplete")
+	public List<Map<String, String>> autocomplete(@RequestParam("keyword") String keyword, Model model) throws Exception{
+		return p_service.autocomplete(keyword);
 	}
 }

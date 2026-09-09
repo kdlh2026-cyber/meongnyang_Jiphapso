@@ -10,46 +10,50 @@
 		order by p.p_no desc
 	</select>
 	
-	<select id="ShoppingViewList" resultType="com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto">
-		select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, p.p_type as ptype, 
-		o.o_main_img as omainimg,o.o_price as oprice, o.o_default as odefault, p.p_no as pno,
-		i.img_content as imgcontent, i.img_sort as imgsort
-		from dc_product p, dc_product_option o, dc_product_detail_image i
-		where p.p_no = o.p_no and p.p_no = i.p_no and img_sort=1 and p.p_no = #{p_no}
-	</select>
-	
 	<resultMap id="ShoppingViewMap" type="com.springboot.meongnyang_Jiphapso.dto.ShoppingViewDto">
-    <id property="pno" column="pno" />
-    <result property="ptitle" column="ptitle" />
-    <result property="pbrand" column="pbrand" />
-    <result property="pcategory" column="pcategory" />
-    <result property="ptype" column="ptype" />
-    <result property="omainimg" column="omainimg" />
-    <result property="oprice" column="oprice" />
-    <result property="odefault" column="odefault" />
-    <result property="ooriginprice" column="ooriginprice" />
-    <result property="oquantity" column="oquantity" />
-    <result property="otypesize" column="otypesize" />
-    <result property="ocolor" column="ocolor" />
-
-    <collection property="detailImages" ofType="com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto">
-        <id property="img_no" column="imgno" />
-        <result property="img_url" column="imgurl" />
-        <result property="img_content" column="imgcontent" />
-        <result property="img_sort" column="imgsort" />
-    </collection>
+	    <id property="pno" column="pno" />
+	    <result property="ptitle" column="ptitle" />
+	    <result property="pbrand" column="pbrand" />
+	    <result property="pcategory" column="pcategory" />
+	    <result property="ptype" column="ptype" />
+	    <collection property="option" ofType="com.springboot.meongnyang_Jiphapso.dto.ProductOptionDto">
+	        <id property="o_no" column="ono" />
+	        <result property="o_price" column="oprice" />
+	        <result property="o_origin_price" column="ooriginprice" />
+	        <result property="o_main_img" column="omainimg" />
+	        <result property="o_quantity" column="oquantity" />
+	        <result property="o_type_size" column="otypesize" />
+	        <result property="o_color" column="ocolor" />
+	        <result property="o_default" column="odefault" />
+	    </collection>
+	    <collection property="detailImages" ofType="com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto">
+	        <id property="img_no" column="imgno" />
+	        <result property="img_url" column="imgurl" />
+	        <result property="img_content" column="imgcontent" />
+	        <result property="img_sort" column="imgsort" />
+	    </collection>
 	</resultMap>
 
 	
 	<select id="ShoppingView" resultMap="ShoppingViewMap">
-    select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, 
-           p.p_type as ptype, o.o_main_img as omainimg, o.o_price as oprice, 
-           o.o_default as odefault, p.p_no as pno, o.o_origin_price as ooriginprice, 
-           o.o_quantity as oquantity, o.o_type_size as otypesize, o.o_color as ocolor,
+    select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, p.p_type as ptype,
+    	   o.o_no as ono, o.o_main_img as omainimg, o.o_price as oprice, o.o_default as odefault, 
+    	   p.p_no as pno, o.o_origin_price as ooriginprice, o.o_quantity as oquantity, o.o_type_size as otypesize, o.o_color as ocolor,
            i.img_no as imgno, i.img_url as imgurl, i.img_content as imgcontent, i.img_sort as imgsort
     from dc_product p
     inner join dc_product_option o on p.p_no = o.p_no
-    inner join dc_product_detail_image i on p.p_no = i.p_no
+    left join dc_product_detail_image i on p.p_no = i.p_no
     where p.p_no = #{p_no}
+    order by i.img_sort asc
+	</select>
+
+	<select id="searchList" resultType="com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto">
+	    select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, p.p_type as ptype, o.o_main_img as omainimg,o.o_price as oprice, o.o_default as odefault, p.p_no as pno
+		from dc_product p, dc_product_option o
+		where p.p_no=o.p_no and o.o_default='Y'
+	    and p.p_no in
+	    <foreach collection="list" item="pno" open="(" separator="," close=")">
+	        #{pno}
+	    </foreach>
 	</select>
 </mapper>
