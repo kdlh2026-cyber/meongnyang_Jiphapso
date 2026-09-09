@@ -37,7 +37,7 @@ public interface ICommunityDAO {
 	
 	// 게시글 작성하기(insert)
 	public int CommunityWrite(CommunityDTO commDto);
-
+	
 	// 게시글 수정하기(update) -> 본인이 쓴 글만 수정 가능
 	public int CommunityUpdate(CommunityDTO commDto);
 	

@@ -10,6 +10,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -52,35 +53,34 @@ public class MemberESService {
 	}
 	
 	public List<MemberDTO> search(String keyword) throws Exception{
-		SearchRequest request=new SearchRequest("dc_Member");
-		
-		// 엘라스틱 서치에서 검색 요청의 본문을 만드는 객체 생성(SQL의 select문)
-		SearchSourceBuilder builder=new SearchSourceBuilder();
-		
-		// 키워드를 title 또는(OR) content 필드에서 검색
-		// builder.query(QueryBuilders.multiMatchQuery(keyword, "title","content").operator(Operator.AND));
-		builder.query(QueryBuilders.multiMatchQuery(keyword,"m_id","m_name","m_addr","m_email","m_age_upper","m_sns","m_authority"));
-		request.source(builder);
-		
-		// 엘라스틱 서치에서 검색한 결과를 받아옴
-		SearchResponse response=client.search(request, RequestOptions.DEFAULT);
-		
-		// 검색한 결과 객체를 생성
-		List<MemberDTO> list=new ArrayList<>();
-		
-		for(SearchHit hit:response.getHits().getHits()) {
-			Map<String,Object> map=hit.getSourceAsMap();
-			MemberDTO m_dto=new MemberDTO();
-			m_dto.setM_id(map.get("m_id").toString());
-			m_dto.setM_name(map.get("m_name").toString());
-			m_dto.setM_addr(map.get("m_addr").toString());
-			m_dto.setM_email(map.get("m_email").toString());
-			m_dto.setM_age_upper(map.get("m_age_upper").toString());
-			m_dto.setM_sns(map.get("m_sns").toString());
-			m_dto.setM_authority(map.get("m_authority").toString());
-			list.add(m_dto);
-		}
-		return list;
+	    SearchRequest request=new SearchRequest("dc_member");
+	    
+	    SearchSourceBuilder builder=new SearchSourceBuilder();
+	    builder.query(QueryBuilders.multiMatchQuery(keyword,"m_id","m_name","m_addr","m_email","m_age_upper","m_sns","m_authority"));
+	    request.source(builder);
+	    
+	    SearchResponse response=client.search(request, RequestOptions.DEFAULT);
+	    
+	    List<MemberDTO> list=new ArrayList<>();
+	    
+	    for(SearchHit hit:response.getHits().getHits()) {
+	        Map<String,Object> map=hit.getSourceAsMap();
+	        MemberDTO m_dto=new MemberDTO();
+	        m_dto.setM_id(toStringOrNull(map.get("m_id")));
+	        m_dto.setM_name(toStringOrNull(map.get("m_name")));
+	        m_dto.setM_addr(toStringOrNull(map.get("m_addr")));
+	        m_dto.setM_email(toStringOrNull(map.get("m_email")));
+	        m_dto.setM_age_upper(toStringOrNull(map.get("m_age_upper")));
+	        m_dto.setM_sns(toStringOrNull(map.get("m_sns")));
+	        m_dto.setM_authority(toStringOrNull(map.get("m_authority")));
+	        list.add(m_dto);
+	    }
+	    return list;
+	}
+
+	// null이면 null 그대로, 아니면 문자열로 변환하는 헬퍼
+	private String toStringOrNull(Object obj) {
+	    return obj == null ? null : obj.toString();
 	}
 	
 	// 자동완성 + 화면 하이라이트 기능
@@ -92,16 +92,18 @@ public class MemberESService {
 		source.size(10);
 		
 		// prefix(접두어) 검색(스 -> 스프 -> 스프링)
-		source.query(QueryBuilders.matchPhrasePrefixQuery("m_id",keyword));
+		source.query(QueryBuilders.multiMatchQuery(keyword, "m_id", "m_name")
+                .type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX));
 		
-		HighlightBuilder highlight=new HighlightBuilder();
-		highlight.field(new HighlightBuilder.Field("m_id")
-						.highlightQuery(QueryBuilders.matchPhrasePrefixQuery("m_id",keyword))
-						);
-		highlight.preTags("<em>");
-		highlight.postTags("</em>");
+		// HighlightBuilder highlight=new HighlightBuilder();
+		// highlight.field(new HighlightBuilder.Field("m_id")
+		//				.highlightQuery(QueryBuilders.matchPhrasePrefixQuery("m_id",keyword))
+		//				);
+		// highlight.field("m_name");
+		// highlight.preTags("<em>");
+		// highlight.postTags("</em>");
 		
-		source.highlighter(highlight);
+		// source.highlighter(highlight);
 		request.source(source);
 		
 		// 엘라스틱 서치에서 검색한 결과를 받아오기
@@ -111,14 +113,20 @@ public class MemberESService {
 		
 		for(SearchHit hit:response.getHits().getHits()) {
 			String m_id=hit.getSourceAsMap().get("m_id").toString();
+			String m_name=hit.getSourceAsMap().get("m_name").toString();
 			String highlighted=m_id;
 			
 			if(hit.getHighlightFields().get("m_id")!=null) {
 				highlighted=hit.getHighlightFields().get("m_id").fragments()[0].string();
 			}
 			
+			else if(hit.getHighlightFields().get("m_name")!=null) {
+				highlighted=hit.getHighlightFields().get("m_name").fragments()[0].string();
+			}
+			
 			Map<String,String> map=new HashMap<>();
 			map.put("m_id", m_id);
+			map.put("m_name", m_name);
 			map.put("highlight", highlighted);
 			result.add(map);
 		}

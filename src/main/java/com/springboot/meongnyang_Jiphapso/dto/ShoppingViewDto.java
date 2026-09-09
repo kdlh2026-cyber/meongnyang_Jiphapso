@@ -11,13 +11,6 @@ public class ShoppingViewDto {
 	private String pbrand;
 	private String pcategory;
 	private String ptype;
-	private String omainimg;
-	private int oprice;
-	private int ooriginprice;
-	private int oquantity;
-	private String otypesize;
-	private String ocolor;
-	private String odefault;
-	
+	private List<ProductOptionDto> option;
 	private List<ProductDetailImageDto> detailImages;
 }

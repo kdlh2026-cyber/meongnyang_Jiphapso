@@ -18,17 +18,9 @@
 	word-break: break-all;
 }
 </style>
-
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
-	<form name="community_search" method="get" action="/comm_search">
-		<input type="text" name="keyword" id="keyword" autocomplete="off">
-		<input type="submit" value="검색">
-		<div id="suggestions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">
-		</div>
-	</form>
-	
-	<a href="/communityCrawlingWriteForm">글쓰기(크롤링용)</a> | <a href="/commWriteForm">글쓰기(실제)</a>
+	<a href="/communityCrawlingWriteForm">글쓰기</a>
 	<div class="category_tabs">
         <a href="/community/commList" class="${empty param.comm_type ? 'active' : ''}">전체</a>
         <a href="/community/commList?comm_type=Q%26A" class="${param.comm_type eq 'Q&A' ? 'active' : ''}">Q&amp;A</a>
