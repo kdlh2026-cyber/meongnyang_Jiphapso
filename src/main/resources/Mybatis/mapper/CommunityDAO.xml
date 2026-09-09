@@ -51,6 +51,10 @@
 	    </where>
 	</select>
 	
+	<select id="BreedList" resultType="com.springboot.meongnyang_Jiphapso.dto.BreedDTO">
+		select * from dc_breed
+	</select>
+	
 	<insert id="CommunityWrite">
 		<selectKey keyProperty="comm_no" resultType="int" order="BEFORE">
         	SELECT dc_community_seq.NEXTVAL FROM DUAL
@@ -109,7 +113,6 @@
 	        <result column="IMG_URL" />
 	    </collection>
 	</resultMap>
-	
 	
 	<resultMap id="CommunityMap" type="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO" autoMapping="true">
 		<id property="comm_no" column="comm_no" />

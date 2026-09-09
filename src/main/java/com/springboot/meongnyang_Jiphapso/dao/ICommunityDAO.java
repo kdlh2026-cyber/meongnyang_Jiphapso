@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.springboot.meongnyang_Jiphapso.dto.BreedDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommImageDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
 
