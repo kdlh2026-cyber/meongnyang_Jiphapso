@@ -10,6 +10,8 @@ import com.springboot.meongnyang_Jiphapso.dto.PetDTO;
 public interface IPetDAO {
 	// 반려동물 목록
 	public List<PetDTO> PetList();
+	// 회원별 반려동물 목록 조회
+	public List<PetDTO> PetMemberList(int m_no);
 	// 펫 개별 정보 조회
 	public PetDTO PetView(int pet_no);
 	// 펫 정보 입력

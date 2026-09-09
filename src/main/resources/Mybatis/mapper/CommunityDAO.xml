@@ -72,16 +72,7 @@
 	        #{comm_breed, jdbcType=VARCHAR}, 
 	        #{comm_img, jdbcType=VARCHAR}, 
 	        #{comm_video, jdbcType=VARCHAR}, 
-	        
-			<choose>
-		        <when test="comm_date != null">
-		            #{comm_date, jdbcType=DATE}
-		        </when>
-		        <otherwise>
-		            SYSDATE
-		        </otherwise>
-		    </choose>,
-
+	        SYSDATE,
 	        #{comm_count, jdbcType=NUMERIC}, 
 	        #{comm_view, jdbcType=NUMERIC}, 
 	        #{comm_good, jdbcType=NUMERIC}, 
@@ -92,7 +83,6 @@
 	        #{pet_no, jdbcType=NUMERIC}
 		 )
 	</insert>
-	
 	
 	<insert id="CommunityImageWrite" parameterType="com.springboot.meongnyang_Jiphapso.dto.CommImageDTO">
 		insert into dc_comm_image(img_no, img_url, img_order, comm_no)
