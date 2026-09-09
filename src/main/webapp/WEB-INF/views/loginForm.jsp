@@ -8,11 +8,12 @@
 <link rel="stylesheet" href="/css/etc/login.css">
 </head>
 <body>
+<%@ include file="/WEB-INF/views/loading_animal.jsp" %>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 <div class="login-page">
     <div class="login-card">
         <h2>로그인</h2>
-        <form id="loginForm" method="post" action="${pageContext.request.contextPath}/j_spring_security_check">
+        <form id="loginForm" method="post" action="${pageContext.request.contextPath}/j_spring_security_check" data-loading>
             <div class="field">
                 <label for="m_id">아이디</label>
                 <input type="text" id="m_id" name="m_id">
@@ -28,7 +29,6 @@
         </div>
     </div>
 </div>
-
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

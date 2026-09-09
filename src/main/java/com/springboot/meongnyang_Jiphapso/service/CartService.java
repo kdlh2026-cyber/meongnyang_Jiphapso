@@ -1,10 +1,13 @@
 package com.springboot.meongnyang_Jiphapso.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.springboot.meongnyang_Jiphapso.dao.ICartDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CartDTO;
 
@@ -30,12 +33,23 @@ public class CartService {
     /** 장바구니 담기 - 이미 담긴 상품(같은 옵션)이면 수량만 합산 */
     @Transactional
     public CartDTO addCart(Long mNo, String guestToken, Long pNo, Long oNo, int quantity) {
+        // 상품목록 페이지처럼 옵션 선택 UI 없이 담는 경우 oNo가 null로 들어옴.
+        // o_price/o_main_img가 dc_product_option에만 있어서 o_no가 null이면
+        // 조회 시 LEFT JOIN이 매칭 안 돼 가격/이미지가 비어버리므로, 대표(default) 옵션으로 채워줌.
+        if (oNo == null) {
+            oNo = cartDAO.selectDefaultOptionNo(pNo);
+            if (oNo == null) {
+                throw new IllegalStateException("담을 수 있는 옵션이 없는 상품입니다");
+            }
+        }
+
         List<CartDTO> existingList = (mNo != null)
                 ? cartDAO.selectCartListByMember(mNo)
                 : cartDAO.selectCartListByToken(guestToken);
 
+        Long finalONo = oNo;
         CartDTO existing = existingList.stream()
-                .filter(c -> c.getPNo().equals(pNo) && Objects.equals(c.getONo(), oNo))
+                .filter(c -> c.getPNo().equals(pNo) && Objects.equals(c.getONo(), finalONo))
                 .findFirst()
                 .orElse(null);
 
@@ -84,6 +98,21 @@ public class CartService {
         dto.setCaYn(bagYn);
         dto.setCaQty(bagQty);
         cartDAO.updateCartBag(dto);
+    }
+
+    /** 옵션 변경 모달용 - 해당 상품(pNo)의 옵션 전체 목록 (색상/사이즈/가격/재고) */
+    public List<Map<String, Object>> getOptionListByProduct(Long pNo) {
+        return cartDAO.selectOptionListByProduct(pNo);
+    }
+
+    /** 장바구니 옵션 변경 - 소유자 검증 후 (연필 아이콘 -> 옵션 변경 모달에서 "변경") */
+    @Transactional
+    public CartDTO changeOption(Long caNo, Long oNo, int quantity, Long mNo, String guestToken) {
+        CartDTO cart = cartDAO.selectCartOne(caNo);
+        checkOwner(cart, mNo, guestToken);
+
+        cartDAO.updateCartOption(caNo, oNo, quantity);
+        return cartDAO.selectCartOne(caNo);
     }
 
     /** 관리자용 - 소유자 검증 없이 강제 삭제 */

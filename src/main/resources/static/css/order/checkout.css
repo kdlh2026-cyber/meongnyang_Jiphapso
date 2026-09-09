@@ -1,0 +1,83 @@
+    * { box-sizing: border-box; }
+    .co-wrap { max-width: 1000px; margin: 32px auto; padding: 0 20px 60px; }
+    .co-header { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+    .co-back { border: none; background: none; font-size: 15px; color: #888; cursor: pointer; padding: 0; }
+    .co-back:hover { color: #c17a52; }
+    .co-title { font-size: 22px; font-weight: 700; margin: 0; }
+
+    .co-grid { display: flex; gap: 24px; align-items: flex-start; }
+    .co-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+    .co-side { flex: none; width: 320px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 20px; }
+
+    .co-card { border: 1px solid #eee; border-radius: 10px; padding: 20px; background: #fff; }
+    .co-card-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+
+    /* 주문 상품 정보 */
+    .co-product-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f2f2f2; }
+    .co-product-row:last-of-type { border-bottom: none; }
+    .co-product-row img { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; background: #f2f2f2; flex: none; }
+    .co-product-info { flex: 1; min-width: 0; }
+    .co-product-name { font-size: 13px; color: #222; margin-bottom: 4px; }
+    .co-product-opt { display: inline-block; font-size: 11px; color: #999; background: #f7f7f7; border-radius: 4px; padding: 1px 6px; margin-bottom: 3px; }
+    .co-product-qty { font-size: 12px; color: #888; }
+    .co-product-price { font-size: 13px; font-weight: 700; color: #222; flex: none; }
+    .co-shipping-note { margin-top: 10px; padding-top: 10px; border-top: 1px solid #f2f2f2; font-size: 12px; color: #888; text-align: right; }
+    .co-shipping-note strong { color: #222; }
+
+    /* 폼 공통 */
+    .co-form-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .co-form-row:last-child { margin-bottom: 0; }
+    .co-form-row input[type="text"],
+    .co-form-row input[type="tel"],
+    .co-form-row select,
+    .co-form-row textarea {
+        flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; font-family: inherit;
+    }
+    .co-form-row textarea { resize: vertical; }
+    .co-btn {
+        border: 1px solid #ccc; background: #fff; color: #444; border-radius: 6px;
+        padding: 0 16px; font-size: 13px; cursor: pointer; white-space: nowrap;
+    }
+    .co-btn:hover { border-color: #c17a52; color: #c17a52; }
+    .co-check-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; margin-top: 4px; }
+
+    /* 쿠폰 / 포인트 */
+    .co-select-row select {
+        width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; background: #fff;
+    }
+    .co-hint { margin: 8px 0 0; font-size: 12px; color: #999; text-align: right; }
+    .co-hint strong { color: #c17a52; }
+    .co-point-row { display: flex; gap: 8px; }
+    .co-point-row input[type="number"] {
+        flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; text-align: right;
+    }
+
+    /* 주문 요약 */
+    .co-summary-row { display: flex; justify-content: space-between; font-size: 13px; color: #666; padding: 5px 0; }
+    .co-summary-total {
+        display: flex; justify-content: space-between; align-items: baseline;
+        border-top: 1px solid #eee; margin-top: 10px; padding-top: 12px; font-size: 14px; font-weight: 700; color: #222;
+    }
+    .co-summary-total .amt { color: #c17a52; font-size: 17px; }
+
+    /* 결제 수단 */
+    .co-pay-option {
+        display: flex; align-items: center; gap: 8px; padding: 11px 4px; font-size: 13px; color: #333; cursor: pointer;
+        border-bottom: 1px solid #f5f5f5;
+    }
+    .co-pay-option:last-child { border-bottom: none; }
+    .co-pay-option input { width: 15px; height: 15px; cursor: pointer; }
+
+    /* 약관 / 결제하기 */
+    .co-terms-text { font-size: 12px; color: #888; line-height: 1.5; margin: 0 0 10px; }
+    .co-terms-check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; margin-bottom: 16px; }
+    .co-btn-pay {
+        width: 100%; border: none; border-radius: 8px; padding: 15px 0;
+        background: #c17a52; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+    .co-btn-pay:hover { background: #ab6a45; }
+
+    @media (max-width: 760px) {
+        .co-grid { flex-direction: column; }
+        .co-side { width: 100%; position: static; }
+    }
