@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.springboot.meongnyang_Jiphapso.dto.BreedDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommImageDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
 
@@ -36,8 +37,7 @@ public interface ICommunityDAO {
 	
 	// 게시글 작성하기(insert)
 	public int CommunityWrite(CommunityDTO commDto);
-	
-	
+
 	// 게시글 수정하기(update) -> 본인이 쓴 글만 수정 가능
 	public int CommunityUpdate(CommunityDTO commDto);
 	

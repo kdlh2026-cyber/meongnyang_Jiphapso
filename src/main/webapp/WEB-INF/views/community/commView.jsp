@@ -65,6 +65,17 @@
 		</table>
 	</div>
 
+	<div class="comment">
+		<form name="comment_form" method="post" action="/comment_write">
+			
+		</form>
+		<table border="1">
+			<tr>
+				<td>답변 00(카운트 넣기)</td>
+			</tr>
+		</table>
+	</div>
+
 	
 <%@ include file="../footer.jsp" %>
 </body>

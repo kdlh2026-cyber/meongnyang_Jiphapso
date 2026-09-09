@@ -1,18 +1,28 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.meongnyang_Jiphapso.dao.IBreedDAO;
 import com.springboot.meongnyang_Jiphapso.dao.ICommunityDAO;
+import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
+import com.springboot.meongnyang_Jiphapso.dto.BreedDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
+import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.service.CommunityService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CommunityController {
@@ -23,11 +33,19 @@ public class CommunityController {
 	ICommunityDAO comm_dao;
 	
 	@Autowired
+	IMemberDAO m_dao;
+	
+	@Autowired
+	IBreedDAO breed_dao;
 	
 	
 	// 로그인을 해야 글쓰기로 넘어감(WebSecurity 설정하면 됨)
 	@GetMapping("/commWriteForm")
-	public String commWriteForm() {
+	public String commWriteForm(Model model) {
+		
+		List<BreedDTO> breedList = breed_dao.BreedList();
+		model.addAttribute("breed", breedList);
+		
 		return "community/communityWriteForm";
 	}
 	
@@ -41,14 +59,31 @@ public class CommunityController {
 	// 게시글 글쓰기 등록하기
 	@RequestMapping("/commWrite")
 	public String commWrite(CommunityDTO dto,
-							@RequestParam("uploadFiles") MultipartFile[] uploadFiles)
+							@RequestParam(value="uploadImages", required = false) MultipartFile[] uploadImages,
+							@RequestParam(value = "uploadVideo", required = false) MultipartFile[] uploadVideo,
+							HttpSession session)
 							throws Exception{
+		
+		 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		 if (authentication != null && authentication.isAuthenticated()
+		            && !"anonymousUser".equals(authentication.getPrincipal())) {
+
+			 String mId = authentication.getName(); // 로그인한 m_id
+		     MemberDTO loginUser = m_dao.MemberView(mId); // 기존 메서드 그대로 재사용
+
+		     if (loginUser != null) {
+		         dto.setM_no(loginUser.getM_no());
+		         dto.setComm_writer(loginUser.getM_name());
+		     }
+		}
+
 		
 		if (dto.getPet_no() == null || dto.getPet_no() == 0) {
 		    dto.setPet_no(null); // 반려동물 번호가 없으면 확실하게 null 처리
 		}
 		
-		service.write(dto, uploadFiles);
+		service.write(dto, uploadImages, uploadVideo);
 		return "redirect:/community/commList";
 	}
 
@@ -93,7 +128,7 @@ public class CommunityController {
 					       @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
 					       @RequestParam(value = "page", defaultValue = "1") int page,
 					       Model model) {
-	    
+		
 	    // 1. 한 페이지에 보여줄 게시글 개수
 	    int pageSize = 10; 
 	    
@@ -116,6 +151,24 @@ public class CommunityController {
 	    return "community/commList";
 	}
 	
+	// 자동 완성
+	@ResponseBody
+	@RequestMapping("/autocomplete")
+	public List<Map<String,String>> autocomplete(@RequestParam("keyword") String keyword) throws Exception{
+		return service.autocomplete(keyword);
+	}
+	
+	
+	// 서치 리스트 불러오기
+	@RequestMapping("/comm_search")
+	public String search(@RequestParam("keyword") String keyword,
+						 Model model) throws Exception{
+		
+		List<CommunityDTO> list = service.search(keyword);
+		model.addAttribute("list", list);
+		
+		return "community/comm_searchList";
+	}
 	
 	// 게시글 내용 상세보기
 	@RequestMapping("/communityView")

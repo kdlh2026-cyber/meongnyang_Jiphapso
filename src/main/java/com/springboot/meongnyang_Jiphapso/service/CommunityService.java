@@ -22,34 +22,59 @@ public class CommunityService {
 	CommunityESService esService;
 	
 	
-	public void write(CommunityDTO dto, MultipartFile[] uploadFiles) throws Exception{
-		// 1. 파일이 업로드된 경우 처리
-	    if (uploadFiles != null && uploadFiles.length > 0) {
-	        // 파일을 저장할 서버 경로 설정 (예시 경로)
-	        String uploadPath = "C:\\upload\\community\\"; 
-	        
-	        // 만약 첫 번째 이미지를 대표 이미지(comm_img)로 저장한다면:
-	        MultipartFile firstFile = uploadFiles[0];
+	public void write(CommunityDTO dto, MultipartFile[] uploadImages, MultipartFile[] uploadVideo) throws Exception {
+	    
+	    String uploadPath = "C:\\Users\\KH_BUSAN_B_15\\git\\meongnyang_Jiphapso\\src\\main\\resources\\static\\images\\community"; 
+	    
+	    // 폴더가 없으면 생성
+	    File dir = new File(uploadPath);
+	    if (!dir.exists()) {
+	        dir.mkdirs();
+	    }
+
+	    // 1. 사진 파일 처리 (첫 번째 이미지를 대표 이미지로 설정)
+	    if (uploadImages != null && uploadImages.length > 0) {
+	        MultipartFile firstFile = uploadImages[0];
 	        if (!firstFile.isEmpty()) {
 	            String originalFileName = firstFile.getOriginalFilename();
-	            // 파일 중복 방지를 위한 UUID 조합
 	            String savedFileName = UUID.randomUUID().toString() + "_" + originalFileName;
 	            
-	            // 파일 저장
 	            File target = new File(uploadPath, savedFileName);
 	            firstFile.transferTo(target);
 	            
-	            // DTO에 이미지 경로 또는 파일명 세팅 (DB의 comm_img 컬럼에 들어갈 값)
-	            dto.setComm_img(savedFileName); 
+	            dto.setComm_img(savedFileName); // DTO의 comm_img 필드와 연동
 	        }
-	        
-	        // 만약 다중 파일을 별도의 이미지 테이블에 각각 저장해야 한다면 
-	        // 여기서 반복문을 돌며 개별 파일 저장 로직을 추가하시면 됩니다!
 	    }
-		
-		
-		dao.CommunityWrite(dto);
-		esService.save(dto);
+	    
+	    // 2. 동영상 파일 처리
+	    if (uploadVideo != null && uploadVideo.length > 0) {
+	        MultipartFile videoFile = uploadVideo[0];
+	        if (!videoFile.isEmpty()) {
+	            String originalVideoName = videoFile.getOriginalFilename();
+	            String savedVideoName = UUID.randomUUID().toString() + "_" + originalVideoName;
+	            
+	            File targetVideo = new File(uploadPath, savedVideoName);
+	            videoFile.transferTo(targetVideo);
+	            
+	            dto.setComm_video(savedVideoName); // DTO의 comm_video 필드와 연동
+	        }
+	    }
+	    
+	    if (dto.getComm_view() == null) {
+	        dto.setComm_view(0);
+	    }
+	    if (dto.getComm_good() == null) {
+	        dto.setComm_good(0);
+	    }
+	    if (dto.getComm_well() == null) {
+	        dto.setComm_well(0);
+	    }
+	    if (dto.getComm_count() == null) {
+	        dto.setComm_count(0);
+	    }
+	    
+	    // 3. DAO 호출하여 DB에 커뮤니티 글 Insert
+	    dao.CommunityWrite(dto);
 	}
 	
 		

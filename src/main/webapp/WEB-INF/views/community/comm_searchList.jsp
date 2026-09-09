@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>게시글 목록</title>
+<title>게시글 서치한 목록</title>
 </head>
 <style>
 .preview_content{
@@ -28,7 +28,7 @@
 		</div>
 	</form>
 	
-	<a href="/communityCrawlingWriteForm">글쓰기(크롤링용)</a> | <a href="/commWriteForm">글쓰기(실제)</a>
+	<a href="/communityCrawlingWriteForm">글쓰기</a>
 	<div class="category_tabs">
         <a href="/community/commList" class="${empty param.comm_type ? 'active' : ''}">전체</a>
         <a href="/community/commList?comm_type=Q%26A" class="${param.comm_type eq 'Q&A' ? 'active' : ''}">Q&amp;A</a>
@@ -104,9 +104,9 @@
     </div>
     
 <%@ include file="../footer.jsp" %>
-
 </body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
 		$("#keyword").on("keyup", function(){
 		    let q = $(this).val();
