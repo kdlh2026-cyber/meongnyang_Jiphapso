@@ -5,16 +5,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.springboot.meongnyang_Jiphapso.dao.IOrderDetailDAO;
+import com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
 
 @Service
 public class OrderDetailService {
 
     private final IOrderDetailDAO orderDetailDAO;
+    private final OrderCancelService orderCancelService; // 삭제 전 취소/반품 이력 존재 여부 체크용
 
     @Autowired
-    public OrderDetailService(IOrderDetailDAO orderDetailDAO) {
+    public OrderDetailService(IOrderDetailDAO orderDetailDAO, OrderCancelService orderCancelService) {
         this.orderDetailDAO = orderDetailDAO;
+        this.orderCancelService = orderCancelService;
     }
 
     public OrderDetailDTO getOne(Long odDetailNo) {
@@ -45,6 +48,11 @@ public class OrderDetailService {
 
     @Transactional
     public void deleteOrderDetail(Long odDetailNo) {
+        List<OrderCancelDTO> cancelHistory = orderCancelService.selectOrderCancelListByOrderDetail(odDetailNo);
+        if (cancelHistory != null && !cancelHistory.isEmpty()) {
+            throw new IllegalStateException("취소/반품/교환 이력이 있는 주문상세는 삭제할 수 없습니다.");
+        }
+
         orderDetailDAO.deleteOrderDetail(odDetailNo);
     }
 

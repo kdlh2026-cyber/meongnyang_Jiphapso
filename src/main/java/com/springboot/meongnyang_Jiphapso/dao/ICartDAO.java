@@ -1,6 +1,7 @@
 package com.springboot.meongnyang_Jiphapso.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -45,4 +46,13 @@ public interface ICartDAO {
 
     // 비회원 장바구니 개수 (추가)
     int countCartByToken(@Param("caToken") String caToken);
+
+    // 옵션 선택 없이 담을 때(상품목록 페이지) 사용할 대표(기본) 옵션 번호 조회
+    Long selectDefaultOptionNo(@Param("pNo") Long pNo);
+
+    // 장바구니 - 옵션 변경 모달용 : 특정 상품(p_no)의 전체 옵션 목록(색상/사이즈/가격/재고) 조회
+    List<Map<String, Object>> selectOptionListByProduct(@Param("pNo") Long pNo);
+
+    // 장바구니 - 옵션 변경 (o_no, 수량 동시 변경)
+    int updateCartOption(@Param("caNo") Long caNo, @Param("oNo") Long oNo, @Param("quantity") Integer quantity);
 }

@@ -33,8 +33,12 @@ public class OrderDetailController {
     @RequestMapping(value = "/order-detail/{odDetailNo}/quantity", method = RequestMethod.PUT)
     @ResponseBody
     public ApiResponse<Void> updateQuantity(@PathVariable("odDetailNo") Long odDetailNo, @RequestBody Map<String, Integer> body) {
-        orderDetailService.updateQuantity(odDetailNo, body.get("quantity"));
-        return ApiResponse.ok(null);
+        try {
+            orderDetailService.updateQuantity(odDetailNo, body.get("quantity"));
+            return ApiResponse.ok(null);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ApiResponse.fail(e.getMessage());
+        }
     }
 
     // ------------------------------------------------------------
@@ -50,7 +54,11 @@ public class OrderDetailController {
     @RequestMapping(value = "/admin/order-detail/{odDetailNo}", method = RequestMethod.DELETE)
     @ResponseBody
     public ApiResponse<Void> adminDelete(@PathVariable("odDetailNo") Long odDetailNo) {
-        orderDetailService.deleteOrderDetail(odDetailNo);
-        return ApiResponse.ok(null);
+        try {
+            orderDetailService.deleteOrderDetail(odDetailNo);
+            return ApiResponse.ok(null);
+        } catch (IllegalStateException e) {
+            return ApiResponse.fail(e.getMessage());
+        }
     }
 }

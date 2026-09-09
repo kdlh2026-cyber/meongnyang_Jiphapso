@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.springboot.meongnyang_Jiphapso.common.SessionConst;
 import com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO;
 import com.springboot.meongnyang_Jiphapso.service.OrderCancelService;
 
@@ -24,6 +25,11 @@ public class OrderCancelController {
 	@Autowired
 	private OrderCancelService orderCancelService;
 
+	private Long loginMemberNo(HttpSession session) {
+		Integer mNo = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+		return (mNo != null) ? mNo.longValue() : null;
+	}
+
 	// ================= 페이지 이동 (JSP 포워딩) =================
 
 	// 회원 - 취소/반품 목록 페이지 (member 폴더, 데이터는 /list/data 를 ajax로 호출해서 채움)
@@ -31,7 +37,7 @@ public class OrderCancelController {
 	public String orderCancelListPage(HttpSession session) {
 
 		// 비로그인이면 로그인페이지로 (주문취소는 회원 전용 기능)
-		Object loginNo = session.getAttribute("m_no");
+		Long loginNo = loginMemberNo(session);
 		if (loginNo == null) {
 			return "redirect:/member/login";
 		}
@@ -55,7 +61,7 @@ public class OrderCancelController {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		// 비로그인이면 실패 응답
-		Object loginNo = session.getAttribute("m_no");
+		Long loginNo = loginMemberNo(session);
 		if (loginNo == null) {
 			map.put("success", false);
 			map.put("message", "로그인이 필요합니다.");
@@ -140,7 +146,7 @@ public class OrderCancelController {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		Long mNo = (Long) session.getAttribute("m_no");
+		Long mNo = loginMemberNo(session);
 		if (mNo == null) {
 			map.put("success", false);
 			map.put("message", "로그인이 필요합니다.");

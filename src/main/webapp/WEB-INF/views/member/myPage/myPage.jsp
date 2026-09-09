@@ -26,6 +26,12 @@
       <a href="/member/order/list">주문 내역</a>
    </li>
    <li>
+   	<a href="/orderCancel/list">취소.반품 내역</a>
+   </li>
+   <li>
+   	   <a href="/favorite/list">관심 상품</a>
+   	</li>   
+   <li>
       <a href="#">포인트 내역</a>
    </li>
 </ul>
