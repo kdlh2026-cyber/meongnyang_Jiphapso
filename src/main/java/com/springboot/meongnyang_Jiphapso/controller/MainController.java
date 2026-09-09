@@ -33,5 +33,9 @@ public class MainController {
 		return "memberInsertForm";
 	}
 	
+	@RequestMapping("/loading_animal")
+	public String loading() {
+		return "loading_animal";
+	}
 	
 }

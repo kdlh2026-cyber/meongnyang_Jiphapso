@@ -46,6 +46,8 @@
 			<p><a href="/admin/cart">장바구니 리스트</a></p>
 			<p><a href="/admin/order">주문내역 리스트</a></p>
 			<p><a href="/admin/order-detail">주문상세 리스트</a></p>
+			<p><a href ="/orderCancel/admin/list">주문취소 리스트</a>
+			<p><a href ="#">결제 리스트</a>
 			<p><a href="/admin/favorite">관심상품 리스트</a></p>
 		</div>
 	</li>
@@ -56,9 +58,11 @@
 		</div>
 	</li>
 	<li>
-		<button>쿠폰 관리</button>
+		<button>쿠폰 / 포인트 관리</button>
 		<div class="content">
-			<p>내용</p>
+			<p><a href ="#">쿠폰 리스트</a>
+			<p><a href ="#">회원 포인트 리스트</a>
+			<p><a href ="#">포인트 리스트</a>
 		</div>
 	</li>
 	<li>
