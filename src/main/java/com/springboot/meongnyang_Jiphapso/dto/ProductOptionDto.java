@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 public class ProductOptionDto {
 	private int o_no;
-	private String o_name;
 	private int o_price;
 	private Integer o_origin_price;
 	private String o_main_img;

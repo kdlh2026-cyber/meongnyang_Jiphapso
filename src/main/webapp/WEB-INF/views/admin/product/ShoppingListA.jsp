@@ -30,7 +30,7 @@
 				<div><fmt:formatNumber value="${list.oprice}" />원</div>
 				<div>
 					<button onclick="location.href='/productUpdate?p_no=${list.pno}'">수정</button>
-					<button onclick="if(confirm('정말 삭제 하시겠습니까?')){location.href='/productDelete?p_no=${list.pno}';}">삭제</button>
+					<button onclick="ifx(confirm('정말 삭제 하시겠습니까?')){location.href='/productDelete?p_no=${list.pno}';}">삭제</button>
 				</div>
 				</td>
 			<c:if test="${status.count%4==0}">

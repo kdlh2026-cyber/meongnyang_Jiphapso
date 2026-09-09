@@ -29,4 +29,7 @@ public interface IProductDao {
 	public int ProductDelete(int p_no);
 	
 	public ProductDto getProductByTitle(String p_title);
+	
+	public List<ProductDto> list();
+	public List<ShoppingListDto> searchList(List<Integer> p_no);
 }
