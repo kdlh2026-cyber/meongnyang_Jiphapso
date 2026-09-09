@@ -78,7 +78,7 @@ public class MemberController {
     	String m_id=authentication.getName();
     	MemberDTO m_dto=m_dao.MemberFindId(m_id);
     	model.addAttribute("myId",m_dao.MemberFindId(m_id));
-    	model.addAttribute("myPetList",pet_dao.PetList());
+    	model.addAttribute("myPetList", pet_dao.PetMemberList(m_dto.getM_no()));
     	
     	return "member/myPage/myPetList";
     }

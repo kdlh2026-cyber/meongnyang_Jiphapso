@@ -8,6 +8,12 @@
 		from dc_pet
 		order by pet_no desc
 	</select>
+	<select id="PetMemberList" resultMap="dc_PetMap">
+		select *
+		from dc_pet
+		where m_no=#{m_no}
+		order by pet_no desc
+	</select>
 	<select id="PetView" resultMap="dc_PetMap">
 		select *
 		from dc_pet

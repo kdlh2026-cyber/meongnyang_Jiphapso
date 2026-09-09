@@ -14,7 +14,7 @@
 		where m_id=#{m_id}
 	</select>
 	<select id="MemberFindId" resultMap="dc_memberMap">
-		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority
+		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img
 		from dc_member
 		where m_id=#{m_id}
 	</select>
@@ -22,6 +22,7 @@
 		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority
 		from dc_member
 		where m_authority=#{m_authority,jdbcType=VARCHAR}
+		order by m_no desc
 	</select>
 	<insert id="MemberWrite">
 		<selectKey keyProperty="m_no" resultType="integer" order="BEFORE">
@@ -54,5 +55,6 @@
 		<result property="m_age_upper" column="m_age_upper" />
 		<result property="m_sns" column="m_sns" />
 		<result property="m_authority" column="m_authority" />
+		<result property="m_img" column="m_img" />
 	</resultMap>
 </mapper>
