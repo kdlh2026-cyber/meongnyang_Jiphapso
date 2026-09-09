@@ -12,6 +12,4 @@ public class ShoppingListDto {
 	private String omainimg;
 	private int oprice;
 	private String odefault;
-	private String imgcontent;
-	private String imgsort;
 }
