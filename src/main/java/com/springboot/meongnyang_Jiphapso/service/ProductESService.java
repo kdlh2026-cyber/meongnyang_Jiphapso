@@ -29,7 +29,7 @@ public class ProductESService {
 	IProductDao p_dao;
 	
 
-	public void save(ProductDto p_dto) throws Exception{
+	public void p_save(ProductDto p_dto) throws Exception{
 		// 인덱스 no 검증(null값 체크)
 		if(p_dto.getP_no()==0) {
 			throw new IllegalStateException("dc_product 인덱스가 null입니다.");
@@ -54,7 +54,7 @@ public class ProductESService {
 		System.out.println("dc_product INDEX 완료: "+p_dto.getP_title());
 	}
 	
-	public List<ShoppingListDto> search(String keyword) throws Exception{
+	public List<ShoppingListDto> p_search(String keyword) throws Exception{
 		SearchRequest request=new SearchRequest("dc_product");
 		
 		// 엘라스틱 서치에서 검색 요청의 본문을 만드는 객체 생성(SQL의 select문)
@@ -79,11 +79,11 @@ public class ProductESService {
 	    }
 	    
 	    // 3. DB에 pno 리스트를 던져서 상품의 모든 상세 정보를 가져옴
-	    return p_dao.searchList(pnoList);
+	    return p_dao.productSearchList(pnoList);
 	}
 
 	//자동완성 + 화면 하이라이트 기능
-	public List<Map<String,String>> autocompleteHighlight(String keyword) throws Exception{
+	public List<Map<String,String>> p_autocompleteHighlight(String keyword) throws Exception{
 		SearchRequest request=new SearchRequest("dc_product");
 		
 		// 엘라스틱 서치에서 검색 요청의 본문을 만드는 객체 생성(SQL의 select문)

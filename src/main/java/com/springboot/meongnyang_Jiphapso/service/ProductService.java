@@ -18,21 +18,21 @@ public class ProductService {
 	@Autowired
 	ProductESService p_esservice;
 	
-	public void write(ProductDto p_dto) throws Exception{
+	public void p_write(ProductDto p_dto) throws Exception{
 		p_dao.ProductWrite(p_dto); 
-		p_esservice.save(p_dto);      // 엘라스틱 서치에 색인(저장)
+		p_esservice.p_save(p_dto);      // 엘라스틱 서치에 색인(저장)
 	}
 	
-	public List<ProductDto> list(){
-		return p_dao.list();
+	public List<ProductDto> p_list(){
+		return p_dao.p_list();
 	}
 	
-	public List<ShoppingListDto> search(String keyword) throws Exception{
-		return p_esservice.search(keyword);	
+	public List<ShoppingListDto> p_search(String keyword) throws Exception{
+		return p_esservice.p_search(keyword);	
 	}
 	// 자동완성 + 하이라이트
-	public List<Map<String, String>> autocomplete(String keyword) throws Exception{
-		return p_esservice.autocompleteHighlight(keyword);
+	public List<Map<String, String>> p_autocomplete(String keyword) throws Exception{
+		return p_esservice.p_autocompleteHighlight(keyword);
 	}
 	
 	
