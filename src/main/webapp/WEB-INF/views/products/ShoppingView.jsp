@@ -144,8 +144,8 @@ function selectOption(type, value) {
         </div>
         <div>
             <div>
-                <button>상품설명</button>
-                <button>리뷰</button>
+                <a href="#">상품설명</a>
+                <a href="#">리뷰</a>
             </div>
             <div class="image">
             <c:if test="${not empty ShoppingView.detailImages}">
