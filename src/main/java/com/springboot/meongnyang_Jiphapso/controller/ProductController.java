@@ -46,7 +46,7 @@ public class ProductController {
 		int generatedPno;
 		
 		if(findtitle == null) {
-			p_service.write(p_dto);	
+			p_service.p_write(p_dto);	
 			generatedPno = p_dto.getP_no(); 
 		} 
 		else {
@@ -148,15 +148,15 @@ public class ProductController {
 	}
 	
 	@RequestMapping("/search")
-	public String search(@RequestParam("keyword") String keyword, Model model) throws Exception {
-		List<ShoppingListDto> list = p_service.search(keyword);
-		model.addAttribute("ShoppingList", list);
+	public String p_search(@RequestParam("keyword") String keyword, Model model) throws Exception {
+		List<ShoppingListDto> p_list = p_service.p_search(keyword);
+		model.addAttribute("ShoppingList", p_list);
 		return "products/ShoppingList";
 	}
 	
 	@ResponseBody
-	@RequestMapping("/autocomplete")
-	public List<Map<String, String>> autocomplete(@RequestParam("keyword") String keyword, Model model) throws Exception{
-		return p_service.autocomplete(keyword);
+	@RequestMapping("/product/autocomplete")
+	public List<Map<String, String>> p_autocomplete(@RequestParam("keyword") String keyword, Model model) throws Exception{
+		return p_service.p_autocomplete(keyword);
 	}
 }

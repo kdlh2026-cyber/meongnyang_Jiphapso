@@ -30,6 +30,6 @@ public interface IProductDao {
 	
 	public ProductDto getProductByTitle(String p_title);
 	
-	public List<ProductDto> list();
-	public List<ShoppingListDto> searchList(List<Integer> p_no);
+	public List<ProductDto> p_list();
+	public List<ShoppingListDto> productSearchList(List<Integer> p_no);
 }
