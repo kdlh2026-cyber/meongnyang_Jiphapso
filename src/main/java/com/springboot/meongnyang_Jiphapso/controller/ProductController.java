@@ -40,7 +40,6 @@ public class ProductController {
 			 @RequestParam("p_title") String p_title, @RequestParam(value="o_origin_price", required = false) Integer o_origin_price
 			 ) throws Exception{
 		
-		
 		ProductDto findtitle = p_dao.getProductByTitle(p_title);
 		  
 		int generatedPno;
@@ -80,6 +79,7 @@ public class ProductController {
 		else {
 			o_dto.setO_main_img(null);
 		}
+		
 		o_dto.setP_no(generatedPno);
 		
 		p_dao.ProductOptionWrite(o_dto);
@@ -109,30 +109,48 @@ public class ProductController {
 		        p_dao.ProductDetailImageWrite(detailDto);
 		    }
 		}		
-
 		return "redirect:main";
 	}
 	
 	@RequestMapping("/products/ShoppingList")
-	public String ShoppingList(ShoppingListDto s_dto, Model model) {
-		
-		List<ShoppingListDto> allList = p_dao.ShoppingList();
+	public String ShoppingList(
+	        @RequestParam(value = "p_type", defaultValue = "강아지") String p_type,
+	        @RequestParam(value = "mode", required = false) String p_category,
+	        Model model) {
 
-		List<ShoppingListDto> filtered;
-		filtered = new ArrayList<>(allList);
-		model.addAttribute("ShoppingList", filtered);
-		return "products/ShoppingList";
+	    if (!"고양이".equals(p_type)) {
+	        p_type = "강아지";
+	    }
+	    
+	    ShoppingListDto paramDto = new ShoppingListDto();
+	    paramDto.setPtype(p_type);
+	    paramDto.setPcategory(p_category); // 카테고리(mode)가 없으면 null 혹은 빈값
+
+	    List<ShoppingListDto> allList = p_dao.ShoppingList(paramDto);
+	    
+	    model.addAttribute("ShoppingList", allList);
+	    
+	    return "products/ShoppingList";
 	}
 	
-	@RequestMapping("/productList")
-	public String ShoppingListA(ShoppingListDto s_dto, Model model) {
+	@RequestMapping("/ProductListA")
+	public String ProductListA(ShoppingListDto s_dto, Model model,
+			@RequestParam(value = "p_type", defaultValue = "강아지") String p_type,
+			@RequestParam(value = "mode", required = false) String p_category) {
 		
-		List<ShoppingListDto> allList = p_dao.ShoppingList();
+		if (!"고양이".equals(p_type)) {
+	        p_type = "강아지";
+	    }
+		
+		ShoppingListDto paramDto = new ShoppingListDto();
+	    paramDto.setPtype(p_type);
+	    paramDto.setPcategory(p_category); // 카테고리(mode)가 없으면 null 혹은 빈값
 
-		List<ShoppingListDto> filtered;
-		filtered = new ArrayList<>(allList);
-		model.addAttribute("ShoppingList", filtered);
-		return "admin/product/ShoppingListA";
+	    List<ShoppingListDto> allList = p_dao.ShoppingList(paramDto);
+	    
+	    model.addAttribute("ShoppingList", allList);
+		
+		return "admin/product/ProductListA";
 	}
 	
 	@RequestMapping("/products/ShoppingView")
@@ -147,7 +165,7 @@ public class ProductController {
 		return "redirect:/productList";
 	}
 	
-	@RequestMapping("/search")
+	@RequestMapping("/products/search")
 	public String p_search(@RequestParam("keyword") String keyword, Model model) throws Exception {
 		List<ShoppingListDto> p_list = p_service.p_search(keyword);
 		model.addAttribute("ShoppingList", p_list);
@@ -155,7 +173,7 @@ public class ProductController {
 	}
 	
 	@ResponseBody
-	@RequestMapping("/product/autocomplete")
+	@RequestMapping("/products/autocomplete")
 	public List<Map<String, String>> p_autocomplete(@RequestParam("keyword") String keyword, Model model) throws Exception{
 		return p_service.p_autocomplete(keyword);
 	}

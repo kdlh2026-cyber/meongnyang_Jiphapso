@@ -37,7 +37,13 @@
 		<button>상품 관리</button>
 		<div class="content">
 			<p><a href="/productWriteForm">상품 등록</a></p>
-			<p><a href="/productList">상품 리스트</a></p>
+			<p><a href="/ProductListA">상품 리스트</a></p>
+		</div>
+	</li>
+	<li>
+		<button>입양 관리</button>
+		<div class="content">
+			<p><a href="/strayWriteForm">유기동물 등록</a></p>
 		</div>
 	</li>
 	<li>
