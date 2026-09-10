@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>게시글 목록</title>
+<title>게시글 서치한 목록</title>
 </head>
 <style>
 .preview_content{
@@ -18,8 +18,16 @@
 	word-break: break-all;
 }
 </style>
+
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
+	<form name="community_search" method="get" action="/comm_search">
+		<input type="text" name="keyword" id="keyword" autocomplete="off">
+		<input type="submit" value="검색">
+		<div id="suggestions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">
+		</div>
+	</form>
+	
 	<a href="/communityCrawlingWriteForm">글쓰기</a>
 	<div class="category_tabs">
         <a href="/community/commList" class="${empty param.comm_type ? 'active' : ''}">전체</a>
@@ -96,9 +104,9 @@
     </div>
     
 <%@ include file="../footer.jsp" %>
-
 </body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
 		$("#keyword").on("keyup", function(){
 		    let q = $(this).val();
