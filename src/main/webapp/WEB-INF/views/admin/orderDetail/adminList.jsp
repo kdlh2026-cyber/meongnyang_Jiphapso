@@ -1,8 +1,11 @@
+<%-- ============================================= --%>
+<%-- admin/orderDetail/adminList.jsp --%>
+<%-- ============================================= --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -40,7 +43,7 @@
             <c:forEach var="detail" items="${orderDetailList}">
                 <tr id="row-${detail.odDetailNo}">
                     <td>${detail.odDetailNo}</td>
-                    <td><img src="${detail.pMainImg}" alt="${detail.odProductName}" class="thumb"></td>
+                    <td><img src="${pageContext.request.contextPath}/images/products/main/${detail.PMainImg}" alt="${detail.odProductName}" class="thumb"></td>
                     <td>${detail.odProductName}</td>
                     <td>${detail.odOptionName}</td>
                     <td><fmt:formatNumber value="${detail.odPrice}" pattern="#,##0" />원</td>

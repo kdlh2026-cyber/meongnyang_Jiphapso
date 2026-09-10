@@ -19,6 +19,7 @@ import com.springboot.meongnyang_Jiphapso.service.OrderCancelService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
+@RequestMapping("/orderCancel")
 public class OrderCancelController {
 
 	@Autowired
@@ -193,4 +194,5 @@ public class OrderCancelController {
 		}
 		return map;
 	}
+
 }

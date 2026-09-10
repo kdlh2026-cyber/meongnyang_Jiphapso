@@ -1,6 +1,9 @@
+<%-- ============================================= --%>
+<%-- admin/cart/adminList.jsp --%>
+<%-- ============================================= --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -57,8 +60,8 @@
                         <td>${cart.caNo}</td>
                         <td>
                             <c:choose>
-                                <c:when test="${cart.mNo != null}">
-                                    <span class="badge member">회원 #${cart.mNo}</span>
+                                <c:when test="${cart.MNo != null}">
+                                    <span class="badge member">회원 #${cart.MNo}</span>
                                 </c:when>
                                 <c:otherwise>
                                     <span class="badge guest">비회원</span>
@@ -66,12 +69,12 @@
                             </c:choose>
                         </td>
                         <td class="name">
-                            <img src="${cart.pMainImg}" alt="${cart.pName}">${cart.pName}
+                            <img src="${pageContext.request.contextPath}/images/products/main/${cart.PMainImg}" alt="${cart.PName}">${cart.PName}
                         </td>
-                        <td>${cart.oName}</td>
-                        <td><fmt:formatNumber value="${cart.oPrice}" pattern="#,##0" />원</td>
+                        <td>${cart.OName}</td>
+                        <td><fmt:formatNumber value="${cart.OPrice}" pattern="#,##0" />원</td>
                         <td>${cart.caQuantity}</td>
-                        <td><fmt:formatNumber value="${cart.oPrice * cart.caQuantity}" pattern="#,##0" />원</td>
+                        <td><fmt:formatNumber value="${cart.OPrice * cart.caQuantity}" pattern="#,##0" />원</td>
                         <td>
                             <c:choose>
                                 <c:when test="${cart.caYn == 'Y'}">Y (${cart.caQty}개)</c:when>
