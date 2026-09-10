@@ -1,3 +1,4 @@
+@charset "UTF-8";
 * { box-sizing: border-box; }
 
 .od-wrap { max-width: 900px; margin: 32px auto; padding: 0 20px 60px; }
