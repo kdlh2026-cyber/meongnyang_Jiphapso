@@ -29,6 +29,22 @@
                 </c:choose>
             </a>
         </c:if>
+       </sec:authorize>
+        <!-- 크리에이터 프로필 이미지 -->
+    <sec:authorize access="hasRole('CREATOR')">
+        <c:if test="${not empty loginMember}">
+        	<a href="/logout" class="logout">로그아웃</a>
+            <a href="/member/myPage/myPage" class="profile-img-link">
+                <c:choose>
+                    <c:when test="${not empty loginMember.m_img}">
+                        <img src="/images/myProfile/${loginMember.m_img}" alt="프로필 사진" class="profile-img">
+                    </c:when>
+                    <c:otherwise>
+                        <img src="/images/myProfile/profil_image.png" alt="기본 프로필" class="profile-img">
+                    </c:otherwise>
+                </c:choose>
+            </a>
+        </c:if>
         <!-- 관리자 프로필 이미지(관리자 페이지로 이동) -->
        </sec:authorize>
        <sec:authorize access="hasRole('ADMIN')">

@@ -281,7 +281,7 @@
 		    }
 		
 		    $.ajax({
-		        url: "/autocomplete",
+		        url: "/products/autocomplete",
 		        data: { keyword: q },
 		        success: function(list){
 		            let html = "";
