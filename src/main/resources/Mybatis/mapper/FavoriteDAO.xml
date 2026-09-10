@@ -14,6 +14,8 @@
         <result property="pName" column="P_NAME"/>
         <result property="pMainImg" column="P_MAIN_IMG"/>
         <result property="oPrice" column="O_PRICE"/>
+        <result property="oOriginPrice" column="O_ORIGIN_PRICE"/>
+        <result property="favoriteCount" column="FAVORITE_COUNT"/>
     </resultMap>
 
     <sql id="favoriteJoinBase">
@@ -24,19 +26,25 @@
             f.m_no       AS M_NO,
             f.p_no       AS P_NO,
             p.p_title    AS P_NAME,
-            def_o.o_main_img AS P_MAIN_IMG,
-            def_o.o_price    AS O_PRICE
+            def_o.o_main_img    AS P_MAIN_IMG,
+            def_o.o_price       AS O_PRICE,
+            def_o.o_origin_price AS O_ORIGIN_PRICE,
+            (SELECT COUNT(*) FROM dc_favorite f2 WHERE f2.p_no = f.p_no) AS FAVORITE_COUNT
         FROM dc_favorite f
         JOIN dc_product p ON f.p_no = p.p_no
         LEFT JOIN dc_product_option def_o
                ON def_o.p_no = p.p_no AND def_o.o_default = 'Y'
     </sql>
 
-    <!-- 찜하기 등록 -->
     <insert id="insertFavorite" parameterType="com.springboot.meongnyang_Jiphapso.dto.FavoriteDTO"
             useGeneratedKeys="true" keyProperty="faNo" keyColumn="FA_NO">
         INSERT INTO dc_favorite (fa_token, fa_at, m_no, p_no)
-        VALUES (#{faToken}, SYSDATE, #{mNo}, #{pNo})
+        VALUES (
+            #{faToken, jdbcType=VARCHAR},
+            SYSDATE,
+            #{mNo, jdbcType=NUMERIC},
+            #{pNo, jdbcType=NUMERIC}
+        )
     </insert>
 
     <!-- 단건 삭제 -->

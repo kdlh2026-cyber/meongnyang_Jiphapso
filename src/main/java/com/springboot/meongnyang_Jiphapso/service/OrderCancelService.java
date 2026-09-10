@@ -7,13 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.meongnyang_Jiphapso.dao.IOrderCancelDAO;
+import com.springboot.meongnyang_Jiphapso.dao.IOrderDetailDAO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO;
+import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
 
 @Service
 public class OrderCancelService {
 
 	@Autowired
 	private IOrderCancelDAO orderCancelDAO;
+
+	@Autowired
+	private IOrderDetailDAO orderDetailDAO; // 환불예정금액(oc_ramount) 계산용 - 주문상세 단가 조회
 
 	// 취소/반품/교환 신청 등록
 	public int insertOrderCancel(OrderCancelDTO dto) {
@@ -25,6 +30,17 @@ public class OrderCancelService {
 		if (dto.getOcStatus() == null || dto.getOcStatus().isEmpty()) {
 			dto.setOcStatus("신청");
 		}
+
+		OrderDetailDTO detail = orderDetailDAO.selectOrderDetailOne(dto.getOdDetailNo());
+		if (detail != null && detail.getOdPrice() != null && dto.getOcQuantity() != null) {
+			dto.setOcRamount(detail.getOdPrice() * dto.getOcQuantity());
+		} else if (dto.getOcRamount() == null) {
+			dto.setOcRamount(0L);
+		}
+
+		if (dto.getOcTurn() == null) dto.setOcTurn(0L);
+		if (dto.getOcPoint() == null) dto.setOcPoint(0L);
+		if (dto.getOcCoupon() == null) dto.setOcCoupon(0L);
 
 		return orderCancelDAO.insertOrderCancel(dto);
 	}

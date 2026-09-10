@@ -28,10 +28,7 @@
 	<delete id="ProductDelete">
 		delete from dc_product where p_no = #{p_no}
 	</delete>
-	<select id="getProductByTitle" resultType="com.springboot.meongnyang_Jiphapso.dto.ProductDto">
-		select * from dc_product where p_title=#{p_title}
-	</select>
-	
+
 	<resultMap id="dc_productMap" type="com.springboot.meongnyang_Jiphapso.dto.ProductDto">
 		<id property="p_no" column="p_no" />
 		<result property="p_title" column="p_title" />

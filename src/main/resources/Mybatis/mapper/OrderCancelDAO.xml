@@ -19,20 +19,31 @@
 		<result property="orNo" column="OR_NO" />
 	</resultMap>
 
-	<!-- 취소/반품/교환 신청 등록 -->
 	<insert id="insertOrderCancel" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO"
 		useGeneratedKeys="true" keyProperty="ocOutNo" keyColumn="OC_OUT_NO">
 		insert into dc_order_cancel
 			(oc_type, oc_status, oc_reason, oc_quantity, oc_ramount, oc_turn, oc_point, oc_coupon, oc_re, oc_pr, od_detail_no)
 		values
-			(#{ocType}, #{ocStatus}, #{ocReason}, #{ocQuantity}, #{ocRamount}, #{ocTurn}, #{ocPoint}, #{ocCoupon}, #{ocRe}, #{ocPr}, #{odDetailNo})
+			(
+				#{ocType, jdbcType=VARCHAR},
+				#{ocStatus, jdbcType=VARCHAR},
+				#{ocReason, jdbcType=VARCHAR},
+				#{ocQuantity, jdbcType=NUMERIC},
+				#{ocRamount, jdbcType=NUMERIC},
+				#{ocTurn, jdbcType=NUMERIC},
+				#{ocPoint, jdbcType=NUMERIC},
+				#{ocCoupon, jdbcType=NUMERIC},
+				#{ocRe, jdbcType=DATE},
+				#{ocPr, jdbcType=DATE},
+				#{odDetailNo, jdbcType=NUMERIC}
+			)
 	</insert>
 
 	<!-- 처리상태 변경 (관리자) -->
 	<update id="updateOrderCancelStatus">
 		update dc_order_cancel
-		set oc_status = #{ocStatus},
-			oc_pr = #{ocPr}
+		set oc_status = #{ocStatus, jdbcType=VARCHAR},
+			oc_pr = #{ocPr, jdbcType=DATE}
 		where oc_out_no = #{ocOutNo}
 	</update>
 

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IMemberLookupDAO">
+
+    <!--  회원 조회 전용 (주문/결제 페이지 주문자정보/배송정보 자동입력용). -->
+    <resultMap id="memberLookupResultMap" type="com.springboot.meongnyang_Jiphapso.dto.MemberDTO">
+        <id property="m_no" column="M_NO"/>
+        <result property="m_id" column="M_ID"/>
+        <result property="m_name" column="M_NAME"/>
+        <result property="m_tel" column="M_TEL"/>
+        <result property="m_addr" column="M_ADDR"/>
+        <result property="m_addr_detail" column="M_ADDR_DETAIL"/>
+        <result property="m_zipno" column="M_ZIPNO"/>
+        <result property="m_email" column="M_EMAIL"/>
+    </resultMap>
+
+    <!--  회원번호(m_no)로 1명 조회 - 주문/결제 페이지 주문자정보/배송정보 자동입력용  -->
+    <select id="selectMemberOne" resultMap="memberLookupResultMap">
+        SELECT m_no AS M_NO, m_id AS M_ID, m_name AS M_NAME, m_tel AS M_TEL, m_addr AS M_ADDR, m_addr_detail AS M_ADDR_DETAIL,
+        m_zipno AS M_ZIPNO, m_email AS M_EMAIL FROM dc_member WHERE m_no = #{mNo}
+    </select>
+
+</mapper>

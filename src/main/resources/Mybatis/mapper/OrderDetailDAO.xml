@@ -17,21 +17,43 @@
 <result property="orStatus" column="OR_STATUS"/>
 </resultMap>
 
-<sql id="orderDetailJoinBase"> 
+<sql id="orderDetailJoinBase">
 SELECT d.od_detail_no AS OD_DETAIL_NO, d.od_option_name AS OD_OPTION_NAME, d.od_product_name AS OD_PRODUCT_NAME, d.od_price AS OD_PRICE,
  d.od_quantity AS OD_QUANTITY, d.od_amount AS OD_AMOUNT, d.od_at AS OD_AT, d.or_no AS OR_NO, d.p_no AS P_NO, d.o_no AS O_NO, opt.o_main_img AS P_MAIN_IMG,
-  ord.or_status AS OR_STATUS 
+  ord.or_status AS OR_STATUS
 FROM dc_order_detail d LEFT JOIN dc_product_option opt ON d.o_no = opt.o_no JOIN dc_order ord ON d.or_no = ord.or_no </sql>
 
-<!--  주문상세 1건 등록  -->
-<insert id="insertOrderDetail" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO" useGeneratedKeys="true" keyProperty="odDetailNo" keyColumn="OD_DETAIL_NO"> 
+<insert id="insertOrderDetail" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO" useGeneratedKeys="true" keyProperty="odDetailNo" keyColumn="OD_DETAIL_NO">
 INSERT INTO dc_order_detail (od_option_name, od_product_name, od_price, od_quantity, od_amount, od_at, or_no, p_no, o_no)
-	 VALUES (#{odOptionName}, #{odProductName}, #{odPrice}, #{odQuantity}, #{odAmount}, SYSDATE, #{orNo}, #{pNo}, #{oNo})
+	 VALUES (
+	    #{odOptionName, jdbcType=VARCHAR},
+	    #{odProductName, jdbcType=VARCHAR},
+	    #{odPrice, jdbcType=NUMERIC},
+	    #{odQuantity, jdbcType=NUMERIC},
+	    #{odAmount, jdbcType=NUMERIC},
+	    SYSDATE,
+	    #{orNo, jdbcType=NUMERIC},
+	    #{pNo, jdbcType=NUMERIC},
+	    #{oNo, jdbcType=NUMERIC}
+	 )
 </insert>
 
 <insert id="insertOrderDetailList" parameterType="map">
 INSERT ALL
-<foreach collection="list" item="item"> INTO dc_order_detail (od_option_name, od_product_name, od_price, od_quantity, od_amount, od_at, or_no, p_no, o_no) VALUES (#{item.odOptionName}, #{item.odProductName}, #{item.odPrice}, #{item.odQuantity}, #{item.odAmount}, SYSDATE, #{item.orNo}, #{item.pNo}, #{item.oNo}) </foreach>
+<foreach collection="list" item="item">
+ INTO dc_order_detail (od_option_name, od_product_name, od_price, od_quantity, od_amount, od_at, or_no, p_no, o_no)
+ VALUES (
+    #{item.odOptionName, jdbcType=VARCHAR},
+    #{item.odProductName, jdbcType=VARCHAR},
+    #{item.odPrice, jdbcType=NUMERIC},
+    #{item.odQuantity, jdbcType=NUMERIC},
+    #{item.odAmount, jdbcType=NUMERIC},
+    SYSDATE,
+    #{item.orNo, jdbcType=NUMERIC},
+    #{item.pNo, jdbcType=NUMERIC},
+    #{item.oNo, jdbcType=NUMERIC}
+ )
+</foreach>
 SELECT 1 FROM DUAL
 
 </insert>
@@ -50,7 +72,7 @@ WHERE d.or_no = #{orNo} ORDER BY d.od_detail_no
 </select>
 
 <!--  수량/옵션 수정  -->
-<update id="updateOrderDetail" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO"> 
+<update id="updateOrderDetail" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO">
 UPDATE dc_order_detail SET od_quantity = #{odQuantity}, od_amount = #{odAmount} WHERE od_detail_no = #{odDetailNo} </update>
 
 <!--  삭제  -->

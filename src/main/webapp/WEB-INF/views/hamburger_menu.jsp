@@ -2,36 +2,42 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<link rel="stylesheet" href="/css/ham_menu.css">
+<link rel="stylesheet" href="/css/etc/ham_menu.css">
   <div class="topbar">
     <span style="font-weight:700;">
         <a href="/"><img src="/images/LOGO_text.png" alt="이미지 로고2" width="180px" height="auto"></a>
     </span>
 
     <div class="topbar-right">
+    <!-- 일반 회원 프로필 이미지 -->
+    <sec:authorize access="hasRole('USER')">
         <c:if test="${not empty loginMember}">
+        	<a href="/logout" class="logout">로그아웃</a>
             <a href="/member/myPage/myPage" class="profile-img-link">
                 <c:choose>
                     <c:when test="${not empty loginMember.m_img}">
                         <img src="/images/myProfile/${loginMember.m_img}" alt="프로필 사진" class="profile-img">
                     </c:when>
                     <c:otherwise>
-                        <img src="/images/myProfile/${loginMember.m_img}" alt="기본 프로필" class="profile-img">
+                        <img src="/images/myProfile/profil_image.png" alt="기본 프로필" class="profile-img">
                     </c:otherwise>
                 </c:choose>
             </a>
         </c:if>
+        <!-- 관리자 프로필 이미지(관리자 페이지로 이동) -->
+       </sec:authorize>
+       <sec:authorize access="hasRole('ADMIN')">
+       		<a href="/logout" class="logout">로그아웃</a>
+       		<a href="/admin/adminPage" class="profile-img-link">
+       			<img src="/images/myProfile/profil_image_2.png" alt="관리자 프로필" class="profile-img">
+       		</a>
+       </sec:authorize>
 
         <label class="hamburger" for="menuToggle">
           <span></span><span></span><span></span>
         </label>
     </div>
 </div>
-
-  <main>
-    <p>왼쪽 위 햄버거를 누르면 오른쪽에서 전체 메뉴 드로어가 열립니다.</p>
-  </main>
-
   <input type="checkbox" id="menuToggle">
   <label for="menuToggle" class="overlay"></label>
 
@@ -44,16 +50,27 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
         </label>
       </div>
-      <div class="pill-row">
-	      <sec:authorize access="hasRole('ADMIN')">
+<!-- 관리자 페이지 버튼만 표시 -->
+	  <sec:authorize access="hasRole('ADMIN')">
+      	<div class="pill-row">
 	      	<a href="/admin/adminPage" class="pill pill--admin">관리자 페이지</a>
-	      </sec:authorize>
-	  </div>
+	  	</div>
+	  </sec:authorize>
+<!-- 일반 회원 버튼 표시 -->
+	  <sec:authorize access="hasRole('USER')">
       <div class="pill-row">
         <a href="/member/myPage/myPage" class="pill pill--solid">마이페이지</a>
-        <a href="#" class="pill pill--outline">글쓰기</a>
+        <a href="/commWriteForm" class="pill pill--outline">글쓰기</a>
       </div>
-
+      </sec:authorize>
+<!-- 비회원 표시 -->
+      <sec:authorize access="isAnonymous()">
+      <div class="pill-row">
+        <a href="/loginForm" class="pill pill--solid">로그인</a>
+        <a href="/memberInsertForm" class="pill pill--outline">회원가입</a>
+      </div>
+      </sec:authorize>
+<!-- 요약 메뉴 영역(유지할지말지 논의 필요) -->
       <p class="label-sm">둘러보기</p>
       <div class="chip-row">
         <a href="#" class="chip">콘텐츠
@@ -66,7 +83,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </a>
       </div>
-
+<!-- 전체 메뉴 영역 -->
       <h3 class="section-title">서비스</h3>
       <div class="cat-grid">
 
@@ -76,7 +93,7 @@
             ♥ 📋 ♥
           </h3> <!-- 커뮤니티 -->
           <ul>
-            <li><a href="#">라운지</a></li>
+            <li><a href="/community/commList">라운지</a></li>
             <li><a href="#">Q&amp;A</a></li>
             <li><a href="#">리뷰</a></li>
             <li><a href="#">이벤트</a></li>
@@ -89,15 +106,15 @@
             ♥ 🛍️ ♥
           </h3> <!-- 쇼핑 -->
           <ul>
-            <li><a href="cart/list">제품별</a></li>
-            <li><a href="favorite/list">상황별</a></li>
+            <li><a href="/products/ShoppingList">제품별</a></li>
+            <li><a href="/products/ShoppingList">상황별</a></li>
           </ul>
         </div>
         
         <div class="cat">
           <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-9C1 7.5 3 4 6.5 4c2 0 3.3 1.1 4 2.2C11.2 5.1 12.5 4 14.5 4 18 4 20 7.5 18.5 11 16 15.65 12 20 12 20z"/></svg>
-            ♥ 입양 ♥
+            ♥ 🐶 ♥
           </h3>
           <ul>
             <li><a href="#">보호소 입양</a></li>
@@ -152,12 +169,12 @@
           </ul>
         </div>
       </div>
-
+<!-- footer와 동일 -->
       <hr class="divider">
       <p class="label-sm">더보기</p>
       <div class="footer-links">
         <a href="#">고객센터</a> <!-- 챗봇 API -->
-        <a href="#">회사소개</a>
+        <a href="/guest/etc/companyIntroduce">회사소개</a>
         <a href="#">이용약관</a>
         <a href="#">개인정보처리방침</a>
       </div>

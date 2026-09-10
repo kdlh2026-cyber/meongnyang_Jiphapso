@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,49 +12,120 @@
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
-<h3>주문상세</h3>
+
 <c:set var="editable" value="${order.orStatus == 'PAYMENT_PENDING'}" />
 
-<table class="info-table">
-    <tr><th>주문번호</th><td>${order.orNo}</td></tr>
-    <tr><th>주문일시</th><td><fmt:formatDate value="${order.orAt}" pattern="yyyy.MM.dd HH:mm" /></td></tr>
-    <tr><th>주문상태</th><td><span class="status-badge">${order.orStatus}</span></td></tr>
-    <tr><th>결제수단</th><td>${order.orMethod}</td></tr>
-    <tr><th>수량</th><td>${order.orQty}개</td></tr>
-    <tr>
-        <th>받는분</th>
-        <td><input type="text" id="orName" value="${order.orName}" ${editable ? '' : 'readonly'}></td>
-    </tr>
-    <tr>
-        <th>연락처</th>
-        <td><input type="text" id="orPhone" value="${order.orPhone}" ${editable ? '' : 'readonly'}></td>
-    </tr>
-    <tr>
-        <th>주소</th>
-        <td>
-            <input type="text" id="orAddress" value="${order.orAddress}" readonly>
-            <c:if test="${editable}">
-                <button type="button" class="btn" onclick="searchAddress()">주소 검색</button>
-            </c:if>
-        </td>
-    </tr>
-    <tr>
-        <th>상세주소</th>
-        <td><input type="text" id="orAddrdetail" value="${order.orAddrdetail}" ${editable ? '' : 'readonly'}></td>
-    </tr>
-    <tr>
-        <th>주문메모</th>
-        <td><textarea id="orMemo" rows="2" ${editable ? '' : 'readonly'}>${order.orMemo}</textarea></td>
-    </tr>
-</table>
+<div class="od-wrap">
 
-<!-- TODO: 주문상세(od_detail_no) 목록 -->
+    <div class="od-header">
+        <button type="button" class="od-back" onclick="history.back()">‹</button>
+        <h2 class="od-title">주문상세</h2>
+    </div>
 
-<div class="btn-group">
-    <button type="button" class="btn" onclick="history.back()">목록으로</button>
-    <c:if test="${editable}">
-        <button type="button" class="btn btn-primary" onclick="updateOrder()">배송지 수정</button>
-    </c:if>
+    <%-- ================== 주문 정보 ================== --%>
+    <div class="od-card">
+        <div class="od-card-title">주문 정보</div>
+        <div class="od-info-grid">
+            <div class="od-info-row"><span class="label">주문번호</span><span>${order.orNo}</span></div>
+            <div class="od-info-row"><span class="label">주문일시</span><span><fmt:formatDate value="${order.orAt}" pattern="yyyy.MM.dd HH:mm" /></span></div>
+            <div class="od-info-row">
+                <span class="label">주문상태</span>
+                <span class="status-badge status-${order.orStatus}">
+                    <c:choose>
+                        <c:when test="${order.orStatus == 'PAYMENT_PENDING'}">결제대기</c:when>
+                        <c:when test="${order.orStatus == 'PAID'}">결제완료</c:when>
+                        <c:when test="${order.orStatus == 'SHIPPING'}">배송중</c:when>
+                        <c:when test="${order.orStatus == 'DELIVERED'}">배송완료</c:when>
+                        <c:when test="${order.orStatus == 'CANCELED'}">취소완료</c:when>
+                        <c:otherwise>${order.orStatus}</c:otherwise>
+                    </c:choose>
+                </span>
+            </div>
+            <div class="od-info-row"><span class="label">결제수단</span><span>${order.orMethod}</span></div>
+            <div class="od-info-row"><span class="label">수량</span><span>${order.orQty}개</span></div>
+        </div>
+    </div>
+
+    <%-- ================== 배송 정보 ================== --%>
+    <div class="od-card">
+        <div class="od-card-title">배송 정보</div>
+
+        <div class="od-form-row">
+            <label>받는분</label>
+            <input type="text" id="orName" value="${order.orName}" ${editable ? '' : 'readonly'}>
+        </div>
+        <div class="od-form-row">
+            <label>연락처</label>
+            <input type="text" id="orPhone" value="${order.orPhone}" ${editable ? '' : 'readonly'}>
+        </div>
+        <div class="od-form-row">
+            <label>주소</label>
+            <div class="od-form-inline">
+                <input type="text" id="orAddress" value="${order.orAddress}" readonly>
+                <c:if test="${editable}">
+                    <button type="button" class="od-btn" onclick="searchAddress()">주소 검색</button>
+                </c:if>
+            </div>
+        </div>
+        <div class="od-form-row">
+            <label>상세주소</label>
+            <input type="text" id="orAddrdetail" value="${order.orAddrdetail}" ${editable ? '' : 'readonly'}>
+        </div>
+        <div class="od-form-row">
+            <label>주문메모</label>
+            <textarea id="orMemo" rows="2" ${editable ? '' : 'readonly'}>${order.orMemo}</textarea>
+        </div>
+
+        <c:if test="${editable}">
+            <div class="od-form-actions">
+                <button type="button" class="od-btn od-btn-primary" onclick="updateOrder()">배송지 수정</button>
+            </div>
+        </c:if>
+    </div>
+
+    <%-- ================== 주문 상품 ================== --%>
+    <div class="od-card">
+        <div class="od-card-title">주문 상품</div>
+        <div class="od-table-wrap">
+            <table class="od-detail-table">
+                <thead>
+                    <tr>
+                        <th>상품명</th>
+                        <th>옵션</th>
+                        <th>단가</th>
+                        <th>수량</th>
+                        <th>금액</th>
+                        <th>취소◦반품◦교환</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="detail" items="${order.orderDetailList}">
+                        <tr>
+                            <td class="od-pname">${detail.odProductName}</td>
+                            <td>${empty detail.odOptionName ? '-' : detail.odOptionName}</td>
+                            <td><fmt:formatNumber value="${detail.odPrice}" pattern="#,##0" />원</td>
+                            <td>${detail.odQuantity}개</td>
+                            <td class="od-amount"><fmt:formatNumber value="${detail.odAmount}" pattern="#,##0" />원</td>
+                            <td>
+                                <%-- 이미 취소된 주문이면 버튼 숨김. 상태값 조건은 실제 정책에 맞게 조정 --%>
+                                <c:if test="${order.orStatus != 'CANCELED'}">
+                                    <button type="button" class="od-btn od-btn-cancel"
+                                            onclick="openCancelModal(${detail.odDetailNo}, '${detail.odProductName}', ${detail.odQuantity})">
+                                        취소/반품/교환
+                                    </button>
+                                </c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="od-btn-group">
+        <button type="button" class="od-btn" onclick="history.back()">목록으로</button>
+    </div>
+
 </div>
 
 <script>
@@ -79,7 +150,7 @@
             orMemo: document.getElementById('orMemo').value
         };
 
-        fetch('/order/' + orNo, {
+        fetch('/member/order/' + orNo, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -95,7 +166,16 @@
         })
         .catch(() => alert('처리 중 오류가 발생했어요.'));
     }
+
+    // 취소/반품/교환 신청 후 화면 갱신용 - cancelForm.jsp 의 submitOrderCancel() 성공 시 자동 호출됨
+    function refreshOrderDetail() {
+        location.reload();
+    }
 </script>
+
+<%-- 취소/반품/교환 신청 모달 (버튼 onclick="openCancelModal(...)" 이 이 안의 함수를 호출함) --%>
+<jsp:include page="/WEB-INF/views/member/OrderCancel/cancelForm.jsp" />
+
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

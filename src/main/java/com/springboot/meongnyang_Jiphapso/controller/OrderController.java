@@ -15,9 +15,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.springboot.meongnyang_Jiphapso.common.ApiResponse;
 import com.springboot.meongnyang_Jiphapso.common.SessionConst;
+import com.springboot.meongnyang_Jiphapso.dao.IMemberLookupDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CartDTO;
+import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderDTO;
 import com.springboot.meongnyang_Jiphapso.service.CartService;
+import com.springboot.meongnyang_Jiphapso.service.OrderDetailService;
 import com.springboot.meongnyang_Jiphapso.service.OrderService;
 
 @Controller
@@ -25,11 +28,16 @@ public class OrderController {
 
     private final OrderService orderService;
     private final CartService cartService;
+    private final OrderDetailService orderDetailService; // 주문상세 페이지에서 라인아이템(취소버튼 포함) 목록 뿌려주려고 추가
+    private final IMemberLookupDAO memberLookupDAO; // 주문/결제 페이지 주문자정보/배송정보 자동입력용 (회원 파트 건드리지 않고 조회 전용으로 분리)
 
     @Autowired
-    public OrderController(OrderService orderService, CartService cartService) {
+    public OrderController(OrderService orderService, CartService cartService,
+                           OrderDetailService orderDetailService, IMemberLookupDAO memberLookupDAO) {
         this.orderService = orderService;
         this.cartService = cartService;
+        this.orderDetailService = orderDetailService;
+        this.memberLookupDAO = memberLookupDAO;
     }
 
     private Long requireLogin(HttpSession session) {
@@ -73,8 +81,12 @@ public class OrderController {
                 .mapToLong(c -> (c.getOPrice() == null ? 0L : c.getOPrice()) * c.getCaQuantity())
                 .sum();
 
+        // 주문자 정보(이름/연락처) + 배송 정보(주소) 자동입력용 - 로그인 회원 정보 조회
+        MemberDTO member = memberLookupDAO.selectMemberOne(mNo);
+
         model.addAttribute("cartList", selected);
         model.addAttribute("productAmount", productAmount);
+        model.addAttribute("member", member);
 
         return "member/order/checkout";
     }
@@ -132,6 +144,9 @@ public class OrderController {
 
         model.addAttribute("order", orderService.getOrderOne(orNo));
 
+
+        model.addAttribute("orderDetailList", orderDetailService.getListByOrder(orNo));
+
         return "member/order/detail";
     }
 
@@ -167,6 +182,8 @@ public class OrderController {
     public String adminOrderDetail(@PathVariable("orNo") Long orNo, Model model) {
 
         model.addAttribute("order", orderService.getOrderOne(orNo));
+        // 관리자 주문상세 화면에도 라인아이템 목록이 필요하면 동일하게 내려줌
+        model.addAttribute("orderDetailList", orderDetailService.getListByOrder(orNo));
 
         return "admin/order/adminDetail";
     }

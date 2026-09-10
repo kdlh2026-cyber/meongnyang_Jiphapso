@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,49 +18,8 @@
 	word-break: break-all;
 }
 </style>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script>
-		$("#keyword").on("keyup", function(){
-		    let q = $(this).val();
-		
-		    if(q.length < 1){
-		        $("#suggestions").empty();
-		        return;
-		    }
-		
-		    $.ajax({
-		        url: "/autocomplete",
-		        data: { keyword: q },
-		        success: function(list){
-		            let html = "";
-		            list.forEach(function(item){
-		                // highlight 필드 사용
-		                html += "<div class='item'>" + item.highlight + "</div>";
-		            });
-		            $("#suggestions").html(html);
-		        },
-		        error: function(){
-		            console.log("autocomplete error");
-		        }
-		    });
-		});
-		
-		// 추천어 클릭 시 검색창에 채움
-		$(document).on("click",".item",function(){
-		    // <em> 태그 제거 후 input에 넣기
-		    $("#keyword").val($(this).text());
-		    $("#suggestions").empty();
-		});
-	</script>
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
-	<form name="community_search" method="get" action="/comm_search">
-		<input type="text" name="keyword" id="keyword" autocomplete="off">
-		<input type="submit" value="검색">
-		<div id="suggetions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">
-		</div>
-	</form>
-	
 	<a href="/communityCrawlingWriteForm">글쓰기</a>
 	<div class="category_tabs">
         <a href="/community/commList" class="${empty param.comm_type ? 'active' : ''}">전체</a>
@@ -112,7 +72,14 @@
 			<td class="preview_content">${board.comm_content}</td>
 		</tr>
 		<tr>
-			<td>답변${board.comm_count} ${board.comm_writer} ${board.comm_tag}</td>
+			<td>
+				답변${board.comm_count} ${board.comm_writer}
+				<c:forEach var="tag" items="${fn:split(board.comm_tag, ',')}">
+				 	<c:if test="${not empty tag}">
+				 		<span>${tag}</span>
+				 	</c:if>
+				</c:forEach>
+			</td>
 		</tr>
 	</c:forEach>
 	</table>
@@ -128,11 +95,41 @@
         <a href="/community/commList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&sort=${param.sort}&page=${pageNum < totalPages ? pageNum + 1 : totalPages}">NEXT</a>
     </div>
     
-    <!-- 댓글 -->
-    
-    
-    
-    
 <%@ include file="../footer.jsp" %>
+
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		$("#keyword").on("keyup", function(){
+		    let q = $(this).val();
+		
+		    if(q.length < 1){
+		        $("#suggestions").empty();
+		        return;
+		    }
+		
+		    $.ajax({
+		        url: "/autocomplete",
+		        data: { keyword: q },
+		        success: function(list){
+		            let html = "";
+		            list.forEach(function(item){
+		                // highlight 필드 사용
+		                html += "<div class='item'>" + item.highlight + "</div>";
+		            });
+		            $("#suggestions").html(html);
+		        },
+		        error: function(){
+		            console.log("autocomplete error");
+		        }
+		    });
+		});
+		
+		// 추천어 클릭 시 검색창에 채움
+		$(document).on("click",".item",function(){
+		    // <em> 태그 제거 후 input에 넣기
+		    $("#keyword").val($(this).text());
+		    $("#suggestions").empty();
+		});
+	</script>
 </html>

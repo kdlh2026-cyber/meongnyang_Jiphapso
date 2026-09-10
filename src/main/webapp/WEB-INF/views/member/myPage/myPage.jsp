@@ -14,7 +14,7 @@
       <a href="/member/myPage/myProfile?m_id=${myId.m_id}">프로필</a>
    </li>
    <li>
-   	  <a href="/member/myPage/myPetList?m_id=${myId.m_id}">반려동물 프로필</a>
+   	  <a href="/member/myPage/myPetList?m_no=${myId.m_no}">반려동물 프로필</a>
    </li>
    <li>
       <a href="#">내가 작성한 글</a>
@@ -23,8 +23,14 @@
       <a href="#">북마크 글</a>
    </li>
    <li>
-      <a href="/member/order/list">주문 내역</a>
+      <a href="/member/order/list?m_no=${myId.m_no}">주문 내역</a>
    </li>
+   <li>
+   	<a href="/orderCancel/list">취소.반품 내역</a>
+   </li>
+   <li>
+   	   <a href="/favorite/list">관심 상품</a>
+   	</li>   
    <li>
       <a href="#">포인트 내역</a>
    </li>
