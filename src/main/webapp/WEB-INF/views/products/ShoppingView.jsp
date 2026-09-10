@@ -136,6 +136,29 @@ function selectOption(type, value) {
 			        </div>
 			    </c:if>
 			</c:if>
+            <c:forEach var="content" items="${ShoppingView.detailImages}">
+                <c:if test="${content.img_sort==1}">
+                    ${content.img_content} 
+                </c:if>
+            </c:forEach>            
+        </div>
+        <div>
+            <div>
+                <a href="#">상품설명</a>
+                <a href="#">리뷰</a>
+            </div>
+            <div class="image">
+            <c:if test="${not empty ShoppingView.detailImages}">
+                <c:forEach var="detail" items="${ShoppingView.detailImages}">
+                    <img src="${pageContext.request.contextPath}/images/products/info/${detail.img_url}">
+                </c:forEach>
+            </c:if>
+            </div>
+        </div>
+    </div>
+<div>
+    <a href="javascript:history.back();">뒤로가기</a>
+</div>
 
 			<div class="qty-row">
 				<button type="button" onclick="changeQty(-1)">-</button>
