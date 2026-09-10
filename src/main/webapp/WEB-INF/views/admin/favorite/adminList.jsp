@@ -1,6 +1,9 @@
+<%-- ============================================= --%>
+<%-- admin/favorite/adminList.jsp --%>
+<%-- ============================================= --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,10 +29,10 @@
             <c:forEach var="favorite" items="${favoriteList}">
                 <tr id="row-${favorite.faNo}">
                     <td>${favorite.faNo}</td>
-                    <td><img src="${favorite.pMainImg}" alt="${favorite.pName}" class="thumb"></td>
-                    <td>${favorite.pName}</td>
-                    <td><fmt:formatNumber value="${favorite.oPrice}" pattern="#,##0" />원</td>
-                    <td>${favorite.mNo}</td>
+                    <td><img src="${pageContext.request.contextPath}/images/products/main/${favorite.PMainImg}" alt="${favorite.PName}" class="thumb"></td>
+                    <td>${favorite.PName}</td>
+                    <td><fmt:formatNumber value="${favorite.OPrice}" pattern="#,##0" />원</td>
+                    <td>${favorite.MNo}</td>
                     <td><fmt:formatDate value="${favorite.faAt}" pattern="yyyy.MM.dd HH:mm" /></td>
                     <td>
                         <button type="button" class="btn-sm btn-danger" onclick="deleteFavorite(${favorite.faNo})">삭제</button>
