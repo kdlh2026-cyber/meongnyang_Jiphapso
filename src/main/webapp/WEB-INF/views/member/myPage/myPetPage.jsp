@@ -33,6 +33,8 @@
 			<td>${myPetPage.pet_weight} kg</td>
 		</tr>
 	</table>
+	<a href="/myPetUpdateForm?pet_no=${myPetPage.pet_no}">수정</a>
+	<a href="/myPetDelete?pet_no=${myPetPage.pet_no}">삭제</a>
 	<a href="/member/myPage/myPetList">목록</a>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>

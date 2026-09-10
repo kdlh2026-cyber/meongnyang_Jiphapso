@@ -1,14 +1,18 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 import java.io.File;
 import java.security.Principal;
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +24,8 @@ import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.dto.PetDTO;
 import com.springboot.meongnyang_Jiphapso.service.MemberService;
 import com.springboot.meongnyang_Jiphapso.service.PetService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class MemberController {
@@ -39,6 +45,13 @@ public class MemberController {
 
     MemberController(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
+    }
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(dateFormat, true));
     }
     
     @RequestMapping("/member/myPage/myPage")
@@ -73,6 +86,15 @@ public class MemberController {
         }
     }
     
+    @RequestMapping("/member/myPage/myProfileUpdateForm")
+    public String memberUpdateForm(Authentication auth, HttpServletRequest request, Model model) {
+        String m_id = auth.getName();
+        MemberDTO m_dto = m_dao.MemberFindId(m_id);
+        model.addAttribute("MemberUpdate", m_dto);
+        
+        return "member/myPage/myProfileUpdateForm";
+    }
+    
     @RequestMapping("/member/myPage/myPetList")
     public String myPetList(Authentication authentication,Model model) {
     	String m_id=authentication.getName();
@@ -93,6 +115,12 @@ public class MemberController {
     @RequestMapping("/member/myPage/myPetInsertForm")
     public String myPetInsertForm() {
     	return "member/myPage/myPetInsertForm";
+    }
+    
+    @RequestMapping("/myPetUpdateForm")
+    public String petUpdateForm(@RequestParam("pet_no") int pet_no, Model model) {
+        model.addAttribute("petUpdate", pet_dao.PetView(pet_no));
+        return "member/myPage/myPetUpdateForm";
     }
     
     @RequestMapping("/myPetInsert")
@@ -120,6 +148,50 @@ public class MemberController {
 		
 		return "redirect:/main";
 	}
+    
+    @RequestMapping("/myPetUpdate")
+    public String PetUpdate(@RequestParam("pet_upload") MultipartFile pet_upload, PetDTO pet_dto, Principal principal) throws Exception{
+        String m_id = principal.getName();
+        MemberDTO m_dto = m_dao.MemberFindId(m_id);
+
+        // 1. 수정 전 기존 반려동물 정보 조회 (소유자 검증 + 이미지 유지용)
+        PetDTO existing = pet_dao.PetView(pet_dto.getPet_no());
+
+        // 2. 소유자 검증: 로그인한 회원의 반려동물이 맞는지 확인
+        if (existing == null || existing.getM_no() != m_dto.getM_no()) {
+            throw new IllegalStateException("본인의 반려동물만 수정할 수 있습니다.");
+        }
+
+        pet_dto.setPet_neuter(pet_dto.getPet_neuter() != null && pet_dto.getPet_neuter().equals("on") ? "T" : "F");
+
+        // 3. 이미지: 새로 업로드했을 때만 교체, 아니면 기존 파일명 유지
+        if (!pet_upload.isEmpty()) {
+            String originalName = pet_upload.getOriginalFilename();
+            String ext = originalName.substring(originalName.lastIndexOf("."));
+            String savedName = UUID.randomUUID().toString() + ext;
+
+            String projectPath = System.getProperty("user.dir");
+            File dir = new File(projectPath + "/src/main/resources/static/images/myPet/");
+            if (!dir.exists()) dir.mkdirs();
+
+            pet_upload.transferTo(new File(dir, savedName));
+
+            if (existing.getPet_image() != null && !existing.getPet_image().isBlank()) {
+                File oldFile = new File(dir, existing.getPet_image());
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+
+            pet_dto.setPet_image(savedName);
+        } else {
+            pet_dto.setPet_image(existing.getPet_image());
+        }
+
+        pet_dao.PetUpdate(pet_dto);
+
+        return "redirect:/main";
+    }
 	
 	@RequestMapping("/myPetDelete")
 	public String petDelete(@RequestParam("pet_no") int pet_no) {
@@ -148,6 +220,52 @@ public class MemberController {
 		mem_serv.write(m_dto);
 		
 		return "redirect:/main";
+	}
+	
+	@RequestMapping("/memberUpdate")
+	public String memberUpdate(@RequestParam("m_upload") MultipartFile m_upload,
+	                            HttpServletRequest request,
+	                            MemberDTO m_dto) throws Exception {
+
+	    // 1. 수정 전 기존 회원 정보 조회 (m_no 또는 m_id 기준 - 프로젝트에 맞는 키 사용)
+	    MemberDTO existing = m_dao.MemberView(m_dto.getM_id());
+
+	    // 2. 비밀번호: 폼에서 값이 넘어온 경우에만 재암호화, 비어있으면 기존 값 유지
+	    if (m_dto.getM_passwd() != null && !m_dto.getM_passwd().isBlank()) {
+	        m_dto.setM_passwd(passwordEncoder.encode(m_dto.getM_passwd()));
+	    } else {
+	        m_dto.setM_passwd(existing.getM_passwd());
+	    }
+
+	    // 3. 이미지: 새로 업로드했을 때만 교체, 아니면 기존 파일명 유지
+	    if (!m_upload.isEmpty()) {
+	        String originalName = m_upload.getOriginalFilename();
+	        String ext = originalName.substring(originalName.lastIndexOf("."));
+	        String savedName = UUID.randomUUID().toString() + ext;
+
+	        String projectPath = System.getProperty("user.dir");
+	        File dir = new File(projectPath + "/src/main/resources/static/images/myProfile/");
+	        if (!dir.exists()) dir.mkdirs();
+
+	        m_upload.transferTo(new File(dir, savedName));
+
+	        // 기존 이미지 파일 삭제 (있었다면)
+	        if (existing.getM_img() != null && !existing.getM_img().isBlank()) {
+	            File oldFile = new File(dir, existing.getM_img());
+	            if (oldFile.exists()) {
+	                oldFile.delete();
+	            }
+	        }
+
+	        m_dto.setM_img(savedName);
+	    } else {
+	        // 새 이미지 업로드 안 했으면 기존 이미지 파일명 그대로 유지
+	        m_dto.setM_img(existing.getM_img());
+	    }
+
+	    m_dao.MemberUpdate(m_dto);
+
+	    return "redirect:main";
 	}
 	
 	@RequestMapping("/memberDelete")

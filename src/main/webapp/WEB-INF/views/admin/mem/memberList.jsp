@@ -32,7 +32,7 @@
 			<th>가입일</th>
 			<th>14세 이상</th>
 			<th>SNS 수신 동의</th>
-			<th></th>
+			<th>회원 유형</th>
 		</tr>
 		<tbody id="memberTableBody">
 		<c:forEach var="list" items="${memberList}">
@@ -43,6 +43,7 @@
 			<td>${list.m_date}</td>
 			<td>${list.m_age_upper}</td>
 			<td>${list.m_sns}</td>
+			<td>${list.m_authority}</td>
 			<td>
 				<a href="#">수정</a>
 			</td>
@@ -67,7 +68,7 @@
 		    }
 
 		    $.ajax({
-		        url: "/admin/mem_autocomplete",
+		        url: "/mem/mem_autocomplete",
 		        data: { keyword: q },
 		        success: function(list){
 		            let html = "";

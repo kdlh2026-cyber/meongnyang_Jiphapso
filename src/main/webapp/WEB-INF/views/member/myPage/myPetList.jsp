@@ -28,7 +28,7 @@
 			<td>${list.pet_breed}</td>
 			<td>${list.pet_gender}</td>
 			<td>
-				<button type="button" onclick="#">삭제</button>
+				<a href="/myPetDelete?pet_no=${list.pet_no}">삭제</a>
 			</td>
 		</tr>
 		</c:forEach>

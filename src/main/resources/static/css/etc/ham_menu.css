@@ -208,6 +208,34 @@
   }
   .footer-links a:hover{ color:#1c1c1c; }
 
+/* 로그인 버튼 */
+  .login {
+	    display: inline-block;
+	    color: #4A3226;
+	    text-decoration: none;
+	    font-size: 16px;
+	    font-weight: bold;
+	}
+	.login:hover {
+		text-decoration-line : none;
+		color: #FDA58F;
+		font-weight: bold;
+	}
+	
+/* 회원가입 버튼 */
+  .joinmember {
+	    display: inline-block;
+	    color: #4A3226;
+	    text-decoration: none;
+	    font-size: 16px;
+	    font-weight: bold;
+	}
+	.joinmember:hover {
+		text-decoration-line : none;
+		color: #FDCC61;
+		font-weight: bold;
+	}
+
 /* 로그아웃 버튼 */
   .logout {
 	    display: inline-block;
