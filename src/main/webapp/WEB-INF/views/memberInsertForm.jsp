@@ -7,8 +7,9 @@
 <title>멍냥집합소</title>
 </head>
 <body>
+<%@ include file="/WEB-INF/views/loading_animal.jsp" %>
 <%@ include file="hamburger_menu.jsp" %>
-	<form id="memberInsertForm" method="post" action="/memberInsert" enctype="multipart/form-data">
+	<form id="memberInsertForm" method="post" action="/memberInsert" enctype="multipart/form-data" data-loading>
 		<table>
 			<tr>
 				<td>아이디</td>

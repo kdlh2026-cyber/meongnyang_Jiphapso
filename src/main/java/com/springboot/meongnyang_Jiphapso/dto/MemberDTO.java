@@ -1,5 +1,7 @@
 package com.springboot.meongnyang_Jiphapso.dto;
 
+import java.util.Date;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
@@ -16,8 +18,8 @@ public class MemberDTO {
 	private int m_zipno;
 	private String m_email;
 	private String m_introduce;
-	private String m_birth;
-	private String m_date;
+	private Date m_birth;
+	private Date m_date;
 	private String m_age_upper;
 	private String m_sns;
 	private String m_authority;

@@ -42,6 +42,12 @@
 		where m_id=#{m_id}
 	</update>
 	
+	<update id="AMemUpdate">
+		update dc_member
+		set m_introduce=#{m_introduce}, m_authority=#{m_authority},m_img=#{m_img,jdbcType=VARCHAR}
+		where m_id=#{m_id}
+	</update>
+	
 	<delete id="MemberDelete">
 		delete from dc_member where m_id=#{m_id}
 	</delete>

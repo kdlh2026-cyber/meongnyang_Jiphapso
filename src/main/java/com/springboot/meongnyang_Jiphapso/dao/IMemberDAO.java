@@ -22,4 +22,6 @@ public interface IMemberDAO {
 	public MemberDTO MemberFindId(String m_id);
 	// 관리자용 멤버리스트 조회
 	public List<MemberDTO> MemberListView(String m_authority);
+	// 관리자용 회원 정보 수정
+	public int AMemUpdate(MemberDTO m_dto);
 }

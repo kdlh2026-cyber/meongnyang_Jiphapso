@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,13 +29,13 @@
 			<td>${memDetail.m_introduce}</td>
 		</tr>
 		<tr>
-			<td>${memDetail.m_birth}</td>
+			<td><fmt:formatDate value="${memDetail.m_birth}" pattern="yyyy-MM-dd" /></td>
 		</tr>
 		<tr>
 			<td>SNS 수신 동의 여부: ${memDetail.m_sns}</td>
 		</tr>
 	</table>
-	<a href="#">회원 정보 수정</a> <!-- 회원 아이디(부적절한 경우), 권한(크리에이터), 자기소개(부적절한 경우) 수정 가능 -->
+	<a href="/AmemUpdateForm?m_id=${memDetail.m_id}">회원 정보 수정</a> <!-- 회원 아이디(부적절한 경우), 권한(크리에이터), 자기소개(부적절한 경우) 수정 가능 -->
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

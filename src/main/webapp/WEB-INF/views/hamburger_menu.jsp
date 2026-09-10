@@ -9,6 +9,11 @@
     </span>
 
     <div class="topbar-right">
+    <!-- 비회원 영역 -->
+    <sec:authorize access="isAnonymous()">
+        <a href="/loginForm" class="login">로그인</a> | 
+        <a href="/memberInsertForm" class="joinmember">회원가입</a>
+      </sec:authorize>
     <!-- 일반 회원 프로필 이미지 -->
     <sec:authorize access="hasRole('USER')">
         <c:if test="${not empty loginMember}">
@@ -71,15 +76,15 @@
       </div>
       </sec:authorize>
 <!-- 요약 메뉴 영역(유지할지말지 논의 필요) -->
-      <p class="label-sm">둘러보기</p>
+      <p class="label-sm">빠른 메뉴</p>
       <div class="chip-row">
-        <a href="#" class="chip">콘텐츠
+        <a href="/community/commList" class="chip">커뮤니티
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </a>
         <a href="/products/ShoppingList" class="chip">쇼핑
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </a>
-        <a href="/community/commList" class="chip">커뮤니티
+        <a href="/cart/list" class="chip">장바구니
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </a>
       </div>
@@ -175,8 +180,8 @@
       <div class="footer-links">
         <a href="#">고객센터</a> <!-- 챗봇 API -->
         <a href="/guest/etc/companyIntroduce">회사소개</a>
-        <a href="#">이용약관</a>
-        <a href="#">개인정보처리방침</a>
+        <a href="/guest/etc/ToS">이용약관</a>
+        <a href="/guest/etc/privacyPolicy">개인정보처리방침</a>
       </div>
 
     </div>

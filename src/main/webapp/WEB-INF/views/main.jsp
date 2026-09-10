@@ -14,8 +14,6 @@
 	<!-- 비회원 영역 -->
 	<sec:authorize access="isAnonymous()">
 	<img src="/images/image.png" width="300px" height="auto"/><br>
-	<a href="/loginForm">로그인</a><br>
-	<a href="/memberInsertForm">회원가입</a>
 	</sec:authorize>
 	
 	<!-- 일반 회원 영역 -->
@@ -32,7 +30,7 @@
 	
 <!-- 공통 표시 영역 -->
 	
-	<!-- 통합 검색창(현재는 커뮤니티만 연결해둠) -->
+	<!-- 통합 검색창(커뮤니티+상품) -->
 		<form name="allSearch" type="get" action="/allSearch" style="position:relative">
 			<p><input type="text" name="keyword" id="keyword" autocomplete="off">
 			<input type="submit" value="통합검색">
