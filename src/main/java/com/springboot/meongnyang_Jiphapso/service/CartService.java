@@ -3,11 +3,9 @@ package com.springboot.meongnyang_Jiphapso.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.springboot.meongnyang_Jiphapso.dao.ICartDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CartDTO;
 
@@ -33,9 +31,7 @@ public class CartService {
     /** 장바구니 담기 - 이미 담긴 상품(같은 옵션)이면 수량만 합산 */
     @Transactional
     public CartDTO addCart(Long mNo, String guestToken, Long pNo, Long oNo, int quantity) {
-        // 상품목록 페이지처럼 옵션 선택 UI 없이 담는 경우 oNo가 null로 들어옴.
-        // o_price/o_main_img가 dc_product_option에만 있어서 o_no가 null이면
-        // 조회 시 LEFT JOIN이 매칭 안 돼 가격/이미지가 비어버리므로, 대표(default) 옵션으로 채워줌.
+
         if (oNo == null) {
             oNo = cartDAO.selectDefaultOptionNo(pNo);
             if (oNo == null) {
@@ -151,6 +147,12 @@ public class CartService {
     @Transactional
     public void deleteCartAllByMember(Long mNo) {
         cartDAO.deleteCartAllByMember(mNo);
+    }
+
+    
+    @Transactional
+    public void deleteCartByOrder(Long orNo) {
+        cartDAO.deleteCartByOrder(orNo);
     }
 
     public List<CartDTO> getCartListByMember(Long mNo) {

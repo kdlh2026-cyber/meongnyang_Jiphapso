@@ -4,193 +4,62 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IOrderDAO">
+<!--  ===================== ResultMap =====================  -->
+<resultMap id="orderResultMap" type="com.springboot.meongnyang_Jiphapso.dto.OrderDTO">
+<id property="orNo" column="OR_NO"/>
+<result property="orName" column="OR_NAME"/>
+<result property="orPhone" column="OR_PHONE"/>
+<result property="orAddress" column="OR_ADDRESS"/>
+<result property="orAddrdetail" column="OR_ADDRDETAIL"/>
+<result property="orMemo" column="OR_MEMO"/>
+<result property="orYn" column="OR_YN"/>
+<result property="orQty" column="OR_QTY"/>
+<result property="orMethod" column="OR_METHOD"/>
+<result property="orStatus" column="OR_STATUS"/>
+<result property="orAt" column="OR_AT"/>
+<result property="orUp" column="OR_UP"/>
+<result property="mNo" column="M_NO"/>
+<!--  계산 컬럼  -->
+<result property="orderNoDisplay" column="ORDER_NO_DISPLAY"/>
+<result property="productAmount" column="PRODUCT_AMOUNT"/>
+<result property="shippingFee" column="SHIPPING_FEE"/>
+<result property="discountAmount" column="DISCOUNT_AMOUNT"/>
+<result property="payAmount" column="PAY_AMOUNT"/>
+<result property="productQty" column="PRODUCT_QTY"/>
+</resultMap>
 
-    <!-- ===================== ResultMap ===================== -->
-    <resultMap id="orderResultMap" type="com.springboot.meongnyang_Jiphapso.dto.OrderDTO">
-        <id property="orNo" column="OR_NO"/>
+<sql id="orderJoinBase"> SELECT o.or_no AS OR_NO, o.or_name AS OR_NAME, o.or_phone AS OR_PHONE, o.or_address AS OR_ADDRESS, o.or_addrdetail AS OR_ADDRDETAIL, o.or_memo AS OR_MEMO, o.or_yn AS OR_YN, o.or_qty AS OR_QTY, o.or_method AS OR_METHOD, o.or_status AS OR_STATUS, o.or_at AS OR_AT, o.or_up AS OR_UP, o.m_no AS M_NO, ('NR' || TO_CHAR(o.or_at,'YYMMDD') || LPAD(o.or_no,7,'0')) AS ORDER_NO_DISPLAY, ( SELECT NVL(SUM(od.od_amount),0) FROM dc_order_detail od WHERE od.or_no = o.or_no ) AS PRODUCT_AMOUNT, ( SELECT NVL(SUM(od2.od_quantity),0) FROM dc_order_detail od2 WHERE od2.or_no = o.or_no ) AS PRODUCT_QTY, NVL(pay.pay_fee,0) AS SHIPPING_FEE, NVL(pay.pay_dis,0) AS DISCOUNT_AMOUNT, NVL(pay.pay_real_amt,0) AS PAY_AMOUNT FROM dc_order o LEFT JOIN ( SELECT p.or_no, p.pay_fee, p.pay_dis, p.pay_real_amt, ROW_NUMBER() OVER ( PARTITION BY p.or_no ORDER BY p.pay_req_at DESC, p.pay_no DESC ) AS rn FROM dc_payment p ) pay ON pay.or_no = o.or_no AND pay.rn = 1 </sql>
 
-        <result property="orName" column="OR_NAME"/>
-        <result property="orPhone" column="OR_PHONE"/>
-        <result property="orAddress" column="OR_ADDRESS"/>
-        <result property="orAddrdetail" column="OR_ADDRDETAIL"/>
-        <result property="orMemo" column="OR_MEMO"/>
-        <result property="orYn" column="OR_YN"/>
-        <result property="orQty" column="OR_QTY"/>
-        <result property="orMethod" column="OR_METHOD"/>
-        <result property="orStatus" column="OR_STATUS"/>
-        <result property="orAt" column="OR_AT"/>
-        <result property="orUp" column="OR_UP"/>
-        <result property="mNo" column="M_NO"/>
+<insert id="insertOrder" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDTO">
+<selectKey keyProperty="orNo" resultType="long" order="AFTER"> SELECT OR_NO FROM dc_order WHERE ROWID = ( SELECT MAX(ROWID) FROM dc_order ) </selectKey>
+INSERT INTO dc_order ( or_name, or_phone, or_address, or_addrdetail, or_memo, or_yn, or_qty, or_method, or_status, or_at, or_up, m_no ) VALUES ( #{orName, jdbcType=VARCHAR}, #{orPhone, jdbcType=VARCHAR}, #{orAddress, jdbcType=VARCHAR}, #{orAddrdetail, jdbcType=VARCHAR}, #{orMemo, jdbcType=VARCHAR}, #{orYn, jdbcType=CHAR}, #{orQty, jdbcType=NUMERIC}, #{orMethod, jdbcType=VARCHAR}, 'PAYMENT_PENDING', SYSDATE, SYSDATE, #{mNo, jdbcType=NUMERIC} )
+</insert>
+<!--  ===================== 주문 상태 변경 =====================  -->
+<update id="updateOrderStatus"> UPDATE dc_order SET or_status = #{orStatus}, or_up = SYSDATE WHERE or_no = #{orNo} </update>
 
-        <!-- 계산 컬럼 -->
-        <result property="orderNoDisplay" column="ORDER_NO_DISPLAY"/>
-        <result property="productAmount" column="PRODUCT_AMOUNT"/>
-        <result property="shippingFee" column="SHIPPING_FEE"/>
-        <result property="discountAmount" column="DISCOUNT_AMOUNT"/>
-        <result property="payAmount" column="PAY_AMOUNT"/>
-
-    </resultMap>
-
-    <!-- ===================== 공통 SELECT ===================== -->
-    <sql id="orderJoinBase">
-        SELECT
-            o.or_no AS OR_NO,
-            o.or_name AS OR_NAME,
-            o.or_phone AS OR_PHONE,
-            o.or_address AS OR_ADDRESS,
-            o.or_addrdetail AS OR_ADDRDETAIL,
-            o.or_memo AS OR_MEMO,
-            o.or_yn AS OR_YN,
-            o.or_qty AS OR_QTY,
-            o.or_method AS OR_METHOD,
-            o.or_status AS OR_STATUS,
-            o.or_at AS OR_AT,
-            o.or_up AS OR_UP,
-            o.m_no AS M_NO,
-
-            ('NR' || TO_CHAR(o.or_at,'YYMMDD')
-                  || LPAD(o.or_no,7,'0')) AS ORDER_NO_DISPLAY,
-
-            (
-                SELECT NVL(SUM(od.od_amount),0)
-                FROM dc_order_detail od
-                WHERE od.or_no = o.or_no
-            ) AS PRODUCT_AMOUNT,
-
-            NVL(pay.pay_fee,0) AS SHIPPING_FEE,
-            NVL(pay.pay_dis,0) AS DISCOUNT_AMOUNT,
-            NVL(pay.pay_real_amt,0) AS PAY_AMOUNT
-
-        FROM dc_order o
-        LEFT JOIN dc_payment pay
-            ON pay.or_no = o.or_no
-
-    </sql>
-
-    <!--
-      ===================== 주문 생성 =====================
-      or_memo 는 nullable(varchar2, not null 아님)이라 값이 안 들어올 수 있어서 jdbcType 명시.
-      나머지도 혹시 몰라 안전하게 jdbcType 같이 명시해둠 (CartDAO/OrderDetailDAO 때와 동일한
-      이유의 ORA-17004 방지)
-    -->
-    <insert id="insertOrder" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDTO">
-        <selectKey keyProperty="orNo"
-                   resultType="long"
-                   order="AFTER">
-            SELECT OR_NO
-            FROM dc_order
-            WHERE ROWID = (
-                SELECT MAX(ROWID)
-                FROM dc_order
-            )
-
-        </selectKey>
-
-        INSERT INTO dc_order
-        (
-            or_name,
-            or_phone,
-            or_address,
-            or_addrdetail,
-            or_memo,
-            or_yn,
-            or_qty,
-            or_method,
-            or_status,
-            or_at,
-            or_up,
-            m_no
-        )
-        VALUES
-        (
-            #{orName, jdbcType=VARCHAR},
-            #{orPhone, jdbcType=VARCHAR},
-            #{orAddress, jdbcType=VARCHAR},
-            #{orAddrdetail, jdbcType=VARCHAR},
-            #{orMemo, jdbcType=VARCHAR},
-            #{orYn, jdbcType=CHAR},
-            #{orQty, jdbcType=NUMERIC},
-            #{orMethod, jdbcType=VARCHAR},
-            'PAYMENT_PENDING',
-            SYSDATE,
-            SYSDATE,
-            #{mNo, jdbcType=NUMERIC}
-        )
-
-    </insert>
-
-    <!-- ===================== 주문 상태 변경 ===================== -->
-    <update id="updateOrderStatus">
-        UPDATE dc_order
-        SET
-            or_status = #{orStatus},
-            or_up = SYSDATE
-        WHERE or_no = #{orNo}
-
-    </update>
-
-    <!--
-      ===================== 주문 수정 (배송지/메모) =====================
-      member/order/detail.jsp 의 "배송지 수정" 버튼에서만 쓰는 update라
-      실제로 화면에서 다루는 or_name/or_phone/or_address/or_addrdetail/or_memo 만 SET함.
-      예전엔 or_yn/or_qty 도 SET절에 같이 있었는데, 이 화면의 JS(updateOrder())가
-      그 두 값은 애초에 body에 안 담아 보내기 때문에 null 로 들어가려다
-      1) jdbcType 없어서 ORA-17004 나고, 2) or_yn 은 NOT NULL 컬럼이라 그걸 고쳐도
-      바로 ORA-01400(NOT NULL 위반)으로 또 터질 상황이었음.
-      -> 이 화면이 안 다루는 컬럼은 SET절에서 아예 빼서 해결
-    -->
-    <update id="updateOrder" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDTO">
-        UPDATE dc_order
-        SET
-            or_name = #{orName, jdbcType=VARCHAR},
-            or_phone = #{orPhone, jdbcType=VARCHAR},
-            or_address = #{orAddress, jdbcType=VARCHAR},
-            or_addrdetail = #{orAddrdetail, jdbcType=VARCHAR},
-            or_memo = #{orMemo, jdbcType=VARCHAR},
-            or_up = SYSDATE
-        WHERE or_no = #{orNo}
-
-    </update>
-
-    <!-- ===================== 주문 삭제 ===================== -->
-    <delete id="deleteOrder">
-        DELETE FROM dc_order
-        WHERE or_no = #{orNo}
-
-    </delete>
-
-    <!-- ===================== 주문 단건 조회 ===================== -->
-    <select id="selectOrderOne" resultMap="orderResultMap">
-        <include refid="orderJoinBase"/>
-        WHERE o.or_no = #{orNo}
-
-    </select>
-
-    <!-- ===================== 회원 주문 목록 ===================== -->
-    <select id="selectOrderListByMember" resultMap="orderResultMap">
-      <include refid="orderJoinBase"/>
-        WHERE o.m_no = #{mNo} ORDER BY o.or_at DESC
-
-    </select>
-
-    <!-- ===================== 회원 주문 목록 (상태별) ===================== -->
-    <select id="selectOrderListByMemberAndStatus" resultMap="orderResultMap">
-        <include refid="orderJoinBase"/>
-        WHERE o.m_no = #{mNo} AND o.or_status = #{orStatus} ORDER BY o.or_at DESC
-
-    </select>
-
-    <!-- ===================== 관리자 전체 주문 목록 ===================== -->
-    <select id="selectOrderListAll" resultMap="orderResultMap">
-        <include refid="orderJoinBase"/>
-        ORDER BY o.or_at DESC
-
-    </select>
-
-    <!-- ===================== 회원 주문 건수 ===================== -->
-    <select id="countOrderByMember" resultType="int">
-        SELECT COUNT(*) FROM dc_order WHERE m_no = #{mNo}
-
-    </select>
-
+<update id="updateOrder" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDTO"> UPDATE dc_order SET or_name = #{orName, jdbcType=VARCHAR}, or_phone = #{orPhone, jdbcType=VARCHAR}, or_address = #{orAddress, jdbcType=VARCHAR}, or_addrdetail = #{orAddrdetail, jdbcType=VARCHAR}, or_memo = #{orMemo, jdbcType=VARCHAR}, or_up = SYSDATE WHERE or_no = #{orNo} </update>
+<!--  ===================== 주문 삭제 =====================  -->
+<delete id="deleteOrder"> DELETE FROM dc_order WHERE or_no = #{orNo} </delete>
+<!--  ===================== 주문 단건 조회 =====================  -->
+<select id="selectOrderOne" resultMap="orderResultMap">
+<include refid="orderJoinBase"/>
+WHERE o.or_no = #{orNo}
+</select>
+<!--  ===================== 회원 주문 목록 =====================  -->
+<select id="selectOrderListByMember" resultMap="orderResultMap">
+<include refid="orderJoinBase"/>
+WHERE o.m_no = #{mNo} ORDER BY o.or_at DESC
+</select>
+<!--  ===================== 회원 주문 목록 (상태별) =====================  -->
+<select id="selectOrderListByMemberAndStatus" resultMap="orderResultMap">
+<include refid="orderJoinBase"/>
+WHERE o.m_no = #{mNo} AND o.or_status = #{orStatus} ORDER BY o.or_at DESC
+</select>
+<!--  ===================== 관리자 전체 주문 목록 =====================  -->
+<select id="selectOrderListAll" resultMap="orderResultMap">
+<include refid="orderJoinBase"/>
+ORDER BY o.or_at DESC
+</select>
+<!--  ===================== 회원 주문 건수 =====================  -->
+<select id="countOrderByMember" resultType="int"> SELECT COUNT(*) FROM dc_order WHERE m_no = #{mNo} </select>
 </mapper>

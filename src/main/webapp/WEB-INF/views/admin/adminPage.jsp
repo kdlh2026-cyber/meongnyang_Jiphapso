@@ -47,7 +47,7 @@
 			<p><a href="/admin/order">주문내역 리스트</a></p>
 			<p><a href="/admin/order-detail">주문상세 리스트</a></p>
 			<p><a href ="/orderCancel/admin/list">주문취소 리스트</a>
-			<p><a href ="#">결제 리스트</a>
+			<p><a href ="/payment/admin/list">결제 리스트</a>
 			<p><a href="/admin/favorite">관심상품 리스트</a></p>
 		</div>
 	</li>

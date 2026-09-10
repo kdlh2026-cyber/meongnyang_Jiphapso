@@ -55,4 +55,6 @@ public interface ICartDAO {
 
     // 장바구니 - 옵션 변경 (o_no, 수량 동시 변경)
     int updateCartOption(@Param("caNo") Long caNo, @Param("oNo") Long oNo, @Param("quantity") Integer quantity);
+
+    int deleteCartByOrder(@Param("orNo") Long orNo);
 }

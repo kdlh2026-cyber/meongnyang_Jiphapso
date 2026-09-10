@@ -1,0 +1,77 @@
+* { box-sizing: border-box; }
+
+.ol-wrap { max-width: 720px; margin: 32px auto; padding: 0 20px 60px; }
+
+.ol-title { font-size: 22px; font-weight: 700; margin: 0; }
+
+.ol-title-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 8px;
+}
+.ol-cancel-history-link {
+    font-size: 13px; color: #c17a52; text-decoration: none; border: 1px solid #e3b79a;
+    background: #fdf3ee; padding: 7px 14px; border-radius: 6px; white-space: nowrap;
+}
+.ol-cancel-history-link:hover { background: #c17a52; color: #fff; }
+
+/* 상태 필터 탭 */
+.status-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.status-tabs a {
+    display: inline-block; padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px;
+    font-size: 13px; color: #555; text-decoration: none; background: #fff;
+}
+.status-tabs a:hover { border-color: #c17a52; color: #c17a52; }
+.status-tabs a.active { background: #222; color: #fff; border-color: #222; }
+
+.empty {
+    padding: 80px 0; text-align: center; color: #888; font-size: 15px;
+    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
+}
+
+/* 주문 카드 */
+.order-card {
+    border: 1px solid #eee; border-radius: 10px; padding: 18px 20px; background: #fff;
+    margin-bottom: 14px;
+}
+
+.order-top {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; color: #888; margin-bottom: 12px;
+}
+.order-top .order-no { font-weight: 700; color: #333; }
+
+.order-mid {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+}
+.order-mid-left { display: flex; align-items: center; gap: 10px; }
+.order-mid .qty { font-size: 13px; color: #666; }
+.order-mid .qty-bag { color: #999; margin-left: 4px; }
+.order-method { font-size: 13px; color: #666; }
+
+/* 상태 배지 - detail.css와 동일한 색상 매핑 */
+.status-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; background: #f2f2f2; color: #666;
+}
+.status-PAYMENT_PENDING { background: #fdf3d7; color: #a9791f; }
+.status-PAID { background: #e7f6ec; color: #12805c; }
+.status-SHIPPING { background: #e6f0ff; color: #2a5fd0; }
+.status-DELIVERED { background: #eef1f4; color: #444; }
+.status-CANCELED { background: #fdeaea; color: #c0392b; }
+
+.order-actions { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #f0f0f0; padding-top: 14px; }
+
+.btn-sm {
+    display: inline-block; border: 1px solid #ccc; background: #fff; color: #444;
+    border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer;
+    text-decoration: none; white-space: nowrap;
+}
+.btn-sm:hover { border-color: #c17a52; color: #c17a52; }
+.btn-sm-outline { border-color: #e3b79a; color: #c17a52; background: #fdf3ee; }
+.btn-sm-outline:hover { background: #c17a52; color: #fff; }
+
+@media (max-width: 480px) {
+    .order-top { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .order-mid { flex-direction: column; align-items: flex-start; gap: 8px; }
+}

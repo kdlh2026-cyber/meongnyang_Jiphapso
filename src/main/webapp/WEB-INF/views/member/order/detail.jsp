@@ -42,7 +42,10 @@
                 </span>
             </div>
             <div class="od-info-row"><span class="label">결제수단</span><span>${order.orMethod}</span></div>
-            <div class="od-info-row"><span class="label">수량</span><span>${order.orQty}개</span></div>
+            <div class="od-info-row"><span class="label">상품 수량</span><span>${order.productQty}개</span></div>
+            <c:if test="${order.orYn == 'Y' && order.orQty > 0}">
+                <div class="od-info-row"><span class="label">쇼핑백</span><span>${order.orQty}개 추가구매</span></div>
+            </c:if>
         </div>
     </div>
 
@@ -84,7 +87,7 @@
     </div>
 
     <%-- ================== 주문 상품 ================== --%>
-    <div class="od-card">
+    <div class="od-card" id="odProductCard">
         <div class="od-card-title">주문 상품</div>
         <div class="od-table-wrap">
             <table class="od-detail-table">
@@ -95,7 +98,7 @@
                         <th>단가</th>
                         <th>수량</th>
                         <th>금액</th>
-                        <th>취소◦반품◦교환</th>
+                        <th>취소/반품/교환</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,13 +110,29 @@
                             <td>${detail.odQuantity}개</td>
                             <td class="od-amount"><fmt:formatNumber value="${detail.odAmount}" pattern="#,##0" />원</td>
                             <td>
-                                <%-- 이미 취소된 주문이면 버튼 숨김. 상태값 조건은 실제 정책에 맞게 조정 --%>
-                                <c:if test="${order.orStatus != 'CANCELED'}">
-                                    <button type="button" class="od-btn od-btn-cancel"
-                                            onclick="openCancelModal(${detail.odDetailNo}, '${detail.odProductName}', ${detail.odQuantity})">
-                                        취소/반품/교환
-                                    </button>
-                                </c:if>
+                                <c:choose>
+                                    <c:when test="${not empty detail.ocStatus && detail.ocStatus != 'REJECTED'}">
+                                        <span class="oc-status-badge oc-status-<c:choose><c:when test="${detail.ocStatus == 'REQUESTED'}">requested</c:when><c:when test="${detail.ocStatus == 'APPROVED'}">approved</c:when><c:when test="${detail.ocStatus == 'REFUNDED'}">refunded</c:when><c:otherwise>etc</c:otherwise></c:choose>">
+                                            <c:choose>
+                                                <c:when test="${detail.ocStatus == 'REQUESTED'}">취소신청중</c:when>
+                                                <c:when test="${detail.ocStatus == 'APPROVED'}">취소승인</c:when>
+                                                <c:when test="${detail.ocStatus == 'REFUNDED'}">환불완료</c:when>
+                                                <c:otherwise>${detail.ocStatus}</c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:if test="${order.orStatus != 'CANCELED'}">
+                                            <button type="button" class="od-btn od-btn-cancel"
+                                                    onclick="openCancelModal(${detail.odDetailNo}, '${detail.odProductName}', ${detail.odQuantity})">
+                                                <c:choose>
+                                                    <c:when test="${detail.ocStatus == 'REJECTED'}">재신청</c:when>
+                                                    <c:otherwise>취소/반품/교환</c:otherwise>
+                                                </c:choose>
+                                            </button>
+                                        </c:if>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                         </tr>
                     </c:forEach>
@@ -130,6 +149,13 @@
 
 <script>
     const orNo = ${order.orNo};
+
+
+    const orderDetailItems = [
+        <c:forEach var="detail" items="${order.orderDetailList}" varStatus="st">
+        { odDetailNo: ${detail.odDetailNo}, odProductName: '${detail.odProductName}', odQuantity: ${detail.odQuantity}, ocStatus: <c:choose><c:when test="${empty detail.ocStatus}">null</c:when><c:otherwise>'${detail.ocStatus}'</c:otherwise></c:choose> }<c:if test="${!st.last}">,</c:if>
+        </c:forEach>
+    ];
 
     function searchAddress() {
         new daum.Postcode({
@@ -167,14 +193,43 @@
         .catch(() => alert('처리 중 오류가 발생했어요.'));
     }
 
-    // 취소/반품/교환 신청 후 화면 갱신용 - cancelForm.jsp 의 submitOrderCancel() 성공 시 자동 호출됨
+
     function refreshOrderDetail() {
-        location.reload();
+        location.href = location.pathname;
     }
 </script>
 
 <%-- 취소/반품/교환 신청 모달 (버튼 onclick="openCancelModal(...)" 이 이 안의 함수를 호출함) --%>
 <jsp:include page="/WEB-INF/views/member/OrderCancel/cancelForm.jsp" />
+
+<script>
+
+    (function () {
+        const params = new URLSearchParams(location.search);
+        if (params.get('cancel') !== '1') return;
+
+        // 이미 취소신청이 들어간(REJECTED=거절 제외) 라인은 자동오픈 대상에서 제외 - 아직 신청 안 한 상품만 대상
+        const cancellable = orderDetailItems.filter(function (item) {
+            return !item.ocStatus || item.ocStatus === 'REJECTED';
+        });
+
+        if (cancellable.length === 0) return;
+
+        if (cancellable.length === 1) {
+            // 취소 가능한 상품이 1개뿐이면 바로 취소/반품/교환 모달을 열어줌
+            const item = cancellable[0];
+            openCancelModal(item.odDetailNo, item.odProductName, item.odQuantity);
+        } else {
+
+            const card = document.getElementById('odProductCard');
+            if (card) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                card.classList.add('od-card-highlight');
+                setTimeout(function () { card.classList.remove('od-card-highlight'); }, 1600);
+            }
+        }
+    })();
+</script>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
