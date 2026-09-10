@@ -16,7 +16,7 @@ public class CommunityDTO {
 	private String comm_content;
 	private String comm_category;
 	private String comm_pet_type;
-	private int comm_score;
+	private Integer comm_score;
 	private String comm_breed;
 	private String comm_img;
 	private String comm_video;
@@ -24,8 +24,8 @@ public class CommunityDTO {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date comm_date;
 	
-	private int comm_count;
-	private int comm_view;
+	private Integer comm_count;
+	private Integer comm_view;
 	private Integer comm_good;
 	private Integer comm_well;
 	private String comm_tag;

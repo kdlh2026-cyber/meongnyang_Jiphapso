@@ -89,8 +89,18 @@
 	</insert>
 	
 	<insert id="CommunityImageWrite" parameterType="com.springboot.meongnyang_Jiphapso.dto.CommImageDTO">
-		insert into dc_comm_image(img_no, img_url, img_order, comm_no)
-			values(dc_comm_image_seq.NEXTVAL, #{img_url}, #{img_order}, #{comm_no})
+		<selectKey keyProperty="img_no" resultType="int" order="BEFORE">
+	        SELECT dc_comm_image_seq.NEXTVAL FROM DUAL
+	    </selectKey>
+		
+		insert into dc_comm_image(img_no, img_url, img_order, comm_no, cmt_no)
+			values(
+				#{img_no, jdbcType=NUMERIC},
+				#{img_url, jdbcType=VARCHAR},
+				#{img_order, jdbcType=NUMERIC},
+				#{comm_no, jdbcType=NUMERIC},
+				#{cmt_no, jdbcType=NUMERIC}
+			)
 	</insert>
 	
 	<select id="CommunityView" resultMap="CommunityViewMap">
@@ -109,6 +119,7 @@
 	</update>
 	
 	<resultMap id="CommunityViewMap" type="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO" extends="CommunityMap">
+		<result property="comm_video" column="COMM_VIDEO" />
 		<collection property="img_url_list" ofType="string">
 	        <result column="IMG_URL" />
 	    </collection>

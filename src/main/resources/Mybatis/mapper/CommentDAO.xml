@@ -4,13 +4,34 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.ICommentDAO">
 	<insert id="CommentWrite" parameterType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+	 	<selectKey keyProperty="cmt_no" resultType="int" order="BEFORE">
+	        select dc_comment_seq.NEXTVAL FROM DUAL
+	    </selectKey>
+	 	
 	 	insert into dc_comment(cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no, cmt_content,
 	 							cmt_good, cmt_choice, cmt_img, cmt_date, m_no)
-	 				values(dc_comment_seq.NEXTVAL, #{cmt_answer_no},
-	 						#{cmt_writer}, #{cmt_type},
-	 						#{cmt_type_no}, #{cmt_content},
-	 						#{cmt_good}, #{cmt_choice},
-	 						#{cmt_img}, #{cmt_date}, #{m_no}
+	 				values(#{cmt_no, jdbcType=INTEGER},
+	 						#{cmt_answer_no, jdbcType=INTEGER},
+	 						#{cmt_writer, jdbcType=VARCHAR},
+	 						#{cmt_type, jdbcType=VARCHAR},
+	 						#{cmt_type_no, jdbcType=INTEGER},
+	 						#{cmt_content, jdbcType=VARCHAR},
+	 						#{cmt_good, jdbcType=INTEGER},
+	 						#{cmt_choice, jdbcType=VARCHAR},
+	 						#{cmt_img, jdbcType=VARCHAR},
+	 						SYSDATE,
+	 						#{m_no, jdbcType=INTEGER}
 	 	)
 	</insert>
+	
+	<select id="CommentList" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+		select cm.comm_no, cm.comm_title, cm.comm_writer,
+			cmt.cmt_no, cmt.cmt_content, cmt.cmt_writer, cmt.cmt_date
+			from dc_community cm
+			left join dc_comment cmt
+			on cm.comm_no = cmt.cmt_type_no
+			where cm.comm_no = #{comm_no, jdbcType=INTEGER}
+			order by cmt.cmt_date desc
+	</select>
+
 </mapper>
