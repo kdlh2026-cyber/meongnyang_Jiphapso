@@ -140,7 +140,16 @@ function selectOption(type, value) {
                 <c:if test="${content.img_sort==1}">
                     ${content.img_content} 
                 </c:if>
-            </c:forEach>            
+            </c:forEach>
+			<div class="qty-row">
+				<button type="button" onclick="changeQty(-1)">-</button>
+				<input type="number" id="qtyInput" value="1" min="1" readonly>
+				<button type="button" onclick="changeQty(1)">+</button>
+			</div>
+			<div class="action-row">
+				<button type="button" onclick="addToCart()">장바구니 담기</button>
+				<button type="button" id="favoriteBtn" onclick="toggleFavorite()">♥ 관심상품</button>
+			</div>
         </div>
         <div>
             <div>
@@ -160,28 +169,7 @@ function selectOption(type, value) {
     <a href="javascript:history.back();">뒤로가기</a>
 </div>
 
-			<div class="qty-row">
-				<button type="button" onclick="changeQty(-1)">-</button>
-				<input type="number" id="qtyInput" value="1" min="1" readonly>
-				<button type="button" onclick="changeQty(1)">+</button>
-			</div>
-			<div class="action-row">
-				<button type="button" onclick="addToCart()">장바구니 담기</button>
-				<button type="button" id="favoriteBtn" onclick="toggleFavorite()">♥ 관심상품</button>
-			</div>
-
-			<div class="image">
-				${ShoppingViewList.imgcontent}
-			</div>
-		</div>
-		<div>
-			<div>
-				<a href="#">상품설명</a>
-				<a href="#">리뷰</a>
-			</div>
-			<div>
-
-			</div>
+			
 		</div>
 	</div>
 </div>
