@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IStrayAnimalDao">
+	<insert id="StrayAnimalWrite">
+		insert into dc_stray_animal(stray_no, stray_category, stray_name, stray_age, stray_gender,
+		stray_neuter, stray_weight, stray_character, stray_memo, stray_status, stray_notice_no,
+		stray_notice_start, stray_notice_end, stray_found_place, stray_shelter_name,
+		stray_shelter_tel, stray_shelter_addr, stray_img)
+		values(#{stray_no},#{stray_category},#{stray_name},#{stray_age},#{stray_gender},
+		#{stray_neuter},#{stray_weight},#{stray_character},#{stray_memo},#{stray_status},
+		#{stray_notice_no},#{stray_notice_start},#{stray_notice_end},#{stray_found_place},#{stray_shelter_name},
+		#{stray_shelter_tel},#{stray_shelter_addr},#{stray_img})
+	</insert>
+
+	<resultMap id="dc_stray_animalMap" type="com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto">
+		<id property="stray_no" column="stray_no" />
+		<result property="stray_category" column="stray_category" />
+		<result property="stray_name" column="stray_name" />
+		<result property="stray_age" column="stray_age" />
+		<result property="stray_gender" column="stray_gender" />
+		<result property="stray_neuter" column="stray_neuter" />
+		<result property="stray_weight" column="stray_weight" />
+		<result property="stray_character" column="stray_character" />
+		<result property="stray_memo" column="stray_memo" />
+		<result property="stray_status" column="stray_status" />
+		<result property="stray_notice_no" column="stray_notice_no" />
+		<result property="stray_notice_start" column="stray_notice_start" />
+		<result property="stray_notice_end" column="stray_notice_end" />
+		<result property="stray_found_place" column="stray_found_place" />
+		<result property="stray_shelter_name" column="stray_shelter_name" />
+		<result property="stray_shelter_tel" column="stray_shelter_tel" />
+		<result property="stray_shelter_addr" column="stray_shelter_addr" />
+		<result property="stray_img" column="stray_img" />
+	</resultMap>
+</mapper>

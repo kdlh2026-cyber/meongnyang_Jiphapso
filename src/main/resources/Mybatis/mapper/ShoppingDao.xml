@@ -6,7 +6,12 @@
 	<select id="ShoppingList" resultType="com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto">
 		select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, p.p_type as ptype, o.o_main_img as omainimg,o.o_price as oprice, o.o_default as odefault, p.p_no as pno
 		from dc_product p, dc_product_option o
-		where p.p_no=o.p_no and o.o_default='Y'
+		where p.p_no=o.p_no
+		 and o.o_default='Y' 
+		 and p.p_type like '%' || #{ptype} || '%'
+		 <if test="pcategory != null and pcategory != ''">
+          and p.p_category = #{pcategory}
+      	 </if>
 		order by p.p_no desc
 	</select>
 	

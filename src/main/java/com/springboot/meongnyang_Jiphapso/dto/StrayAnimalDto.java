@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 @Data
@@ -25,5 +27,6 @@ public class StrayAnimalDto {
 	 private String stray_shelter_name;
 	 private String stray_shelter_tel;
 	 private String stray_shelter_addr;
+	 private MultipartFile main_img;
 	 private String stray_img;
 }

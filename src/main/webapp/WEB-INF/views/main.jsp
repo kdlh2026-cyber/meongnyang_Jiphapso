@@ -26,8 +26,6 @@
 	<!-- 관리자 영역 -->
 	<sec:authorize access="hasRole('ADMIN')">
 		관리자님, 환영합니다.<br>
-		<a href="/productWriteForm">상품등록</a><br>
-		<a href="/productList">상품리스트</a>
 	</sec:authorize>
 	
 <!-- 공통 표시 영역 -->
