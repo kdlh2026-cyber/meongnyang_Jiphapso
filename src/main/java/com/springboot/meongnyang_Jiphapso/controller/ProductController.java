@@ -18,12 +18,14 @@ import com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductOptionDto;
 import com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto;
+import com.springboot.meongnyang_Jiphapso.service.ProductService;
 
 @Controller
 public class ProductController {
 	@Autowired
 	private IProductDao p_dao;
- 
+	@Autowired
+	private ProductService p_service;
 	
 	@RequestMapping("/productWriteForm")
 	public String productWriteForm() {
@@ -34,34 +36,36 @@ public class ProductController {
 	public String productWrite(ProductDto p_dto, ProductDetailImageDto img_dto, ProductOptionDto o_dto,
 			 @RequestParam("o_img") MultipartFile o_img, @RequestParam("img_urls") List<MultipartFile> img_urls,
 			 @RequestParam(value="o_quantity", defaultValue="100") int o_quantity, @RequestParam("o_price") int o_price,
-			 @RequestParam("o_default") String o_default,
-			 @RequestParam("p_title") String p_title) throws Exception{
+			 @RequestParam(value="o_default", required = false) String o_default,
+			 @RequestParam("p_title") String p_title, @RequestParam(value="o_origin_price", required = false) Integer o_origin_price
+			 ) throws Exception{
 		
-		/*
-		 * ProductDto existingProduct = p_dao.getProductByTitle(p_title);
-		 * 
-		 * int generatedPno;
-		 * 
-		 * if(existingProduct == null) { p_dao.ProductWrite(p_dto); generatedPno =
-		 * p_dto.getP_no(); } else {
-		 * 
-		 * generatedPno = existingProduct.getP_no(); }
-		 * 
-		 * 
-		 * o_dto.setP_no(generatedPno);
-		 */
 		
-		p_dao.ProductWrite(p_dto);
-		//p_service.write(p_dto);
-	    
-	    // 방금 생성된 상품 번호 꺼내기
-	    int generatedPno = p_dto.getP_no();
+		ProductDto findtitle = p_dao.getProductByTitle(p_title);
+		  
+		int generatedPno;
+		
+		if(findtitle == null) {
+			p_service.write(p_dto);	
+			generatedPno = p_dto.getP_no(); 
+		} 
+		else {
+			generatedPno = findtitle.getP_no(); 
+		}
+		  
+		o_dto.setP_no(generatedPno);
+		
+		//
 		
 	    if(o_price == 0) {
 	    	o_dto.setO_quantity(0);
 	    }
 	    else {
 	    	o_dto.setO_quantity(o_quantity);
+	    }
+	    
+	    if(o_origin_price == null) {
+	    	o_dto.setO_origin_price(o_price);
 	    }
 	    
 	    if(!"Y".equals(o_default)) {
