@@ -8,5 +8,5 @@ public class CommImageDTO {
 	private String img_url;
 	private int img_order;
 	private int comm_no;
-	private int cmt_no;
+	private Integer cmt_no;
 }

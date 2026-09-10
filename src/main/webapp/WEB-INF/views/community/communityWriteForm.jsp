@@ -72,8 +72,8 @@
 				<input type="file" id="uploadImages" name="uploadImages" class="file_input_hidden" multiple accept="image/*">
 				<div class="file_guide">최대 10장 · 20MB 이하</div>
 				
-				<label for="uploadVidea" class="file_custom_btn">사진 첨부</label>
-				<input type="file" id="uploadVidea" name="uploadVidea" class="file_input_hidden" multiple accept="video/*">
+				<label for="uploadVideo" class="file_custom_btn">동영상 첨부</label>
+				<input type="file" id="uploadVideo" name="uploadVideo" class="file_input_hidden" multiple accept="video/*">
 				<div class="file_guide">
 					최대 65MB · 1개<br>
 				    동영상과 사진을 함께 업로드 시, 첫 번째 사진이 썸네일로 지정됩니다.<br>
@@ -154,6 +154,25 @@ function renderTags() {
 
     // 서버로 전송될 hidden 필드에 값 갱신
     commTagHidden.value = tags.join(',');
+}
+
+let selectedFiles = [];
+
+document.getElementById('uploadImages').addEventListener('change', function(e){
+	// 새로 선택된 파일들을 배열에 누적
+	for(const file of e.target.files){
+		selectedFiles.push(file);
+	}
+	
+	const dataTransfer = new DataTransfer();
+	selectedFiles.forEach(file => dataTransfer.items.add(file));
+	e.target.files = dataTransfer.files;
+	
+	renderImagePreview();
+});
+
+function renderImagePreview(){
+	
 }
 </script>
 </body>

@@ -21,7 +21,7 @@
 
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
-	<form name="community_search" method="get" action="/comm_search">
+	<form name="community_search" method="get" action="/community/search">
 		<input type="text" name="keyword" id="keyword" autocomplete="off">
 		<input type="submit" value="검색">
 		<div id="suggestions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">

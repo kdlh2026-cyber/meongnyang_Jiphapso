@@ -39,7 +39,7 @@ public class CommunityController {
 	IBreedDAO breed_dao;
 	
 	
-	// 로그인을 해야 글쓰기로 넘어감(WebSecurity 설정하면 됨)
+	// 로그인을 해야 글쓰기로 넘어감
 	@GetMapping("/commWriteForm")
 	public String commWriteForm(Model model) {
 		
@@ -47,6 +47,20 @@ public class CommunityController {
 		model.addAttribute("breed", breedList);
 		
 		return "community/communityWriteForm";
+	}
+	
+	// 로그인을 해야 댓글을 사용할 수 있음(안전장치, 메인으로 튀기면 다시 게시글 번호로 리아디렉트)
+	@GetMapping("/community/comment/write-auth")
+	public String commentAuthRedirect(@RequestParam(value = "comm_no", required = false) String comm_no) {
+		return "redirect:/community/commView?comm_no=" + comm_no;
+	}
+	
+	// 로그인을 해야 답글을 사용할 수 있음(안전장치, 메인으로 튀기면 다시 게시글 번호로 리아디렉트)
+	@GetMapping("/community/comment/reply-auth")
+	public String commentReplyRedirect(@RequestParam(value = "comm_no", required = false) String comm_no,
+									   @RequestParam(value = "cmt_no", required = false) String cmt_no) {
+		
+		return "redirect:/community/commView?comm_no=" + comm_no;
 	}
 	
 	// 크롤링 용 글쓰기로 넘어가기
@@ -61,11 +75,10 @@ public class CommunityController {
 	public String commWrite(CommunityDTO dto,
 							@RequestParam(value="uploadImages", required = false) MultipartFile[] uploadImages,
 							@RequestParam(value = "uploadVideo", required = false) MultipartFile[] uploadVideo,
-							HttpSession session)
+							HttpSession session,
+							Authentication authentication)
 							throws Exception{
-		
-		 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
+	
 		 if (authentication != null && authentication.isAuthenticated()
 		            && !"anonymousUser".equals(authentication.getPrincipal())) {
 
@@ -132,14 +145,14 @@ public class CommunityController {
 	
 	// 자동 완성
 	@ResponseBody
-	@RequestMapping("/autocomplete")
+	@RequestMapping("/community/autocomplete")
 	public List<Map<String,String>> autocomplete(@RequestParam("keyword") String keyword) throws Exception{
 		return service.autocomplete(keyword);
 	}
 	
 	
 	// 서치 리스트 불러오기
-	@RequestMapping("/comm_search")
+	@RequestMapping("/community/search")
 	public String search(@RequestParam("keyword") String keyword,
 						 Model model) throws Exception{
 		
@@ -150,13 +163,16 @@ public class CommunityController {
 	}
 	
 	// 게시글 내용 상세보기
-	@RequestMapping("/communityView")
+	@RequestMapping("/community/commView")
 	public String communityView(@RequestParam("comm_no") Integer comm_no,
 								Model model) {
 		
 		model.addAttribute("view",service.viewList(comm_no));
 		comm_dao.CommunityHit(comm_no);
 		
+		model.addAttribute("cmt", service.cmtList(comm_no));
+		
 		return "community/commView";
 	}
+	
 }

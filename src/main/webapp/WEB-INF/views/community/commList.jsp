@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>게시글 서치한 목록</title>
+<title>게시글 목록</title>
 </head>
 <style>
 .preview_content{
@@ -17,18 +17,25 @@
 	text-overflow: ellipsis;
 	word-break: break-all;
 }
+
+#suggestions em{
+	background : Tomato;
+	color : Seashell;
+	font-weight : bold;
+	font-style : italic;
+}
 </style>
 
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
-	<form name="community_search" method="get" action="/comm_search">
+	<form name="community_search" method="get" action="/community/search">
 		<input type="text" name="keyword" id="keyword" autocomplete="off">
 		<input type="submit" value="검색">
 		<div id="suggestions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">
 		</div>
 	</form>
 	
-	<a href="/communityCrawlingWriteForm">글쓰기</a>
+	<a href="/communityCrawlingWriteForm">글쓰기(크롤링용)</a> | <a href="/commWriteForm">글쓰기(실제)</a>
 	<div class="category_tabs">
         <a href="/community/commList" class="${empty param.comm_type ? 'active' : ''}">전체</a>
         <a href="/community/commList?comm_type=Q%26A" class="${param.comm_type eq 'Q&A' ? 'active' : ''}">Q&amp;A</a>
@@ -74,7 +81,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><a href="/communityView?comm_no=${board.comm_no}">${board.comm_title}</a></td>
+			<td><a href="/community/commView?comm_no=${board.comm_no}">${board.comm_title}</a></td>
 		</tr>
 		<tr>
 			<td class="preview_content">${board.comm_content}</td>
@@ -104,9 +111,9 @@
     </div>
     
 <%@ include file="../footer.jsp" %>
-</body>
 
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
 		$("#keyword").on("keyup", function(){
 		    let q = $(this).val();
@@ -117,7 +124,7 @@
 		    }
 		
 		    $.ajax({
-		        url: "/autocomplete",
+		        url: "/community/autocomplete",
 		        data: { keyword: q },
 		        success: function(list){
 		            let html = "";
