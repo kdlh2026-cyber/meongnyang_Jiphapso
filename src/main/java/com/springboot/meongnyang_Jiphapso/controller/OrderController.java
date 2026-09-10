@@ -1,10 +1,15 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +45,18 @@ public class OrderController {
         this.memberLookupDAO = memberLookupDAO;
     }
 
+    private static class NotLoggedInException extends IllegalStateException {
+        public NotLoggedInException(String message) {
+            super(message);
+        }
+    }
+
     private Long requireLogin(HttpSession session) {
         // 세션엔 MemberDTO.m_no 타입 그대로(Integer) 들어있어서 Integer로 꺼낸 다음 Long으로 변환
         Integer mNo = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
 
         if (mNo == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+            throw new NotLoggedInException("로그인이 필요합니다.");
         }
         return mNo.longValue();
     }
@@ -136,7 +147,6 @@ public class OrderController {
         return "member/order/list";
     }
 
-    // 주문 상세 - TODO: orderService.getOrderOne(orNo)의 mNo가 로그인 회원과 같은지 검증 필요
     @RequestMapping(value = "/member/order/{orNo}", method = RequestMethod.GET)
     public String orderDetail(@PathVariable("orNo") Long orNo, HttpSession session, Model model) {
 
@@ -150,7 +160,6 @@ public class OrderController {
         return "member/order/detail";
     }
 
-    // 배송지/메모 수정 - 마찬가지로 본인 주문인지 확인 필요
     @RequestMapping(value = "/member/order/{orNo}", method = RequestMethod.PUT)
     @ResponseBody
     public ApiResponse<Void> updateOrder(@PathVariable("orNo") Long orNo,
@@ -164,11 +173,6 @@ public class OrderController {
 
         return ApiResponse.ok(null);
     }
-
-    // ------------------------------------------------------------
-    // 관리자 화면 - /admin/order/**
-    // 관리자 권한 체크는 WebSecurityConfig에서 /admin/** -> hasAnyRole("ADMIN")으로 이미 처리됨
-    // ------------------------------------------------------------
 
     @RequestMapping(value = "/admin/order", method = RequestMethod.GET)
     public String adminOrderList(Model model) {
@@ -207,14 +211,28 @@ public class OrderController {
         return ApiResponse.ok(null);
     }
 
-    // ------------------------------------------------------------
-    // 로그인 안 된 상태로 접근하면 500 대신 로그인 페이지로 리다이렉트
-    // ------------------------------------------------------------
-
-    @ExceptionHandler(IllegalStateException.class)
-    public String handleNotLoggedIn(IllegalStateException e, RedirectAttributes redirectAttributes) {
+    @ExceptionHandler(NotLoggedInException.class)
+    public String handleNotLoggedIn(NotLoggedInException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         // WebSecurityConfig 기준 실제 로그인 페이지 경로
         return "redirect:/loginForm";
+    }
+
+    @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
+    @ResponseBody
+    public ApiResponse<Void> handleBusinessException(RuntimeException e, HttpServletRequest request,
+                                                      HttpServletResponse response) throws IOException {
+
+        boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"))
+                || (request.getHeader("Accept") != null && request.getHeader("Accept").contains("application/json"));
+
+        if (!isAjax) {
+            String message = e.getMessage() != null ? e.getMessage() : "요청 처리 중 오류가 발생했습니다.";
+            String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
+            response.sendRedirect(request.getContextPath() + "/member/order/list?error=" + encodedMessage);
+            return null; // sendRedirect로 이미 응답을 커밋했으므로 바디는 비워둠
+        }
+
+        return ApiResponse.fail(e.getMessage());
     }
 }

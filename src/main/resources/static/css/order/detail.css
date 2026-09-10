@@ -1,4 +1,3 @@
-@charset "UTF-8";
 * { box-sizing: border-box; }
 
 .od-wrap { max-width: 900px; margin: 32px auto; padding: 0 20px 60px; }
@@ -65,6 +64,24 @@
 .od-detail-table .od-amount { font-weight: 700; color: #222; }
 
 .od-btn-group { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+
+/* 상품 라인별 취소/반품/교환 진행상태 배지 (버튼 대신 표시) */
+.oc-status-badge {
+    display: inline-block; padding: 4px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.oc-status-requested { background: #fdf3d7; color: #a9791f; } /* 신청 - 취소신청중 */
+.oc-status-approved  { background: #e6f0ff; color: #2a5fd0; } /* 승인 - 취소승인 */
+.oc-status-refunded  { background: #eef1f4; color: #444; }    /* 환불완료 */
+.oc-status-etc       { background: #f2f2f2; color: #666; }
+
+/* ?cancel=1 로 들어왔을 때 상품이 여러개라 자동으로 모달을 못 연 경우,
+   어느 카드로 스크롤됐는지 눈에 띄게 잠깐 테두리를 강조 */
+.od-card-highlight { animation: odCardHighlight 1.6s ease-out; }
+@keyframes odCardHighlight {
+    0%   { box-shadow: 0 0 0 3px rgba(193, 122, 82, 0.55); }
+    100% { box-shadow: 0 0 0 0 rgba(193, 122, 82, 0); }
+}
 
 @media (max-width: 640px) {
     .od-info-row .label { width: 70px; }

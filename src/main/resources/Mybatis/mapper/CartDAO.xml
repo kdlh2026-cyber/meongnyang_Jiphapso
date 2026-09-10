@@ -24,79 +24,52 @@
 <result property="oQuantity" column="O_QUANTITY"/>
 </resultMap>
 <!--  공통 SELECT  -->
+<sql id="cartJoinBase"> SELECT c.ca_no AS CA_NO, c.ca_token AS CA_TOKEN, c.ca_quantity AS CA_QUANTITY, c.ca_yn AS CA_YN, c.ca_qty AS CA_QTY, c.ca_at AS CA_AT, c.ca_up AS CA_UP, c.m_no AS M_NO, c.p_no AS P_NO, c.o_no AS O_NO, p.p_title AS P_NAME, o.o_main_img AS P_MAIN_IMG, o.o_price AS O_PRICE, (o.o_type_size || CASE WHEN o.o_color IS NOT NULL THEN ' / ' || o.o_color END) AS O_NAME, o.o_quantity AS O_QUANTITY FROM dc_cart c JOIN dc_product p ON c.p_no = p.p_no LEFT JOIN dc_product_option o ON c.o_no = o.o_no </sql>
 
-<sql id="cartJoinBase"> 
-SELECT c.ca_no AS CA_NO, c.ca_token AS CA_TOKEN, c.ca_quantity AS CA_QUANTITY, c.ca_yn AS CA_YN, c.ca_qty AS CA_QTY, c.ca_at AS CA_AT, 
-		c.ca_up AS CA_UP, c.m_no AS M_NO, c.p_no AS P_NO, c.o_no AS O_NO, p.p_title AS P_NAME, o.o_main_img AS P_MAIN_IMG, o.o_price 
-		AS O_PRICE, (o.o_type_size || CASE WHEN o.o_color IS NOT NULL THEN ' / ' || o.o_color END) AS O_NAME, o.o_quantity AS O_QUANTITY 
-		FROM dc_cart c JOIN dc_product p ON c.p_no = p.p_no LEFT JOIN dc_product_option o ON c.o_no = o.o_no 
-</sql>
-
-<insert id="insertCart" parameterType="com.springboot.meongnyang_Jiphapso.dto.CartDTO" useGeneratedKeys="true" keyProperty="caNo" keyColumn="CA_NO"> 
-INSERT INTO dc_cart ( ca_token, ca_quantity, ca_yn, ca_qty, ca_at, ca_up, m_no, p_no, o_no ) 
-VALUES ( #{caToken, jdbcType=VARCHAR}, #{caQuantity, jdbcType=NUMERIC}, #{caYn, jdbcType=CHAR}, #{caQty, jdbcType=NUMERIC}, 
-		SYSDATE, SYSDATE, #{mNo, jdbcType=NUMERIC}, #{pNo, jdbcType=NUMERIC}, #{oNo, jdbcType=NUMERIC} ) 
-</insert>
-
+<insert id="insertCart" parameterType="com.springboot.meongnyang_Jiphapso.dto.CartDTO" useGeneratedKeys="true" keyProperty="caNo" keyColumn="CA_NO"> INSERT INTO dc_cart ( ca_token, ca_quantity, ca_yn, ca_qty, ca_at, ca_up, m_no, p_no, o_no ) VALUES ( #{caToken, jdbcType=VARCHAR}, #{caQuantity, jdbcType=NUMERIC}, #{caYn, jdbcType=CHAR}, #{caQty, jdbcType=NUMERIC}, SYSDATE, SYSDATE, #{mNo, jdbcType=NUMERIC}, #{pNo, jdbcType=NUMERIC}, #{oNo, jdbcType=NUMERIC} ) </insert>
 <!--  상품 수량 변경  -->
-<update id="updateCartQuantity" parameterType="com.springboot.meongnyang_Jiphapso.dto.CartDTO"> 
-UPDATE dc_cart SET ca_quantity = #{caQuantity}, ca_up = SYSDATE WHERE ca_no = #{caNo} 
-</update>
-
+<update id="updateCartQuantity" parameterType="com.springboot.meongnyang_Jiphapso.dto.CartDTO"> UPDATE dc_cart SET ca_quantity = #{caQuantity}, ca_up = SYSDATE WHERE ca_no = #{caNo} </update>
 <!--  쇼핑백 여부 및 수량 변경  -->
-<update id="updateCartBag" parameterType="com.springboot.meongnyang_Jiphapso.dto.CartDTO"> 
-UPDATE dc_cart SET ca_yn = #{caYn}, ca_qty = #{caQty}, ca_up = SYSDATE WHERE ca_no = #{caNo} 
-</update>
-
+<update id="updateCartBag" parameterType="com.springboot.meongnyang_Jiphapso.dto.CartDTO"> UPDATE dc_cart SET ca_yn = #{caYn}, ca_qty = #{caQty}, ca_up = SYSDATE WHERE ca_no = #{caNo} </update>
 <!--  장바구니 1개 삭제  -->
 <delete id="deleteCart"> DELETE FROM dc_cart WHERE ca_no = #{caNo} </delete>
-
 <!--  선택 삭제  -->
 <delete id="deleteCartList">
 DELETE FROM dc_cart WHERE ca_no IN
 <foreach collection="caNoList" item="caNo" open="(" separator="," close=")"> #{caNo} </foreach>
 </delete>
-
 <!--  회원 장바구니 전체 삭제  -->
 <delete id="deleteCartAllByMember"> DELETE FROM dc_cart WHERE m_no = #{mNo} </delete>
-
 <!--  장바구니 1건 조회  -->
 <select id="selectCartOne" resultMap="cartResultMap">
 <include refid="cartJoinBase"/>
 WHERE c.ca_no = #{caNo}
 </select>
-
 <!--  회원 장바구니 목록  -->
 <select id="selectCartListByMember" resultMap="cartResultMap">
 <include refid="cartJoinBase"/>
 WHERE c.m_no = #{mNo} ORDER BY c.ca_at DESC
 </select>
-
 <!--  비회원 장바구니 목록  -->
 <select id="selectCartListByToken" resultMap="cartResultMap">
 <include refid="cartJoinBase"/>
 WHERE c.ca_token = #{caToken} AND c.m_no IS NULL ORDER BY c.ca_at DESC
 </select>
-
 <!--  관리자 전체 장바구니 목록  -->
 <select id="selectCartListAll" resultMap="cartResultMap">
 <include refid="cartJoinBase"/>
 ORDER BY c.ca_at DESC
 </select>
-
 <!--  회원 장바구니 개수  -->
 <select id="countCartByMember" resultType="int"> SELECT COUNT(*) FROM dc_cart WHERE m_no = #{mNo} </select>
 <!--  비회원 장바구니 개수  -->
 <select id="countCartByToken" resultType="int"> SELECT COUNT(*) FROM dc_cart WHERE ca_token = #{caToken} AND m_no IS NULL </select>
 
-<select id="selectDefaultOptionNo" resultType="java.lang.Long"> 
-SELECT o_no FROM dc_product_option WHERE p_no = #{pNo} AND o_default = 'Y' AND ROWNUM = 1 
-</select>
+<select id="selectDefaultOptionNo" resultType="java.lang.Long"> SELECT o_no FROM dc_product_option WHERE p_no = #{pNo} AND o_default = 'Y' AND ROWNUM = 1 </select>
 
-<select id="selectOptionListByProduct" resultType="map"> 
-SELECT o_no AS "oNo", o_type_size AS "oTypeSize", o_color AS "oColor", 
-o_price AS "oPrice", o_quantity AS "oQuantity" FROM dc_product_option WHERE p_no = #{pNo} ORDER BY o_type_size, o_color 
-</select>
+<select id="selectOptionListByProduct" resultType="map"> SELECT o_no AS "oNo", o_type_size AS "oTypeSize", o_color AS "oColor", o_price AS "oPrice", o_quantity AS "oQuantity" FROM dc_product_option WHERE p_no = #{pNo} ORDER BY o_type_size, o_color </select>
 <!--  장바구니 - 옵션 변경 (연필 아이콘 클릭 -> 옵션 변경 모달에서 변경 클릭 시)  -->
 <update id="updateCartOption"> UPDATE dc_cart SET o_no = #{oNo}, ca_quantity = #{quantity}, ca_up = SYSDATE WHERE ca_no = #{caNo} </update>
+
+<delete id="deleteCartByOrder"> DELETE FROM dc_cart WHERE m_no = (SELECT m_no FROM dc_order WHERE or_no = #{orNo}) AND (p_no, NVL(o_no, -1)) IN ( SELECT p_no, NVL(o_no, -1) FROM dc_order_detail WHERE or_no = #{orNo} ) </delete>
 </mapper>

@@ -22,6 +22,7 @@ public class OrderDetailDTO {
     private String pMainImg;     // 상품 이미지
     private String orStatus;     // 상위 주문상태 (결제하기/취소 버튼 노출 분기용)
     private Date orAt;           // 상위 주문일시
+    private String ocStatus;     // 이 상세건의 가장 최근 취소/반품/교환 신청상태 (신청/승인/거절/환불완료 등, 이력 없으면 null)
 
     public OrderDetailDTO() {}
 
@@ -64,6 +65,9 @@ public class OrderDetailDTO {
     public Date getOrAt() { return orAt; }
     public void setOrAt(Date orAt) { this.orAt = orAt; }
 
+    public String getOcStatus() { return ocStatus; }
+    public void setOcStatus(String ocStatus) { this.ocStatus = ocStatus; }
+
     @Override
     public String toString() {
         return "OrderDetailDTO{" +
@@ -71,6 +75,7 @@ public class OrderDetailDTO {
                 ", odProductName='" + odProductName + '\'' +
                 ", odQuantity=" + odQuantity +
                 ", orNo=" + orNo +
+                ", ocStatus='" + ocStatus + '\'' +
                 '}';
     }
 }
