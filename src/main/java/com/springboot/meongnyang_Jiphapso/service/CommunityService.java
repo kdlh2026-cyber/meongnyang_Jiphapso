@@ -187,7 +187,7 @@ public class CommunityService {
 	}
 	
 	// 커뮤니티 글(리뷰) insert 성공 직후, 대상 금액의 3% 적립
-	pointService.earnCommunityBonus(mNo, baseAmount);
+	// pointService.earnCommunityBonus(mNo, baseAmount);
 
 	
 	
