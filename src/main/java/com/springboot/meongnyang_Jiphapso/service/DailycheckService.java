@@ -39,5 +39,5 @@ public class DailycheckService {
 	}
 
 	// 출석 insert 성공 직후, 100P 적립
-	pointService.earnDailyCheckBonus(mNo, chNo);
+	// pointService.earnDailyCheckBonus(mNo, chNo);
 }
