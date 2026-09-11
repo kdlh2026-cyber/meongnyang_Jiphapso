@@ -1,11 +1,39 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>멍냥집합소</title>
+<style>
+.content-list,
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.content-item,
+.product-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.content-item img,
+.product-item .image img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+</style>
 </head>
 <body>
 <%@ include file="hamburger_menu.jsp" %>
@@ -13,16 +41,18 @@
 	
 	<!-- 비회원 영역 -->
 	<sec:authorize access="isAnonymous()">
-	<img src="/images/image.png" width="300px" height="auto"/><br>
+	<img src="/images/main/LOGO_main.png" width="350px" height="auto"/><br>
 	</sec:authorize>
 	
 	<!-- 일반 회원 영역 -->
 	<sec:authorize access="hasRole('USER')">
+		<img src="/images/main/LOGO_main.png" width="350px" height="auto"/><br>
 			회원님, 환영합니다.<br>
 	</sec:authorize>
 	
 	<!-- 관리자 영역 -->
 	<sec:authorize access="hasRole('ADMIN')">
+		<img src="/images/main/LOGO_main.png" width="350px" height="auto"/><br>
 		관리자님, 환영합니다.<br>
 	</sec:authorize>
 	
@@ -37,10 +67,44 @@
 		</form>
 		
 	<!-- 광고바 삽입 영역 -->
+	<img src="/images/main/advertisement.png" width="800px" height="auto" /><br>
 	
-	<!-- 추천 콘텐츠 표시 영역 -->
-	
-	<!-- 추천 상품 표시 영역 -->
+	<!-- 추천 게시글 표시 영역 -->
+		<h3>추천 게시글</h3>
+		<c:if test="${empty recommendContentList}">
+		    <p>등록된 게시글이 없습니다.</p>
+		</c:if>
+		<div class="content-list">
+		    <c:forEach var="cm" items="${recommendContentList}" end="4">
+		        <div class="content-item">
+		            <c:if test="${not empty cm.comm_img}">
+		                <img src=/images/"${cm.comm_img}" width="120" height="120">
+		            </c:if>
+		            <div><a href="/communityView?comm_no=${cm.comm_no}">${cm.comm_title}</a></div>
+		            <div>${cm.comm_writer}</div>
+		        </div>
+		    </c:forEach>
+		</div>
+		
+		<!-- 추천 상품 표시 영역 -->
+		<h3>추천 상품</h3>
+		<c:if test="${empty recommendProductList}">
+		    <p>등록된 상품이 없습니다.</p>
+		</c:if>
+		<div class="product-list">
+		    <c:forEach var="pd" items="${recommendProductList}" end="5">
+		        <div class="product-item">
+		            <div class="image">
+		            	<a href="/products/ShoppingView?p_no=${pd.pno}">
+		                	<div class="image"><img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(pd.omainimg, '%', '%25')}" width="120"></div>
+		            	</a>
+		            </div>
+		            <div>${pd.pbrand}</div>
+		            <div><a href="/products/ShoppingView?p_no=${pd.pno}">${pd.ptitle}</a></div>
+		            <div><fmt:formatNumber value="${pd.oprice}" />원</div>
+		        </div>
+		    </c:forEach>
+		</div>
 	
 <%@ include file="footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

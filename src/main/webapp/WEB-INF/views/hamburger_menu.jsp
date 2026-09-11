@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/css/etc/ham_menu.css">
   <div class="topbar">
     <span style="font-weight:700;">
-        <a href="/"><img src="/images/LOGO_text.png" alt="이미지 로고2" width="180px" height="auto"></a>
+        <a href="/"><img src="/images/main/LOGO_text.png" alt="이미지 로고2" width="180px" height="auto"></a>
     </span>
 
     <div class="topbar-right">
@@ -117,7 +117,7 @@
             <li><a href="/community/commList">라운지</a></li>
             <li><a href="#">Q&amp;A</a></li>
             <li><a href="#">리뷰</a></li>
-            <li><a href="#">이벤트</a></li>
+            <li><a href="/community/comm_eventList">이벤트</a></li>
           </ul>
         </div>
         
@@ -127,8 +127,8 @@
             ♥ 🛍️ ♥
           </h3> <!-- 쇼핑 -->
           <ul>
-            <li><a href="/products/ShoppingList">제품별</a></li>
-            <li><a href="/products/ShoppingList">상황별</a></li>
+            <li><a href="/products/ShoppingList?p_type=강아지">강아지</a></li>
+            <li><a href="/products/ShoppingList?p_type=고양이">고양이</a></li>
           </ul>
         </div>
         
@@ -139,8 +139,7 @@
           </h3>
           <ul>
             <li><a href="/guest/StrayList">보호소 입양</a></li>
-            <li><a href="#">임시보호</a></li>
-            <li><a href="#">이름 짓기</a></li>
+            <li><a href="/guest/hospital/hospitalList">동물병원 찾기</a></li>
           </ul>
         </div>
 
@@ -156,26 +155,6 @@
           </ul>
         </div>
 
-      <div class="cat">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-            동물병원
-          </h3>
-          <ul>
-            <li><a href="#">동물병원 찾기</a></li>
-          </ul>
-        </div>
-
-        <div class="cat">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
-            반려동물 장소
-          </h3>
-          <ul>
-            <li><a href="#">동반 여행</a></li>
-          </ul>
-        </div>
-
       </div>
 
       <div class="cat-grid single">
@@ -186,7 +165,6 @@
           </h3>
           <ul>
             <li><a href="#">크리에이터 신청</a></li>
-            <li><a href="#">캠페인</a></li>
           </ul>
         </div>
       </div>

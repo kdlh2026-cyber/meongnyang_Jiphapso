@@ -33,6 +33,8 @@
 		</tr>
 	</table>
 	<a href="/member/myPage/myProfileUpdateForm">회원 정보 수정</a>
+	<!-- 크리에이터 신청 버튼 자리 -->
+	<a href="/member/myPage/myPage?m_id='${myId.m_id}'">마이페이지</a>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>
