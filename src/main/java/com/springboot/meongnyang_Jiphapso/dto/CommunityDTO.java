@@ -38,4 +38,6 @@ public class CommunityDTO {
 	
 	private List<String> img_url_list;
 	
+	private Integer reply_count;
+	
 }

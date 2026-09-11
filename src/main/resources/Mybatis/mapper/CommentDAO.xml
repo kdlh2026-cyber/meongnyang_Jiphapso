@@ -25,13 +25,29 @@
 	</insert>
 	
 	<select id="CommentList" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
-		select cm.comm_no, cm.comm_title, cm.comm_writer,
-			cmt.cmt_no, cmt.cmt_content, cmt.cmt_writer, cmt.cmt_date
-			from dc_community cm
-			left join dc_comment cmt
-			on cm.comm_no = cmt.cmt_type_no
-			where cm.comm_no = #{comm_no, jdbcType=INTEGER}
-			order by cmt.cmt_date desc
+		 select cm.comm_no, cm.comm_title, cm.comm_writer,
+	        cmt.cmt_no, cmt.cmt_answer_no, cmt.cmt_writer, cmt.cmt_type, cmt.cmt_type_no,
+	        cmt.cmt_content, cmt.cmt_good, cmt.cmt_choice, cmt.cmt_img, cmt.cmt_date, cmt.m_no
+	        from dc_community cm
+	        left join dc_comment cmt
+	        on cm.comm_no = cmt.cmt_type_no
+	        where cm.comm_no = #{comm_no, jdbcType=INTEGER}
+	        order by cmt.cmt_date desc
+	</select>
+	
+	<select id="myComment" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+		 select cm.comm_no, cm.comm_title, cm.comm_img,
+		 	cmt.cmt_no, cmt.cmt_content, cmt.cmt_writer as comment_writer,
+		 	cmt.cmt_date, cmt.cmt_type, cmt.cmt_type_no, cmt.cmt_img,
+		 	(SELECT COUNT(*) FROM dc_comment WHERE cmt_type_no = cm.comm_no) as comment_count
+		 	from dc_community cm
+		 	left join dc_comment cmt
+		 	on cm.comm_no = cmt.cmt_type_no
+		 	where cmt.m_no = #{m_no}
+		 	order by cmt.cmt_date desc
 	</select>
 
+	<delete id="CommentDelete">
+		delete from dc_comment where cmt_no = #{cmt_no} and m_no = #{m_no}
+	</delete>
 </mapper>

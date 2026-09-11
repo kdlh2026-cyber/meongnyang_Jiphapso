@@ -140,4 +140,22 @@
 		<result property="comm_date" column="COMM_DATE"/>
 	</resultMap>
 	
+	<select id="myList" resultType="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO">
+		select c.*, (select count(*) from dc_comment where cmt_type_no = c.comm_no) as reply_count
+			from dc_community c
+			where c.m_no = #{m_no}
+		<if test="comm_type != null and comm_type != ''">
+			and c.comm_type = #{comm_type}
+		</if>
+		order by c.comm_no desc
+	</select>
+	
+	<select id="getLatestByType" resultType="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO">
+		select * from (select count(*) from dc_comment where cmt_type_no = c.comm_no) as reply_count
+			from dc_community c
+			where c.m_no = #{m_no} and c.comm_type  = #{comm_type}
+			order by c.comm_no desc)
+			where rownum = 1
+	</select>
+	
 </mapper>

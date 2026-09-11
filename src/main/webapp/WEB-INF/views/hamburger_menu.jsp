@@ -138,7 +138,7 @@
             ♥ 🐶 ♥
           </h3>
           <ul>
-            <li><a href="#">보호소 입양</a></li>
+            <li><a href="/guest/StrayList">보호소 입양</a></li>
             <li><a href="/guest/hospital/hospitalList">동물병원 찾기</a></li>
           </ul>
         </div>

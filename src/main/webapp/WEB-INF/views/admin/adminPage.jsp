@@ -44,6 +44,7 @@
 		<button>입양 관리</button>
 		<div class="content">
 			<p><a href="/strayWriteForm">유기동물 등록</a></p>
+			<p><a href="/admin/stray/StrayListA">유기동물 리스트</a></p>
 		</div>
 	</li>
 	<li>
@@ -60,6 +61,7 @@
 	<li>
 		<button>커뮤니티 관리</button>
 		<div class="content">
+			<p><a href="/breedInfo">품종관리</a>
 			<p><a href="/communityCrawlingWriteForm">글쓰기 페이지</a></p>
 		</div>
 	</li>

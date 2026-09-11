@@ -10,12 +10,15 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.meongnyang_Jiphapso.dao.IBreedDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
+import com.springboot.meongnyang_Jiphapso.dto.BreedDTO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.service.MemberService;
 
@@ -28,6 +31,9 @@ public class AdminController {
 	
 	@Autowired
 	MemberService mem_serv;
+	
+	@Autowired
+	IBreedDAO b_dao;
 	
 	@RequestMapping("/admin/adminPage")
 	public String adminPage() {
@@ -118,5 +124,45 @@ public class AdminController {
 		m_dao.MemberDelete(m_id);
 		
 		return "redirect:admin/mem/memberList";
+	}
+	
+	// ------------------ 커뮤니티 ------------------ //
+	@RequestMapping("/breedInfo")
+	public String breedInfo(Model model) {
+		
+		model.addAttribute("dogbreed", b_dao.BreedList("강아지"));
+		model.addAttribute("catbreed", b_dao.BreedList("고양이"));
+		return "admin/community/breedInfo";
+	}
+	
+	@PostMapping("/admin/breedInsert")
+	public String breedInsert(@RequestParam("pet_type") String pet_type,
+							  BreedDTO bdto,
+							  Model model) {
+		
+		b_dao.breedInsert(bdto);
+		model.addAttribute("dogbreed", b_dao.BreedList("강아지"));
+		model.addAttribute("catbreed", b_dao.BreedList("고양이"));
+		
+		return "admin/community/breedInfo";
+	}
+	
+	@RequestMapping("/admin/breedUpdate")
+	public String breedUpdate(BreedDTO bdto,
+							  Model model) {
+		b_dao.breedUpdate(bdto);
+		model.addAttribute("dogbreed", b_dao.BreedList("강아지"));
+		model.addAttribute("catbreed", b_dao.BreedList("고양이"));
+		
+		return "admin/community/breedInfo";
+	}
+	
+	@RequestMapping("/admin/breedDelete")
+	public String breedDelete(@RequestParam("breed_id") int breed_id,
+							  Model model) {
+		b_dao.breedDelete(breed_id);
+		model.addAttribute("dogbreed", b_dao.BreedList("강아지"));
+		model.addAttribute("catbreed", b_dao.BreedList("고양이"));
+		return "admin/community/breedInfo";
 	}
 }

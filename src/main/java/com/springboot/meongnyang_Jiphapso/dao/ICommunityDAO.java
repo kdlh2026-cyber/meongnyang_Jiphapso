@@ -46,4 +46,12 @@ public interface ICommunityDAO {
 	
 	// 게시글 이미지 테이블에 저장(insert)
 	public void CommunityImageWrite(CommImageDTO imgDto) throws Exception;
+	
+	// 내가 쓴 글 조회
+	public List<CommunityDTO> myList(@Param("m_no") Integer m_no,
+									 @Param("comm_type") String comm_type);
+	
+	// 가장 최신글 하나만 조회
+	public CommunityDTO getLatestByType(@Param("m_no") Integer m_no,
+										@Param("comm_type") String comm_type);
 }
