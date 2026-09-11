@@ -28,4 +28,7 @@ public interface IOrderDetailDAO {
 
     // 관리자 - 전체 주문상세 목록
     List<OrderDetailDTO> selectOrderDetailListAll();
+    
+    // 주문번호 기준 주문상세 일괄삭제 (관리자 - 주문 전체 삭제 시 자식 레코드 정리용)
+    int deleteOrderDetailListByOrder(@Param("orNo") Long orNo);
 }

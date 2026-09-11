@@ -32,7 +32,10 @@
    	   <a href="/favorite/list">관심 상품</a>
    	</li>   
    <li>
-      <a href="#">포인트 내역</a>
+      <a href="/point/list">포인트</a>
+   </li>
+   <li>
+   	 <a href ="#">쿠폰</a>
    </li>
 </ul>
 <a href="/memberDelete?m_id=${myId.m_id}" onclick="return confirm('정말로 탈퇴하시겠습니까?');">계정 탈퇴</a>

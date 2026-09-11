@@ -34,4 +34,7 @@ public interface IPaymentDAO {
 
 	// 삭제 (관리자 전용)
 	int deletePayment(@Param("payNo") Long payNo);
+	
+	// 주문번호 기준 결제내역 일괄삭제 (관리자 - 주문 전체 삭제 시 자식 레코드 정리용)
+	int deletePaymentByOrder(@Param("orNo") Long orNo);
 }

@@ -6,59 +6,24 @@
 <meta charset="UTF-8">
 <title>취소 ◦ 반품 내역</title>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-</head>
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: #f7f7f8; color: #222; }
-
-  .oc-wrap { max-width: 1100px; margin: 40px auto; padding: 0 20px 60px; }
-  .oc-title { font-size: 22px; font-weight: 700; margin: 0 0 24px; border-bottom: 2px solid #222; padding-bottom: 14px; }
-
-  .oc-empty {
-    padding: 80px 0; text-align: center; color: #888; font-size: 15px;
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
-  }
-
-  .oc-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; }
-  .oc-table th, .oc-table td { padding: 14px 12px; text-align: center; font-size: 14px; border-bottom: 1px solid #eee; }
-  .oc-table thead th { background: #fafafa; color: #555; font-weight: 600; }
-  .oc-table tbody tr:last-child td { border-bottom: none; }
-  .oc-table tbody tr:hover { background: #fbfbfb; }
-
-  .oc-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-  .oc-badge-requested { background: #eee; color: #666; }
-  .oc-badge-approved  { background: #e6f0ff; color: #1a56db; }
-  .oc-badge-refunded  { background: #e6f7ec; color: #12805c; }
-  .oc-badge-rejected  { background: #fdeaea; color: #c0392b; }
-
-  .oc-btn-detail {
-    padding: 6px 14px; border: 1px solid #ccc; background: #fff; border-radius: 6px;
-    font-size: 13px; cursor: pointer; color: #333;
-  }
-  .oc-btn-detail:hover { background: #222; color: #fff; border-color: #222; }
-
-  /* 상세보기 모달 */
-  .oc-modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center; z-index: 1000;
-  }
-  .oc-modal { background: #fff; width: 420px; max-width: 90vw; border-radius: 10px; padding: 28px; position: relative; }
-  .oc-modal h3 { margin: 0 0 18px; font-size: 18px; }
-  .oc-modal-close {
-    position: absolute; top: 14px; right: 16px; border: none; background: none;
-    font-size: 22px; cursor: pointer; color: #999; line-height: 1;
-  }
-  .oc-dl { display: grid; grid-template-columns: 110px 1fr; row-gap: 10px; column-gap: 8px; margin: 0; font-size: 14px; }
-  .oc-dl dt { color: #888; }
-  .oc-dl dd { margin: 0; color: #222; word-break: break-all; }
-</style>
+<link rel="stylesheet" href="/css/orderCancel/list.css">
 </head>
 <body>
-
 <div class="oc-wrap">
   <h2 class="oc-title">취소 ◦ 반품 내역</h2>
 
-  <div id="ocEmpty" class="oc-empty" style="display:none;">등록된 취소/반품 신청 내역이 없습니다.</div>
+    <div class="status-tabs">
+        <a href="${pageContext.request.contextPath}/member/order/list">전체</a>
+        <a href="${pageContext.request.contextPath}/member/order/list?status=PAYMENT_PENDING">결제대기</a>
+        <a href="${pageContext.request.contextPath}/member/order/list?status=PAID">결제완료</a>
+        <a href="${pageContext.request.contextPath}/member/order/list?status=SHIPPING">배송중</a>
+        <a href="${pageContext.request.contextPath}/member/order/list?status=DELIVERED">배송완료</a>
+        <a href="${pageContext.request.contextPath}/orderCancel/list" class="active">취소 · 반품</a>
+    </div>
+
+    <div id="ocEmpty" class="oc-empty" style="display:none;">
+        등록된 취소 · 반품 신청 내역이 없습니다.
+    </div>
 
   <table class="oc-table" id="ocTable" style="display:none;">
     <thead>

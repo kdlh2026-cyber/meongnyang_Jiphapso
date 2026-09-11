@@ -13,8 +13,8 @@
 <body>
 <h3>주문관리</h3>
 
-<c:set var="statusCodes" value="${fn:split('PAYMENT_PENDING,PAID,PREPARING,SHIPPING,DELIVERED,CONFIRMED,CANCELED', ',')}" />
-<c:set var="statusLabels" value="${fn:split('결제 대기 중,결제 완료,상품 준비 중,배송 중,배송 완료,구매 확정,주문 취소', ',')}" />
+<c:set var="statusCodes" value="${fn:split('PAYMENT_PENDING,PAID,PREPARING,SHIPPING,DELIVERED,CONFIRMED', ',')}" />
+<c:set var="statusLabels" value="${fn:split('결제 대기 중,결제 완료,상품 준비 중,배송 중,배송 완료,구매 확정', ',')}" />
 
 <table class="admin-table">
     <thead>
@@ -38,11 +38,19 @@
                     <td>${order.orQty}</td>
                     <td>${order.orMethod}</td>
                     <td>
-                        <select class="status-select" onchange="changeStatus(${order.orNo}, this.value)">
-                            <c:forEach var="code" items="${statusCodes}" varStatus="loop">
-                                <option value="${code}" ${order.orStatus == code ? 'selected' : ''}>${statusLabels[loop.index]}</option>
-                            </c:forEach>
-                        </select>
+                        <c:choose>
+                            <%-- 이미 취소된 주문은 드롭다운 대신 상태 뱃지로만 표시 (여기서 되돌리는 것도 막기 위함) --%>
+                            <c:when test="${order.orStatus == 'CANCELED'}">
+                                <span style="color:#c0392b; font-weight:600;">주문 취소</span>
+                            </c:when>
+                            <c:otherwise>
+                                <select class="status-select" onchange="changeStatus(${order.orNo}, this.value)">
+                                    <c:forEach var="code" items="${statusCodes}" varStatus="loop">
+                                        <option value="${code}" ${order.orStatus == code ? 'selected' : ''}>${statusLabels[loop.index]}</option>
+                                    </c:forEach>
+                                </select>
+                            </c:otherwise>
+                        </c:choose>
                     </td>
                     <td>
                         <a class="btn-sm" href="/admin/order/${order.orNo}">상세</a>
@@ -58,6 +66,12 @@
 <script>
     // 주문상태 변경 - PUT /admin/order/{orNo}/status
     function changeStatus(orNo, orStatus) {
+        // CANCELED는 이제 이 드롭다운에 없지만, 혹시 모를 우회 호출까지 클라이언트단에서도 한 번 더 막아둠
+        if (orStatus === 'CANCELED') {
+            alert('주문 취소는 [취소/반품 관리] 메뉴에서 처리해주세요.');
+            return;
+        }
+
         fetch('/admin/order/' + orNo + '/status', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },

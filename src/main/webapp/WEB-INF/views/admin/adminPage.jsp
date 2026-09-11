@@ -68,8 +68,7 @@
 	<li>
 		<button>쿠폰 / 포인트 관리</button>
 		<div class="content">
-			<p><a href ="#">쿠폰 리스트</a>
-			<p><a href ="#">회원 포인트 리스트</a>
+			<p><a href ="/admin/point/list">쿠폰 리스트</a>
 			<p><a href ="#">포인트 리스트</a>
 		</div>
 	</li>
