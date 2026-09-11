@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.springboot.meongnyang_Jiphapso.common.SessionConst;
 import com.springboot.meongnyang_Jiphapso.dto.PaymentDTO;
 import com.springboot.meongnyang_Jiphapso.service.PaymentService;
+import com.springboot.meongnyang_Jiphapso.service.PointService;
 
 @Controller
 @RequestMapping("/payment")
@@ -24,6 +25,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private PointService pointService; // 결제요청 등록 시 포인트 잔액 검증용
 
     // =====================================================
     // 세션 로그인 회원번호 가져오기 (OrderController와 동일 방식)
@@ -120,6 +124,15 @@ public class PaymentController {
         try {
 
             dto.setMNo(mNo);
+
+            if (dto.getPayUsed() != null && dto.getPayUsed() > 0) {
+                Long balance = pointService.getCurrentBalance(mNo);
+                if (balance == null || dto.getPayUsed() > balance) {
+                    map.put("success", false);
+                    map.put("message", "보유 포인트가 부족합니다.");
+                    return map;
+                }
+            }
 
             paymentService.bindChannelKey(dto);
 

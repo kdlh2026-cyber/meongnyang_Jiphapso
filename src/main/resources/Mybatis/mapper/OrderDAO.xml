@@ -30,10 +30,26 @@
 
 <sql id="orderJoinBase"> SELECT o.or_no AS OR_NO, o.or_name AS OR_NAME, o.or_phone AS OR_PHONE, o.or_address AS OR_ADDRESS, o.or_addrdetail AS OR_ADDRDETAIL, o.or_memo AS OR_MEMO, o.or_yn AS OR_YN, o.or_qty AS OR_QTY, o.or_method AS OR_METHOD, o.or_status AS OR_STATUS, o.or_at AS OR_AT, o.or_up AS OR_UP, o.m_no AS M_NO, ('NR' || TO_CHAR(o.or_at,'YYMMDD') || LPAD(o.or_no,7,'0')) AS ORDER_NO_DISPLAY, ( SELECT NVL(SUM(od.od_amount),0) FROM dc_order_detail od WHERE od.or_no = o.or_no ) AS PRODUCT_AMOUNT, ( SELECT NVL(SUM(od2.od_quantity),0) FROM dc_order_detail od2 WHERE od2.or_no = o.or_no ) AS PRODUCT_QTY, NVL(pay.pay_fee,0) AS SHIPPING_FEE, NVL(pay.pay_dis,0) AS DISCOUNT_AMOUNT, NVL(pay.pay_real_amt,0) AS PAY_AMOUNT FROM dc_order o LEFT JOIN ( SELECT p.or_no, p.pay_fee, p.pay_dis, p.pay_real_amt, ROW_NUMBER() OVER ( PARTITION BY p.or_no ORDER BY p.pay_req_at DESC, p.pay_no DESC ) AS rn FROM dc_payment p ) pay ON pay.or_no = o.or_no AND pay.rn = 1 </sql>
 
-<insert id="insertOrder" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDTO">
-<selectKey keyProperty="orNo" resultType="long" order="AFTER"> SELECT OR_NO FROM dc_order WHERE ROWID = ( SELECT MAX(ROWID) FROM dc_order ) </selectKey>
-INSERT INTO dc_order ( or_name, or_phone, or_address, or_addrdetail, or_memo, or_yn, or_qty, or_method, or_status, or_at, or_up, m_no ) VALUES ( #{orName, jdbcType=VARCHAR}, #{orPhone, jdbcType=VARCHAR}, #{orAddress, jdbcType=VARCHAR}, #{orAddrdetail, jdbcType=VARCHAR}, #{orMemo, jdbcType=VARCHAR}, #{orYn, jdbcType=CHAR}, #{orQty, jdbcType=NUMERIC}, #{orMethod, jdbcType=VARCHAR}, 'PAYMENT_PENDING', SYSDATE, SYSDATE, #{mNo, jdbcType=NUMERIC} )
-</insert>
+	<insert id="insertOrder" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDTO"
+		useGeneratedKeys="true" keyProperty="orNo" keyColumn="OR_NO">
+		insert into dc_order
+			(or_name, or_phone, or_address, or_addrdetail, or_memo, or_yn, or_qty, or_method, or_status, or_at, or_up, m_no)
+		values
+			(
+				#{orName, jdbcType=VARCHAR},
+				#{orPhone, jdbcType=VARCHAR},
+				#{orAddress, jdbcType=VARCHAR},
+				#{orAddrdetail, jdbcType=VARCHAR},
+				#{orMemo, jdbcType=VARCHAR},
+				#{orYn, jdbcType=CHAR},
+				#{orQty, jdbcType=NUMERIC},
+				#{orMethod, jdbcType=VARCHAR},
+				'PAYMENT_PENDING',
+				SYSDATE,
+				SYSDATE,
+				#{mNo, jdbcType=NUMERIC}
+			)
+	</insert>
 <!--  ===================== 주문 상태 변경 =====================  -->
 <update id="updateOrderStatus"> UPDATE dc_order SET or_status = #{orStatus}, or_up = SYSDATE WHERE or_no = #{orNo} </update>
 

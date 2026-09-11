@@ -9,8 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.meongnyang_Jiphapso.dao.IOrderCancelDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IOrderDetailDAO;
+import com.springboot.meongnyang_Jiphapso.dao.IPaymentDAO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
+import com.springboot.meongnyang_Jiphapso.dto.PaymentDTO;
 
 @Service
 public class OrderCancelService {
@@ -24,26 +26,17 @@ public class OrderCancelService {
 	@Autowired
 	private OrderService orderService; // 주문 전체 상태(or_status)를 CANCELED로 갱신하기 위함
 
+	@Autowired
+	private IPaymentDAO paymentDAO; // 주문 전체 결제내역(포인트/쿠폰 사용액) 조회용 - 몰수액 계산에 사용
+
 	// 취소/반품/교환 신청 등록
-	// (insert + 주문 전체취소 여부 재확인을 한 트랜잭션으로 묶음)
 	@Transactional
 	public int insertOrderCancel(OrderCancelDTO dto) {
-
-		// 신청일시는 서버 시간 기준으로 고정 (클라이언트값 신뢰 안 함)
-		dto.setOcRe(new Date());
-
-		// oc_status가 not null이라 값 없으면 기본값 세팅.
-		// 관리자페이지(admin/OrderCancel/list.jsp)가 REQUESTED/APPROVED/REFUNDED/REJECTED
-		// 영문 코드값 기준으로 탭 필터링/select 옵션을 만들고 있어서, 여기 기본값도 반드시
-		// 그 코드값과 맞춰야 함 (예전에 "신청"이라는 한글값을 기본으로 넣고 있었는데,
-		// 그러면 관리자페이지 상태 select랑 탭 필터에서 안 걸려서 화면에 "REQUESTED" 상태로 안 잡히는 문제가 있었음)
+	dto.setOcRe(new Date());
 		if (dto.getOcStatus() == null || dto.getOcStatus().isEmpty()) {
 			dto.setOcStatus("REQUESTED");
 		}
 
-		// 환불예정금액(oc_ramount) = 주문상세 단가(od_price) x 신청 수량(oc_quantity)
-		// 예전엔 무조건 0으로 넣고 있어서 관리자 목록에서 "환불예정금액"이 항상 0원으로 뜨던 버그였음.
-		// 주문상세를 다시 조회해서 단가 가져온 다음 신청 수량만큼 곱해서 채워줌.
 		OrderDetailDTO detail = orderDetailDAO.selectOrderDetailOne(dto.getOdDetailNo());
 		if (detail != null && detail.getOdPrice() != null && dto.getOcQuantity() != null) {
 			dto.setOcRamount(detail.getOdPrice() * dto.getOcQuantity());
@@ -51,17 +44,11 @@ public class OrderCancelService {
 			dto.setOcRamount(0L);
 		}
 
-		// oc_turn(반품 배송비)/oc_point/oc_coupon 은
-		// 관리자가 실제로 승인/처리할 때 확정되는 값이라 신청 시점엔 아직 없음 -> 기본값 0
 		if (dto.getOcTurn() == null) dto.setOcTurn(0L);
 		if (dto.getOcPoint() == null) dto.setOcPoint(0L);
 		if (dto.getOcCoupon() == null) dto.setOcCoupon(0L);
 
 		int result = orderCancelDAO.insertOrderCancel(dto);
-
-		// 이 신청으로 인해 주문에 속한 상품 라인이 전부 취소상태가 됐으면
-		// 주문(dc_order) 자체 상태도 CANCELED로 바꿔줌 -> 주문내역 목록의 "취소" 탭에 표시되게 하기 위함.
-		// (라인이 하나뿐인 주문이면 이번 신청 한 번으로 바로 전체취소로 잡힘)
 		if (result > 0 && detail != null && detail.getOrNo() != null) {
 			updateOrderStatusIfFullyCancelled(detail.getOrNo());
 		}
@@ -72,6 +59,13 @@ public class OrderCancelService {
 	// 처리상태 변경 (관리자)
 	@Transactional
 	public int updateOrderCancelStatus(Long ocOutNo, String ocStatus, Date ocPr) {
+
+		if ("APPROVED".equals(ocStatus) || "REFUNDED".equals(ocStatus)) {
+			OrderCancelDTO target = orderCancelDAO.selectOrderCancelOne(ocOutNo);
+			if (target != null) {
+				calculateForfeitedPointAndCoupon(target);
+			}
+		}
 
 		int result = orderCancelDAO.updateOrderCancelStatus(ocOutNo, ocStatus, ocPr);
 
@@ -86,9 +80,36 @@ public class OrderCancelService {
 		return result;
 	}
 
-	// 주문에 속한 모든 상세 라인이 취소상태(REJECTED 제외, REQUESTED/APPROVED/REFUNDED 등)면
-	// 주문 전체 상태를 CANCELED로 변경.
-	// 상세 라인 중 하나라도 취소 이력이 없거나(ocStatus == null) 거절(REJECTED)된 상태면 전체취소로 보지 않음.
+	private void calculateForfeitedPointAndCoupon(OrderCancelDTO cancel) {
+
+		// 이미 몰수액이 확정돼서 0이 아닌 값으로 들어가 있으면 재계산하지 않음 (같은 건에 대해 중복 승인 호출되는 경우 방지)
+		if ((cancel.getOcPoint() != null && cancel.getOcPoint().longValue() != 0)
+				|| (cancel.getOcCoupon() != null && cancel.getOcCoupon().longValue() != 0)) {
+			return;
+		}
+
+		OrderDetailDTO detail = orderDetailDAO.selectOrderDetailOne(cancel.getOdDetailNo());
+		if (detail == null || detail.getOrNo() == null) {
+			return;
+		}
+
+		PaymentDTO payment = paymentDAO.selectPaymentByOrder(detail.getOrNo());
+		if (payment == null || payment.getPayAmount() == null || payment.getPayAmount() == 0) {
+			return; // 결제내역이 없거나 상품금액이 0이면 비율 계산 불가 -> 0으로 둔 채 종료
+		}
+
+		long totalProductAmount = payment.getPayAmount();  // 주문 전체 상품금액 (분모)
+		long totalPointUsed = (payment.getPayUsed() != null) ? payment.getPayUsed() : 0L;
+		long totalCouponUsed = (payment.getPayDiscount() != null) ? payment.getPayDiscount() : 0L;
+		long cancelAmount = (cancel.getOcRamount() != null) ? cancel.getOcRamount() : 0L;
+
+		// 이번 취소 라인 금액 비율만큼 포인트/쿠폰도 비례 몰수 (반올림)
+		long forfeitedPoint = Math.round(totalPointUsed * (double) cancelAmount / totalProductAmount);
+		long forfeitedCoupon = Math.round(totalCouponUsed * (double) cancelAmount / totalProductAmount);
+
+		orderCancelDAO.updateOrderCancelForfeit(cancel.getOcOutNo(), forfeitedPoint, forfeitedCoupon);
+	}
+
 	private void updateOrderStatusIfFullyCancelled(Long orNo) {
 
 		List<OrderDetailDTO> details = orderDetailDAO.selectOrderDetailListByOrder(orNo);

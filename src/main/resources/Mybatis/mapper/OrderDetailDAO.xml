@@ -45,4 +45,11 @@ WHERE d.or_no = #{orNo} ORDER BY d.od_detail_no
 <include refid="orderDetailJoinBase"/>
 ORDER BY d.od_at DESC
 </select>
+
+<!-- 주문번호 기준 주문상세 일괄삭제 (관리자 - 주문 전체 삭제 시 자식 레코드 정리용) -->
+<delete id="deleteOrderDetailListByOrder">
+	delete from dc_order_detail
+	where or_no = #{orNo}
+</delete>
+
 </mapper>

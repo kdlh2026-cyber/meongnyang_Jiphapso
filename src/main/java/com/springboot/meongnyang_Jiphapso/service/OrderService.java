@@ -8,8 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.meongnyang_Jiphapso.dao.ICartDAO;
+import com.springboot.meongnyang_Jiphapso.dao.IOrderCancelDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IOrderDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IOrderDetailDAO;
+import com.springboot.meongnyang_Jiphapso.dao.IPaymentDAO;
+import com.springboot.meongnyang_Jiphapso.dao.IPointDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CartDTO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderDTO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
@@ -20,12 +23,19 @@ public class OrderService {
 	private final IOrderDAO orderDAO;
     private final IOrderDetailDAO orderDetailDAO;
     private final ICartDAO cartDAO;
+    private final IOrderCancelDAO orderCancelDAO; // 주문 삭제 시 취소이력 정리용
+    private final IPaymentDAO paymentDAO;         // 주문 삭제 시 결제내역 정리용
+    private final IPointDAO pointDAO;             // 주문 삭제 시 포인트 이력 연결 해제용 (이력 자체는 보존)
 
 	@Autowired
-	public OrderService (IOrderDAO orderDAO, IOrderDetailDAO orderDetailDAO, ICartDAO cartDAO) {
+	public OrderService (IOrderDAO orderDAO, IOrderDetailDAO orderDetailDAO, ICartDAO cartDAO,
+			IOrderCancelDAO orderCancelDAO, IPaymentDAO paymentDAO, IPointDAO pointDAO) {
         this.orderDAO = orderDAO;
         this.orderDetailDAO = orderDetailDAO;
         this.cartDAO = cartDAO;
+        this.orderCancelDAO = orderCancelDAO;
+        this.paymentDAO = paymentDAO;
+        this.pointDAO = pointDAO;
     }
 
 	@Transactional
@@ -98,6 +108,10 @@ public class OrderService {
     /** 관리자 - 주문 삭제 */
     @Transactional
     public void deleteOrder(Long orNo) {
+        orderCancelDAO.deleteOrderCancelListByOrder(orNo);
+        paymentDAO.deletePaymentByOrder(orNo);
+        pointDAO.detachPointFromOrder(orNo);
+        orderDetailDAO.deleteOrderDetailListByOrder(orNo);
         orderDAO.deleteOrder(orNo);
     }
 

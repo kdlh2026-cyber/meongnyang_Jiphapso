@@ -25,13 +25,23 @@
     <tr>
         <th>주문상태</th>
         <td>
-            <c:set var="statusCodes" value="${fn:split('PAYMENT_PENDING,PAID,PREPARING,SHIPPING,DELIVERED,CONFIRMED,CANCELED', ',')}" />
-            <c:set var="statusLabels" value="${fn:split('결제 대기 중,결제 완료,상품 준비 중,배송 중,배송 완료,구매 확정,주문 취소', ',')}" />
+
+            <c:set var="statusCodes" value="${fn:split('PAYMENT_PENDING,PAID,PREPARING,SHIPPING,DELIVERED,CONFIRMED', ',')}" />
+            <c:set var="statusLabels" value="${fn:split('결제 대기 중,결제 완료,상품 준비 중,배송 중,배송 완료,구매 확정', ',')}" />
             <select id="orStatus">
                 <c:forEach var="code" items="${statusCodes}" varStatus="loop">
                     <option value="${code}" ${order.orStatus == code ? 'selected' : ''}>${statusLabels[loop.index]}</option>
                 </c:forEach>
+                <%-- 이미 취소된 주문을 조회하는 경우에는 현재 상태가 드롭다운에 보이도록 예외적으로 옵션 추가 --%>
+                <c:if test="${order.orStatus == 'CANCELED'}">
+                    <option value="CANCELED" selected>주문 취소</option>
+                </c:if>
             </select>
+            <c:if test="${order.orStatus != 'CANCELED'}">
+                <p style="margin:6px 0 0; font-size:12px; color:#888;">
+                    주문 취소는 <a href="/orderCancel/admin/list">취소/반품 관리</a>에서 처리해주세요.
+                </p>
+            </c:if>
         </td>
     </tr>
 </table>
@@ -49,6 +59,12 @@
 
     function changeStatus() {
         const orStatus = document.getElementById('orStatus').value;
+
+        // CANCELED는 이제 이 드롭다운에 없지만, 혹시 모를 우회 호출까지 클라이언트단에서도 한 번 더 막아둠
+        if (orStatus === 'CANCELED') {
+            alert('주문 취소는 [취소/반품 관리] 메뉴에서 처리해주세요.');
+            return;
+        }
 
         fetch('/admin/order/' + orNo + '/status', {
             method: 'PUT',

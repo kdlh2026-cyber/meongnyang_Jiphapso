@@ -54,4 +54,10 @@
 		<result property="img_sort" column="img_sort" />
 		<result property="p_no" column="p_no" />
 	</resultMap>
+	
+	<update id="decreaseOptionStock">
+    UPDATE dc_product_option 
+    SET o_quantity = o_quantity - #{param2}
+    WHERE o_no = #{param1}
+	</update>
 </mapper>
