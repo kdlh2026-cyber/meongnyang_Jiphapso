@@ -172,4 +172,18 @@ public class CommunityService {
 	public List<CommentDTO> cmtList(int comm_no){
 		return cmt_dao.CommentList(comm_no);
 	}
+	
+	// 목록 조회
+	public List<CommunityDTO> myList(Integer m_no, String comm_type) {
+	    return dao.myList(m_no, comm_type);
+	}
+
+	// 최신글 1개 조회
+	public CommunityDTO getLatestByType(Integer m_no, String comm_type) {
+	    return dao.getLatestByType(m_no, comm_type);
+	}
+	
+	
+	
+	
 }

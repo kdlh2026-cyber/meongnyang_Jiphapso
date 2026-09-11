@@ -1,7 +1,6 @@
 package com.springboot.meongnyang_Jiphapso.service;
 
-import java.util.List;
-
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +19,4 @@ public class CommentService {
 		dao.CommentWrite(dto);
 		esService.save(dto);
 	}
-
 }

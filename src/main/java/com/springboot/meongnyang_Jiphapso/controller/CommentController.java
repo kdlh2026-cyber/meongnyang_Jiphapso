@@ -3,10 +3,12 @@ package com.springboot.meongnyang_Jiphapso.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.springboot.meongnyang_Jiphapso.common.SessionConst;
 import com.springboot.meongnyang_Jiphapso.dao.ICommentDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
@@ -81,4 +83,26 @@ public class CommentController {
 		return "redirect:/community/commView?comm_no=" + comm_no;
 	}
 	
+	// 내가 쓴 댓글 삭제
+	@RequestMapping("/comment/delete")
+	public String commentDelete(@RequestParam("cmt_no") int cmt_no,
+	                            HttpSession session,
+	                            @RequestHeader(value = "Referer", required = false) String referer
+	                            ) {
+
+	    Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+
+	    if (m_no == null) {
+	    	System.out.println("m_no가 null이라 로그인 페이지로 리다이렉트합니다.");
+	        return "redirect:/loginForm";
+	    }
+
+	    cmt_dao.CommentDelete(cmt_no, m_no);
+	    
+	    if (referer != null && !referer.isEmpty()) {
+	        return "redirect:" + referer;
+	    }
+
+	    return "redirect:/community/myCommunity";
+	}
 }

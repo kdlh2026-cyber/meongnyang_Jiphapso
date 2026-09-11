@@ -4,6 +4,24 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IBreedDAO">
 	<select id="BreedList" resultType="com.springboot.meongnyang_Jiphapso.dto.BreedDTO">
-		select * from dc_breed order by breed_name asc
+		select * from dc_breed where pet_type = #{pet_type} order by breed_name asc
 	</select>
+	
+	<insert id="breedInsert">
+		insert into dc_breed(breed_id, breed_name, pet_type, icon_url)
+			values(dc_breed_seq.NEXTVAL,
+					#{breed_name},
+					#{pet_type},
+					#{icon_url, jdbcType=VARCHAR})
+	</insert>
+	
+	<delete id="breedDelete">
+		delete from dc_breed where breed_id = #{breed_id}
+	</delete>
+	
+	<update id="breedUpdate">
+		update dc_breed
+			set breed_name = #{breed_name}, icon_url = #{icon_url, jdbcType=VARCHAR}
+			where breed_id = #{breed_id}
+	</update>
 </mapper>

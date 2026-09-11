@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.meongnyang_Jiphapso.common.SessionConst;
 import com.springboot.meongnyang_Jiphapso.dao.IBreedDAO;
+import com.springboot.meongnyang_Jiphapso.dao.ICommentDAO;
 import com.springboot.meongnyang_Jiphapso.dao.ICommunityDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
-import com.springboot.meongnyang_Jiphapso.dto.BreedDTO;
+import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.service.CommunityService;
@@ -38,13 +39,16 @@ public class CommunityController {
 	@Autowired
 	IBreedDAO breed_dao;
 	
+	@Autowired
+	ICommentDAO cmt_dao;
+	
 	
 	// 로그인을 해야 글쓰기로 넘어감
 	@GetMapping("/commWriteForm")
 	public String commWriteForm(Model model) {
 		
-		List<BreedDTO> breedList = breed_dao.BreedList();
-		model.addAttribute("breed", breedList);
+		model.addAttribute("dogBreed", breed_dao.BreedList("강아지"));
+	    model.addAttribute("catBreed", breed_dao.BreedList("고양이"));
 		
 		return "community/communityWriteForm";
 	}
@@ -174,5 +178,51 @@ public class CommunityController {
 		
 		return "community/commView";
 	}
+	
+	
+	// ------------- 마이프로필 ----------------- //
+	@RequestMapping("/community/myCommunity")
+	public String myCommunity(HttpSession session,
+							  @RequestParam(value = "comm_type", required = false) String comm_type,
+							  Model model) {
+	
+		Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+
+		if(m_no == null) {
+			return "redirect:/loginForm";
+		}
+		
+		model.addAttribute("m_no", m_no);
+		List<CommunityDTO> list = service.myList(m_no, comm_type);
+		List<CommentDTO> myList = cmt_dao.myComment(m_no);
+		
+		if (comm_type == null || comm_type.isEmpty()) {
+		    // 1. Q&A 카테고리: 개수와 최신글 1개 추출
+		    List<CommunityDTO> qnaList = list.stream().filter(b -> "Q&A".equals(b.getComm_type())).toList();
+		    model.addAttribute("qnaCount", qnaList.size());
+		    model.addAttribute("latestQna", qnaList.isEmpty() ? null : qnaList.get(0)); // 첫 번째가 가장 최신글!
+
+		    // 2. 라운지 카테고리: 개수와 최신글 1개 추출
+		    List<CommunityDTO> loungeList = list.stream().filter(b -> "라운지".equals(b.getComm_type())).toList();
+		    model.addAttribute("loungeCount", loungeList.size());
+		    model.addAttribute("latestLounge", loungeList.isEmpty() ? null : loungeList.get(0));
+		    
+		    // 3. 콘텐츠 카테고리: 개수와 최신글 1개 추출
+		    List<CommunityDTO> contentsList = list.stream().filter(b -> "콘텐츠".equals(b.getComm_type())).toList();
+		    model.addAttribute("contentCount", contentsList.size());
+		    model.addAttribute("latestcontent", contentsList.isEmpty() ? null : contentsList.get(0));
+		
+		    // 4. 댓글 카테고리 : 개수와 최신글 1개 추출
+		    model.addAttribute("commentCount", myList.size());
+		    model.addAttribute("latestComment", myList.isEmpty() ? null : myList.get(0));
+		} else if ("댓글".equals(comm_type)) {
+	        model.addAttribute("list", myList);
+	    } else {
+	        model.addAttribute("list", list);
+	    }
+		
+		return "community/myCommunityMain";
+	}
+	
 	
 }
