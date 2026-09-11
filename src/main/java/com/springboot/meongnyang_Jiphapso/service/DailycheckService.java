@@ -16,6 +16,9 @@ public class DailycheckService {
 	
 	@Autowired
 	DailycheckESService ch_service;
+
+	@Autowired
+	private PointService pointService; 
 	
 	public void write(DailycheckDTO ch_dto) throws Exception{
 		ch_dao.CheckWrite(ch_dto);  // 오라클 DB에 저장
@@ -34,4 +37,7 @@ public class DailycheckService {
 	public List<Map<String,String>> autocomplete(String keyword) throws Exception{
 		return ch_service.autocompleteHighlight(keyword);
 	}
+
+	// 출석 insert 성공 직후, 100P 적립
+	pointService.earnDailyCheckBonus(mNo, chNo);
 }
