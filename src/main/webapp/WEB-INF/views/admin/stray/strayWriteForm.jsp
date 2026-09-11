@@ -8,6 +8,7 @@
 </head>
 <body>
 <div>
+<%@ include file="../../hamburger_menu.jsp" %>
 	<h2>입양동물 등록</h2>
 	<form action="StrayAnimalWrite" name="strayWriteForm" method="post" enctype="multipart/form-data">
 	<div>

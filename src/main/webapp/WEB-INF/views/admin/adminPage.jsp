@@ -44,6 +44,7 @@
 		<button>입양 관리</button>
 		<div class="content">
 			<p><a href="/strayWriteForm">유기동물 등록</a></p>
+			<p><a href="/admin/stray/StrayListA">유기동물 리스트</a></p>
 		</div>
 	</li>
 	<li>

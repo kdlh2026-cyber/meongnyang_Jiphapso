@@ -13,7 +13,26 @@
 		#{stray_notice_no},#{stray_notice_start},#{stray_notice_end},#{stray_found_place},#{stray_shelter_name},
 		#{stray_shelter_tel},#{stray_shelter_addr},#{stray_img})
 	</insert>
+	
+	<select id="StrayAnimalPageList" resultMap="dc_stray_animalMap">
+	    SELECT * FROM dc_stray_animal
+	    ORDER BY stray_no DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
 
+	<select id="StrayAnimalCount" resultType="int">
+	    select count(*) from dc_stray_animal
+	</select>
+	
+	<select id="StrayView" resultMap="dc_stray_animalMap">
+		select * from dc_stray_animal
+		where stray_no = #{stray_no}
+	</select>
+	
+	<delete id="StrayAnimalDelete">
+		delete from dc_stray_animal where stray_no = #{stray_no}
+	</delete>
+	
 	<resultMap id="dc_stray_animalMap" type="com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto">
 		<id property="stray_no" column="stray_no" />
 		<result property="stray_category" column="stray_category" />

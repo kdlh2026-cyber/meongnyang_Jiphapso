@@ -126,6 +126,7 @@
 <title>상품</title>
 </head>
 <body>
+<%@ include file="../hamburger_menu.jsp" %>
 	<h3>상품리스트</h3>
 	<c:set var="currentType" value="${empty param.p_type ? '강아지' : param.p_type}" />
 	<div class="type-btn">
@@ -141,6 +142,7 @@
 	<c:if test="${currentType eq '강아지'}">
 	<div class="category-btn">
 		<button onclick="location.href='?p_type=강아지'">
+			<span><img src="${pageContext.request.contextPath}/images/products/menu/toebeans-all.png"></span>
 			<span>전체</span>
 		</button>
 		<button onclick="location.href='?p_type=강아지&mode=간식'">
@@ -264,7 +266,7 @@
 		</button>
 	</div>
 	</c:if>
-	<form name="p_search" method="get" action="/products/search" style="position:relative;">
+	<form name="p_search" method="get" action="/products/ShoppingList" style="position:relative;">
 		<input type="text" name="keyword" id="keyword" autocomplete="off">
 		<input type="submit" value="검색">
 		<div id="suggestions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">
