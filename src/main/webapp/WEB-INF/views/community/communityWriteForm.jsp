@@ -46,14 +46,22 @@
 					<input type="radio" name="comm_pet_type" value="etc" onclick="toggleBreed()"> 기타
 			</div>
 			
-			<div id="breedWrapper">
-				<div class="category_name">견종</div> 
-					<select name="comm_breed">
-						<option value="견종 입력">견종 입력</option>
-						<c:forEach var="breed" items="${breed}">
-							<option value="${breed.breed_name}"> ${breed.breed_name} </option>
-						</c:forEach>
-					</select>
+			<div id="breedWrapper" style="display: none;">
+				<div class="category_name" id="breedLabel">품종</div> 
+				
+				<select name="comm_breed" id="dogBreedSelect" style="display: none;">
+					<option value="">강아지 품종 선택</option>
+					<c:forEach var="breed" items="${dogBreed}">
+						<option value="${breed.breed_name}">${breed.breed_name}</option>
+					</c:forEach>
+				</select>
+
+				<select name="comm_breed" id="catBreedSelect" style="display: none;" disabled>
+					<option value="">고양이 품종 선택</option>
+					<c:forEach var="breed" items="${catBreed}">
+						<option value="${breed.breed_name}">${breed.breed_name}</option>
+					</c:forEach>
+				</select>
 			</div>
 			
 			<div class="tag_box" id="tag_box">
@@ -91,13 +99,34 @@
 <script>
 //1. 견종 토글 함수
 function toggleBreed(){
-    const dogRadio = document.querySelector('input[name="comm_pet_type"]:checked');
-    const breedWrapper = document.getElementById('breedWrapper');
+	const selectedRadio = document.querySelector('input[name="comm_pet_type"]:checked');
+	if (!selectedRadio) return;
+    const selectedType = selectedRadio.value;
     
-    if(dogRadio && dogRadio.value === 'dog'){
+    const breedWrapper = document.getElementById('breedWrapper');
+    const breedLabel = document.getElementById('breedLabel');
+    const dogSelect = document.getElementById('dogBreedSelect');
+    const catSelect = document.getElementById('catBreedSelect');
+    
+    if(selectedType === 'dog'){
         breedWrapper.style.display = 'block';
+        breedLabel.innerText = '견종';
+        dogSelect.style.display = 'inline-block';
+        dogSelect.disabled = false; // 전송에 포함되도록 활성화
+        catSelect.style.display = 'none';
+        catSelect.disabled = true;  // 전송에서 제외되도록 비활성화
+    } else if(selectedType === 'cat'){
+        breedWrapper.style.display = 'block';
+        breedLabel.innerText = '묘종';
+        catSelect.style.display = 'inline-block';
+        catSelect.disabled = false; // 전송에 포함되도록 활성화
+        dogSelect.style.display = 'none';
+        dogSelect.disabled = true;  // 전송에서 제외되도록 비활성화
     } else {
+        // 소동물이나 기타를 선택했을 때는 품종 영역 자체를 숨김
         breedWrapper.style.display = 'none';
+        dogSelect.disabled = true;
+        catSelect.disabled = true;
     }
 }
 

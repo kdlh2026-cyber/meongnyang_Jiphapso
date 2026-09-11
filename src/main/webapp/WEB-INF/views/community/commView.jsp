@@ -105,63 +105,96 @@
 		</div>
 		
 		<div class="comment_list">
-			<c:forEach var="comment" items="${cmt}"> <!-- 댓글 작성 -> DB 저장 -> 댓글 테이블에서 정보 가져오기 -->
-				<div class="comment_body" id="comment-body-${comment.cmt_no}">
-					<div class="comment_title">
-						${comment.cmt_writer} | <fmt:formatDate value="${comment.cmt_date}" pattern="yyyy.MM.dd" />
+		<!-- 댓글 리스트가 비어있지 않을 때만 전체 목록 영역을 그림 -->
+		<c:if test="${not empty cmt}">
+			<c:forEach var="comment" items="${cmt}"> 
+				<!-- 1. 부모 댓글만 먼저 출력 (cmt_answer_no가 비어있는 것) -->
+				<c:if test="${empty comment.cmt_answer_no and not empty comment.cmt_content}">
+					<div class="comment_body" id="comment-body-${comment.cmt_no}">
+						<div class="comment_title">
+							${comment.cmt_writer} | <fmt:formatDate value="${comment.cmt_date}" pattern="yyyy.MM.dd" />
+						</div>
+						<div class="comment_content">					
+							${comment.cmt_content}
+						</div>
+						
+						<div class="comment_answer">
+						    <sec:authorize access="isAnonymous()">
+						        <div class="need-login-reply">
+						            <a href="/community/comment/reply-auth?comm_no=${view.comm_no}&cmt_no=${comment.cmt_no}">
+						                답글
+						            </a>
+						        </div>
+						    </sec:authorize>
+						
+							<sec:authorize access="isAuthenticated()">
+							    <div>
+							        <button type="button">도움돼요</button>
+							        <button type="button" onclick="showReplyForm(this, '${comment.cmt_no}')">답글</button>
+							    </div>
+							</sec:authorize>
+						</div>
 					</div>
-					<div class="comment_content">					
-						${comment.cmt_content}
-					</div>
-					
-					<div class="comment_answer">
-					    <sec:authorize access="isAnonymous()">
-					        <div class="need-login-reply">
-					        	(답글 수)
-					            <a href="/community/comment/reply-auth?comm_no=${view.comm_no}&cmt_no=${comment.cmt_no}">
-					                답글
-					            </a>
-					        </div>
-					    </sec:authorize>
-					
-					    <sec:authorize access="isAuthenticated()">
-					    	<div>
-					        	(답글 수) <button type="button" onclick="showReplyForm('${comment.cmt_no}')">답글</button>
-					        </div>
-					    </sec:authorize>
-					</div>
-				</div>
-			</c:forEach>
-		</div>
-	</div>
 
+					<!-- 2. 해당 부모 댓글에 속하는 답글이 실제로 존재하는지 체크 후 출력 -->
+					<c:set var="hasReply" value="false" />
+					<c:forEach var="reply" items="${cmt}">
+						<c:if test="${reply.cmt_answer_no == comment.cmt_no}">
+							<c:set var="hasReply" value="true" />
+						</c:if>
+					</c:forEach>
+
+					<c:if test="${hasReply}">
+						<div class="reply_list">
+							<c:forEach var="reply" items="${cmt}">
+								<c:if test="${reply.cmt_answer_no == comment.cmt_no}">
+									<div class="reply_item">
+										<div class="comment_title">
+											<b>${reply.cmt_writer}</b> | <fmt:formatDate value="${reply.cmt_date}" pattern="yyyy.MM.dd" />
+										</div>
+										<div class="comment_content">					
+											${reply.cmt_content}
+										</div>
+									</div>
+								</c:if>
+							</c:forEach>
+						</div>
+					</c:if>
+
+				</c:if>
+			</c:forEach>
+		</c:if>
+	</div>
 	
 <%@ include file="../footer.jsp" %>
 </body>
 <script>
-function showReplyForm(cmt_no) {
-    // 기존에 열려있는 답글 폼이 있다면 제거하거나 토글
+function showReplyForm(button, cmt_no) {
+    let commentBody = button.closest('.comment_body');
     let existingForm = document.getElementById("reply-form-" + cmt_no);
+
     if (existingForm) {
         existingForm.remove();
         return;
     }
 
-    // 해당 댓글 아래에 동적으로 답글 입력 폼 삽입
-    let targetDiv = document.getElementById("comment-body-" + cmt_no); // 댓글 바디 ID
+    // JSP EL 값은 여기서 한 번만 추출 (이 줄만 서버에서 렌더링됨)
+    var commNo = "${view.comm_no}";
+    var commType = "${view.comm_type}";
 
-    let replyHtml = `
-        <div id="reply-form-${cmt_no}" class="reply-input-box" style="margin-top: 10px; padding-left: 20px;">
-            <form action="/community/replyWrite" method="post">
-                <input type="hidden" name="cmt_answer_no" value="${cmt_no}"> 
-                <input type="hidden" name="comm_no" value="${view.comm_no}">   
-                <input type="hidden" name="comm_type" value="${view.comm_type}">
-                <textarea name="cmt_content" rows="2" cols="50" placeholder="답글을 남겨주세요"></textarea>
-                <button type="submit">등록</button>
-            </form>
-        </div>
-    `;
-    targetDiv.insertAdjacentHTML('afterend', replyHtml);
+    // 이후로는 순수 JS 문자열 연결(+)만 사용 - 템플릿 리터럴(백틱) 사용 안 함
+    var replyHtml =
+        '<div id="reply-form-' + cmt_no + '" class="reply-input-box" style="margin-top: 10px; padding-left: 20px;">' +
+        '  <form action="/community/replyWrite" method="post">' +
+        '    <input type="hidden" name="cmt_answer_no" value="' + cmt_no + '">' +
+        '    <input type="hidden" name="comm_no" value="' + commNo + '">' +
+        '    <input type="hidden" name="comm_type" value="' + commType + '">' +
+        '    <textarea name="cmt_content" rows="2" cols="50" placeholder="답글을 남겨주세요"></textarea>' +
+        '    <button type="submit">등록</button>' +
+        '  </form>' +
+        '</div>';
+
+    commentBody.insertAdjacentHTML('afterend', replyHtml);
 }
 </script>
 </html>

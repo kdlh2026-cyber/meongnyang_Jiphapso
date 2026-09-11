@@ -17,7 +17,7 @@
    	  <a href="/member/myPage/myPetList?m_no=${myId.m_no}">반려동물 프로필</a>
    </li>
    <li>
-      <a href="#">내가 작성한 글</a>
+      <a href="/community/myCommunity?m_no=${myId.m_no}">내가 작성한 글</a>
    </li>
    <li>
       <a href="#">북마크 글</a>
