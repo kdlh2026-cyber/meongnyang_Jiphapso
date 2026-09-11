@@ -116,6 +116,7 @@ function showTab(tabName) {
 <title>${ShoppingView.ptitle}</title>
 </head>
 <body>
+<%@ include file="../hamburger_menu.jsp" %>
 <div>
     <div>
         <div>

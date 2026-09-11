@@ -8,6 +8,7 @@
 </head>
 <body>
 <div>
+<%@ include file="../../hamburger_menu.jsp" %>
 	<h2>상품 등록</h2>
 	<form action="productWrite" name="productWriteForm" method="post" enctype="multipart/form-data">
 	<div>

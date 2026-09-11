@@ -138,7 +138,7 @@
             ♥ 🐶 ♥
           </h3>
           <ul>
-            <li><a href="#">보호소 입양</a></li>
+            <li><a href="/guest/StrayList">보호소 입양</a></li>
             <li><a href="#">임시보호</a></li>
             <li><a href="#">이름 짓기</a></li>
           </ul>
