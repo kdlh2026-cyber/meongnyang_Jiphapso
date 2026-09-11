@@ -1,6 +1,7 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.io.File;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +111,7 @@ public class AdminController {
 
 	    return "redirect:/admin/mem/memberList";
 	}
+
 	
 	@RequestMapping("/AmemberDelete")
 	public String AmemDelte(@RequestParam("m_id") String m_id) {

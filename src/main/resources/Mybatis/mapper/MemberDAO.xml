@@ -4,22 +4,22 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IMemberDAO">
 	<select id="MemberList" resultMap="dc_memberMap">
-		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority
+		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img,m_cre_sub
 		from dc_member
 		order by m_no desc
 	</select>
 	<select id="MemberView" resultMap="dc_memberMap">
-		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority
+		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img,m_cre_sub
 		from dc_member
 		where m_id=#{m_id}
 	</select>
 	<select id="MemberFindId" resultMap="dc_memberMap">
-		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img
+		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img,m_cre_sub
 		from dc_member
 		where m_id=#{m_id}
 	</select>
 	<select id="MemberListView" resultMap="dc_memberMap">
-		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority
+		select m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img,m_cre_sub
 		from dc_member
 		where m_authority=#{m_authority,jdbcType=VARCHAR}
 		order by m_no desc
@@ -29,23 +29,29 @@
 			select dc_member_seq.NEXTVAL from dual
 		</selectKey>
 		insert into dc_member(m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,
-								m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img)
+								m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img,m_cre_sub)
 		values(#{m_no},#{m_id},#{m_passwd},#{m_name},#{m_tel},#{m_addr},#{m_addr_detail},#{m_zipno},
-				#{m_email},#{m_introduce},#{m_birth},sysdate,#{m_age_upper,jdbcType=VARCHAR},#{m_sns,jdbcType=VARCHAR},#{m_authority,jdbcType=VARCHAR},#{m_img,jdbcType=VARCHAR})
+				#{m_email},#{m_introduce},#{m_birth},sysdate,#{m_age_upper,jdbcType=VARCHAR},#{m_sns,jdbcType=VARCHAR},
+				#{m_authority,jdbcType=VARCHAR},#{m_img,jdbcType=VARCHAR},#{m_cre_sub,jdbcType=VARCHAR})
 	</insert>
 	<update id="MemberUpdate">
 		update dc_member
-		set m_passwd=#{m_passwd}, m_name=#{m_name}, m_tel=#{m_tel}, m_addr=#{m_addr},
+		set m_passwd=#{m_passwd}, m_tel=#{m_tel}, m_addr=#{m_addr},
 		m_addr_detail=#{m_addr_detail}, m_zipno=#{m_zipno}, m_email=#{m_email},
-		m_introduce=#{m_introduce}, m_birth=#{m_birth}, m_age_upper=#{m_age_upper},
-		m_sns=#{m_sns}, m_authority=#{m_authority},m_img=#{m_img,jdbcType=VARCHAR}
+		m_introduce=#{m_introduce}, m_birth=#{m_birth}, m_sns=#{m_sns}, m_img=#{m_img,jdbcType=VARCHAR}
 		where m_id=#{m_id}
 	</update>
 	
 	<update id="AMemUpdate">
-		update dc_member
-		set m_introduce=#{m_introduce}, m_authority=#{m_authority},m_img=#{m_img,jdbcType=VARCHAR}
-		where m_id=#{m_id}
+	    update dc_member
+	    set m_introduce=#{m_introduce}, m_authority=#{m_authority}, m_img=#{m_img,jdbcType=VARCHAR}, m_cre_sub=#{m_cre_sub,jdbcType=VARCHAR}
+	    where m_id=#{m_id}
+	</update>
+	<!-- 크리에티ㅓ 신청 매퍼 -->
+	<update id="MemberCreatorApply">
+	    update dc_member
+	    set m_cre_sub = 'P'
+	    where m_id = #{m_id}
 	</update>
 	
 	<delete id="MemberDelete">
@@ -62,5 +68,6 @@
 		<result property="m_sns" column="m_sns" />
 		<result property="m_authority" column="m_authority" />
 		<result property="m_img" column="m_img" />
+		<result property="m_cre_sub" column="m_cre_sub" />
 	</resultMap>
 </mapper>

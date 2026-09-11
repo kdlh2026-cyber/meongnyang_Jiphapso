@@ -17,23 +17,25 @@
 		<selectKey keyProperty="hp_no" resultType="integer" order="BEFORE">
 		select dc_hospital_seq.NEXTVAL from dual
 		</selectKey>
-		insert into dc_hospital(hp_no,hp_name,hp_addr,hp_land_addr,hp_tel,hp_url,hp_hour,hp_sp_clinic,hp_keyword)
-		values(#{hp_no},#{hp_name},#{hp_addr},#{hp_land_addr},#{hp_tel},#{hp_url},#{hp_hour},#{hp_sp_clinic},#{hp_keyword})
+		insert into dc_hospital(hp_no,hp_name,hp_addr,hp_tel,hp_url,hp_hour,hp_sp_clinic,hp_keyword)
+		values(#{hp_no},#{hp_name},#{hp_addr},#{hp_tel},#{hp_url},#{hp_hour},#{hp_sp_clinic},#{hp_keyword})
 	</insert>
 	<update id="HospitalUpdate">
 		update dc_hospital
-		set hp_name=#{hp_name},hp_addr=#{hp_addr},hp_land_addr=#{hp_land_addr},hp_tel=#{hp_tel},hp_url=#{hp_url},hp_hour=#{hp_hour},hp_sp_clinic=#{hp_sp_clinic},hp_keyword=#{hp_keyword}
+		set hp_name=#{hp_name},hp_addr=#{hp_addr},hp_tel=#{hp_tel},hp_url=#{hp_url},hp_hour=#{hp_hour},hp_sp_clinic=#{hp_sp_clinic},hp_keyword=#{hp_keyword}
 	</update>
 	<delete id="HospitalDelete">
 		delete from dc_hospital where hp_no=#{hp_no}
 	</delete>
 	
 	<resultMap id="dc_hospitalMap" type="com.springboot.meongnyang_Jiphapso.dto.HospitalDTO">
-		<id property="ch_no" column="ch_no" />
-		<result property="ch_name" column="ch_name" />
-		<result property="ch_addr" column="ch_addr" />
-		<result property="ch_land_addr" column="ch_land_addr" />
-		<result property="ch_sp_clinic" column="ch_sp_clinic" />
-		<result property="ch_keyword" column="ch_keyword" />
+		<id property="hp_no" column="hp_no" />
+		<result property="hp_name" column="hp_name" />
+		<result property="hp_addr" column="hp_addr" />
+		<result property="hp_tel" column="hp_tel" />
+		<result property="hp_url" column="hp_url" />
+		<result property="hp_hour" column="hp_hour" />
+		<result property="hp_sp_clinic" column="hp_sp_clinic" />
+		<result property="hp_keyword" column="hp_keyword" />
 	</resultMap>
 </mapper>

@@ -74,7 +74,8 @@
 	<li>
 		<button>그 외</button> <!-- 회사소개 이용약관 개인정보처리방침 등 -->
 		<div class="content">
-			<p>내용</p>
+			<p><a href="/adimn/hospital/hospitalInsertForm">동물병원 등록</a></p>
+			<p><a href="/adimn/hospital/hospitalList">동물병원 리스트</a></p>
 		</div>
 	</li>
 </ul>
