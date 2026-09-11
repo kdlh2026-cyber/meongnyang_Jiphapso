@@ -16,6 +16,9 @@ public class MemberService {
 	
 	@Autowired
 	MemberESService m_service;
+
+	@Autowired
+	private PointService pointService; 
 	
 	public void write(MemberDTO m_dto) throws Exception{
 		m_dao.MemberWrite(m_dto);   // 오라클 DB에 저장
@@ -34,4 +37,7 @@ public class MemberService {
 	public List<Map<String,String>> autocomplete(String keyword) throws Exception{
 		return m_service.autocompleteHighlight(keyword);
 	}
+
+	// insertMember() 성공 직후, 신규 회원가입 축하 포인트 1000P 지급
+	pointService.earnSignupBonus(mNo)
 }
