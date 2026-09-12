@@ -104,7 +104,12 @@ public class CommunityService {
 	    
 	    // 3. DAO 호출하여 DB에 커뮤니티 글 Insert
 	    dao.CommunityWrite(dto);
-	
+
+	    // 글 작성 완료 시 50P 정액 적립 (글 종류/내용과 무관하게 1건당)
+	    if (dto.getM_no() != null) {
+	        pointService.earnCommunityPostBonus((long) dto.getM_no());
+	    }
+
 	    // 4. 전체 이미지를 이미지 테이블에 순서대로 저장
 	    Integer commNo = dto.getComm_no();
 	    
@@ -185,10 +190,5 @@ public class CommunityService {
 	public CommunityDTO getLatestByType(Integer m_no, String comm_type) {
 	    return dao.getLatestByType(m_no, comm_type);
 	}
-	
-	// 커뮤니티 글(리뷰) insert 성공 직후, 대상 금액의 3% 적립
-	// pointService.earnCommunityBonus(mNo, baseAmount);
-
-	
 	
 }

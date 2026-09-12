@@ -20,7 +20,7 @@
     padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px;
     box-sizing: border-box;
   }
-  .pta-adjust-box input[name="mNo"] { width: 100px; flex-shrink: 0; }
+  .pta-adjust-box input[name="mId"] { width: 140px; flex-shrink: 0; }
   .pta-adjust-box input[name="amount"] { width: 150px; flex-shrink: 0; }
   .pta-adjust-box input[name="reason"] { flex: 1 1 200px; min-width: 160px; }
 
@@ -72,11 +72,11 @@
     <h3 class="pta-section-title">지급 · 차감 관리</h3>
 
     <div class="pta-adjust-box">
-      <input type="number" name="mNo" id="ptaMNo" placeholder="회원번호" />
+      <input type="text" name="mId" id="ptaMId" placeholder="회원아이디" />
       <input type="number" name="amount" id="ptaAmount" placeholder="포인트 (+/-)" />
       <input type="text" name="reason" id="ptaReason" placeholder="사유 (미입력시 관리자 수동처리)" />
       <button type="button" class="pta-btn-adjust" onclick="adjustPoint()">적용</button>
-      <span class="pta-hint">양수를 입력하면 지급, 음수를 입력하면 차감됩니다. 아래 목록에서 "이 회원에게 지급" 버튼을 누르면 회원번호가 자동으로 채워집니다.</span>
+      <span class="pta-hint">양수를 입력하면 지급, 음수를 입력하면 차감됩니다. 아래 목록에서 "이 회원에게 지급" 버튼을 누르면 회원아이디가 자동으로 채워집니다.</span>
     </div>
 
     <div class="pta-adjust-box">
@@ -170,9 +170,9 @@
     renderList(filtered);
   }
 
-  // 목록의 회원번호를 상단 지급/차감 입력창에 채워서 바로 이어서 처리할 수 있게 함
-  function quickFillMNo(mNo) {
-    document.getElementById("ptaMNo").value = mNo;
+  // 목록의 회원아이디를 상단 지급/차감 입력창에 채워서 바로 이어서 처리할 수 있게 함
+  function quickFillMId(mId) {
+    document.getElementById("ptaMId").value = mId;
     document.getElementById("ptaAmount").focus();
   }
 
@@ -204,7 +204,6 @@
       var amountCls = isPlus ? "pta-amount-plus" : "pta-amount-minus";
       var amountText = (isPlus ? "+" : "") + formatNumber(item.poAmount);
 
-      var mNoValue = item.mno;
       var mIdValue = item.mid;
 
       var isAlreadyCancelled = !!cancelledOriginalNos[item.poNo];
@@ -215,7 +214,7 @@
       var tr = document.createElement("tr");
       tr.innerHTML =
         "<td>" + item.poNo + "</td>" +
-        "<td>" + escapeHtml(mIdValue) + " (" + mNoValue + ")</td>" +
+        "<td>" + escapeHtml(mIdValue) + "</td>" +
         "<td>" + typeLabel + "</td>" +
         "<td class=\"" + amountCls + "\">" + amountText + "P</td>" +
         "<td>" + formatNumber(item.poAfter) + "P</td>" +
@@ -223,7 +222,7 @@
         "<td>" + formatDate(item.poAt) + "</td>" +
         "<td>" + (item.poEx ? formatDate(item.poEx) : "-") + "</td>" +
         "<td>" +
-          "<button type=\"button\" class=\"pta-btn-delete\" style=\"border-color:#1a56db; color:#1a56db;\" onclick=\"quickFillMNo(" + mNoValue + ")\">이 회원에게 지급</button>" +
+          "<button type=\"button\" class=\"pta-btn-delete\" style=\"border-color:#1a56db; color:#1a56db;\" onclick=\"quickFillMId('" + escapeHtml(mIdValue).replace(/'/g, "&#39;") + "')\">이 회원에게 지급</button>" +
           cancelBtn +
         "</td>";
       tbody.appendChild(tr);
@@ -255,7 +254,7 @@
       var tr = document.createElement("tr");
       tr.innerHTML =
         "<td>" + item.poNo + "</td>" +
-        "<td>" + escapeHtml(item.mid) + " (" + item.mno + ")</td>" +
+        "<td>" + escapeHtml(item.mid) + "</td>" +
         "<td class=\"" + amountCls + "\">" + amountText + "P</td>" +
         "<td>" + escapeHtml(item.poReason) + "</td>" +
         "<td>" + formatDate(item.poAt) + "</td>";
@@ -263,27 +262,27 @@
     });
   }
 
-  // 관리자 수동 지급/차감 (PointController#adjustPoint) - 입력한 부호 그대로 전송
+  // 관리자 수동 지급/차감 (PointController#adjustPoint) - 입력한 부호 그대로 전송, 회원은 아이디로 식별
   function adjustPoint() {
-    var mNo = document.getElementById("ptaMNo").value;
+    var mId = document.getElementById("ptaMId").value.trim();
     var amount = document.getElementById("ptaAmount").value;
     var reason = document.getElementById("ptaReason").value;
 
-    if (!mNo || !amount) {
-      alert("회원번호와 포인트를 입력해주세요.");
+    if (!mId || !amount) {
+      alert("회원아이디와 포인트를 입력해주세요.");
       return;
     }
 
     fetch(contextPath + "/admin/point/adjust", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mNo: mNo, amount: amount, reason: reason })
+      body: JSON.stringify({ mId: mId, amount: amount, reason: reason })
     })
       .then(function (res) { return res.json(); })
       .then(function (result) {
         alert(result.success ? "처리되었습니다." : (result.message || "처리에 실패했습니다."));
         if (result.success) {
-          document.getElementById("ptaMNo").value = "";
+          document.getElementById("ptaMId").value = "";
           document.getElementById("ptaAmount").value = "";
           document.getElementById("ptaReason").value = "";
           loadAdminPointList();

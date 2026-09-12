@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.springboot.meongnyang_Jiphapso.common.ApiResponse;
 import com.springboot.meongnyang_Jiphapso.common.SessionConst;
+import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
+import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.dto.PointDTO;
 import com.springboot.meongnyang_Jiphapso.service.PointService;
 
@@ -22,6 +24,9 @@ public class PointController {
 
 	@Autowired
 	private PointService pointService;
+
+	@Autowired
+	private IMemberDAO m_dao;
 
 	private Long loginMemberNo(HttpSession session) {
 		// 세션엔 MemberDTO.m_no 타입 그대로(Integer) 들어있어서 Integer로 꺼낸 다음 Long으로 변환
@@ -76,12 +81,22 @@ public class PointController {
 		return ApiResponse.ok(pointService.getPointListAll());
 	}
 
-	/** 관리자 - 특정 회원 포인트 수동 지급/차감 */
+	/** 관리자 - 특정 회원 포인트 수동 지급/차감 (회원아이디로 조회해서 회원번호 확인 후 처리) */
 	@RequestMapping(value = "/admin/point/adjust", method = RequestMethod.POST)
 	@ResponseBody
 	public ApiResponse<Void> adjustPoint(@RequestBody Map<String, Object> body) {
 		try {
-			Long mNo = Long.valueOf(String.valueOf(body.get("mNo")));
+			String mId = body.get("mId") != null ? String.valueOf(body.get("mId")) : null;
+			if (mId == null || mId.isBlank()) {
+				return ApiResponse.fail("회원아이디를 입력해주세요.");
+			}
+
+			MemberDTO member = m_dao.MemberView(mId);
+			if (member == null) {
+				return ApiResponse.fail("존재하지 않는 회원아이디입니다.");
+			}
+			Long mNo = (long) member.getM_no(); // MemberDTO.getM_no()는 int 반환 (MemberService에서도 이렇게 캐스팅해서 씀)
+
 			long amount = Long.parseLong(String.valueOf(body.get("amount")));
 			String reason = body.get("reason") != null ? String.valueOf(body.get("reason")) : null;
 
