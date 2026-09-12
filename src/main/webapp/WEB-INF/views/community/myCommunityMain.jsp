@@ -49,7 +49,7 @@
 </style>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<%@ include file="../hamburger_menu.jsp" %>
 <!-- 🌟 좌우 레이아웃 래퍼와 사이드바 추가 -->
 <div class="my-page-wrapper">
     
@@ -76,6 +76,6 @@
     </div>
 
 </div>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>
 </body>
 </html>

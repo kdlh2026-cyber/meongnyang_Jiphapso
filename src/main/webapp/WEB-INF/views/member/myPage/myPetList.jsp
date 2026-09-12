@@ -10,7 +10,6 @@
 <title>멍냥집합소</title>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 	나의 반려동물 리스트 페이지<br>
 	<table>
 		<tr>
@@ -39,6 +38,5 @@
 	<br>
 	
 	<a href="/member/myPage/myPage">마이페이지</a>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>
