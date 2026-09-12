@@ -78,9 +78,9 @@
 		    <c:forEach var="cm" items="${recommendContentList}" end="4">
 		        <div class="content-item">
 		            <c:if test="${not empty cm.comm_img}">
-		                <img src=/images/"${cm.comm_img}" width="120" height="120">
+		                <img src="${board.comm_img}" width="120" height="120">
 		            </c:if>
-		            <div><a href="/communityView?comm_no=${cm.comm_no}">${cm.comm_title}</a></div>
+		            <div><a href="/community/commView?comm_no=${cm.comm_no}">${cm.comm_title}</a></div>
 		            <div>${cm.comm_writer}</div>
 		        </div>
 		    </c:forEach>

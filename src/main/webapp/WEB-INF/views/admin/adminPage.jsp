@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>관리자 페이지</title>
 <style>
-	body{font-family: Arial, sans-serif;padding: 40px;background:#f5f5f5}
+	body{font-family: Arial, sans-serif;background:#f5f5f5}
 	ul, li, ol{list-style:none}
 	.accordion{padding: 0;margin: 0;max-width: 400px;}
 	.accordion li{border: 1px solid #ccc;margin-bottom: 10px;border-radius: 5px;overflow: hidden}
