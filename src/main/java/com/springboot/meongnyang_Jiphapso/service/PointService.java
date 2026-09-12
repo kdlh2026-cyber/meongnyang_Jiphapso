@@ -158,19 +158,16 @@ public class PointService {
 	public void earnHotPostBonus(Long mNo) {
 		earn(mNo, PointPolicy.AMOUNT_HOT_POST, PointPolicy.REASON_HOT_POST, null, null);
 	}
-
-
 	@Transactional
 	public void earnPurchaseReviewBonus(Long mNo, long reviewedProductAmount, Long orderNo) {
 		long amount = PointPolicy.calcRate(reviewedProductAmount, PointPolicy.RATE_PURCHASE_REVIEW);
 		earn(mNo, amount, PointPolicy.REASON_PURCHASE_REVIEW, orderNo, null);
 	}
 
-	// 커뮤니티 리뷰 적립 (커뮤니티 글 작성 Service에서 호출, 대상 상품 금액의 3%)
+	// 커뮤니티 글 작성 적립 (글 종류/내용과 무관하게 1건당 고정 50P, 커뮤니티 Service에서 글 insert 성공 후 호출)
 	@Transactional
-	public void earnCommunityBonus(Long mNo, long baseAmount) {
-		long amount = PointPolicy.calcRate(baseAmount, PointPolicy.RATE_COMMUNITY);
-		earn(mNo, amount, PointPolicy.REASON_COMMUNITY, null, null);
+	public void earnCommunityPostBonus(Long mNo) {
+		earn(mNo, PointPolicy.AMOUNT_COMMUNITY_POST, PointPolicy.REASON_COMMUNITY_POST, null, null);
 	}
 
 	// 관리자 수동 적립/차감 (관리자 페이지에서 직접 호출, amount는 양수(적립)/음수(차감) 모두 가능)
@@ -197,7 +194,7 @@ public class PointService {
 		pointDAO.insertPoint(dto);
 	}
 
-
+	// 관리자 - 특정 이력을 "취소" 
 	@Transactional
 	public void cancelPointEntry(Long poNo, String reason) {
 		if (reason == null || reason.trim().isEmpty()) {

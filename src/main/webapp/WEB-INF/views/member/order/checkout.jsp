@@ -108,15 +108,15 @@
                 </div>
             </div>
 
-            <%-- 쿠폰 --%>
+            <%-- 쿠폰 (CouponController#usableCouponList 로 ajax 조회해서 채움) --%>
             <div class="co-card">
                 <div class="co-card-title">쿠폰</div>
                 <div class="co-select-row">
-                    <select id="couponSelect" disabled>
-                        <option>사용 가능한 쿠폰이 없어요</option>
+                    <select id="couponSelect" disabled onchange="onCouponChange()">
+                        <option value="">사용 가능한 쿠폰이 없어요</option>
                     </select>
                 </div>
-                <p class="co-hint">선택한 쿠폰이 없어요</p>
+                <p class="co-hint" id="couponHint">선택한 쿠폰이 없어요</p>
             </div>
 
             <%-- 포인트 --%>
@@ -150,6 +150,10 @@
                     <span>쇼핑백</span>
                     <span id="bagFeeAmount">0원</span>
                 </div>
+                <div class="co-summary-row" id="couponDiscountRow" style="display:none;">
+                    <span>쿠폰 할인</span>
+                    <span id="couponDiscountAmount">-0원</span>
+                </div>
                 <div class="co-summary-row" id="pointDiscountRow" style="display:none;">
                     <span>포인트 사용</span>
                     <span id="pointDiscountAmount">-0원</span>
@@ -171,7 +175,7 @@
                         <%-- height를 auto로 주어 이미지가 찌그러지거나 상하 여백이 생기는 현상 방지 --%>
                         <img src="${pageContext.request.contextPath}/images/checkout/shopping-bag-pets.png"
                              alt="쇼핑백" class="shoppingbag-img" style="width:75px; height:auto; object-fit:contain; flex:none;">
-                        
+
                         <div class="shoppingbag-info" style="flex:1;">
                             <span class="shoppingbag-badge" style="font-size:10px; background:#fdf3ee; color:#c17a52; padding:2px 6px; border-radius:3px; display:inline-block; margin-bottom:3px; font-weight:600;">SPECIAL EVENT</span>
                             <h4 style="font-size:14px; margin:0 0 2px 0; color:#222; font-weight:700;">멍냥 쇼핑백</h4>
@@ -265,6 +269,69 @@
     const BAG_MIN_QTY = 1;
     const BAG_MAX_QTY = 5;
     let bagQty = BAG_MIN_QTY;
+
+    // ================= 쿠폰 =================
+    var usableCouponList = [];   // /coupon/usable 조회 결과 캐시
+    var selectedCoupon = null;   // 현재 선택된 쿠폰 (MemberCouponDTO)
+
+    // 사용 가능한(미사용 + 만료전) 보유쿠폰 목록 조회 (CouponController#usableCouponList)
+    function loadUsableCoupons() {
+        fetch('/coupon/usable')
+            .then(function (res) { return res.json(); })
+            .then(function (result) {
+                if (!result.success) return;
+                usableCouponList = result.data || [];
+                renderCouponSelect();
+            })
+            .catch(function (err) { console.error('사용 가능한 쿠폰 조회 실패', err); });
+    }
+
+    function renderCouponSelect() {
+        var select = document.getElementById('couponSelect');
+
+        // 최소주문금액을 만족하는 쿠폰만 선택 가능하게 표시
+        var applicable = usableCouponList.filter(function (c) { return productAmountVal >= (c.coMinAmt || 0); });
+
+        if (applicable.length === 0) {
+            select.innerHTML = '<option value="">사용 가능한 쿠폰이 없어요</option>';
+            select.disabled = true;
+            return;
+        }
+
+        select.disabled = false;
+        var html = '<option value="">쿠폰을 선택해주세요</option>';
+        applicable.forEach(function (c) {
+            var label = c.coName + ' (' + c.coVal + '% 할인' + (c.coMaxAmt ? ', 최대 ' + formatPrice(c.coMaxAmt) + '원' : '') + ')';
+            html += '<option value="' + c.mcNo + '">' + escapeHtml(label) + '</option>';
+        });
+        select.innerHTML = html;
+    }
+
+    function onCouponChange() {
+        var select = document.getElementById('couponSelect');
+        var mcNo = select.value;
+
+        if (!mcNo) {
+            selectedCoupon = null;
+            document.getElementById('couponHint').innerText = '선택한 쿠폰이 없어요';
+        } else {
+            selectedCoupon = usableCouponList.find(function (c) { return String(c.mcNo) === String(mcNo); });
+            document.getElementById('couponHint').innerText = '적용 할인 ' + formatPrice(getCouponDiscountAmount()) + '원';
+        }
+        updateTotalAmount();
+    }
+
+    // 쿠폰 할인액 계산 (정률 할인, coMaxAmt 있으면 상한 캡)
+    function getCouponDiscountAmount() {
+        if (!selectedCoupon) return 0;
+        var raw = Math.floor(productAmountVal * (selectedCoupon.coVal / 100));
+        if (selectedCoupon.coMaxAmt && raw > selectedCoupon.coMaxAmt) {
+            raw = selectedCoupon.coMaxAmt;
+        }
+        return raw;
+    }
+
+    loadUsableCoupons();
 
     function toggleMemberAddr(checked) {
         var addressInput = document.getElementById('orAddress');
@@ -364,7 +431,16 @@
 
     function updateTotalAmount() {
         var usePoint = getUsePointAmount();
-        var total = productAmountVal + shippingFeeVal + getBagAmount() - usePoint;
+        var couponDiscount = getCouponDiscountAmount();
+        var total = productAmountVal + shippingFeeVal + getBagAmount() - couponDiscount - usePoint;
+
+        var couponRow = document.getElementById('couponDiscountRow');
+        if (couponDiscount > 0) {
+            couponRow.style.display = 'flex';
+            document.getElementById('couponDiscountAmount').innerText = '-' + couponDiscount.toLocaleString() + '원';
+        } else {
+            couponRow.style.display = 'none';
+        }
 
         var pointRow = document.getElementById('pointDiscountRow');
         if (usePoint > 0) {
@@ -426,7 +502,8 @@
             orMemo: document.getElementById('orMemo').value,
             orMethod: payMethodEl.value,
             orYn: bagChecked ? 'Y' : 'N',
-            orQty: bagChecked ? bagQty : 0
+            orQty: bagChecked ? bagQty : 0,
+            mcNo: selectedCoupon ? selectedCoupon.mcNo : null // 선택한 보유쿠폰 번호 (없으면 null)
         };
 
         fetch('/member/order', {
@@ -440,7 +517,9 @@
         .then(res => res.json())
         .then(result => {
             if (result.success) {
-                startPayment(result.data, payMethodEl.value);
+                markCouponUsed(result.data).then(function () {
+                    startPayment(result.data, payMethodEl.value);
+                });
             } else {
                 btnPay.disabled = false;
                 alert(result.message || '주문 생성에 실패했어요.');
@@ -452,22 +531,48 @@
         });
     }
 
+    // 선택한 쿠폰을 이번 주문에 사용 처리 (CouponController#useCoupon)
+    // 쿠폰은 주문취소/반품이 되어도 되돌려주지 않는 정책이라, 주문이 생성된 시점에 바로 사용 확정 처리함
+    function markCouponUsed(orNo) {
+        if (!selectedCoupon) {
+            return Promise.resolve();
+        }
+        const params = new URLSearchParams();
+        params.append('mcNo', selectedCoupon.mcNo);
+        params.append('orNo', orNo);
+
+        return fetch('/coupon/use', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (!result.success) {
+                console.error('쿠폰 사용 처리 실패:', result.message);
+            }
+        })
+        .catch(err => console.error('쿠폰 사용 처리 중 오류', err));
+    }
+
     function startPayment(orNo, orMethodValue) {
         const easyPayProvider = EASY_PAY_PROVIDER_MAP[orMethodValue];
         const bagAmountVal = getBagAmount();
         const usePointVal = getUsePointAmount();
-        const totalPayAmount = productAmountVal + shippingFeeVal + bagAmountVal - usePointVal;
+        const couponDiscountVal = getCouponDiscountAmount();
+        const totalPayAmount = productAmountVal + shippingFeeVal + bagAmountVal - couponDiscountVal - usePointVal;
 
         const params = new URLSearchParams();
         params.append('orNo', orNo);
         params.append('easyPayProvider', easyPayProvider);
         params.append('payAmount', productAmountVal);
         params.append('payFee', shippingFeeVal);
-        params.append('payDiscount', 0);
+        params.append('payDiscount', couponDiscountVal); // 쿠폰 할인액
         params.append('payUsed', usePointVal);
         params.append('payDis', usePointVal);
         params.append('payRealAmt', totalPayAmount);
         params.append('orderName', buildOrderName());
+        params.append('mcNo', selectedCoupon ? selectedCoupon.mcNo : '');
 
         fetch('/payment/request', {
             method: 'POST',
@@ -553,6 +658,16 @@
                 document.getElementById('orAddrdetail').focus();
             }
         }).open();
+    }
+
+    function formatPrice(v) {
+        if (v === null || v === undefined) return '0';
+        return Number(v).toLocaleString('ko-KR');
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 </script>
 <%@ include file="/WEB-INF/views/footer.jsp" %>

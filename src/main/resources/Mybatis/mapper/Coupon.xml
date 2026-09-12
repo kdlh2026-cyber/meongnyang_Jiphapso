@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.ICouponDAO">
+
+	<resultMap id="couponResultMap" type="com.springboot.meongnyang_Jiphapso.dto.CouponDTO">
+		<id     property="coNo"     column="co_no" />
+		<result property="coName"    column="co_name" />
+		<result property="coType"    column="co_type" />
+		<result property="coVal"     column="co_val" />
+		<result property="coMaxAmt"  column="co_max_amt" />
+		<result property="coMinAmt"  column="co_min_amt" />
+		<result property="coScope"   column="co_scope" />
+		<result property="coReason"  column="co_reason" />
+		<result property="coDays"    column="co_days" />
+		<result property="coStart"   column="co_start" />
+		<result property="coEnd"     column="co_end" />
+		<result property="coAt"      column="co_at" />
+		<result property="pNo"       column="p_no" />
+		<result property="pTitle"    column="p_title" />
+	</resultMap>
+
+	<!-- 관리자 - 쿠폰 등록 -->
+	<insert id="insertCoupon" parameterType="com.springboot.meongnyang_Jiphapso.dto.CouponDTO"
+			useGeneratedKeys="true" keyProperty="coNo" keyColumn="CO_NO">
+		insert into dc_coupon
+			(co_name, co_type, co_val, co_max_amt, co_min_amt, co_scope, co_reason, co_days, co_start, co_end, co_at, p_no)
+		values
+			(#{coName}, #{coType}, #{coVal}, #{coMaxAmt,jdbcType=INTEGER}, #{coMinAmt}, #{coScope}, #{coReason}, #{coDays,jdbcType=INTEGER}, #{coStart}, #{coEnd}, sysdate, #{pNo,jdbcType=INTEGER})
+	</insert>
+
+	<!-- 관리자 - 쿠폰 수정 -->
+	<update id="updateCoupon" parameterType="com.springboot.meongnyang_Jiphapso.dto.CouponDTO">
+		update dc_coupon
+		set co_name = #{coName},
+			co_type = #{coType},
+			co_val = #{coVal},
+			co_max_amt = #{coMaxAmt,jdbcType=INTEGER},
+			co_min_amt = #{coMinAmt},
+			co_scope = #{coScope},
+			co_reason = #{coReason},
+			co_days = #{coDays,jdbcType=INTEGER},
+			co_start = #{coStart},
+			co_end = #{coEnd},
+			p_no = #{pNo,jdbcType=INTEGER}
+		where co_no = #{coNo}
+	</update>
+
+	<!-- 관리자 - 쿠폰 삭제 -->
+	<delete id="deleteCoupon" parameterType="java.lang.Long">
+		delete from dc_coupon where co_no = #{coNo}
+	</delete>
+
+	<!-- 쿠폰 단건 조회 (대상상품명 조인) -->
+	<select id="selectCouponOne" parameterType="java.lang.Long" resultMap="couponResultMap">
+		select c.co_no, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope,
+			   c.co_reason, c.co_days, c.co_start, c.co_end, c.co_at, c.p_no, p.p_title
+		from dc_coupon c
+		left join dc_product p on c.p_no = p.p_no
+		where c.co_no = #{coNo}
+	</select>
+
+	<!-- 관리자 - 전체 쿠폰 목록 (최신 등록순) -->
+	<select id="selectCouponListAll" resultMap="couponResultMap">
+		select c.co_no, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope,
+			   c.co_reason, c.co_days, c.co_start, c.co_end, c.co_at, c.p_no, p.p_title
+		from dc_coupon c
+		left join dc_product p on c.p_no = p.p_no
+		order by c.co_no desc
+	</select>
+
+	<!--
+		회원 - 현재 다운로드 가능한 쿠폰 목록
+		조건 1) 오늘이 다운로드 기간(coStart ~ coEnd) 안에 있을 것
+		조건 2) 이 회원이 아직 다운로드하지 않은 쿠폰일 것 (dc_member_coupon 에 없어야 함)
+	-->
+	<select id="selectDownloadableCouponList" parameterType="java.lang.Long" resultMap="couponResultMap">
+		select c.co_no, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope,
+			   c.co_reason, c.co_days, c.co_start, c.co_end, c.co_at, c.p_no, p.p_title
+		from dc_coupon c
+		left join dc_product p on c.p_no = p.p_no
+		where sysdate between c.co_start and c.co_end
+		  and not exists (
+				select 1 from dc_member_coupon mc
+				where mc.co_no = c.co_no
+				  and mc.m_no = #{mNo}
+		  )
+		order by c.co_val desc
+	</select>
+
+	<!-- 관리자 - 쿠폰 등록폼 "대상 상품" 검색 (상품명 부분일치, 최대 20건) -->
+	<select id="searchProducts" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select p_no as "pNo", p_title as "pTitle", p_brand as "pBrand"
+		from dc_product
+		where p_title like '%' || #{keyword} || '%'
+		  and rownum &lt;= 20
+		order by p_no desc
+	</select>
+
+</mapper>

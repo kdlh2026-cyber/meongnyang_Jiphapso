@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IOrderDetailDAO">
+
 <resultMap id="orderDetailResultMap" type="com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO">
 <id property="odDetailNo" column="OD_DETAIL_NO"/>
 <result property="odOptionName" column="OD_OPTION_NAME"/>
@@ -18,32 +20,49 @@
 </resultMap>
 
 <sql id="orderDetailJoinBase"> SELECT d.od_detail_no AS OD_DETAIL_NO, d.od_option_name AS OD_OPTION_NAME, d.od_product_name AS OD_PRODUCT_NAME, d.od_price AS OD_PRICE, d.od_quantity AS OD_QUANTITY, d.od_amount AS OD_AMOUNT, d.od_at AS OD_AT, d.or_no AS OR_NO, d.p_no AS P_NO, d.o_no AS O_NO, opt.o_main_img AS P_MAIN_IMG, ord.or_status AS OR_STATUS, oc.oc_status AS OC_STATUS FROM dc_order_detail d LEFT JOIN dc_product_option opt ON d.o_no = opt.o_no JOIN dc_order ord ON d.or_no = ord.or_no LEFT JOIN ( SELECT od_detail_no, oc_status, ROW_NUMBER() OVER (PARTITION BY od_detail_no ORDER BY oc_re DESC) AS rn FROM dc_order_cancel ) oc ON oc.od_detail_no = d.od_detail_no AND oc.rn = 1 </sql>
+
 <!--  주문상세 1건 등록-->
 <insert id="insertOrderDetail" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO" useGeneratedKeys="true" keyProperty="odDetailNo" keyColumn="OD_DETAIL_NO"> INSERT INTO dc_order_detail (od_option_name, od_product_name, od_price, od_quantity, od_amount, od_at, or_no, p_no, o_no) VALUES ( #{odOptionName, jdbcType=VARCHAR}, #{odProductName, jdbcType=VARCHAR}, #{odPrice, jdbcType=NUMERIC}, #{odQuantity, jdbcType=NUMERIC}, #{odAmount, jdbcType=NUMERIC}, SYSDATE, #{orNo, jdbcType=NUMERIC}, #{pNo, jdbcType=NUMERIC}, #{oNo, jdbcType=NUMERIC} ) </insert>
+
 <!-- 주문상세 여러건 한번에 등록 (INSERT ALL) - -->
 <insert id="insertOrderDetailList" parameterType="map">
 INSERT ALL
 <foreach collection="list" item="item"> INTO dc_order_detail (od_option_name, od_product_name, od_price, od_quantity, od_amount, od_at, or_no, p_no, o_no) VALUES ( #{item.odOptionName, jdbcType=VARCHAR}, #{item.odProductName, jdbcType=VARCHAR}, #{item.odPrice, jdbcType=NUMERIC}, #{item.odQuantity, jdbcType=NUMERIC}, #{item.odAmount, jdbcType=NUMERIC}, SYSDATE, #{item.orNo, jdbcType=NUMERIC}, #{item.pNo, jdbcType=NUMERIC}, #{item.oNo, jdbcType=NUMERIC} ) </foreach>
 SELECT 1 FROM DUAL
 </insert>
+
 <!--   단건 조회   -->
 <select id="selectOrderDetailOne" resultMap="orderDetailResultMap">
 <include refid="orderDetailJoinBase"/>
 WHERE d.od_detail_no = #{odDetailNo}
 </select>
+
 <!--   주문번호로 상세 목록 조회   -->
 <select id="selectOrderDetailListByOrder" resultMap="orderDetailResultMap">
 <include refid="orderDetailJoinBase"/>
 WHERE d.or_no = #{orNo} ORDER BY d.od_detail_no
 </select>
+
 <!--   수량/옵션 수정   -->
 <update id="updateOrderDetail" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO"> UPDATE dc_order_detail SET od_quantity = #{odQuantity}, od_amount = #{odAmount} WHERE od_detail_no = #{odDetailNo} </update>
+
 <!--   삭제   -->
 <delete id="deleteOrderDetail"> DELETE FROM dc_order_detail WHERE od_detail_no = #{odDetailNo} </delete>
+
 <!--   관리자 - 전체 주문상세 목록   -->
 <select id="selectOrderDetailListAll" resultMap="orderDetailResultMap">
 <include refid="orderDetailJoinBase"/>
 ORDER BY d.od_at DESC
+</select>
+
+<!-- 회원이 해당 상품을 결제완료 이후 상태로 구매한 주문상세 중 가장 최근 것 1건 (리뷰 작성 시 구매검증/구매금액 조회용) -->
+<select id="selectPurchasedDetailByMemberAndProduct" resultMap="orderDetailResultMap">
+<include refid="orderDetailJoinBase"/>
+		WHERE ord.m_no = #{mNo}
+		  AND d.p_no = #{pNo}
+		  AND ord.or_status IN ('PAID', 'PREPARING', 'SHIPPING', 'DELIVERED', 'CONFIRMED')
+		ORDER BY d.od_at DESC
+		FETCH FIRST 1 ROWS ONLY
 </select>
 
 <!-- 주문번호 기준 주문상세 일괄삭제 (관리자 - 주문 전체 삭제 시 자식 레코드 정리용) -->

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IMemberCouponDAO">
+<resultMap id="memberCouponResultMap" type="com.springboot.meongnyang_Jiphapso.dto.MemberCouponDTO">
+<id property="mcNo" column="mc_no"/>
+<result property="mcStatus" column="mc_status"/>
+<result property="mcIssued" column="mc_issued"/>
+<result property="mcExpired" column="mc_expired"/>
+<result property="mcUsed" column="mc_used"/>
+<result property="usedOrderNo" column="used_order_no"/>
+<result property="mNo" column="m_no"/>
+<result property="coNo" column="co_no"/>
+<result property="mId" column="m_id"/>
+<result property="coName" column="co_name"/>
+<result property="coType" column="co_type"/>
+<result property="coVal" column="co_val"/>
+<result property="coMaxAmt" column="co_max_amt"/>
+<result property="coMinAmt" column="co_min_amt"/>
+<result property="coScope" column="co_scope"/>
+<result property="coReason" column="co_reason"/>
+</resultMap>
+<!--  쿠폰 다운로드 (보유쿠폰 등록) - 상태는 항상 UNUSED 로 시작  -->
+<insert id="insertMemberCoupon" parameterType="com.springboot.meongnyang_Jiphapso.dto.MemberCouponDTO" useGeneratedKeys="true" keyProperty="mcNo" keyColumn="MC_NO"> insert into dc_member_coupon (mc_status, mc_issued, mc_expired, m_no, co_no) values ('UNUSED', sysdate, #{mcExpired}, #{mNo}, #{coNo}) </insert>
+<!--  중복 다운로드 체크  -->
+<select id="countDownloaded" resultType="int"> select count(*) from dc_member_coupon where m_no = #{mNo} and co_no = #{coNo} </select>
+<!--  보유쿠폰 단건 조회 (쿠폰정보 조인)  -->
+<select id="selectMemberCouponOne" parameterType="java.lang.Long" resultMap="memberCouponResultMap"> select mc.mc_no, mc.mc_status, mc.mc_issued, mc.mc_expired, mc.mc_used, mc.used_order_no, mc.m_no, mc.co_no, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope, c.co_reason from dc_member_coupon mc join dc_coupon c on mc.co_no = c.co_no where mc.mc_no = #{mcNo} </select>
+<!--  회원 - 보유쿠폰함 전체 목록 (사용가능 + 사용완료 + 만료 전부, 다운로드일 최신순)  -->
+<select id="selectMemberCouponListByMember" parameterType="java.lang.Long" resultMap="memberCouponResultMap"> select mc.mc_no, mc.mc_status, mc.mc_issued, mc.mc_expired, mc.mc_used, mc.used_order_no, mc.m_no, mc.co_no, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope, c.co_reason from dc_member_coupon mc join dc_coupon c on mc.co_no = c.co_no where mc.m_no = #{mNo} order by mc.mc_issued desc </select>
+<!--  회원 - 결제 시 실제 사용 가능한 쿠폰만 (미사용 + 만료전, 할인율 높은순)  -->
+<select id="selectUsableMemberCouponListByMember" parameterType="java.lang.Long" resultMap="memberCouponResultMap"> select mc.mc_no, mc.mc_status, mc.mc_issued, mc.mc_expired, mc.mc_used, mc.used_order_no, mc.m_no, mc.co_no, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope, c.co_reason from dc_member_coupon mc join dc_coupon c on mc.co_no = c.co_no where mc.m_no = #{mNo} and mc.mc_status = 'UNUSED' and (mc.mc_expired is null or mc.mc_expired >= sysdate) order by c.co_val desc </select>
+<!--  관리자 - 전체 회원 보유쿠폰 목록 (회원아이디 조인)  -->
+<select id="selectMemberCouponListAll" resultMap="memberCouponResultMap"> select mc.mc_no, mc.mc_status, mc.mc_issued, mc.mc_expired, mc.mc_used, mc.used_order_no, mc.m_no, mc.co_no, m.m_id, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope, c.co_reason from dc_member_coupon mc join dc_coupon c on mc.co_no = c.co_no join dc_member m on mc.m_no = m.m_no order by mc.mc_issued desc </select>
+<!--  쿠폰 사용 처리 (결제 시)  -->
+<update id="updateUseStatus"> update dc_member_coupon set mc_status = 'USED', mc_used = sysdate, used_order_no = #{usedOrderNo} where mc_no = #{mcNo} </update>
+
+<!-- 만료 처리 배치 - 기간이 지난 미사용 쿠폰을 EXPIRED 로 일괄 변경 -->
+<update id="updateExpiredStatusBatch">
+    update dc_member_coupon
+    set mc_status = 'EXPIRED'
+    where mc_status = 'UNUSED'
+      and mc_expired is not null
+      and mc_expired &lt; sysdate
+</update>
+
+<!--  관리자 - 보유쿠폰 강제 삭제  -->
+<delete id="deleteMemberCoupon" parameterType="java.lang.Long"> delete from dc_member_coupon where mc_no = #{mcNo} </delete>
+</mapper>
