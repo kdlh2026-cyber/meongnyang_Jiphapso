@@ -34,7 +34,6 @@ public class HospitalESService {
 		Map<String,Object> map=new HashMap<>();
 		map.put("hp_name",hp_dto.getHp_name());
 		map.put("hp_addr",hp_dto.getHp_addr());
-		map.put("hp_land_addr",hp_dto.getHp_land_addr());
 		map.put("hp_sp_clinic",hp_dto.getHp_sp_clinic());
 		map.put("hp_keyword",hp_dto.getHp_keyword());
 		
@@ -71,7 +70,6 @@ public class HospitalESService {
 			hp_dto.setHp_no(Integer.parseInt(hit.getId()));
 			hp_dto.setHp_name(map.get("hp_name").toString());
 			hp_dto.setHp_addr(map.get("hp_addr").toString());
-			hp_dto.setHp_land_addr(map.get("hp_land_addr").toString());
 			hp_dto.setHp_sp_clinic(map.get("hp_sp_clinic").toString());
 			hp_dto.setHp_keyword(map.get("hp_keyword").toString());
 			list.add(hp_dto);

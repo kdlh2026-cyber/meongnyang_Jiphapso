@@ -39,5 +39,5 @@ public class MemberService {
 	}
 
 	// insertMember() 성공 직후, 신규 회원가입 축하 포인트 1000P 지급
-	pointService.earnSignupBonus(mNo)
+	// pointService.earnSignupBonus(mNo)
 }

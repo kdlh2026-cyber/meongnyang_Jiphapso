@@ -31,14 +31,14 @@
 		insert into dc_member(m_no,m_id,m_passwd,m_name,m_tel,m_addr,m_addr_detail,m_zipno,m_email,
 								m_introduce,m_birth,m_date,m_age_upper,m_sns,m_authority,m_img,m_cre_sub)
 		values(#{m_no},#{m_id},#{m_passwd},#{m_name},#{m_tel},#{m_addr},#{m_addr_detail},#{m_zipno},
-				#{m_email},#{m_introduce},#{m_birth},sysdate,#{m_age_upper,jdbcType=VARCHAR},#{m_sns,jdbcType=VARCHAR},
+				#{m_email},#{m_introduce},#{m_birth,jdbcType=DATE},sysdate,#{m_age_upper,jdbcType=VARCHAR},#{m_sns,jdbcType=VARCHAR},
 				#{m_authority,jdbcType=VARCHAR},#{m_img,jdbcType=VARCHAR},#{m_cre_sub,jdbcType=VARCHAR})
 	</insert>
 	<update id="MemberUpdate">
 		update dc_member
 		set m_passwd=#{m_passwd}, m_tel=#{m_tel}, m_addr=#{m_addr},
 		m_addr_detail=#{m_addr_detail}, m_zipno=#{m_zipno}, m_email=#{m_email},
-		m_introduce=#{m_introduce}, m_birth=#{m_birth}, m_sns=#{m_sns}, m_img=#{m_img,jdbcType=VARCHAR}
+		m_introduce=#{m_introduce}, m_birth=#{m_birth,jdbcType=DATE}, m_sns=#{m_sns}, m_img=#{m_img,jdbcType=VARCHAR}
 		where m_id=#{m_id}
 	</update>
 	
@@ -47,7 +47,7 @@
 	    set m_introduce=#{m_introduce}, m_authority=#{m_authority}, m_img=#{m_img,jdbcType=VARCHAR}, m_cre_sub=#{m_cre_sub,jdbcType=VARCHAR}
 	    where m_id=#{m_id}
 	</update>
-	<!-- 크리에티ㅓ 신청 매퍼 -->
+	<!-- 크리에이터 신청 매퍼 -->
 	<update id="MemberCreatorApply">
 	    update dc_member
 	    set m_cre_sub = 'P'
