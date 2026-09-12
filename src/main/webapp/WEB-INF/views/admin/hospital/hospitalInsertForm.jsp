@@ -5,6 +5,22 @@
 <head>
 <meta charset="UTF-8">
 <title>관리자 페이지</title>
+<style>
+	.tag-input-box {
+		display: flex; flex-wrap: wrap; gap: 6px;
+		border: 1px solid #ccc; padding: 6px; min-height: 38px;
+	}
+	.tag-input-box .tag {
+		background: #eee; padding: 2px 8px; border-radius: 12px;
+		display: flex; align-items: center; gap: 4px; font-size: 13px;
+	}
+	.tag-input-box .tag button {
+		border: none; background: none; cursor: pointer; font-weight: bold;
+	}
+	.tag-input-box input {
+		border: none; outline: none; flex: 1; min-width: 80px;
+	}
+</style>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
@@ -19,18 +35,9 @@
 				<td><input type="text" name="hp_addr"></td>
 			</tr>
 			<tr>
-				<td>상세주소</td>
-				<td><input type="text" name="hp_addr_detail"></td>
-			</tr>
-			<tr>
-				<td>병원 우편번호</td>
-				<td><input type="text" name="hp_zipno"></td>
-			</tr>
-			<tr>
 				<td>전화번호</td>
 				<td><input type="text" name="hp_tel"></td>
 			</tr>
-			
 			<tr>
 				<td>url</td>
 				<td><input type="text" name="hp_url"></td>
@@ -41,15 +48,68 @@
 			</tr>
 			<tr>
 				<td>특화 진료</td>
-				<td><input type="text" name="hp_sp_clinic"></td>
+				<td>
+					<div class="tag-input-box" id="sp_clinic_box">
+						<input type="text" id="sp_clinic_input" placeholder="입력 후 Enter">
+					</div>
+					<input type="hidden" name="hp_sp_clinic" id="hp_sp_clinic">
+				</td>
 			</tr>
 			<tr>
 				<td>키워드</td>
-				<td><input type="text" name="hp_keyword"></td>
+				<td>
+					<div class="tag-input-box" id="keyword_box">
+						<input type="text" id="keyword_input" placeholder="입력 후 Enter">
+					</div>
+					<input type="hidden" name="hp_keyword" id="hp_keyword">
+				</td>
 			</tr>
 		</table>
 		<input type="submit" value="등록">
 	</form>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
+
+<script>
+function initTagInput(boxId, inputId, hiddenId) {
+	const box = document.getElementById(boxId);
+	const input = document.getElementById(inputId);
+	const hidden = document.getElementById(hiddenId);
+	const tags = [];
+
+	function render() {
+		box.querySelectorAll('.tag').forEach(el => el.remove());
+		tags.forEach((tag, idx) => {
+			const span = document.createElement('span');
+			span.className = 'tag';
+			span.innerHTML = tag + ' <button type="button" data-idx="' + idx + '">x</button>';
+			box.insertBefore(span, input);
+		});
+		hidden.value = tags.join(',');
+	}
+
+	input.addEventListener('keydown', function(e) {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			const val = input.value.trim();
+			if (val && !tags.includes(val)) {
+				tags.push(val);
+				input.value = '';
+				render();
+			}
+		}
+	});
+
+	box.addEventListener('click', function(e) {
+		if (e.target.tagName === 'BUTTON') {
+			const idx = Number(e.target.dataset.idx);
+			tags.splice(idx, 1);
+			render();
+		}
+	});
+}
+
+initTagInput('sp_clinic_box', 'sp_clinic_input', 'hp_sp_clinic');
+initTagInput('keyword_box', 'keyword_input', 'hp_keyword');
+</script>
 </body>
 </html>

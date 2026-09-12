@@ -1,6 +1,7 @@
 package com.springboot.meongnyang_Jiphapso.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,4 +19,7 @@ public interface IHospitalDAO {
 	public int HospitalUpdate(HospitalDTO hp_dto);
 	// 병원 정보 삭제
 	public int HospitalDelete(int hp_no);
+	
+	public List<HospitalDTO> HospitalSelectList(Map<String, Object> params);
+	public int HospitalTotalCount(String keyword);
 }

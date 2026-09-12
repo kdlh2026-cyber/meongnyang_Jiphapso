@@ -13,6 +13,7 @@
   .footer-links a:hover{ color:#1c1c1c; }
 </style>
 <footer>
+<%@ include file="/WEB-INF/views/member/dailycheck/dailycheck_popup.jsp" %>
 <hr>
 	<div class="footer-links">
         <a href="#">고객센터</a> <!-- 챗봇 API -->
