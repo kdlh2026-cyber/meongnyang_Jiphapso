@@ -21,8 +21,12 @@ public class MemberService {
 	private PointService pointService; 
 	
 	public void write(MemberDTO m_dto) throws Exception{
-		m_dao.MemberWrite(m_dto);   // 오라클 DB에 저장
-		m_service.save(m_dto);      // 엘라스틱 서치에 색인(저장)
+	    m_dao.MemberWrite(m_dto);   // 오라클 DB에 저장
+
+	    // 회원가입 축하 포인트 1000P 지급 (m_no가 int 타입이라 Long으로 캐스팅)
+	    pointService.earnSignupBonus((long) m_dto.getM_no());
+
+	    m_service.save(m_dto);      // 엘라스틱 서치에 색인(저장)
 	}
 	
 	public List<MemberDTO> m_list(){
@@ -37,7 +41,4 @@ public class MemberService {
 	public List<Map<String,String>> autocomplete(String keyword) throws Exception{
 		return m_service.autocompleteHighlight(keyword);
 	}
-
-	// insertMember() 성공 직후, 신규 회원가입 축하 포인트 1000P 지급
-	// pointService.earnSignupBonus(mNo)
 }

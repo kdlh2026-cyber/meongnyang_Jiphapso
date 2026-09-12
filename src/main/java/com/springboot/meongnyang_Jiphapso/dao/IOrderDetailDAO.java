@@ -31,4 +31,7 @@ public interface IOrderDetailDAO {
     
     // 주문번호 기준 주문상세 일괄삭제 (관리자 - 주문 전체 삭제 시 자식 레코드 정리용)
     int deleteOrderDetailListByOrder(@Param("orNo") Long orNo);
+    
+	// 회원이 특정 상품을 구매(결제완료 이후)한 주문상세 중 가장 최근 것 1건 조회 - 리뷰 작성 시 구매 검증 + 구매금액 조회용
+	OrderDetailDTO selectPurchasedDetailByMemberAndProduct(@Param("mNo") Long mNo, @Param("pNo") Long pNo);
 }
