@@ -12,16 +12,35 @@ public interface ICommentDAO {
 	// 댓글 조회
 	public List<CommentDTO> CommentList(@Param("comm_no") Integer comm_no);
 	
+	// 댓글 개수 조회 (신규)
+	public int CommentCount(@Param("comm_no") Integer comm_no);
+	
 	// 댓글 작성(insert)
 	public int CommentWrite(CommentDTO cmtDto);
 	
 	// 댓글 삭제(delete) -> 본인이 쓴 댓글만 삭제 가능
-	public int CommentDelete(@Param("cmt_no") int cmt_no, @Param("m_no") int m_no);
+	public int CommentDelete(@Param("cmt_no") int cmt_no,
+							 @Param("m_no") int m_no);
+	
+	// 내 댓글에 달린 답글 수
+	public int CountReplies(int cmt_no);
+	
+	// 내 댓글 삭제
+	public int CommentHardDelete(@Param("cmt_no") int cmt_no, @Param("m_no") int m_no);
 	
 	// 댓글 수정(update) -> 본인이 쓴 댓글만 수정 가능
-	public int CommentUpdate(CommentDTO cmtDto);
+	public int CommentUpdate(@Param("cmt_no") int cmt_no,
+							 @Param("m_no") int m_no,
+							 @Param("cmt_content") String cmt_content);
 	
 	// 내가 쓴 댓글 조회
 	public List<CommentDTO> myComment(@Param("m_no") Integer m_no);
-
+	
+	List <CommentDTO> FindCommentById(int cmt_no);
+	
+	public int ParentHardDelete(int cmt_no);
+	
+	// 이벤트용 댓글
+	public List<CommentDTO> EventCommentList(@Param("event_no") Integer event_no);
+    public int EventCommentCount(@Param("event_no") Integer event_no);
 }

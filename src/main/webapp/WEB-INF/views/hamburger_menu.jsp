@@ -114,10 +114,7 @@
             ♥ 📋 ♥
           </h3> <!-- 커뮤니티 -->
           <ul>
-            <li><a href="/community/commList">라운지</a></li>
-            <li><a href="#">Q&amp;A</a></li>
-            <li><a href="#">리뷰</a></li>
-            <li><a href="#">이벤트</a></li>
+            <li><a href="/event/eventList">이벤트</a></li>
           </ul>
         </div>
         

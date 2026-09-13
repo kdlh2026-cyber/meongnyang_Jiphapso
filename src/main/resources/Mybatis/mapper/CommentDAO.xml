@@ -9,7 +9,7 @@
 	    </selectKey>
 	 	
 	 	insert into dc_comment(cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no, cmt_content,
-	 							cmt_good, cmt_choice, cmt_img, cmt_date, m_no)
+	 							cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no)
 	 				values(#{cmt_no, jdbcType=INTEGER},
 	 						#{cmt_answer_no, jdbcType=INTEGER},
 	 						#{cmt_writer, jdbcType=VARCHAR},
@@ -20,34 +20,81 @@
 	 						#{cmt_choice, jdbcType=VARCHAR},
 	 						#{cmt_img, jdbcType=VARCHAR},
 	 						SYSDATE,
+	 						#{cmt_deleted, jdbcType=VARCHAR},
 	 						#{m_no, jdbcType=INTEGER}
 	 	)
 	</insert>
 	
+	<!-- 댓글 목록 조회 -->
 	<select id="CommentList" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
-		 select cm.comm_no, cm.comm_title, cm.comm_writer,
-	        cmt.cmt_no, cmt.cmt_answer_no, cmt.cmt_writer, cmt.cmt_type, cmt.cmt_type_no,
-	        cmt.cmt_content, cmt.cmt_good, cmt.cmt_choice, cmt.cmt_img, cmt.cmt_date, cmt.m_no
-	        from dc_community cm
-	        left join dc_comment cmt
-	        on cm.comm_no = cmt.cmt_type_no
-	        where cm.comm_no = #{comm_no, jdbcType=INTEGER}
-	        order by cmt.cmt_date desc
+	    select cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no,
+	        cmt_content, cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no
+	    from dc_comment
+	    where cmt_type_no = #{comm_no, jdbcType=INTEGER}
+	    order by cmt_date desc
+	</select>
+	
+	<!-- 댓글 총 개수 조회 -->
+	<select id="CommentCount" resultType="int">
+	    select count(*) from dc_comment where cmt_type_no = #{comm_no, jdbcType=INTEGER}
 	</select>
 	
 	<select id="myComment" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
-		 select cm.comm_no, cm.comm_title, cm.comm_img,
-		 	cmt.cmt_no, cmt.cmt_content, cmt.cmt_writer as comment_writer,
-		 	cmt.cmt_date, cmt.cmt_type, cmt.cmt_type_no, cmt.cmt_img,
-		 	(SELECT COUNT(*) FROM dc_comment WHERE cmt_type_no = cm.comm_no) as comment_count
-		 	from dc_community cm
-		 	left join dc_comment cmt
-		 	on cm.comm_no = cmt.cmt_type_no
-		 	where cmt.m_no = #{m_no}
-		 	order by cmt.cmt_date desc
+	    select cm.comm_no, cm.comm_title, cm.comm_img,
+	        cmt.cmt_no, cmt.cmt_content, cmt.cmt_writer,
+	        cmt.cmt_date, cmt.cmt_type, cmt.cmt_type_no, cmt.cmt_img, cmt.cmt_deleted,
+	        (SELECT COUNT(*) FROM dc_comment WHERE cmt_type_no = cm.comm_no) as reply_count
+	    from dc_community cm
+	    left join dc_comment cmt
+	    on cm.comm_no = cmt.cmt_type_no
+	    where cmt.m_no = #{m_no}
+	    order by cmt.cmt_date desc
 	</select>
 
-	<delete id="CommentDelete">
-		delete from dc_comment where cmt_no = #{cmt_no} and m_no = #{m_no}
+	<update id="CommentUpdate">
+	    update dc_comment
+	    set cmt_content = #{cmt_content, jdbcType=VARCHAR}
+	    where cmt_no = #{cmt_no, jdbcType=INTEGER}
+	    and m_no = #{m_no, jdbcType=INTEGER}
+	</update>
+	
+	<!-- 특정 댓글에 달린 답글 개수 조회 -->
+	<select id="CountReplies" resultType="int">
+	    select count(*) from dc_comment where cmt_answer_no = #{cmt_no}
+	</select>
+	
+	<!-- 내 댓글 삭제 -->
+	<delete id="CommentHardDelete">
+	    delete from dc_comment where cmt_no = #{cmt_no} and m_no = #{m_no}
 	</delete>
+	
+	<!-- 내 댓글에 답글이 남아있는 경우 내 댓글을 삭제했을 때. -->
+	<update id="CommentDelete">
+	    update dc_comment
+	    set cmt_content = '삭제된 댓글입니다.', cmt_deleted = 'Y'
+	    where cmt_no = #{cmt_no} and m_no = #{m_no}
+	</update>
+	
+	<!-- 부모 번호 및 삭제 대상 정보 조회 -->
+	<select id="FindCommentById" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+	    select cmt_no, cmt_answer_no, cmt_deleted from dc_comment where cmt_no = #{cmt_no}
+	</select>
+	
+	<!-- 부모 강제 삭제 쿼리 -->
+	<delete id="ParentHardDelete">
+	    delete from dc_comment where cmt_no = #{cmt_no}
+	</delete>
+	
+	<!-- 이벤트 댓글 조회 -->
+	<select id="EventCommentList" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+	    SELECT * FROM dc_comment 
+	    WHERE cmt_type = 'event' AND cmt_type_no = #{event_no}
+	    ORDER BY cmt_date DESC
+	</select>
+	
+	<!-- 이벤트 댓글 개수 조회 -->
+	<select id="EventCommentCount" resultType="int">
+	    SELECT COUNT(*) FROM dc_comment 
+	    WHERE cmt_type = 'event' AND cmt_type_no = #{event_no}
+	</select>
 </mapper>

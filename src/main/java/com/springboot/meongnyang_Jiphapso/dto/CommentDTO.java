@@ -16,10 +16,13 @@ public class CommentDTO {
 	private String cmt_choice;
 	private String cmt_img;
 	private Date cmt_date;
+	private String cmt_deleted;
 	private Integer m_no;
 	
 	private String comm_img;
 	private String comm_title;
 	private Integer comment_count;
 	private String comm_type;
+	
+	private Integer reply_count;
 }

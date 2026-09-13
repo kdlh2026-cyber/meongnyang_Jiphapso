@@ -10,7 +10,9 @@
 	<select id="CommunitySelectList" resultMap="CommunityMap">
     select * FROM (
         select ROWNUM as rnum, A.* from (
-            select * from dc_community
+        	select cm.*,
+        		(select count(*) from dc_comment where cmt_type_no = cm.comm_no) as reply_count
+        		from dc_community cm
             <where>
                 <if test="comm_type != null and comm_type != '' and comm_type != '전체'">
                     AND comm_type = #{comm_type}
@@ -24,7 +26,7 @@
             </where>
             <choose>
                 <when test="sort == 'popular'">
-                    ORDER BY comm_count DESC, comm_no DESC
+                    ORDER BY comm_good DESC, comm_view DESC, comm_no DESC
                 </when>
                 <otherwise>
                     ORDER BY comm_date DESC
@@ -53,6 +55,13 @@
 	
 	<select id="BreedList" resultType="com.springboot.meongnyang_Jiphapso.dto.BreedDTO">
 		select * from dc_breed
+	</select>
+	
+	<!-- 카테고리별 오늘 등록된 게시글 수 조회 -->
+	<select id="getTodayCountByType" resultType="int">
+	    select count(*) from dc_community 
+	    where comm_type = #{comm_type}
+	      and TRUNC(comm_date) = TRUNC(SYSDATE)
 	</select>
 	
 	<insert id="CommunityWrite">
@@ -105,17 +114,32 @@
 	
 	<select id="CommunityView" resultMap="CommunityViewMap">
 		select cm.*, img.IMG_URL
-		from dc_community cm
-		left join dc_comm_image img
-		on cm.comm_no = img.comm_no
-		where cm.comm_no = #{comm_no}
-		order by img.IMG_ORDER asc
+			from dc_community cm
+			left join dc_comm_image img
+			on cm.comm_no = img.comm_no
+			where cm.comm_no = #{comm_no}
+			order by img.IMG_ORDER asc
 	</select>
+	
+	<update id="CommunityUpdate">
+		update dc_community
+		 set comm_title = #{comm_title},
+		 	comm_content = #{comm_content},
+		 	comm_category = #{comm_category, jdbcType=VARCHAR},
+	        comm_pet_type = #{comm_pet_type, jdbcType=VARCHAR},
+	        comm_breed = #{comm_breed, jdbcType=VARCHAR},
+	        comm_img = #{comm_img, jdbcType=VARCHAR},
+	        comm_video = #{comm_video, jdbcType=VARCHAR},
+	        comm_tag = #{comm_tag, jdbcType=VARCHAR},
+		 	comm_type = #{comm_type}
+		 where comm_no = #{comm_no}
+		 and m_no = #{m_no}
+	</update>
 	
 	<update id="CommunityHit">
 		update dc_community
-		set comm_view = comm_view + 1
-		where comm_no = #{comm_no}
+			set comm_view = comm_view + 1
+			where comm_no = #{comm_no}
 	</update>
 	
 	<resultMap id="CommunityViewMap" type="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO" extends="CommunityMap">
@@ -138,6 +162,9 @@
 		<result property="comm_img" column="comm_img" />
 		<result property="comm_view" column="COMM_VIEW"/>
 		<result property="comm_date" column="COMM_DATE"/>
+		<result property="m_no" column="m_no" />
+	    <result property="p_no" column="p_no" />
+	    <result property="pet_no" column="pet_no" />
 	</resultMap>
 	
 	<select id="myList" resultType="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO">
@@ -158,4 +185,62 @@
 			where rownum = 1
 	</select>
 	
+	<delete id="CommunityDelete" parameterType="int">
+		   delete from dc_community where comm_no = #{comm_no, jdbcType=INTEGER} and m_no = #{m_no, jdbcType=INTEGER}
+	</delete>
+	
+	<!-- 이미 투표했는지 확인 (타입 상관없이 해당 게시글에 이 유저가 누른 적이 있는지) -->
+	<select id="checkRecommend" resultType="int">
+	    select count(*) from dc_comm_recommend 
+	    where comm_no = #{comm_no} and m_no = #{m_no}
+	</select>
+		
+	<!-- 2. 투표 이력 저장 -->
+	<insert id="insertRecommend">
+	    insert into dc_comm_recommend (rec_no, comm_no, m_no, rec_type)
+	    	values (dc_rec_seq.NEXTVAL, #{comm_no}, #{m_no}, #{rec_type})
+	</insert>
+	
+	<!-- 3. 게시글 도움돼요(good) 수 증가 -->
+	<update id="updateCommGood">
+	    update dc_community set comm_good = comm_good + 1 where comm_no = #{comm_no}
+	</update>
+	
+	<!-- 4. 게시글 글쎄요(well) 수 증가 -->
+	<update id="updateCommWell">
+	    update dc_community set comm_well = comm_well + 1 where comm_no = #{comm_no}
+	</update>
+
+	<!-- 투표 이력 삭제 -->
+	<delete id="deleteRecommend">
+	    delete from dc_comm_recommend where comm_no = #{comm_no} and m_no = #{m_no}
+	</delete>
+	
+	<!-- good 수 감소 -->
+	<update id="decreaseCommGood">
+	    update dc_community set comm_good = comm_good - 1 where comm_no = #{comm_no}
+	</update>
+	
+	<!-- well 수 감소 -->
+	<update id="decreaseCommWell">
+	    update dc_community set comm_well = comm_well - 1 where comm_no = #{comm_no}
+	</update>
+	
+	<!-- 유저의 기존 투표 타입 조회 -->
+    <select id="getRecommendType" resultType="string">
+        select rec_type from dc_comm_recommend 
+        	where comm_no = #{comm_no} and m_no = #{m_no}
+    </select>  
+    
+    <!-- 통계용 -->
+    <select id="getCommunityListForStats" resultMap="CommunityMap">
+	    select cm.* 
+	    from dc_community cm
+	    <where>
+	        <if test="comm_type != null and comm_type != '' and comm_type != '전체'">
+	            and comm_type = #{comm_type}
+	        </if>
+	    </where>
+	    order by comm_no desc
+	</select>
 </mapper>

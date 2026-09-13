@@ -40,4 +40,6 @@ public class CommunityDTO {
 	
 	private Integer reply_count;
 	
+	private int rec_no;
+	private String rec_type;
 }

@@ -93,16 +93,33 @@ public class CommentController {
 	    Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
 
 	    if (m_no == null) {
-	    	System.out.println("m_no가 null이라 로그인 페이지로 리다이렉트합니다.");
 	        return "redirect:/loginForm";
 	    }
 
-	    cmt_dao.CommentDelete(cmt_no, m_no);
+	    service.deleteComment(cmt_no, m_no);
 	    
 	    if (referer != null && !referer.isEmpty()) {
 	        return "redirect:" + referer;
 	    }
 
 	    return "redirect:/community/myCommunity";
+	}
+	
+	// 댓글 수정
+	@PostMapping("/comment/update")
+	public String commentUpdate(@RequestParam("cmt_no") int cmt_no,
+	                            @RequestParam("comm_no") int comm_no,
+	                            @RequestParam("cmt_content") String cmt_content,
+	                            HttpSession session) {
+
+	    Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+
+	    if (m_no == null) {
+	        return "redirect:/loginForm";
+	    }
+
+	    service.updateComment(cmt_no, m_no, cmt_content);
+
+	    return "redirect:/community/commView?comm_no=" + comm_no;
 	}
 }
