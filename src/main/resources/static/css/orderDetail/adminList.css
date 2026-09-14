@@ -20,6 +20,26 @@ table.admin-table td {
 
 table.admin-table th {
     background: #fafafa;
+    white-space: nowrap;
+}
+
+/* 가격 컬럼 - 줄바꿈 방지 */
+table.admin-table th:nth-child(5),
+table.admin-table td:nth-child(5) {
+    white-space: nowrap;
+    min-width: 66px;
+}
+
+/* 주문번호 / 주문상태 컬럼 - 헤더/내용 줄바꿈 방지 */
+table.admin-table th:nth-child(8),
+table.admin-table td:nth-child(8) {
+    white-space: nowrap;
+    min-width: 74px;
+}
+table.admin-table th:nth-child(9),
+table.admin-table td:nth-child(9) {
+    white-space: nowrap;
+    min-width: 96px;
 }
 
 .thumb {
@@ -41,4 +61,30 @@ table.admin-table th {
 .btn-danger {
     color: #c0392b;
     border-color: #c0392b;
+}
+
+/* 주문상태 필터 탭 버튼 */
+.ord-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 14px 0 18px;
+}
+.ord-tab {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #555;
+}
+.ord-tab.active {
+    background: #222;
+    color: #fff;
+    border-color: #222;
+}
+
+.ord-no-match td {
+    color: #888;
 }

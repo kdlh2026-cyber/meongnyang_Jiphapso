@@ -3,6 +3,7 @@ package com.springboot.meongnyang_Jiphapso.controller;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.springboot.meongnyang_Jiphapso.common.ApiResponse;
-import com.springboot.meongnyang_Jiphapso.common.SessionConst;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberLookupDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CartDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
@@ -44,7 +44,7 @@ public class OrderController {
     private final OrderService orderService;
     private final CartService cartService;
     private final OrderDetailService orderDetailService; // 주문상세 페이지에서 라인아이템(취소버튼 포함) 목록 뿌려주려고 추가
-    private final IMemberLookupDAO memberLookupDAO; // 주문/결제 페이지 주문자정보/배송정보 자동입력용 (회원 파트 건드리지 않고 조회 전용으로 분리)
+    private final IMemberLookupDAO memberLookupDAO; // 주문/결제 페이지 주문자정보/배송정보 자동입력 + 로그인 회원 조회용
     private final PointService pointService; // 결제 페이지에 보유 포인트 표시용
 
     @Autowired
@@ -64,14 +64,19 @@ public class OrderController {
         }
     }
 
-    private Long requireLogin(HttpSession session) {
-        // 세션엔 MemberDTO.m_no 타입 그대로(Integer) 들어있어서 Integer로 꺼낸 다음 Long으로 변환
-        Integer mNo = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
-
-        if (mNo == null) {
+    private Long requireLogin(Principal principal) {
+        if (principal == null) {
             throw new NotLoggedInException("로그인이 필요합니다.");
         }
-        return mNo.longValue();
+
+        String mId = principal.getName(); // 로그인 아이디
+        MemberDTO member = memberLookupDAO.selectMemberByLoginId(mId);
+
+        if (member == null) {
+            throw new NotLoggedInException("로그인이 필요합니다.");
+        }
+
+        return (long) member.getM_no();
     }
 
     @Autowired
@@ -83,10 +88,10 @@ public class OrderController {
     // 주문/결제 페이지
     @RequestMapping(value = "/member/order/checkout", method = RequestMethod.GET)
     public String checkout(@RequestParam(value = "caNo", required = false) String caNoParam,
-                           HttpSession session,
+                           Principal principal,
                            Model model) {
 
-        Long mNo = requireLogin(session);
+        Long mNo = requireLogin(principal);
 
         // caNo 없이 들어온 경우 장바구니로 돌려보냄
         if (caNoParam == null || caNoParam.isBlank()) {
@@ -126,9 +131,9 @@ public class OrderController {
     @ResponseBody
     @SuppressWarnings("unchecked")
     public ApiResponse<Long> createOrder(@RequestBody Map<String, Object> body,
-                                         HttpSession session) {
+                                         Principal principal) {
 
-        Long mNo = requireLogin(session);
+        Long mNo = requireLogin(principal);
 
         List<Long> caNoList = ((List<Object>) body.get("caNoList")).stream()
                 .map(v -> Long.valueOf(String.valueOf(v)))
@@ -152,10 +157,10 @@ public class OrderController {
     // 주문 목록
     @RequestMapping(value = "/member/order/list", method = RequestMethod.GET)
     public String orderList(@RequestParam(value = "status", required = false) String status,
-                            HttpSession session,
+                            Principal principal,
                             Model model) {
 
-        Long mNo = requireLogin(session);
+        Long mNo = requireLogin(principal);
 
         List<OrderDTO> list = (status == null || status.isEmpty())
                 ? orderService.getOrderListByMember(mNo)
@@ -167,11 +172,11 @@ public class OrderController {
     }
 
     @RequestMapping(value = "/member/order/{orNo}", method = RequestMethod.GET)
-    public String orderDetail(@PathVariable("orNo") Long orNo, HttpSession session, Model model) {
-
-        requireLogin(session);
+    public String orderDetail(@PathVariable("orNo") Long orNo, Principal principal, Model model) {
         
         OrderDTO order = orderService.getOrderOne(orNo);
+        requireLogin(principal);
+
 
         if (order != null && order.getOrderDetailList() != null) {
             for (OrderDetailDTO detail : order.getOrderDetailList()) {
@@ -193,9 +198,9 @@ public class OrderController {
     @ResponseBody
     public ApiResponse<Void> updateOrder(@PathVariable("orNo") Long orNo,
                                          @RequestBody OrderDTO orderInfo,
-                                         HttpSession session) {
+                                         Principal principal) {
 
-        requireLogin(session);
+        requireLogin(principal);
 
         orderInfo.setOrNo(orNo);
         orderService.updateOrderInfo(orderInfo);
@@ -245,10 +250,10 @@ public class OrderController {
 
         return ApiResponse.ok(null);
     }
-
     @ExceptionHandler(NotLoggedInException.class)
     public String handleNotLoggedIn(NotLoggedInException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
         // WebSecurityConfig 기준 실제 로그인 페이지 경로
         return "redirect:/loginForm";
     }

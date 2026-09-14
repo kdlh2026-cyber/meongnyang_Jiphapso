@@ -17,7 +17,7 @@
 				<td><img src="/images/myProfile/${AmemUpdate.m_img}" alt="${AmemUpdate.m_img}" width="150px"></td>
 			</tr>
 			<tr>
-				<td><input type="text" value="${AmemUpdate.m_id}"></td>
+				<td>${AmemUpdate.m_id}</td> <!-- **처리 필요 -->
 			</tr>
 			<tr>
 				<td>
@@ -29,7 +29,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>${AmemUpdate.m_name}</td> <!-- **처리 필요 -->
+				<td><input type="m_name" value="${AmemUpdate.m_name}"></td> <!-- **처리 필요 -->
 			</tr>
 			<tr>
 				<td>${AmemUpdate.m_email}</td> <!-- **처리 필요 -->

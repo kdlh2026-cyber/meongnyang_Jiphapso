@@ -10,8 +10,8 @@ import com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto;
 
 @Mapper
 public interface IStrayAnimalDao {
-	public List<StrayAnimalDto> StrayAnimalPageList(@Param("offset") int offset, @Param("pageSize") int pageSize);
-	public int StrayAnimalCount();
+	public List<StrayAnimalDto> StrayAnimalPageList(@Param("offset") int offset, @Param("pageSize") int pageSize, @Param("stray_category") String stray_category);
+	public int StrayAnimalCount(String stray_category);
 	
 	//상세보기
 	public StrayAnimalDto StrayView(Long stray_no);

@@ -11,9 +11,32 @@ body {
 
 h3 {
   max-width: 1200px;
-  margin: 0 auto 20px;
+  margin: 0 auto 12px;
   font-size: 20px;
   font-weight: 700;
+}
+
+/* 주문상태 필터 탭 */
+.ord-tabs {
+  max-width: 1200px;
+  margin: 0 auto 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ord-tab {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #555;
+}
+.ord-tab.active {
+  background: #222;
+  color: #fff;
+  border-color: #222;
 }
 
 .admin-table {
@@ -33,6 +56,7 @@ h3 {
   padding: 12px 10px;
   text-align: center;
   border-bottom: 1px solid #eee;
+  white-space: nowrap;
 }
 
 .admin-table thead th {
@@ -47,16 +71,27 @@ h3 {
 .admin-table td[colspan] {
   padding: 60px 0;
   color: #888;
+  white-space: normal;
 }
 
-.status-select {
-  padding: 6px 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+.ord-no-match td { color: #888; }
+
+/* 상태 뱃지 */
+.order-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
   font-size: 12px;
-  background: #fff;
-  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
 }
+.badge-payment_pending { background: #f1f1f1; color: #666; }
+.badge-paid            { background: #e8f0fe; color: #1a56db; }
+.badge-preparing       { background: #fdf3e8; color: #b5651d; }
+.badge-shipping        { background: #e6f4ff; color: #0077b6; }
+.badge-delivered       { background: #e6f7ee; color: #1a7a4c; }
+.badge-confirmed       { background: #eafbe7; color: #2e7d32; }
+.badge-canceled        { background: #fdecea; color: #c0392b; }
 
 .btn-sm {
   display: inline-block;

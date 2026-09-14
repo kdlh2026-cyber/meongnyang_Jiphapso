@@ -11,5 +11,6 @@ public class ProductDto {
 	private String p_brand;
 	private String p_category;
 	private String p_type;
+	private String p_content;
 	private LocalDateTime p_date;
 }

@@ -1,13 +1,3 @@
-<%--
-  파일 위치: /WEB-INF/views/member/payment/list.jsp
-  용도    : 회원 - 결제내역 목록 페이지
-
-  연동    : PaymentController
-             GET  /payment/list        -> 이 JSP 로 포워딩 (컨트롤러에서 로그인 체크 후 forward)
-             GET  /payment/list/data   -> 화면 로드 후 ajax 로 목록 데이터 조회
-             GET  /payment/detail      -> 상세보기 모달용 단건 조회
-             GET  /payment/cancelPage  -> 취소 버튼 클릭 시 결제취소 페이지로 이동
---%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="ko">

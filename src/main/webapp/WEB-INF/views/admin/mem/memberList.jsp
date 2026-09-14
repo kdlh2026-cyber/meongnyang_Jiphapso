@@ -43,8 +43,15 @@
 			<td>${list.m_date}</td>
 			<td>${list.m_age_upper}</td>
 			<td>${list.m_sns}</td>
-			<td>${list.m_authority}</td>
-			<!-- 크리에이터 신청 시 승인/거절 버튼 생성 자리 -->
+			<c:if test="${list.m_cre_sub == 'F' or list.m_cre_sub == 'T'}">
+			    <td>${list.m_authority}</td>
+			</c:if>
+			<c:if test="${list.m_cre_sub == 'P'}">
+			    <td>
+			        <a href="/creatorApprove?m_id=${list.m_id}">수락</a>
+			        <a href="/creatorRefuse?m_id=${list.m_id}">거절</a>
+			    </td>
+			</c:if>
 			<td>
 				<a href="/AmemUpdateForm?m_id=${list.m_id}">수정</a>
 			</td>

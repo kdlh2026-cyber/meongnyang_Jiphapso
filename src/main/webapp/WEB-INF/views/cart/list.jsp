@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="/css/cart/cart_list.css">
 </head>
 <body>
+<div id="cartToastWrap" class="cart-toast-wrap"></div>
 
 	<c:choose>
 		<%-- 장바구니가 비어있는 경우 --%>
@@ -202,6 +203,23 @@
 	</div>
 
 	<script>
+    function showToast(message, type) {
+        var wrap = document.getElementById('cartToastWrap');
+        if (!wrap || !message) return;
+
+        var toast = document.createElement('div');
+        toast.className = 'cart-toast' + (type === 'success' ? ' cart-toast-success' : type === 'error' ? ' cart-toast-error' : '');
+        toast.textContent = message;
+        wrap.appendChild(toast);
+
+        requestAnimationFrame(function () { toast.classList.add('cart-toast-show'); });
+
+        setTimeout(function () {
+            toast.classList.remove('cart-toast-show');
+            setTimeout(function () { toast.remove(); }, 250);
+        }, 2200);
+    }
+
     var contextPath = "${pageContext.request.contextPath}";
     var FREE_SHIPPING_THRESHOLD = 30000;
     var SHIPPING_FEE = 3000;
@@ -215,7 +233,7 @@
         chk.addEventListener('change', recalcTotal);
     });
 
-    recalcTotal(); // 최초 진입 시에도 무료배송 배너/합계를 바로 채워줌 (recalcTotal은 아래 정의돼 있지만 함수 선언이라 호이스팅됨)
+    recalcTotal(); 
 
     function goDetail(pNo) {
         location.href = contextPath + '/products/ShoppingView?p_no=' + pNo;
@@ -226,7 +244,7 @@
         location.href = contextPath + '/products/ShoppingList';
     }
 
-    // ---- 옵션 변경 모달 (CartController#optionList / #updateOption) ----
+    // ---- 옵션 변경 모달 ----
     var optionModalState = { caNo: null, pNo: null, options: [] };
     var optModalQty = 1;
     var optModalSelected = null;
@@ -239,13 +257,13 @@
             .then(res => res.json())
             .then(result => {
                 if (!result.success) {
-                    alert(result.message || '옵션 정보를 불러오지 못했어요.');
+                    showToast(result.message || '옵션 정보를 불러오지 못했어요.', 'error');
                     return;
                 }
                 optionModalState.options = result.data || [];
                 renderOptionModal(currentQty);
             })
-            .catch(() => alert('옵션 정보를 불러오는 중 오류가 발생했어요.'));
+            .catch(() => showToast('옵션 정보를 불러오는 중 오류가 발생했어요.', 'error'));
     }
 
     function renderOptionModal(currentQty) {
@@ -355,17 +373,17 @@
             .then(res => res.json())
             .then(result => {
                 if (!result.success) {
-                    alert(result.message || '옵션 변경에 실패했어요.');
+                    showToast(result.message || '옵션 변경에 실패했어요.', 'error');
                     return;
                 }
                 closeOptionModal();
                 location.reload(); // 이미지/가격/옵션명이 바뀔 수 있어 목록을 다시 불러옴
             })
-            .catch(() => alert('옵션 변경 중 오류가 발생했어요.'));
+            .catch(() => showToast('옵션 변경 중 오류가 발생했어요.', 'error'));
     }
 
     function notReady() {
-        alert('현재 준비 중인 기능이에요.');
+        showToast('현재 준비 중인 기능이에요.');
     }
 
     function formatNumber(num) {
@@ -430,7 +448,6 @@
         if (summaryProductEl) summaryProductEl.textContent = formatNumber(total) + '원';
         if (checkoutCountEl) checkoutCountEl.textContent = checkedCount;
 
-        // 배너/배송비 안내 갱신 + 이번 배송비 반환받아서 총 주문금액(상품금액 + 배송비)에 반영
         const shippingFee = updateFreeShippingBanner(total);
         if (totalEl) totalEl.textContent = formatNumber(total + shippingFee) + '원';
 
@@ -467,7 +484,7 @@
 
                 recalcTotal();
             } else {
-                alert(res.message || '수량 변경에 실패했어요.');
+                showToast(res.message || '수량 변경에 실패했어요.', 'error');
             }
         });
     }
@@ -482,7 +499,7 @@
                     document.querySelector('.cart-row[data-cano="' + caNo + '"]')?.remove();
                     recalcTotal();
                 } else {
-                    alert(res.message || '삭제에 실패했어요.');
+                    showToast(res.message || '삭제에 실패했어요.', 'error');
                 }
             });
     }
@@ -503,7 +520,7 @@
                 recalcTotal();
                 if (onDone) onDone();
             } else {
-                alert(res.message || '삭제에 실패했어요.');
+                showToast(res.message || '삭제에 실패했어요.', 'error');
             }
         });
     }
@@ -513,7 +530,7 @@
             .map(chk => Number(chk.value));
 
         if (caNoList.length === 0) {
-            alert('삭제할 상품을 선택해주세요.');
+            showToast('삭제할 상품을 선택해주세요.', 'error');
             return;
         }
         if (!confirm(caNoList.length + '개 상품을 삭제할까요?')) return;
@@ -527,7 +544,7 @@
             .map(row => Number(row.dataset.cano));
 
         if (caNoList.length === 0) {
-            alert('품절된 상품이 없습니다.');
+            showToast('품절된 상품이 없습니다.', 'error');
             return;
         }
         if (!confirm('품절된 상품 ' + caNoList.length + '개를 삭제할까요?')) return;
@@ -540,7 +557,7 @@
             .map(chk => chk.value);
 
         if (caNoList.length === 0) {
-            alert('주문할 상품을 선택해주세요.');
+            showToast('주문할 상품을 선택해주세요.', 'error');
             return;
         }
         location.href = contextPath + '/member/order/checkout?caNo=' + caNoList.join(',');

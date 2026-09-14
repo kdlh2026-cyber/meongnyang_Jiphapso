@@ -376,12 +376,7 @@ function showActionBanner(icon, message, action) {
 			        </div>
 			    </c:if>
 			</c:if>
-            
-            <c:forEach var="content" items="${ShoppingView.detailImages}">
-                <c:if test="${content.img_sort==1}">
-                    ${content.img_content} 
-                </c:if>
-            </c:forEach>
+            ${ShoppingView.pcontent} 
 
             <%-- 페이지 최초 로드 시 첫번째 옵션의 품절 여부를 판별하여 초기 화면 세팅 --%>
             <c:set var="isSoldOut" value="${ShoppingView.option[0].o_price eq 0 or ShoppingView.option[0].o_quantity le 0}" />

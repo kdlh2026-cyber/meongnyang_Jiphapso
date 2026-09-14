@@ -4,7 +4,9 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IProductDao">
 	<select id="ShoppingList" resultType="com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto">
-		select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, p.p_type as ptype, o.o_main_img as omainimg,o.o_price as oprice, o.o_default as odefault, p.p_no as pno
+		select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, 
+		p.p_type as ptype, o.o_main_img as omainimg,o.o_price as oprice, 
+		o.o_default as odefault, p.p_no as pno, o.o_quantity as oquantity
 		from dc_product p, dc_product_option o
 		where p.p_no=o.p_no
 		 and o.o_default='Y' 
@@ -21,6 +23,7 @@
 	    <result property="pbrand" column="pbrand" />
 	    <result property="pcategory" column="pcategory" />
 	    <result property="ptype" column="ptype" />
+	    <result property="pcontent" column="pcontent" />
 	    <collection property="option" ofType="com.springboot.meongnyang_Jiphapso.dto.ProductOptionDto">
 	        <id property="o_no" column="ono" />
 	        <result property="o_price" column="oprice" />
@@ -34,17 +37,15 @@
 	    <collection property="detailImages" ofType="com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto">
 	        <id property="img_no" column="imgno" />
 	        <result property="img_url" column="imgurl" />
-	        <result property="img_content" column="imgcontent" />
 	        <result property="img_sort" column="imgsort" />
 	    </collection>
 	</resultMap>
-
 	
 	<select id="ShoppingView" resultMap="ShoppingViewMap">
     select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, p.p_type as ptype,
     	   o.o_no as ono, o.o_main_img as omainimg, o.o_price as oprice, o.o_default as odefault, 
     	   p.p_no as pno, o.o_origin_price as ooriginprice, o.o_quantity as oquantity, o.o_type_size as otypesize, o.o_color as ocolor,
-           i.img_no as imgno, i.img_url as imgurl, i.img_content as imgcontent, i.img_sort as imgsort
+           i.img_no as imgno, i.img_url as imgurl, p.p_content as pcontent, i.img_sort as imgsort
     from dc_product p
     inner join dc_product_option o on p.p_no = o.p_no
     left join dc_product_detail_image i on p.p_no = i.p_no
@@ -52,6 +53,34 @@
     order by i.img_sort asc
 	</select>
 
+	<select id="ProductViewUpdate" resultMap="ShoppingViewMap">
+    select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, p.p_type as ptype,
+           o.o_no as ono, o.o_main_img as omainimg, o.o_price as oprice, o.o_default as odefault, 
+           p.p_no as pno, o.o_origin_price as ooriginprice, o.o_quantity as oquantity, o.o_type_size as otypesize, o.o_color as ocolor,
+           i.img_no as imgno, i.img_url as imgurl, p.p_content as pcontent, i.img_sort as imgsort
+    from dc_product p
+    inner join dc_product_option o on p.p_no = o.p_no
+    left join dc_product_detail_image i on p.p_no = i.p_no
+    where p.p_no = #{p_no}
+    <choose>
+        <when test="o_no != null and o_no != ''">
+            and o.o_no = #{o_no}
+        </when>
+        <otherwise>
+            and (o.o_default = 'Y' or o.o_no = (
+                select min(o_no) from dc_product_option where p_no = p.p_no
+            ))
+        </otherwise>
+    </choose>
+    order by i.img_sort asc
+	</select>
+	
+	<update id="resetProductDefaultOption" parameterType="int">
+	    update dc_product_option
+	    set o_default = 'N'
+	    where p_no = #{p_no}
+	</update>
+	
 	<select id="productSearchList" resultType="com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto">
 	    select p.p_title as ptitle, p.p_brand as pbrand, p.p_category as pcategory, p.p_type as ptype, o.o_main_img as omainimg,o.o_price as oprice, o.o_default as odefault, p.p_no as pno
 		from dc_product p, dc_product_option o

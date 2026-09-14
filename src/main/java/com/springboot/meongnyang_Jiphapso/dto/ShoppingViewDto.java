@@ -11,6 +11,7 @@ public class ShoppingViewDto {
 	private String pbrand;
 	private String pcategory;
 	private String ptype;
+	private String pcontent;
 	private List<ProductOptionDto> option;
 	private List<ProductDetailImageDto> detailImages;
 }

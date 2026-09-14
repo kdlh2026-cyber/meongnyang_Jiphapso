@@ -54,14 +54,18 @@ public class AdminController {
 		return "admin/adminPage";
 	}
 	
+	// ------------------ 회원 관리 ------------------ //
+	
 	@RequestMapping("/admin/mem/memberList")
 	public String memberList(Model model) {
 		 List<MemberDTO> userList = m_dao.MemberListView("USER");
 		 List<MemberDTO> creatorList = m_dao.MemberListView("CREATOR");
+		 List<MemberDTO> badList = m_dao.MemberListView("BADMAN");
 	    
 	    List<MemberDTO> users = new ArrayList<>();
 	    users.addAll(userList);
 	    users.addAll(creatorList);
+	    users.addAll(badList);
 
 	    model.addAttribute("memberList", users);
 	    return "admin/mem/memberList";
@@ -131,13 +135,27 @@ public class AdminController {
 
 	    return "redirect:/admin/mem/memberList";
 	}
+	
+	@RequestMapping("/creatorApprove")
+	public String creapp(MemberDTO m_dto) {
+		m_dao.MemberCreatorApprove(m_dto);
+		
+		return "redirect:/admin/mem/memberList";
+	}
+	
+	@RequestMapping("/creatorRefuse")
+	public String crefuse(MemberDTO m_dto) {
+		m_dao.MemberCreatorRefuse(m_dto);
+		
+		return "redirect:/admin/mem/memberList";
+	}
 
 	
 	@RequestMapping("/AmemberDelete")
 	public String AmemDelte(@RequestParam("m_id") String m_id) {
 		m_dao.MemberDelete(m_id);
 		
-		return "redirect:admin/mem/memberList";
+		return "redirect:/admin/mem/memberList";
 	}
 	
 	// ------------------ 커뮤니티 ------------------ //

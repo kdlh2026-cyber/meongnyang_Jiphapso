@@ -15,6 +15,7 @@
     <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
 </head>
 <body>
+<div id="coToastWrap" class="co-toast-wrap"></div>
 
 <div class="co-wrap">
     <div class="co-header">
@@ -152,11 +153,11 @@
                 </div>
                 <div class="co-summary-row" id="couponDiscountRow" style="display:none;">
                     <span>쿠폰 할인</span>
-                    <span id="couponDiscountAmount">-0원</span>
+                    <span id="couponDiscountAmount" class="co-discount-amt">-0원</span>
                 </div>
                 <div class="co-summary-row" id="pointDiscountRow" style="display:none;">
                     <span>포인트 사용</span>
-                    <span id="pointDiscountAmount">-0원</span>
+                    <span id="pointDiscountAmount" class="co-discount-amt">-0원</span>
                 </div>
                 <div class="co-summary-total"><span>총 주문금액</span><span class="amt" id="totalAmount"><fmt:formatNumber value="${finalAmount}" pattern="#,##0" />원</span></div>
             </div>
@@ -172,7 +173,6 @@
                     <input type="checkbox" id="useShoppingBag" onchange="toggleShoppingBag(this.checked)" style="width:16px; height:16px; flex:none;">
 
                     <div class="shoppingbag-top" style="display:flex; align-items:center; gap:14px; flex:1;">
-                        <%-- height를 auto로 주어 이미지가 찌그러지거나 상하 여백이 생기는 현상 방지 --%>
                         <img src="${pageContext.request.contextPath}/images/checkout/shopping-bag-pets.png"
                              alt="쇼핑백" class="shoppingbag-img" style="width:75px; height:auto; object-fit:contain; flex:none;">
 
@@ -232,7 +232,7 @@
                 <div class="co-card-title">이용 및 정보 제공 약관</div>
                 <p class="co-terms-text">결제 전 이용 및 정보 제공 약관 내용을 확인했으며 이에 동의합니다.</p>
                 <label class="co-terms-check">
-                    <input type="checkbox" id="agreeTerms" required>
+                    <input type="checkbox" id="agreeTerms">
                     구매조건 확인 및 결제진행 동의
                 </label>
                 <button type="button" class="co-btn-pay" id="btnPay" onclick="requestOrder()">결제하기</button>
@@ -243,6 +243,23 @@
 </div>
 
 <script>
+    function showToast(message, type) {
+        var wrap = document.getElementById('coToastWrap');
+        if (!wrap || !message) return;
+
+        var toast = document.createElement('div');
+        toast.className = 'co-toast' + (type === 'success' ? ' co-toast-success' : type === 'error' ? ' co-toast-error' : '');
+        toast.textContent = message;
+        wrap.appendChild(toast);
+
+        requestAnimationFrame(function () { toast.classList.add('co-toast-show'); });
+
+        setTimeout(function () {
+            toast.classList.remove('co-toast-show');
+            setTimeout(function () { toast.remove(); }, 250);
+        }, 2500);
+    }
+
     var memberInfo = {
         name: document.getElementById('memberName').value,
         tel: document.getElementById('memberTel').value,
@@ -271,10 +288,10 @@
     let bagQty = BAG_MIN_QTY;
 
     // ================= 쿠폰 =================
-    var usableCouponList = [];   // /coupon/usable 조회 결과 캐시
-    var selectedCoupon = null;   // 현재 선택된 쿠폰 (MemberCouponDTO)
+    var usableCouponList = [];   // /coupon/usable 조회 결과
+    var selectedCoupon = null;   // 현재 선택된 쿠폰
 
-    // 사용 가능한(미사용 + 만료전) 보유쿠폰 목록 조회 (CouponController#usableCouponList)
+    // 사용 가능한(미사용 + 만료전) 보유쿠폰 목록 조회
     function loadUsableCoupons() {
         fetch('/coupon/usable')
             .then(function (res) { return res.json(); })
@@ -475,7 +492,10 @@
         }
 
         if (!document.getElementById('agreeTerms').checked) {
-            alert('구매조건 확인 및 결제진행에 동의해주세요.');
+            showToast('구매조건 확인 및 결제진행에 동의해주세요.', 'error');
+            var termsCheck = document.querySelector('.co-terms-check');
+            termsCheck.classList.add('co-terms-error', 'co-terms-shake');
+            setTimeout(function () { termsCheck.classList.remove('co-terms-shake'); }, 400);
             btnPay.disabled = false;
             return;
         }
@@ -483,7 +503,7 @@
         const payMethodEl = document.querySelector('input[name="orMethod"]:checked');
 
         if (V2_UNSUPPORTED_METHODS.includes(payMethodEl.value)) {
-            alert('아직 준비 중인 결제수단이에요. 다른 결제수단을 선택해주세요.');
+            showToast('아직 준비 중인 결제수단이에요.', 'error');
             btnPay.disabled = false;
             return;
         }
@@ -522,17 +542,15 @@
                 });
             } else {
                 btnPay.disabled = false;
-                alert(result.message || '주문 생성에 실패했어요.');
+                showToast(result.message || '주문 생성에 실패했어요.', 'error');
             }
         })
         .catch(() => {
             btnPay.disabled = false;
-            alert('주문 처리 중 오류가 발생했어요.');
+            showToast('주문 처리 중 오류가 발생했어요.', 'error');
         });
     }
 
-    // 선택한 쿠폰을 이번 주문에 사용 처리 (CouponController#useCoupon)
-    // 쿠폰은 주문취소/반품이 되어도 되돌려주지 않는 정책이라, 주문이 생성된 시점에 바로 사용 확정 처리함
     function markCouponUsed(orNo) {
         if (!selectedCoupon) {
             return Promise.resolve();
@@ -586,7 +604,7 @@
         .then(result => {
             if (!result.success) {
                 document.getElementById('btnPay').disabled = false;
-                alert(result.message || '결제요청 등록에 실패했어요.');
+                showToast(result.message || '결제요청 등록에 실패했어요.', 'error');
                 return;
             }
 
@@ -608,7 +626,7 @@
             }).then(function (paymentResponse) {
                 if (paymentResponse.code != null) {
                     document.getElementById('btnPay').disabled = false;
-                    alert('결제가 완료되지 않았어요: ' + paymentResponse.message);
+                    showToast('결제가 완료되지 않았어요: ' + paymentResponse.message, 'error');
                     return;
                 }
                 confirmPayment(result.payNo, paymentResponse.paymentId, orNo);
@@ -616,7 +634,7 @@
         })
         .catch(() => {
             document.getElementById('btnPay').disabled = false;
-            alert('결제요청 처리 중 오류가 발생했어요.');
+            showToast('결제요청 처리 중 오류가 발생했어요.', 'error');
         });
     }
 
@@ -636,20 +654,35 @@
         .then(res => res.json())
         .then(result => {
             if (result.success) {
-                alert('결제가 완료되었어요.');
-                location.href = '/member/order/' + orNo;
+                showToast('결제가 완료되었어요.', 'success');
+                setTimeout(function () { location.href = '/member/order/' + orNo; }, 800);
             } else {
                 document.getElementById('btnPay').disabled = false;
-                alert(result.message || '결제 승인에 실패했어요.');
-                location.href = '/member/order/' + orNo;
+                showToast(result.message || '결제 승인에 실패했어요.', 'error');
+                setTimeout(function () { location.href = '/member/order/' + orNo; }, 1200);
             }
         })
         .catch(() => {
             document.getElementById('btnPay').disabled = false;
-            alert('결제 승인 처리 중 오류가 발생했어요.');
-            location.href = '/member/order/' + orNo;
+            showToast('결제 승인 처리 중 오류가 발생했어요.', 'error');
+            setTimeout(function () { location.href = '/member/order/' + orNo; }, 1200);
         });
     }
+
+    // 보유 포인트 초과 입력 시 입력창 빨간 테두리로 표시
+    (function bindUsePointValidation() {
+        var usePointInput = document.getElementById('usePoint');
+        if (!usePointInput) return;
+        usePointInput.addEventListener('input', function () {
+            var val = parseInt(usePointInput.value || '0', 10);
+            var max = parseInt(usePointInput.getAttribute('max') || '0', 10);
+            if (val > max) {
+                usePointInput.classList.add('co-point-error');
+            } else {
+                usePointInput.classList.remove('co-point-error');
+            }
+        });
+    })();
 
     function searchAddress() {
         new daum.Postcode({

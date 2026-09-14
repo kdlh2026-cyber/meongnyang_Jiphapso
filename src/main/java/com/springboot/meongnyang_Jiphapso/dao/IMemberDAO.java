@@ -24,6 +24,10 @@ public interface IMemberDAO {
 	public List<MemberDTO> MemberListView(String m_authority);
 	// 관리자용 회원 정보 수정
 	public int AMemUpdate(MemberDTO m_dto);
-	// 크리에이터 신청 조회
-	public List<MemberDTO> MemberCreatorApply(String m_cre_sub);
+	// 크리에이터 신청
+	public int MemberCreatorApply(String m_id);;
+	// 크리에이터 신청 승인
+	public int MemberCreatorApprove(MemberDTO m_dto);
+	// 크리에이터 신청 거절
+	public int MemberCreatorRefuse(MemberDTO m_dto);
 }

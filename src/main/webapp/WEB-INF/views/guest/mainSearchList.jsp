@@ -33,12 +33,12 @@
 	</c:if>
 	<c:forEach var="cm" items="${CMList}" end="4">
 		<div class="cm-item">
-			<a href="/communityView?comm_no=${cm.comm_no}">${cm.comm_title}</a>
+			<a href="/community/commView?comm_no=${cm.comm_no}">${cm.comm_title}</a>
 			<p>${cm.comm_content}</p>
 		</div>
 	</c:forEach>
 	<c:if test="${cmTotal > 5}">
-		<a href="/comm_search?keyword=${keyword}">커뮤니티 전체보기 &gt;</a>
+		<a href="/community/commsearch?keyword=${keyword}">커뮤니티 전체보기 &gt;</a>
 	</c:if>
 
 	<hr>

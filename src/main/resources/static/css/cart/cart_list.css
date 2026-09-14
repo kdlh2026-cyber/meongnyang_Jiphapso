@@ -185,3 +185,24 @@
         .cart-page { flex-direction: column; }
         .cart-summary { width: 100%; position: static; }
     }
+
+    /* 안내메세지 토스트 (alert 대체) */
+    .cart-toast-wrap {
+        position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+        z-index: 9999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center;
+        pointer-events: none; width: auto;
+    }
+    .cart-toast {
+        display: inline-flex; align-items: center; justify-content: center;
+        max-width: 320px; width: max-content;
+        padding: 12px 22px; border-radius: 999px;
+        background: #333; color: #fff; font-size: 13px; font-weight: 600; text-align: center;
+        line-height: 1.4; white-space: normal; word-break: keep-all;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        opacity: 0; transform: translateY(14px) scale(0.98);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        pointer-events: auto;
+    }
+    .cart-toast.cart-toast-show { opacity: 1; transform: translateY(0) scale(1); }
+    .cart-toast-success { background: #f5c518; color: #222; }
+    .cart-toast-error   { background: #f5c518; color: #a34e1c; }

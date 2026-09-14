@@ -7,8 +7,8 @@
 		<selectKey keyProperty="p_no" resultType="integer" order="BEFORE">
 			select dc_product_seq.NEXTVAL from dual
 		</selectKey>
-		insert into dc_product(p_no,p_title,p_brand,p_category,p_type)
-		values(#{p_no},#{p_title},#{p_brand},#{p_category},#{p_type})
+		insert into dc_product(p_no,p_title,p_brand,p_category,p_type, p_content)
+		values(#{p_no},#{p_title},#{p_brand},#{p_category},#{p_type}, #{p_content})
 	</insert>
 	<insert id="ProductOptionWrite">
 		<selectKey keyProperty="o_no" resultType="integer" order="BEFORE">
@@ -17,24 +17,90 @@
 		insert into dc_product_option(o_no,o_price,o_origin_price,o_main_img,o_quantity,o_type_size,o_color,o_default,p_no)
 		values(#{o_no},#{o_price},#{o_origin_price},#{o_main_img},#{o_quantity},#{o_type_size},#{o_color},#{o_default},#{p_no})
 	</insert>
+	
 	<insert id="ProductDetailImageWrite">
 		<selectKey keyProperty="img_no" resultType="integer" order="BEFORE">
 			select dc_product_detail_image_seq.NEXTVAL from dual
 		</selectKey>
-		insert into dc_product_detail_image(img_no,img_url,img_content,img_sort,p_no)
-		values(#{img_no},#{img_url},#{img_content, jdbcType=VARCHAR},#{img_sort},#{p_no})
+		insert into dc_product_detail_image(img_no,img_url,img_sort,p_no)
+		values(#{img_no},#{img_url},#{img_sort},#{p_no})
 	</insert>
+	
+	<!-- 상세 이미지 최대 img_sort 조회 (없으면 0 반환) -->
+	<select id="getMaxDetailSort" parameterType="int" resultType="int">
+	    select NVL(MAX(img_sort), 0)
+	    from dc_product_detail_image
+	    where p_no = #{p_no}
+	</select>
+
+	<update id="ProductUpdate">
+	    update dc_product
+	    set p_brand = #{p_brand},
+	        p_category = #{p_category},
+	        p_content = #{p_content}
+	    where p_no = #{p_no}
+	</update>
+
+	<update id="ProductOptionUpdate">
+	    update dc_product_option
+	    set o_price = #{o_price},
+	        o_origin_price = #{o_origin_price},
+	        o_quantity = #{o_quantity},
+	        o_type_size = #{o_type_size},
+	        o_color = #{o_color},
+	        o_default = #{o_default},
+	        o_main_img = #{o_main_img}
+	    where o_no = #{o_no}
+	</update>
+	
+	<!-- 삭제할 이미지 번호에 해당하는 파일명 조회 -->
+	<select id="getImageUrlsByNos" resultType="string">
+	    select img_url 
+	    from dc_product_detail_image
+	    where img_no in
+	    <foreach item="item" collection="list" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+	</select>
+	
+	<!-- 선택된 상세 이미지 DB 삭제 -->
+	<delete id="deleteImagesByNos">
+	    delete FROM dc_product_detail_image
+	    where img_no in
+	    <foreach item="item" collection="list" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+	</delete>
+	
+	<!-- 삭제 후 남은 상세 이미지들의 순서(img_sort)를 1, 2, 3...으로 재정렬 -->
+	<update id="reorderDetailImages" parameterType="int">
+	    MERGE INTO dc_product_detail_image tgt
+	    USING (
+	        SELECT img_no, 
+	               ROW_NUMBER() OVER (ORDER BY img_sort ASC, img_no ASC) AS new_sort
+	        FROM dc_product_detail_image
+	        WHERE p_no = #{p_no}
+	    ) src
+	    ON (tgt.img_no = src.img_no)
+	    WHEN MATCHED THEN
+	    UPDATE SET tgt.img_sort = src.new_sort
+	</update>
 
 	<delete id="ProductDelete">
 		delete from dc_product where p_no = #{p_no}
 	</delete>
-
+	
+	<select id="getProductByTitle" resultMap="dc_productMap">
+		select * from dc_product where p_title = #{p_title}
+	</select>
+	
 	<resultMap id="dc_productMap" type="com.springboot.meongnyang_Jiphapso.dto.ProductDto">
 		<id property="p_no" column="p_no" />
 		<result property="p_title" column="p_title" />
 		<result property="p_brand" column="p_brand" />
 		<result property="p_category" column="p_category" />
 		<result property="p_type" column="p_type" />
+		<result property="p_content" column="p_content" />
 	</resultMap>
 	<resultMap id="dc_productOptionMap" type="com.springboot.meongnyang_Jiphapso.dto.ProductOptionDto">
 		<id property="o_no" column="o_no" />
@@ -45,12 +111,12 @@
 		<result property="o_type_size" column="o_type_size" />
 		<result property="o_color" column="o_color" />
 		<result property="o_default" column="o_default" />
+		
 		<result property="p_no" column="p_no" />
 	</resultMap>
 	<resultMap id="dc_productDetailImageMap" type="com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto">
 		<id property="img_no" column="img_no" />
 		<result property="img_url" column="img_url" />
-		<result property="img_content" column="img_content" />
 		<result property="img_sort" column="img_sort" />
 		<result property="p_no" column="p_no" />
 	</resultMap>
