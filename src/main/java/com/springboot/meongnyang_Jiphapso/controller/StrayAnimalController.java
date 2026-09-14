@@ -50,27 +50,26 @@ public class StrayAnimalController {
 	
 	@RequestMapping("/admin/stray/StrayListA")
 	public String StrayListA(Model model,
-	        @RequestParam(value = "page", defaultValue = "1") int page) {
+	        @RequestParam(value = "page", defaultValue = "1") int page,
+	        @RequestParam(value = "category", required = false, defaultValue = "DOG") String stray_category) {
 	    
 	    int pageSize = 15; // 한 페이지에 보여줄 데이터 수
 	    int blockSize = 5; // 하단에 보여줄 페이지 버튼 개수
 	    int offset = (page - 1) * pageSize;
 
-	    List<StrayAnimalDto> strayList = stray_dao.StrayAnimalPageList(offset, pageSize);
+	    List<StrayAnimalDto> strayList = stray_dao.StrayAnimalPageList(offset, pageSize, stray_category);
 	    
-	    int totalCount = stray_dao.StrayAnimalCount();
+	    int totalCount = stray_dao.StrayAnimalCount(stray_category); 
 	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
-	    // 페이지 제한
+	    // 페이지 번호 계산
 	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
 	    int endPage = startPage + blockSize - 1;
 	    
-	    // 끝 페이지가 실제 총 페이지 수보다 커지지 않도록 처리
 	    if (endPage > totalPages) {
 	        endPage = totalPages;
 	    }
 	    
-	    // 이전/다음 화살표 활성화 여부
 	    boolean hasPrev = startPage > 1;
 	    boolean hasNext = endPage < totalPages;
 
@@ -82,6 +81,8 @@ public class StrayAnimalController {
 	    model.addAttribute("endPage", endPage);
 	    model.addAttribute("hasPrev", hasPrev);
 	    model.addAttribute("hasNext", hasNext);
+	    model.addAttribute("totalCount", totalCount);
+	    model.addAttribute("category", stray_category);
 	    
 	    return "admin/stray/StrayListA";
 	}
@@ -94,15 +95,16 @@ public class StrayAnimalController {
 	
 	@RequestMapping("/guest/StrayList")
 	public String StrayList(Model model,
-	        @RequestParam(value = "page", defaultValue = "1") int page) {
+	        @RequestParam(value = "page", defaultValue = "1") int page,
+	        @RequestParam(value = "category", required = false, defaultValue = "DOG") String category) {
 	    
 	    int pageSize = 15; // 한 페이지에 보여줄 데이터 수
 	    int blockSize = 5; // 하단에 보여줄 페이지 버튼 개수
 	    int offset = (page - 1) * pageSize;
 
-	    List<StrayAnimalDto> strayList = stray_dao.StrayAnimalPageList(offset, pageSize);
+	    List<StrayAnimalDto> strayList = stray_dao.StrayAnimalPageList(offset, pageSize, category);
 	    
-	    int totalCount = stray_dao.StrayAnimalCount();
+	    int totalCount = stray_dao.StrayAnimalCount(category); 
 	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
 	    // 페이지 제한

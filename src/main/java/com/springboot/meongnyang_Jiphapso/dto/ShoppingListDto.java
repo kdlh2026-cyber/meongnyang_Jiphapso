@@ -12,4 +12,5 @@ public class ShoppingListDto {
 	private String omainimg;
 	private int oprice;
 	private String odefault;
+	private int oquantity;
 }

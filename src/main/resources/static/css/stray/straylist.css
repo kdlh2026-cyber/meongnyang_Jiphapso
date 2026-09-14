@@ -1,0 +1,235 @@
+@charset "UTF-8";
+/* 기본 폰트 및 공통 설정 */
+* {
+    box-sizing: border-box;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+}
+
+/* 필터 전체 컨테이너 */
+.adoption-search-wrap {
+    max-width: 960px;
+    margin: 40px auto 20px;
+    padding: 0 15px;
+}
+
+.search-header-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 800;
+    color: #222;
+    margin-bottom: 50px;
+}
+
+/* 베이지/연노랑 메인 박스 */
+.filter-card {
+    position: relative; /* 캐릭터 이미지 배치를 위해 필수 */
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: #fdfbf5;
+    border: 1px solid #f3eedf;
+    border-radius: 20px;
+    padding: 24px 30px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+/* 상단에 걸쳐진 캐릭터 이미지 */
+.character-banner-img {
+    position: absolute;
+    right: 40px;
+    top: -70px;
+    width: 140px;
+    height: auto;
+    z-index: 2;
+    pointer-events: none; /* 클릭 통과 */
+}
+
+/* 강아지/고양이 탭 버튼 */
+.animal-tabs {
+    display: flex;
+    gap: 12px;
+}
+
+.animal-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: #444;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.animal-tab img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    margin-bottom: 4px;
+}
+
+/* 선택된 탭 */
+.animal-tab.active {
+    background-color: #fcedb6;
+    border-color: #edd999;
+}
+
+/* 품종 / 지역 노란 알약 버튼 공통 */
+.pill-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    padding: 0 20px;
+    background-color: #feefb8;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.pill-btn:hover {
+    background-color: #fce79f;
+}
+
+/* 품종 영역 (너비 확장) */
+.breed-filter {
+    flex: 1.5;
+}
+
+/* 지역 영역 및 팝업 래퍼 */
+.region-filter-wrap {
+    position: relative;
+    flex: 1;
+}
+
+.region-btn {
+    width: 100%;
+}
+
+/* 화살표 아이콘 모양 (CSS 드로잉) */
+.arrow-icon {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #333;
+    border-bottom: 2px solid #333;
+    transform: rotate(45deg); /* 기본 아래(down) 화살표 */
+    transition: transform 0.2s;
+}
+
+.arrow-icon.up {
+    transform: rotate(-135deg); /* 위(up) 화살표 */
+}
+
+/* 지역 드롭다운 팝업 레이어 */
+.region-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 290px;
+    background-color: #ffffff;
+    border: 2px solid #f6cf4c;
+    border-radius: 16px;
+    padding: 22px 20px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+}
+
+.dropdown-group {
+    margin-bottom: 16px;
+}
+
+.dropdown-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.dropdown-group select {
+    width: 100%;
+    height: 42px;
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+}
+
+.dropdown-group select:focus {
+    border-color: #f6cf4c;
+}
+
+/* 적용 버튼 */
+.dropdown-submit-btn {
+    display: block;
+    margin: 10px auto 0;
+    width: 80px;
+    height: 36px;
+    background-color: #f6c728;
+    color: #222;
+    border: none;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdown-submit-btn:hover {
+    background-color: #e5b61a;
+}
+
+/* 하단 부가 정보 및 필터 바 */
+.filter-sub-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.simple-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+}
+
+.stray-count-info {
+    font-size: 15px;
+    color: #333;
+}
+
+.stray-count-info .yellow-dot {
+    color: #f6c728;
+    font-size: 18px;
+    vertical-align: middle;
+    margin-right: 2px;
+}
+
+.stray-count-info strong {
+    font-weight: 800;
+    color: #111;
+}

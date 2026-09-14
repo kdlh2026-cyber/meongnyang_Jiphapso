@@ -13,19 +13,19 @@
 	<form action="productWrite" name="productWriteForm" method="post" enctype="multipart/form-data">
 	<div>
 		상품 명 :
-		<input type="text" name="p_title">
+		<input type="text" name="p_title" required>
 	</div>
 	<div>
 		상품 브랜드 :
-		<input type="text" name="p_brand">
+		<input type="text" name="p_brand" required>
 	</div>
 	<div>
 		상품 카테고리 :
-		<input type="text" name="p_category">
+		<input type="text" name="p_category" required>
 	</div>
 	<div>
 		상품 펫 타입 :
-		<input type="text" name="p_type">
+		<input type="text" name="p_type" required>
 	</div>
 	<div>
 		기본 상품 :
@@ -45,7 +45,7 @@
 	</div>
 	<div>
 		상품 판매가 :
-		<input type="text" name="o_price">
+		<input type="text" name="o_price" required>
 	</div>
 	<div>
 		상품 메인 이미지 :
@@ -57,7 +57,7 @@
 	</div>
 	<div>
 		상품 상세 내용 :
-		<textarea rows="5" cols="80" name="img_content"></textarea>
+		<textarea rows="5" cols="80" name="p_content"></textarea>
 	</div>
 	<div>
 		상품 상세 이미지 :
