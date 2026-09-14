@@ -28,7 +28,7 @@
 		<c:forEach var="hp" items="${hospitalList}">
 			<tr>
 				<td>
-					<a href="/hospitalView?hp_no=${hp.hp_no}">${hp.hp_name}</a>
+					<a href="/guest/hospital/hospitalView?hp_no=${hp.hp_no}">${hp.hp_name}</a>
 				</td>
 				<td>${hp.hp_addr}</td>
 				<td>${hp.hp_tel}</td>

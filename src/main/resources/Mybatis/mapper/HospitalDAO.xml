@@ -39,7 +39,7 @@
                          OR hp_addr LIKE '%' || #{keyword} || '%')
                 </if>
             </where>
-            order by hp_no desc
+            order by hp_no asc
         ) A
         WHERE ROWNUM &lt;= #{endRow}
     )
