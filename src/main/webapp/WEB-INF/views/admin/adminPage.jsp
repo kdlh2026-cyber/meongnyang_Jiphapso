@@ -61,8 +61,10 @@
 	<li>
 		<button>커뮤니티 관리</button>
 		<div class="content">
-			<p><a href="/breedInfo">품종관리</a>
-			<p><a href="/communityCrawlingWriteForm">글쓰기 페이지</a></p>
+			<p><a href="/admin/communityManage">게시글 관리</a>
+			<p><a href="/admin/eventManage">이벤트 관리</a>
+			<p><a href="/admin/breedInfo">품종관리</a>
+			<p><a href="/communityCrawlingWriteForm">글쓰기 페이지</a></p>>
 		</div>
 	</li>
 	<li>

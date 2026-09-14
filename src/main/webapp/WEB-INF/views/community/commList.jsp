@@ -69,7 +69,7 @@
         </div>
     </c:if>
 
-	<div>전체 oo개</div>
+	<div>전체 ${totalCount}</div>
 	<table border="1" width="700">
 	<c:forEach var="board" items="${list}">
 		<tr>
@@ -88,7 +88,7 @@
 		</tr>
 		<tr>
 			<td>
-				답변${board.comm_count} ${board.comm_writer}
+				답변${board.reply_count} ${board.comm_writer}
 				<c:forEach var="tag" items="${fn:split(board.comm_tag, ',')}">
 				 	<c:if test="${not empty tag}">
 				 		<span>${tag}</span>

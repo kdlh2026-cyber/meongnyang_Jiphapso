@@ -93,12 +93,12 @@
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
 	<div style="max-width: 900px; margin: 0 auto; padding: 20px;">
-		<div><h1>커뮤니티 글쓰기</h1></div>
+		<div><h1>게시글 수정하기</h1></div>
 		<div style="margin-bottom: 20px; color: #666;">반려동물에 대한 궁금증을 가장 빠르게 답변 받아보세요!</div>
 		
 		<div>
-			<form name="communityWriteForm" method="post" action="/commWrite" enctype="multipart/form-data" onsubmit="return validateForm()">
-				
+			<form name="communityUpdateForm" method="post" action="/community/update" enctype="multipart/form-data">
+				<input type="hidden" name="comm_no" value="${update.comm_no}">
 				<!-- [1단계] 게시판 선택 -->
 				<div class="form-row-top">
 					<div class="catgogry_box step-active" id="step1Box">
@@ -162,7 +162,7 @@
 					
 					<!-- [제목 영역] -->
 					<div class="title" style="margin-bottom: 15px;">
-						<input type="text" name="comm_title" placeholder="제목을 입력해주세요" style="padding: 12px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px;">
+						<input type="text" name="comm_title" value="${update.comm_title}" style="padding: 12px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px;">
 					</div>	
 					<div class="explain" style="font-size: 12px; color: #777; margin-bottom: 20px;">
 						<span class="sub_explain">! 질병 관련 질문 시 지역명을 함께 적어주시면 수의사분들의 빠른 답변을 받아보실 수 있습니다.</span>
@@ -171,7 +171,7 @@
 					
 					<!-- [내용 입력 영역] -->
 					<div class="body_content" style="margin-bottom: 20px;">
-						<textarea rows="15" name="comm_content" placeholder="5자 이상의 질문 내용을 입력해주세요." style="padding: 12px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
+						<textarea rows="15" name="comm_content" style="padding: 12px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; resize: vertical;">${update.comm_content}</textarea>
 					</div>
 					
 					<!-- [태그 / 사진 / 동영상 하단 배치] -->

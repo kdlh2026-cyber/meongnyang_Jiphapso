@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IEventDAO">
+	<!-- 이벤트 신청 -->
+	<insert id="eventReport">
+		insert into dc_event_report(report_no, report_link, report_content, m_no, report_date)
+			values(dc_event_report_seq.NEXTVAL, 
+					#{report_link, jdbcType=VARCHAR}, 
+					#{report_content, jdbcType=VARCHAR}, 
+					#{m_no, jdbcType=INTEGER},
+					SYSDATE)
+	</insert>
+	
+	<!-- 이벤트 신청 조회 -->
+	<select id="eventReportList" resultType="com.springboot.meongnyang_Jiphapso.dto.EventReportDTO">
+		select * from dc_event_report
+	</select>
+	
+ 	<!--이벤트 조회-->
+ 	<select id="eventList" resultType="com.springboot.meongnyang_Jiphapso.dto.EventDTO">
+ 		select * from dc_event
+ 	</select>
+ 	
+ 	<!--이벤트 상세 조회-->
+ 	<select id="eventDetail" parameterType="int" resultType="com.springboot.meongnyang_Jiphapso.dto.EventDTO">
+ 		select * from dc_event where event_no = #{event_no}
+ 	</select>
+	
+	<!-- 이벤트 등록(관리자) -->
+	<insert id="eventWrite">
+		insert into dc_event(event_no, event_title, event_pet_type, event_onoff,
+							event_start, event_end, event_all, event_loc, event_date,
+							m_no, event_thumb, event_content)
+			values(dc_event_seq.NEXTVAL,
+				   #{event_title},
+				   #{event_pet_type},
+				   #{event_onoff},
+				   #{event_start, jdbcType=VARCHAR},
+				   #{event_end, jdbcType=VARCHAR},
+				   #{event_all, jdbcType=VARCHAR},
+				   #{event_loc},
+				   SYSDATE,
+				   #{m_no, jdbcType=INTEGER},
+				   #{event_thumb},
+				   #{event_content})
+	</insert>
+	
+	<!-- 이벤트 수정(관리자) -->
+	<update id="eventUpdate" parameterType="com.springboot.meongnyang_Jiphapso.dto.EventDTO">
+	    UPDATE dc_event 
+	    SET event_title = #{event_title},
+	        event_start = #{event_start, jdbcType=VARCHAR},
+	        event_end = #{event_end, jdbcType=VARCHAR},
+	        event_all = #{event_all, jdbcType=VARCHAR},  <!-- [수정] 이 부분에 jdbcType=VARCHAR 추가 -->
+	        event_pet_type = #{event_pet_type},
+	        event_onoff = #{event_onoff},
+	        event_loc = #{event_loc},
+	        event_content = #{event_content},
+	        event_thumb = #{event_thumb}
+	    WHERE event_no = #{event_no}
+	</update>
+	
+	<!-- 이벤트 삭제(관리자) -->
+	<delete id="eventDelete">
+	    DELETE FROM dc_event WHERE event_no = #{event_no}
+	</delete>
+</mapper>
