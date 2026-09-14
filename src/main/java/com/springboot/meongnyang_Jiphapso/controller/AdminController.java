@@ -209,7 +209,9 @@ public class AdminController {
             latestByType.put(type, com_service.selectList(type, null, null, "latest", 1, 10));
 
             // 인기 Top 10 영역: 인기순(도움돼요순) 무조건 1~10개 고정
-            topByType.put(type, com_service.selectList(type, null, null, "popular", 1, 10));
+            Map<String, Object> params = new HashMap<>();
+            params.put("comm_type", type);
+            topByType.put(type, com_service.getPopularList(params));
         }
 
         model.addAttribute("categoryCounts", categoryCounts);

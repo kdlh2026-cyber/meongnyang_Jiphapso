@@ -30,8 +30,8 @@ public class CommunityService {
 	@Autowired
 	ICommentDAO cmt_dao;
 
-	//@Autowired
-	//private PointService pointService; 
+	@Autowired
+	private PointService pointService; 
 	
 	public void write(CommunityDTO dto, MultipartFile[] uploadImages, MultipartFile[] uploadVideo) throws Exception {
 	    
@@ -107,12 +107,7 @@ public class CommunityService {
 	    
 	    // 3. DAO 호출하여 DB에 커뮤니티 글 Insert
 	    dao.CommunityWrite(dto);
-
-	    // 글 작성 완료 시 50P 정액 적립 (글 종류/내용과 무관하게 1건당)
-	    if (dto.getM_no() != null) {
-	        pointService.earnCommunityPostBonus((long) dto.getM_no());
-	    }
-
+	
 	    // 4. 전체 이미지를 이미지 테이블에 순서대로 저장
 	    Integer commNo = dto.getComm_no();
 	    
@@ -241,9 +236,11 @@ public class CommunityService {
 	public Map<String, Object> getCommunityStatsByJava(String commType) {
 	    Map<String, Object> result = new HashMap<>();
 
-	    // 1. 해당 탭(commType)의 모든 게시글 목록을 가져옴 (필요시 commType 조건만 파라미터로 전달)
-	    // 기존에 있는 Dao 메서드나 별도의 전체 조회 메서드 활용
+	    // 1. 해당 탭(commType)의 모든 게시글 목록을 가져옴 (null 방어)
 	    List<CommunityDTO> list = dao.getCommunityListForStats(commType);
+	    if (list == null) {
+	        list = new ArrayList<>();
+	    }
 	    
 	    // 1-1. 총 개수
 	    int totalCount = list.size();
@@ -251,7 +248,7 @@ public class CommunityService {
 
 	    // 2. 펫 유형별 비율 계산 (Map을 이용한 그룹바이 집계)
 	    Map<String, Long> petCountMap = list.stream()
-	        .filter(c -> c.getComm_pet_type() != null)
+	        .filter(c -> c != null && c.getComm_pet_type() != null) // c가 null인 경우 방어
 	        .collect(Collectors.groupingBy(CommunityDTO::getComm_pet_type, Collectors.counting()));
 
 	    List<Map<String, Object>> petRatioList = new ArrayList<>();
@@ -281,8 +278,7 @@ public class CommunityService {
 	    // 3. 월별 등록 현황 (1월~12월 배열 만들기)
 	    int[] monthlyCounts = new int[12];
 	    for (CommunityDTO c : list) {
-	        if (c.getComm_date() != null) {
-	            // 날짜 형식에 맞춰 월 추출 (java.sql.Date 또는 LocalDate 기준)
+	        if (c != null && c.getComm_date() != null) {
 	            Calendar cal = Calendar.getInstance();
 	            cal.setTime(c.getComm_date());
 	            int month = cal.get(Calendar.MONTH); // 0(1월) ~ 11(12월)
@@ -291,24 +287,34 @@ public class CommunityService {
 	    }
 	    result.put("monthlyCounts", monthlyCounts);
 
-	    // 4. 반응 비율 (도움돼요 / 글쎄요 합산)
-	    int totalHelpful = list.stream().mapToInt(CommunityDTO::getComm_good).sum();
-	    int totalUseless = list.stream().mapToInt(CommunityDTO::getComm_well).sum();
+	    // 4. 반응 비율 (도움돼요 / 글쎄요 합산) - [Null 방어 추가]
+	    int totalHelpful = list.stream()
+	            .filter(c -> c != null)
+	            .mapToInt(c -> c.getComm_good() != null ? c.getComm_good() : 0)
+	            .sum();
+	            
+	    int totalUseless = list.stream()
+	            .filter(c -> c != null)
+	            .mapToInt(c -> c.getComm_well() != null ? c.getComm_well() : 0)
+	            .sum();
+
 	    Map<String, Object> reactionRatio = new HashMap<>();
 	    reactionRatio.put("HELPFUL", totalHelpful);
 	    reactionRatio.put("USELESS", totalUseless);
 	    result.put("reactionRatio", reactionRatio);
 
-	    // 5. 태그 Top 5 추출 (comm_tag 컬럼이 콤마로 구분되어 있는 경우 자바에서 완벽하게 파싱!)
+	    // 5. 태그 Top 5 추출 (comm_tag 컬럼 파싱)
 	    Map<String, Integer> tagCountMap = new HashMap<>();
 	    for (CommunityDTO c : list) {
-	        String tags = c.getComm_tag();
-	        if (tags != null && !tags.trim().isEmpty()) {
-	            String[] tagArray = tags.split(",");
-	            for (String tag : tagArray) {
-	                String cleanTag = tag.trim();
-	                if (!cleanTag.isEmpty()) {
-	                    tagCountMap.put(cleanTag, tagCountMap.getOrDefault(cleanTag, 0) + 1);
+	        if (c != null) {
+	            String tags = c.getComm_tag();
+	            if (tags != null && !tags.trim().isEmpty()) {
+	                String[] tagArray = tags.split(",");
+	                for (String tag : tagArray) {
+	                    String cleanTag = tag.trim();
+	                    if (!cleanTag.isEmpty()) {
+	                        tagCountMap.put(cleanTag, tagCountMap.getOrDefault(cleanTag, 0) + 1);
+	                    }
 	                }
 	            }
 	        }
@@ -331,6 +337,24 @@ public class CommunityService {
 	    result.put("comm_type", commType);
 
 	    return result;
+	}
+	
+	// 인기 Top 10 목록 가져오기 (comm_type: Q&A, 라운지 등 탭 분류)
+	public List<CommunityDTO> getPopularList(Map<String, Object> params) {
+	    // 1. DAO를 통해 SQL 조건에 맞는 전체 목록을 조회 (ROWNUM 제거된 상태)
+	    List<CommunityDTO> fullList = dao.selectPopular(params);
+	    
+	    // 2. 데이터가 null일 경우를 대비한 방어 코드
+	    if (fullList == null) {
+	        fullList = new ArrayList<>();
+	    }
+	    
+	    // 3. 자바 Stream을 이용해 상위 10개만 추출 (.limit(10))
+	    List<CommunityDTO> top10List = fullList.stream()
+	                                         .limit(10)
+	                                         .collect(Collectors.toList());
+	                                         
+	    return top10List;
 	}
 	
 	// 커뮤니티 글(리뷰) insert 성공 직후, 대상 금액의 3% 적립

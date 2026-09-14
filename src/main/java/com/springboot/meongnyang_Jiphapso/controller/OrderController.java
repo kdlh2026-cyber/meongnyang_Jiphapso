@@ -8,26 +8,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.springboot.meongnyang_Jiphapso.common.ApiResponse;
 import com.springboot.meongnyang_Jiphapso.common.SessionConst;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberLookupDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CartDTO;
+import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderDTO;
+import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
 import com.springboot.meongnyang_Jiphapso.service.CartService;
+import com.springboot.meongnyang_Jiphapso.service.CommentService;
 import com.springboot.meongnyang_Jiphapso.service.OrderDetailService;
 import com.springboot.meongnyang_Jiphapso.service.OrderService;
 import com.springboot.meongnyang_Jiphapso.service.PointService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class OrderController {
@@ -65,6 +74,8 @@ public class OrderController {
         return mNo.longValue();
     }
 
+    @Autowired
+    CommentService commentService;
     // ------------------------------------------------------------
     // 회원 화면 - /member/order/**
     // ------------------------------------------------------------
@@ -159,11 +170,21 @@ public class OrderController {
     public String orderDetail(@PathVariable("orNo") Long orNo, HttpSession session, Model model) {
 
         requireLogin(session);
+        
+        OrderDTO order = orderService.getOrderOne(orNo);
 
+        if (order != null && order.getOrderDetailList() != null) {
+            for (OrderDetailDTO detail : order.getOrderDetailList()) {
+            	Long detailNo = detail.getOdDetailNo() != null ? detail.getOdDetailNo().longValue() : null;
+            	CommentDTO review = commentService.getReviewByDetailNo(detailNo);
+            	detail.setReview(review);
+            }
+        }
+        
         model.addAttribute("order", orderService.getOrderOne(orNo));
-
-
         model.addAttribute("orderDetailList", orderDetailService.getListByOrder(orNo));
+        
+        model.addAttribute("orderWithReview", order);
 
         return "member/order/detail";
     }
@@ -180,7 +201,7 @@ public class OrderController {
         orderService.updateOrderInfo(orderInfo);
 
         return ApiResponse.ok(null);
-    }
+    }    
 
     @RequestMapping(value = "/admin/order", method = RequestMethod.GET)
     public String adminOrderList(Model model) {

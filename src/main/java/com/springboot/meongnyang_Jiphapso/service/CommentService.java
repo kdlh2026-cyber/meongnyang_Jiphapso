@@ -17,8 +17,8 @@ public class CommentService {
 	@Autowired
 	CommentESService esService;
 
-	//@Autowired
-	//private PointService pointService; 
+	@Autowired
+	private PointService pointService; 
 	
 	public void write(CommentDTO dto) throws Exception{
 		dao.CommentWrite(dto);
@@ -76,8 +76,29 @@ public class CommentService {
         return result;
     }
     
-	// 리뷰 insert 성공 직후 (실제 구매자인지 검증 후)
+    // 내가 쓴 특정 상품 리뷰 조회
+    public CommentDTO getReviewByDetailNo(Long odDetailNo) {
+        return dao.selectReviewByDetailNo(odDetailNo);
+    }
 
+    // 내가 쓴 상품 리뷰 삭제
+    public int reviewDelete(Integer cmt_no, Integer m_no) {
+    	return dao.reviewDelete(cmt_no, m_no);
+    }
+    
+    // 내가 쓴 모든 리뷰
+    public List<CommentDTO> getReviewsByMemberNo(Integer m_no) {
+        return dao.selectReviewsByMemberNo(m_no);
+    }
+    
+    public void reviewUpdate(int cmt_no, int m_no, String cmt_content, int cmt_score) {
+        dao.reviewUpdate(cmt_no, m_no, cmt_content, cmt_score);
+    }
+    
+    public List<CommentDTO> selectReviewListByProductNo(int p_no) {
+        return dao.selectReviewListByProductNo(p_no);
+    }
+    
 	// ① 이 회원의 첫 리뷰면 1000P (이미 지급됐으면 내부에서 자동으로 무시됨)
 	// pointService.earnFirstReviewBonus(mNo);
 	

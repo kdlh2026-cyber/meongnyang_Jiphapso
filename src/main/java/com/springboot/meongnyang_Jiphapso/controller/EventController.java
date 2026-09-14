@@ -82,40 +82,42 @@ public class EventController {
 	
 	@RequestMapping("/event/eventWrite")
 	public String eventWrite(EventDTO e_dto,
-							 @RequestParam("thumbFile") MultipartFile thumbFile,
-							 HttpServletRequest request,
-							 Model model) {
-		try {
-            // 1. 썸네일 파일 업로드 처리
-            if (thumbFile != null && !thumbFile.isEmpty()) {
-                String originalFilename = thumbFile.getOriginalFilename();
-                
-                // 파일을 저장할 서버 실제 경로 지정 (예시)
-                String uploadDir = request.getServletContext().getRealPath("/resources/upload/event/");
-                
-                // 파일 중복 방지를 위한 파일명 변경 (선택 사항)
-                String savedFileName = System.currentTimeMillis() + "_" + originalFilename;
-                
-                // 파일 저장 실행
-                java.io.File serverFile = new java.io.File(uploadDir + savedFileName);
-                if (!serverFile.getParentFile().exists()) {
-                    serverFile.getParentFile().mkdirs(); // 폴더가 없으면 생성
-                }
-                thumbFile.transferTo(serverFile);
-                
-                // DTO에 썸네일 웹 접근 경로 세팅 (event_thumb 컬럼에 저장될 값)
-                e_dto.setEvent_thumb("/resources/upload/event/" + savedFileName);
-            }
-            
-            // 2. 서비스 호출하여 DB에 INSERT (CLOB 내용과 썸네일 경로 등 저장)
-            int result = dao.eventWrite(e_dto);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            // 예외 처리 로직
-        }	
-		
-		return "redirect:/admin/eventManage";
+	                         @RequestParam("thumbFile") MultipartFile thumbFile,
+	                         HttpServletRequest request,
+	                         Model model) {
+	    try {
+	        // 1. 썸네일 파일 업로드 처리
+	        if (thumbFile != null && !thumbFile.isEmpty()) {
+	            String originalFilename = thumbFile.getOriginalFilename();
+	            
+	            // 프로젝트 원본 소스 폴더 경로 지정
+	            String uploadDirPath = "C:\\Users\\KH_BUSAN_B_15\\git\\meongnyang_Jiphapso\\src\\main\\resources\\static\\images\\event";
+	            
+	            // 파일 중복 방지를 위한 고유 파일명 생성
+	            String savedFileName = System.currentTimeMillis() + "_" + originalFilename;
+	            
+	            // 폴더 객체 생성 후 존재하지 않으면 생성
+	            java.io.File uploadDir = new java.io.File(uploadDirPath);
+	            if (!uploadDir.exists()) {
+	                uploadDir.mkdirs(); // 디렉토리 전체 생성
+	            }
+	            
+	            // 최종 파일 객체 생성 및 저장
+	            java.io.File serverFile = new java.io.File(uploadDir, savedFileName);
+	            thumbFile.transferTo(serverFile);
+	            
+	            // DB에 저장될 웹 접근 경로 세팅
+	            e_dto.setEvent_thumb("/images/event/" + savedFileName);
+	        }
+	        
+	        // 2. 서비스 호출하여 DB에 INSERT
+	        int result = dao.eventWrite(e_dto);
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }    
+	    
+	    return "redirect:/admin/eventManage";
 	}
 	
 	@RequestMapping("/event/eventView")

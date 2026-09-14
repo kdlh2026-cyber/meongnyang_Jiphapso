@@ -31,6 +31,7 @@
             <a href="/community/myCommunity?comm_type=라운지" class="${param.comm_type eq '라운지' ? 'active' : ''}">라운지</a>
             <a href="/community/myCommunity?comm_type=콘텐츠" class="${param.comm_type eq '콘텐츠' ? 'active' : ''}">콘텐츠</a>
             <a href="/community/myCommunity?comm_type=댓글" class="${param.comm_type eq '댓글' ? 'active' : ''}">댓글</a>
+            <a href="/community/myCommunity?comm_type=리뷰" class="${param.comm_type eq 'REVIEW' ? 'active' : ''}">리뷰</a>
         </div>
     </div>
 
@@ -154,6 +155,40 @@
                         <p style="color: #999; font-size: 14px; padding: 10px 0;">작성한 댓글이 없습니다.</p>
                     </c:if>
                 </div>
+
+                <!-- 리뷰 섹션 요약 (댓글 섹션 바깥으로 독립) -->
+                <div class="section-block" style="margin-bottom: 40px;">
+                    <div class="section-header">
+                        <h3>리뷰 <span>${reviewAll}</span></h3>
+                        <a href="/community/myCommunity?comm_type=리뷰" class="more-link">전체보기 &gt;</a>
+                    </div>
+                
+                    <c:if test="${not empty latestReview}">
+                        <div class="comment-card">
+                            <div class="comment-header-row">
+                            	<span style="color: #f59e0b; font-size: 15px; letter-spacing: 2px; margin-right: 8px;">
+	             					<c:choose>
+							            <c:when test="${latestReview.cmt_score == 5}">★★★★★</c:when>
+							            <c:when test="${latestReview.cmt_score == 4}">★★★★☆</c:when>
+							            <c:when test="${latestReview.cmt_score == 3}">★★★☆☆</c:when>
+							            <c:when test="${latestReview.cmt_score == 2}">★★☆☆☆</c:when>
+							            <c:otherwise>★☆☆☆☆</c:otherwise>
+							        </c:choose>
+							    </span>
+                                <span class="comment-date"><fmt:formatDate value="${latestReview.cmt_date}" pattern="yyyy-MM-dd" /></span>
+                                <span class="badge-category-outline">상품 리뷰</span>
+                            </div>
+                
+                            <div class="my-comment-text" style="margin-top: 8px; font-size: 14px; color: #333;">
+                                ${latestReview.cmt_content}
+                            </div>
+                        </div>
+                    </c:if>
+                    
+                    <c:if test="${empty latestReview}">
+                        <p style="color: #999; font-size: 14px; padding: 10px 0;">작성한 리뷰가 없습니다.</p>
+                    </c:if>
+                </div>
                 
             </c:if>
             
@@ -194,9 +229,39 @@
                             </div>
                         </div>
                     </c:if>
+                    
+                    <!-- 리뷰 카테고리일 때 -->
+                    <c:if test="${param.comm_type eq '리뷰'}">
+                        <div class="comment-card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
+                            <div class="comment-header-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            	<span style="color: #f59e0b; font-size: 15px; letter-spacing: 2px; margin-right: 8px;">
+							        <c:choose>
+							            <c:when test="${item.cmt_score == 5}">★★★★★</c:when>
+							            <c:when test="${item.cmt_score == 4}">★★★★☆</c:when>
+							            <c:when test="${item.cmt_score == 3}">★★★☆☆</c:when>
+							            <c:when test="${item.cmt_score == 2}">★★☆☆☆</c:when>
+							            <c:otherwise>★☆☆☆☆</c:otherwise>
+							        </c:choose>
+							    </span>
+                                <span class="comment-date" style="font-size: 12px; color: #888;">
+                                    <fmt:formatDate value="${item.cmt_date}" pattern="yyyy-MM-dd HH:mm" />
+                                </span>
+                                <span class="badge-category-outline" style="font-size: 11px; padding: 2px 6px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">상품 리뷰</span>
+                            </div>
+                
+                            <div class="my-comment-text" style="font-size: 14px; color: #333; line-height: 1.5; margin-bottom: 10px;">
+                                ${item.cmt_content}
+                            </div>
+                            
+							<div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
+							    <button type="button" onclick="location.href='/member/order/${item.cmt_type_no}'" style="padding: 5px 10px; cursor: pointer; background: #f1f3f5; border: 1px solid #dcdcdc; border-radius: 4px; font-size: 12px;">주문상세로 이동</button>
+							    <button type="button" onclick="if(confirm('정말 리뷰를 삭제하시겠습니까?')) { location.href='/community/reviewDelete?cmt_no=${item.cmt_no}'; }" style="padding: 5px 10px; cursor: pointer; background: #fff5f5; border: 1px solid #ffa8a8; color: #e03131; border-radius: 4px; font-size: 12px;">삭제하기</button>
+							</div>
+                        </div>
+                    </c:if>
                 
                     <!-- 일반 게시글 카테고리(Q&A, 라운지, 콘텐츠)일 때 -->
-                    <c:if test="${param.comm_type ne '댓글'}">
+                    <c:if test="${param.comm_type ne '댓글' && param.comm_type ne '리뷰'}">
                         <div class="post-card">
                             <a href="/community/commView?comm_no=${item.comm_no}" class="post-title">${item.comm_title}</a>
                             <div class="post-preview">${item.comm_content}</div>

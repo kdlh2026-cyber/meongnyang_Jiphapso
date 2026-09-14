@@ -24,6 +24,8 @@ public class OrderDetailDTO {
     private Date orAt;           // 상위 주문일시
     private String ocStatus;     // 이 상세건의 가장 최근 취소/반품/교환 신청상태 (신청/승인/거절/환불완료 등, 이력 없으면 null)
 
+    private CommentDTO review; 	// 주문완료 상품 리뷰작성 데이터
+    
     public OrderDetailDTO() {}
 
     public Long getOdDetailNo() { return odDetailNo; }
@@ -78,4 +80,7 @@ public class OrderDetailDTO {
                 ", ocStatus='" + ocStatus + '\'' +
                 '}';
     }
+    
+    public CommentDTO getReview() { return review; }
+    public void setReview(CommentDTO review) { this.review = review; }
 }
