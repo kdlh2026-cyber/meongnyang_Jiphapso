@@ -20,7 +20,7 @@ public class HospitalController {
 	@Autowired
 	HospitalService hp_serv;
 
-	@RequestMapping("/adimn/hospital/hospitalInsertForm")
+	@RequestMapping("/admin/hospital/hospitalInsertForm")
 	public String hp_insertForm() {
 		return "admin/hospital/hospitalInsertForm";
 	}
@@ -58,7 +58,7 @@ public class HospitalController {
 		return "admin/hospital/hospitalList";
 	}
 	
-	@RequestMapping("/hospitalView")
+	@RequestMapping("/guest/hospital/hospitalView")
 	public String hp_view(@RequestParam("hp_no") int hp_no, Model model) {
 		model.addAttribute("hospital", hp_serv.view(hp_no));
 		return "guest/hospital/hospitalView";
