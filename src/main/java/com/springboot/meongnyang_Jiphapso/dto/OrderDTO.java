@@ -14,21 +14,21 @@ public class OrderDTO {
 	private String orAddrdetail; // 배송상세주소
 	private String orMemo; 	 // 배송 요청사항
 	private String orYn; 		 // 쇼핑백 구매여부(Y/N)
-	private Integer orQty; 	 // 쇼핑백 수량 (주문 상품 개수 아님! 장바구니에 담긴 상품 총 수량이 아니라, 쇼핑백 추가구매 옵션의 수량임)
+	private Integer orQty; 	 // 쇼핑백 수량
 	private String orMethod; 	 // 결제수단
 	private String orStatus; 	 // 주문상태
 	private  Date orAt; 		 // 주문일시
 	private	 Date orUp; 		 // 수정일시
 	private  Long mNo; 		 	 // 회원번호FK
-
-
+	
+	
 	// --화면 표시/조인용 (저장컬럼x)--
-    private String orderNoDisplay;    			  // 주문번호 문자열
-    private Long productAmount;    			  	  // 상품 금액 합계
-    private Long shippingFee;      			  	  // 배송비
-    private Long discountAmount;   			  	  // 쿠폰+포인트 총 할인액
-    private Long payAmount;      			  	  	  // 최종 결제금액
-    private Integer productQty;                     // 주문에 포함된 상품 총 수량 (dc_order_detail.od_quantity 합계) - or_qty(쇼핑백 수량)랑 다른 값이라 목록화면에서 헷갈리지 않게 별도로 내려줌
+    private String orderNoDisplay;    			  // 주문번호 문자열 
+    private Long productAmount;    				  // 상품 금액 합계
+    private Long shippingFee;      				  // 배송비
+    private Long discountAmount;   				  // 쿠폰+포인트 총 할인액
+    private Long payAmount;      				  // 최종 결제금액
+    private Long productQty;                         // 주문에 담긴 실제 상품 수량 합계
     private List<OrderDetailDTO> orderDetailList; // 주문상세 목록
 
     public OrderDTO() {}
@@ -87,8 +87,8 @@ public class OrderDTO {
     public Long getPayAmount() { return payAmount; }
     public void setPayAmount(Long payAmount) { this.payAmount = payAmount; }
 
-    public Integer getProductQty() { return productQty; }
-    public void setProductQty(Integer productQty) { this.productQty = productQty; }
+    public Long getProductQty() { return productQty; }
+    public void setProductQty(Long productQty) { this.productQty = productQty; }
 
     public List<OrderDetailDTO> getOrderDetailList() { return orderDetailList; }
     public void setOrderDetailList(List<OrderDetailDTO> orderDetailList) { this.orderDetailList = orderDetailList; }

@@ -104,5 +104,17 @@
         <include refid="favoriteJoinBase"/>
         ORDER BY f.fa_at DESC
     </select>
+    <!-- 관리자 - 회원별 관심상품 요약 (회원아이디 + 찜한 상품 개수), 상세보기 목록용 -->
+	<select id="selectFavoriteMemberSummaryAll" resultType="map">
+	    SELECT
+	        m.m_no       AS "mNo",
+	        m.m_id       AS "mId",
+	        COUNT(*)     AS "faCount",
+	        MAX(f.fa_at) AS "lastFaAt"
+	    FROM dc_favorite f
+	    JOIN dc_member m ON f.m_no = m.m_no
+	    GROUP BY m.m_no, m.m_id
+	    ORDER BY MAX(f.fa_at) DESC
+	</select>
 
 </mapper>

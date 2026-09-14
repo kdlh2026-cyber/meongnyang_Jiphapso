@@ -149,7 +149,7 @@ public class CartService {
         cartDAO.deleteCartAllByMember(mNo);
     }
 
-    
+
     @Transactional
     public void deleteCartByOrder(Long orNo) {
         cartDAO.deleteCartByOrder(orNo);
@@ -174,5 +174,44 @@ public class CartService {
     /** 관리자 - 전체 목록 */
     public List<CartDTO> getCartListAll() {
         return cartDAO.selectCartListAll();
+    }
+
+    @Transactional
+    public void mergeGuestCartIntoMember(String guestToken, Long mNo) {
+        if (guestToken == null || mNo == null) return;
+
+        List<CartDTO> guestList = cartDAO.selectCartListByToken(guestToken);
+        if (guestList.isEmpty()) return;
+
+        List<CartDTO> memberList = cartDAO.selectCartListByMember(mNo);
+
+        for (CartDTO guestItem : guestList) {
+            CartDTO matched = memberList.stream()
+                    .filter(m -> m.getPNo().equals(guestItem.getPNo()) && Objects.equals(m.getONo(), guestItem.getONo()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (matched != null) {
+                // 이미 회원 장바구니에 같은 상품/옵션이 있으면 수량 합산 후 게스트 항목은 삭제
+                CartDTO updateDto = new CartDTO();
+                updateDto.setCaNo(matched.getCaNo());
+                updateDto.setCaQuantity(matched.getCaQuantity() + guestItem.getCaQuantity());
+                cartDAO.updateCartQuantity(updateDto);
+                cartDAO.deleteCart(guestItem.getCaNo());
+            } else {
+                // 겹치는 상품이 없으면 게스트 항목의 소유권을 회원으로 이전
+                cartDAO.updateCartOwner(guestItem.getCaNo(), mNo);
+            }
+        }
+    }
+
+    /** 관리자 - 회원별 장바구니 요약 (관심상품 관리 페이지와 동일한 패턴) */
+    public List<Map<String, Object>> getCartMemberSummaryAll() {
+        return cartDAO.selectCartMemberSummaryAll();
+    }
+
+    /** 관리자 - 비회원(게스트) 장바구니 전체 건수 */
+    public int getGuestCartCountAll() {
+        return cartDAO.countCartByGuestAll();
     }
 }

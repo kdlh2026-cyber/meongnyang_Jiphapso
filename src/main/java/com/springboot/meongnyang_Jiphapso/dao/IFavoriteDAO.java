@@ -3,6 +3,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.springboot.meongnyang_Jiphapso.dto.FavoriteDTO;
+import java.util.Map;
 @Mapper
 public interface IFavoriteDAO {
 	
@@ -35,4 +36,7 @@ public interface IFavoriteDAO {
     
     // 관리자 - 전체 관심상품 목록
     List<FavoriteDTO> selectFavoriteListAll();
+    
+	// 관리자 - 회원별 관심상품 요약 (회원아이디 + 개수)
+	List<Map<String, Object>> selectFavoriteMemberSummaryAll();
 }

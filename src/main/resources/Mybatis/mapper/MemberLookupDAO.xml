@@ -23,4 +23,10 @@
         m_zipno AS M_ZIPNO, m_email AS M_EMAIL FROM dc_member WHERE m_no = #{mNo}
     </select>
 
+    <!--  로그인 아이디(m_id)로 1명 조회 - Principal.getName()으로 로그인 회원의 m_no를 찾기 위한 용도  -->
+    <select id="selectMemberByLoginId" resultMap="memberLookupResultMap">
+        SELECT m_no AS M_NO, m_id AS M_ID, m_name AS M_NAME, m_tel AS M_TEL, m_addr AS M_ADDR, m_addr_detail AS M_ADDR_DETAIL,
+        m_zipno AS M_ZIPNO, m_email AS M_EMAIL FROM dc_member WHERE m_id = #{mId}
+    </select>
+
 </mapper>

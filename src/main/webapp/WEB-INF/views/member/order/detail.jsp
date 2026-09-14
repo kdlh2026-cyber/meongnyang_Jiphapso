@@ -8,7 +8,6 @@
     <meta charset="UTF-8">
     <title>주문상세</title>
     <link rel="stylesheet" href="/css/order/detail.css">
-    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>

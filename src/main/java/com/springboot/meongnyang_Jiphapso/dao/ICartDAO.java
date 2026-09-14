@@ -57,4 +57,11 @@ public interface ICartDAO {
     int updateCartOption(@Param("caNo") Long caNo, @Param("oNo") Long oNo, @Param("quantity") Integer quantity);
 
     int deleteCartByOrder(@Param("orNo") Long orNo);
+    void updateCartOwner(@Param("caNo") Long caNo, @Param("mNo") Long mNo);
+
+    // 관리자 - 회원별 장바구니 요약 (회원아이디 + 담은 상품개수 + 최근담은일시)
+    List<Map<String, Object>> selectCartMemberSummaryAll();
+
+    // 관리자 - 비회원(게스트) 장바구니 전체 건수
+    int countCartByGuestAll();
 }

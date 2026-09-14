@@ -13,8 +13,16 @@
 <body>
 <h3>주문관리</h3>
 
-<c:set var="statusCodes" value="${fn:split('PAYMENT_PENDING,PAID,PREPARING,SHIPPING,DELIVERED,CONFIRMED', ',')}" />
-<c:set var="statusLabels" value="${fn:split('결제 대기 중,결제 완료,상품 준비 중,배송 중,배송 완료,구매 확정', ',')}" />
+<c:set var="statusCodes" value="${fn:split('PAYMENT_PENDING,PAID,PREPARING,SHIPPING,DELIVERED,CONFIRMED,CANCELED', ',')}" />
+<c:set var="statusLabels" value="${fn:split('결제 대기 중,결제 완료,상품 준비 중,배송 중,배송 완료,구매 확정,주문 취소', ',')}" />
+
+<!-- 주문상태 필터 탭 -->
+<div class="ord-tabs" id="ordTabs">
+    <button type="button" class="ord-tab active" data-status="ALL" onclick="filterByStatus('ALL', this)">전체</button>
+    <c:forEach var="code" items="${statusCodes}" varStatus="loop">
+        <button type="button" class="ord-tab" data-status="${code}" onclick="filterByStatus('${code}', this)">${statusLabels[loop.index]}</button>
+    </c:forEach>
+</div>
 
 <table class="admin-table">
     <thead>
@@ -23,34 +31,26 @@
         <th>수량</th><th>결제수단</th><th>상태</th><th>관리</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody id="ordTbody">
     <c:choose>
         <c:when test="${empty orderList}">
             <tr><td colspan="8">등록된 주문이 없어요.</td></tr>
         </c:when>
         <c:otherwise>
             <c:forEach var="order" items="${orderList}">
-                <tr id="row-${order.orNo}">
+                <tr id="row-${order.orNo}" class="ord-row" data-status="${order.orStatus}">
                     <td>${order.orNo}</td>
                     <td><fmt:formatDate value="${order.orAt}" pattern="yyyy.MM.dd HH:mm" /></td>
                     <td>${order.orName}</td>
                     <td>${order.orPhone}</td>
-                    <td>${order.orQty}</td>
+                    <td>${order.productQty}개</td>
                     <td>${order.orMethod}</td>
                     <td>
-                        <c:choose>
-                            <%-- 이미 취소된 주문은 드롭다운 대신 상태 뱃지로만 표시 (여기서 되돌리는 것도 막기 위함) --%>
-                            <c:when test="${order.orStatus == 'CANCELED'}">
-                                <span style="color:#c0392b; font-weight:600;">주문 취소</span>
-                            </c:when>
-                            <c:otherwise>
-                                <select class="status-select" onchange="changeStatus(${order.orNo}, this.value)">
-                                    <c:forEach var="code" items="${statusCodes}" varStatus="loop">
-                                        <option value="${code}" ${order.orStatus == code ? 'selected' : ''}>${statusLabels[loop.index]}</option>
-                                    </c:forEach>
-                                </select>
-                            </c:otherwise>
-                        </c:choose>
+                        <span class="order-badge badge-${fn:toLowerCase(order.orStatus)}">
+                            <c:forEach var="code" items="${statusCodes}" varStatus="loop">
+                                <c:if test="${order.orStatus == code}">${statusLabels[loop.index]}</c:if>
+                            </c:forEach>
+                        </span>
                     </td>
                     <td>
                         <a class="btn-sm" href="/admin/order/${order.orNo}">상세</a>
@@ -58,30 +58,34 @@
                     </td>
                 </tr>
             </c:forEach>
+            <tr id="ordNoMatch" class="ord-no-match" style="display:none;">
+                <td colspan="8">해당 상태의 주문이 없어요.</td>
+            </tr>
         </c:otherwise>
     </c:choose>
     </tbody>
 </table>
 
 <script>
-    // 주문상태 변경 - PUT /admin/order/{orNo}/status
-    function changeStatus(orNo, orStatus) {
-        // CANCELED는 이제 이 드롭다운에 없지만, 혹시 모를 우회 호출까지 클라이언트단에서도 한 번 더 막아둠
-        if (orStatus === 'CANCELED') {
-            alert('주문 취소는 [취소/반품 관리] 메뉴에서 처리해주세요.');
-            return;
-        }
+    // 상태 탭 클릭 시 클라이언트에서 행 필터링 (서버 재조회 없음)
+    function filterByStatus(status, btnEl) {
+        var tabs = document.querySelectorAll('#ordTabs .ord-tab');
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        btnEl.classList.add('active');
 
-        fetch('/admin/order/' + orNo + '/status', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orStatus: orStatus })
-        })
-        .then(res => res.json())
-        .then(result => {
-            if (!result.success) alert(result.message || '상태 변경에 실패했어요.');
-        })
-        .catch(() => alert('처리 중 오류가 발생했어요.'));
+        var rows = document.querySelectorAll('#ordTbody .ord-row');
+        var visibleCount = 0;
+
+        rows.forEach(function (row) {
+            var match = (status === 'ALL') || (row.dataset.status === status);
+            row.style.display = match ? '' : 'none';
+            if (match) visibleCount++;
+        });
+
+        var noMatch = document.getElementById('ordNoMatch');
+        if (noMatch) {
+            noMatch.style.display = (visibleCount === 0) ? '' : 'none';
+        }
     }
 
     // 주문 삭제 - DELETE /admin/order/{orNo}

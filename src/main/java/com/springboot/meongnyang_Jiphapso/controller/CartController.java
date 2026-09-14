@@ -26,7 +26,6 @@ public class CartController {
         this.cartService = cartService;
     }
     private Long loginMemberNo(HttpSession session) {
-        // 세션엔 MemberDTO.m_no 타입 그대로(Integer) 들어있어서 Integer로 꺼낸 다음 Long으로 변환
         Integer mNo = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
         return (mNo != null) ? mNo.longValue() : null;
     }
@@ -52,8 +51,6 @@ public class CartController {
     @ResponseBody
     public ApiResponse<CartDTO> addCart(@RequestBody Map<String, Object> body,
                                          HttpSession session, HttpServletRequest request, HttpServletResponse response) {
-        // pNo 파싱 실패(NumberFormatException)나 Service 쪽 재고/옵션 검증 실패(IllegalArgumentException,
-        // IllegalStateException) 를 여기서 안 잡으면 그대로 500 나가서 프론트에서 alert(result.message) 가 안 뜸
         try {
             Long mNo = loginMemberNo(session);
             Long pNo = Long.valueOf(String.valueOf(body.get("pNo")));
@@ -77,7 +74,6 @@ public class CartController {
             cartService.updateQuantity(caNo, body.get("quantity"), mNo, guestToken); // 소유자 검증 후 수정
             return ApiResponse.ok(null);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            // 소유자 아님 / 존재하지 않는 caNo 등의 검증 실패를 fail 메시지로 내려줌
             return ApiResponse.fail(e.getMessage());
         }
     }
@@ -161,11 +157,22 @@ public class CartController {
     // ------------------------------------------------------------
     // 관리자 화면
     // ------------------------------------------------------------
+
+    /** 회원별 장바구니 요약 목록 (관심상품 관리와 동일한 패턴) */
     @RequestMapping(value = "/admin/cart", method = RequestMethod.GET)
     public String adminCartList(Model model) {
-        model.addAttribute("cartList", cartService.getCartListAll());
+        model.addAttribute("cartSummaryList", cartService.getCartMemberSummaryAll());
+        model.addAttribute("guestCartCount", cartService.getGuestCartCountAll());
         return "admin/cart/adminList"; // /WEB-INF/views/admin/cart/adminList.jsp
     }
+
+    /** 회원별 장바구니 상세 (상세보기 모달용) */
+    @RequestMapping(value = "/admin/cart/byMember", method = RequestMethod.GET)
+    @ResponseBody
+    public ApiResponse<List<CartDTO>> adminCartListByMember(@RequestParam("mNo") Long mNo) {
+        return ApiResponse.ok(cartService.getCartListByMember(mNo));
+    }
+
     @RequestMapping(value = "/admin/cart/{caNo}", method = RequestMethod.DELETE)
     @ResponseBody
     public ApiResponse<Void> adminDeleteCart(@PathVariable("caNo") Long caNo) {

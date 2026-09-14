@@ -23,7 +23,6 @@
         <a href="/member/order/list?status=PAID" class="${param.status == 'PAID' ? 'active' : ''}">결제완료</a>
         <a href="/member/order/list?status=SHIPPING" class="${param.status == 'SHIPPING' ? 'active' : ''}">배송중</a>
         <a href="/member/order/list?status=DELIVERED" class="${param.status == 'DELIVERED' ? 'active' : ''}">배송완료</a>
-
         <a href="/orderCancel/list">취소</a>
     </div>
 
@@ -45,7 +44,6 @@
 
                     <div class="order-mid">
                         <div class="order-mid-left">
-                            <%-- 상태값은 detail.jsp랑 동일한 한글 라벨 + status-${orStatus} 클래스로 색상 매핑 --%>
                             <span class="status-badge status-${order.orStatus}">
                                 <c:choose>
                                     <c:when test="${order.orStatus == 'PAYMENT_PENDING'}">결제대기</c:when>
@@ -72,9 +70,6 @@
                         </a>
 
                         <c:if test="${order.orStatus == 'PAYMENT_PENDING' || order.orStatus == 'PAID'}">
-                            <%-- 주문취소는 상세페이지의 취소/반품/교환 모달을 그대로 사용.
-                                 ?cancel=1 을 붙여서 넘어가면 detail.jsp 쪽에서 이 파라미터를 보고
-                                 (상품이 1개면) 취소 모달을 자동으로 열어줌 --%>
                             <button type="button"
                                     class="btn-sm btn-sm-outline"
                                     onclick="location.href='/member/order/${order.orNo}?cancel=1'">
