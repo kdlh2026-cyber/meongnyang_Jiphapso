@@ -18,6 +18,8 @@ public class CommentDTO {
 	private Date cmt_date;
 	private String cmt_deleted;
 	private Integer m_no;
+	private int cmt_score;
+	private Long p_no;
 	
 	private String comm_img;
 	private String comm_title;

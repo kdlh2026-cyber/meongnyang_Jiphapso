@@ -26,7 +26,7 @@
             </where>
             <choose>
                 <when test="sort == 'popular'">
-                    ORDER BY comm_good DESC, comm_view DESC, comm_no DESC
+                    ORDER BY comm_good DESC NULLS LAST, comm_view DESC NULLS LAST, comm_no DESC
                 </when>
                 <otherwise>
                     ORDER BY comm_date DESC
@@ -36,6 +36,21 @@
 	        WHERE ROWNUM &lt;= #{endRow}
 	    )
 	    WHERE rnum &gt;= #{startRow}
+	</select>
+	
+	<select id="selectPopular" resultMap="CommunityMap">
+	    SELECT cm.*,
+	        (SELECT count(*) FROM dc_comment WHERE cmt_type_no = cm.comm_no) AS reply_count
+	    FROM dc_community cm
+	    <where>
+	        <if test="comm_type != null and comm_type != '' and comm_type != '전체'">
+	            AND comm_type = #{comm_type}
+	        </if>
+	        <if test="comm_pet_type != null and comm_pet_type != '' and comm_pet_type != '전체'">
+	            AND comm_pet_type = #{comm_pet_type}
+	        </if>
+	    </where>
+	    ORDER BY comm_good DESC NULLS LAST, comm_view DESC NULLS LAST, comm_no DESC
 	</select>
 	
 	<select id="getTotalCount" resultType="int">

@@ -9,20 +9,22 @@
 	    </selectKey>
 	 	
 	 	insert into dc_comment(cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no, cmt_content,
-	 							cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no)
-	 				values(#{cmt_no, jdbcType=INTEGER},
-	 						#{cmt_answer_no, jdbcType=INTEGER},
-	 						#{cmt_writer, jdbcType=VARCHAR},
-	 						#{cmt_type, jdbcType=VARCHAR},
-	 						#{cmt_type_no, jdbcType=INTEGER},
-	 						#{cmt_content, jdbcType=VARCHAR},
-	 						#{cmt_good, jdbcType=INTEGER},
-	 						#{cmt_choice, jdbcType=VARCHAR},
-	 						#{cmt_img, jdbcType=VARCHAR},
-	 						SYSDATE,
-	 						#{cmt_deleted, jdbcType=VARCHAR},
-	 						#{m_no, jdbcType=INTEGER}
-	 	)
+						cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no, cmt_score, p_no)
+			values(#{cmt_no, jdbcType=INTEGER},
+					#{cmt_answer_no, jdbcType=INTEGER},
+					#{cmt_writer, jdbcType=VARCHAR},
+					#{cmt_type, jdbcType=VARCHAR},
+					#{cmt_type_no, jdbcType=INTEGER},
+					#{cmt_content, jdbcType=VARCHAR},
+					#{cmt_good, jdbcType=INTEGER},
+					#{cmt_choice, jdbcType=VARCHAR},
+					#{cmt_img, jdbcType=VARCHAR},
+					SYSDATE,
+					#{cmt_deleted, jdbcType=VARCHAR},
+					#{m_no, jdbcType=INTEGER},
+					#{cmt_score, jdbcType=INTEGER},
+					#{p_no, jdbcType=INTEGER}
+					)
 	</insert>
 	
 	<!-- 댓글 목록 조회 -->
@@ -96,5 +98,50 @@
 	<select id="EventCommentCount" resultType="int">
 	    SELECT COUNT(*) FROM dc_comment 
 	    WHERE cmt_type = 'event' AND cmt_type_no = #{event_no}
+	</select>
+	
+	<!-- 특정 주문 상품(odDetailNo)에 작성된 리뷰 조회 -->
+	<select id="selectReviewByDetailNo" parameterType="long" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+	    SELECT cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no,
+	           cmt_content, cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no, cmt_score, p_no
+	    FROM dc_comment
+	    WHERE cmt_type = 'REVIEW'
+	      AND cmt_type_no = #{odDetailNo}
+	      AND cmt_deleted = 'N'
+	    ORDER BY cmt_date DESC
+	</select>
+	
+	<!-- 내가 작성한 모든 리뷰 목록 조회 -->
+	<select id="selectReviewsByMemberNo" parameterType="int" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+	    SELECT cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no,
+	           cmt_content, cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no, cmt_score
+	    FROM dc_comment
+	    WHERE cmt_type = 'REVIEW'
+	      AND m_no = #{m_no, jdbcType=INTEGER}
+	      AND cmt_deleted = 'N'
+	    ORDER BY cmt_date DESC
+	</select>
+	
+	<delete id="reviewDelete">
+		delete dc_comment where cmt_no = #{cmt_no} and m_no = #{m_no}
+	</delete>
+	
+	<!-- 상품 리뷰 수정 -->
+	<update id="reviewUpdate">
+	    update dc_comment
+	    set cmt_content = #{cmt_content, jdbcType=VARCHAR},
+	        cmt_score = #{cmt_score, jdbcType=INTEGER}
+	    where cmt_no = #{cmt_no, jdbcType=INTEGER}
+	    and m_no = #{m_no, jdbcType=INTEGER}
+	</update>
+	
+	<!-- 특정 상품(pNo)에 작성된 전체 리뷰 목록 조회 -->
+	<select id="selectReviewListByProductNo" parameterType="int" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+	    SELECT cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no,
+	           cmt_content, cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no, cmt_score, p_no
+	    FROM dc_comment
+	    WHERE p_no = #{p_no}
+	      AND cmt_deleted = 'N'
+	    ORDER BY cmt_date DESC
 	</select>
 </mapper>

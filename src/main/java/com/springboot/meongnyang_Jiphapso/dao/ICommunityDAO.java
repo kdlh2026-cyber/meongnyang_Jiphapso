@@ -1,11 +1,11 @@
 package com.springboot.meongnyang_Jiphapso.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.springboot.meongnyang_Jiphapso.dto.BreedDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommImageDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
 
@@ -23,6 +23,9 @@ public interface ICommunityDAO {
 												  @Param("startRow") int startRow,
 												  @Param("endRow") int endRow
 												  );
+	
+	// top10 조회
+	public List<CommunityDTO> selectPopular(Map<String, Object> params);
 	
 	public int getTotalCount(@Param("comm_type") String comm_type,
 							 @Param("comm_pet_type") String comm_pet_type,

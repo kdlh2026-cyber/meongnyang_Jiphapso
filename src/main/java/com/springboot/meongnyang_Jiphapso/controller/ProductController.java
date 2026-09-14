@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.meongnyang_Jiphapso.dao.IProductDao;
+import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
 import com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductOptionDto;
 import com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto;
+import com.springboot.meongnyang_Jiphapso.service.CommentService;
 import com.springboot.meongnyang_Jiphapso.service.ProductService;
 
 @Controller
@@ -26,6 +28,8 @@ public class ProductController {
 	private IProductDao p_dao;
 	@Autowired
 	private ProductService p_service;
+	@Autowired
+	private CommentService cmt_service;
 	
 	@RequestMapping("/productWriteForm")
 	public String productWriteForm() {

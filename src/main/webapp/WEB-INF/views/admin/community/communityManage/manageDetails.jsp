@@ -104,7 +104,7 @@
                     <c:forEach var="tag" items="${tagRankList}" varStatus="status">
                         <div class="tag-card">
                             <div class="tag-rank">${status.index + 1}</div>
-                            <div class="tag-name">#${tag.TAG_NAME}</div>
+                            <div class="tag-name">${tag.TAG_NAME}</div>
                             <div class="tag-count">${tag.TAG_COUNT}회</div>
                         </div>
                     </c:forEach>

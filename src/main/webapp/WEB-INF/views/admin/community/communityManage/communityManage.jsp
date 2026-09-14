@@ -88,7 +88,7 @@
 	     <div class="panel">
 	         <div class="panel-header">
 	             <h4>게시글 관리</h4>
-	             <a href="/admin/communityManage/all">전체보기</a>
+	             <a href="/community/commList">커뮤니티 바로가기</a>
 	         </div>
 	
 	         <div class="tab-group">
@@ -134,7 +134,7 @@
         <div class="panel">
             <div class="panel-header">
                 <h4>인기 top10</h4>
-                <a href="/admin/communityManage/top">전체보기</a>
+                <a href="/community/commList">커뮤니티 바로가기</a>
             </div>
 
             <div class="tab-group">

@@ -126,7 +126,6 @@ function loadMpTab(btn) {
         .catch(err => console.error('Error loading tab:', err));
 }
 </script>
-
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

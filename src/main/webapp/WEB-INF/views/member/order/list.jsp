@@ -77,7 +77,6 @@
                             </button>
                         </c:if>
                     </div>
-
                 </div>
             </c:forEach>
         </c:otherwise>
@@ -86,5 +85,27 @@
 </div>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
+<script>
+//document 전체에 이벤트를 걸어 동적으로 생성되거나 로드된 요소도 완벽하게 잡아냅니다.
+document.addEventListener('click', function(event) {
+    // 클릭된 요소가 'btn-review-toggle' 클래스를 가지고 있는지 확인 (버튼 안의 span 등을 눌렀을 수도 있으므로 .closest 사용)
+    const reviewBtn = event.target.closest('.btn-review-toggle');
+    
+    if (reviewBtn) {
+        const orNo = reviewBtn.getAttribute('data-orno');
+        const reviewBox = document.getElementById('review-box-' + orNo);
+        
+        if (reviewBox) {
+            if (reviewBox.style.display === 'none' || reviewBox.style.display === '') {
+                reviewBox.style.display = 'block';
+            } else {
+                reviewBox.style.display = 'none';
+            }
+        } else {
+            console.log('리뷰 박스를 찾지 못했습니다. ID: review-box-' + orNo);
+        }
+    }
+});
+</script>
 </body>
 </html>

@@ -24,15 +24,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.springboot.meongnyang_Jiphapso.common.ApiResponse;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberLookupDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CartDTO;
+import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderDTO;
+import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
 import com.springboot.meongnyang_Jiphapso.service.CartService;
+import com.springboot.meongnyang_Jiphapso.service.CommentService;
 import com.springboot.meongnyang_Jiphapso.service.OrderDetailService;
 import com.springboot.meongnyang_Jiphapso.service.OrderService;
 import com.springboot.meongnyang_Jiphapso.service.PointService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class OrderController {
@@ -75,6 +79,8 @@ public class OrderController {
         return (long) member.getM_no();
     }
 
+    @Autowired
+    CommentService commentService;
     // ------------------------------------------------------------
     // 회원 화면 - /member/order/**
     // ------------------------------------------------------------
@@ -167,13 +173,23 @@ public class OrderController {
 
     @RequestMapping(value = "/member/order/{orNo}", method = RequestMethod.GET)
     public String orderDetail(@PathVariable("orNo") Long orNo, Principal principal, Model model) {
-
+        
+        OrderDTO order = orderService.getOrderOne(orNo);
         requireLogin(principal);
 
+
+        if (order != null && order.getOrderDetailList() != null) {
+            for (OrderDetailDTO detail : order.getOrderDetailList()) {
+            	Long detailNo = detail.getOdDetailNo() != null ? detail.getOdDetailNo().longValue() : null;
+            	CommentDTO review = commentService.getReviewByDetailNo(detailNo);
+            	detail.setReview(review);
+            }
+        }
+        
         model.addAttribute("order", orderService.getOrderOne(orNo));
-
-
         model.addAttribute("orderDetailList", orderDetailService.getListByOrder(orNo));
+        
+        model.addAttribute("orderWithReview", order);
 
         return "member/order/detail";
     }
@@ -190,7 +206,7 @@ public class OrderController {
         orderService.updateOrderInfo(orderInfo);
 
         return ApiResponse.ok(null);
-    }
+    }    
 
     @RequestMapping(value = "/admin/order", method = RequestMethod.GET)
     public String adminOrderList(Model model) {

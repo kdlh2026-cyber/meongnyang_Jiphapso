@@ -297,6 +297,7 @@ public class CommunityController {
 		model.addAttribute("m_no", m_no);
 		List<CommunityDTO> list = com_service.myList(m_no, comm_type);
 		List<CommentDTO> myList = cmt_dao.myComment(m_no);
+		List<CommentDTO> reviewList = cmt_dao.selectReviewsByMemberNo(m_no);
 		
 		if (comm_type == null || comm_type.isEmpty()) {
 		    // 1. Q&A 카테고리: 개수와 최신글 1개 추출
@@ -317,8 +318,15 @@ public class CommunityController {
 		    // 4. 댓글 카테고리 : 개수와 최신글 1개 추출
 		    model.addAttribute("commentCount", myList.size());
 		    model.addAttribute("latestComment", myList.isEmpty() ? null : myList.get(0));
+		    
+		    // 5. 리뷰 카테고리 : 개수와 최신글 1개 추출
+		    model.addAttribute("reviewAll", reviewList.size());
+		    model.addAttribute("latestReview", reviewList.isEmpty() ? null : reviewList.get(0));
+		    
 		} else if ("댓글".equals(comm_type)) {
 	        model.addAttribute("list", myList);
+	    } else if ("리뷰".equals(comm_type)) {
+	        model.addAttribute("list", reviewList);
 	    } else {
 	        model.addAttribute("list", list);
 	    }
