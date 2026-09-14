@@ -105,6 +105,14 @@ function loadMpTab(btn) {
         return;
     }
 
+    // 포인트/쿠폰/주문내역
+    if (url.indexOf('/point/list') !== -1
+        || url.indexOf('/coupon/list') !== -1
+        || url.indexOf('/member/order/list') !== -1) {
+        location.href = url;
+        return;
+    }
+
     document.querySelectorAll('.mp-tab').forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
 

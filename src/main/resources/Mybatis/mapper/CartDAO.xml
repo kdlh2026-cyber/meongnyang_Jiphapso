@@ -72,4 +72,23 @@ ORDER BY c.ca_at DESC
 <update id="updateCartOption"> UPDATE dc_cart SET o_no = #{oNo}, ca_quantity = #{quantity}, ca_up = SYSDATE WHERE ca_no = #{caNo} </update>
 
 <delete id="deleteCartByOrder"> DELETE FROM dc_cart WHERE m_no = (SELECT m_no FROM dc_order WHERE or_no = #{orNo}) AND (p_no, NVL(o_no, -1)) IN ( SELECT p_no, NVL(o_no, -1) FROM dc_order_detail WHERE or_no = #{orNo} ) </delete>
+<!--  게스트 장바구니 -> 회원 장바구니 소유권 이전 (로그인 시 병합용, 겹치는 상품 없을 때)  -->
+<update id="updateCartOwner">
+    UPDATE dc_cart
+    SET m_no = #{mNo}, ca_token = NULL, ca_up = SYSDATE
+    WHERE ca_no = #{caNo}
+</update>
+	<!--  관리자 - 회원별 장바구니 요약 (게스트/비회원 건은 제외 - 별도 카운트로만 표시)  -->
+	<select id="selectCartMemberSummaryAll" resultType="map">
+		SELECT m.m_no AS "mNo", m.m_id AS "mId", COUNT(*) AS "caCount", MAX(c.ca_at) AS "lastCaAt"
+		FROM dc_cart c
+		JOIN dc_member m ON c.m_no = m.m_no
+		GROUP BY m.m_no, m.m_id
+		ORDER BY MAX(c.ca_at) DESC
+	</select>
+
+	<!--  관리자 - 비회원(게스트) 장바구니 전체 건수  -->
+	<select id="countCartByGuestAll" resultType="int">
+		SELECT COUNT(*) FROM dc_cart WHERE m_no IS NULL
+	</select>
 </mapper>

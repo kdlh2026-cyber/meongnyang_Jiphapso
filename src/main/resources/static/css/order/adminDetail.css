@@ -9,22 +9,54 @@ body {
   padding: 40px 20px 60px;
 }
 
-h3 {
-  max-width: 640px;
-  margin: 0 auto 20px;
+.od-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.od-header {
+  margin-bottom: 20px;
+}
+
+.od-title {
+  margin: 0;
   font-size: 20px;
   font-weight: 700;
 }
 
-.info-table {
-  max-width: 640px;
-  margin: 0 auto;
-  width: 100%;
-  border-collapse: collapse;
+.od-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #eee;
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.od-card {
   background: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 8px;
+  margin-bottom: 16px;
   overflow: hidden;
+}
+
+.od-card-title {
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  background: #fafafa;
+}
+
+/* 주문 정보 테이블 */
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 14px;
 }
 
@@ -37,7 +69,7 @@ h3 {
   width: 120px;
   text-align: left;
   padding: 14px 16px;
-  background: #fafafa;
+  background: #fcfcfc;
   color: #666;
   font-weight: 600;
   vertical-align: top;
@@ -57,9 +89,86 @@ h3 {
   cursor: pointer;
 }
 
+/* 주문 상품 목록 */
+.od-empty {
+  padding: 30px 16px;
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+}
+
+.od-product-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f2f2f2;
+}
+.od-product-row:last-of-type { border-bottom: none; }
+
+.od-product-row img {
+  width: 56px;
+  height: 56px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #f2f2f2;
+  flex: none;
+}
+
+.od-product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.od-product-name {
+  font-size: 13px;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.od-product-opt {
+  display: inline-block;
+  font-size: 11px;
+  color: #999;
+  background: #f7f7f7;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-bottom: 4px;
+}
+
+.od-product-qty {
+  font-size: 12px;
+  color: #888;
+}
+
+.od-product-price {
+  flex: none;
+  text-align: right;
+}
+
+.od-product-price .od-product-amt {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+}
+
+.od-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 16px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+  font-size: 13px;
+  color: #555;
+}
+
+.od-total-row strong {
+  font-size: 16px;
+  color: #222;
+}
+
 .btn-group {
-  max-width: 640px;
-  margin: 20px auto 0;
   display: flex;
   justify-content: flex-end;
   gap: 8px;

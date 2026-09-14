@@ -17,9 +17,10 @@ public class OrderCancelDTO {
 	private Date ocPr;             // 처리완료일시
 	private Long odDetailNo;       // 주문상세번호 (FK)
 
-	// 아래 두 개는 테이블 컬럼은 아니고, 목록 조회 시 조인해서 같이 내려주는 표시용 필드
-	private String odProductTitle; // 상품명 (dc_order_detail.od_product_name)
-	private Long orNo;             // 주문번호 (dc_order.or_no)
+	// 아래는 테이블 컬럼은 아니고, 목록 조회 시 조인해서 같이 내려주는 표시용 필드
+	private String odProductTitle; 
+	private Long orNo;             
+	private String mId;           
 
 	public Long getOcOutNo() {
 		return ocOutNo;
@@ -130,6 +131,14 @@ public class OrderCancelDTO {
 
 	public void setOrNo(Long orNo) {
 		this.orNo = orNo;
+	}
+
+	public String getMId() {
+		return mId;
+	}
+
+	public void setMId(String mId) {
+		this.mId = mId;
 	}
 
 }
