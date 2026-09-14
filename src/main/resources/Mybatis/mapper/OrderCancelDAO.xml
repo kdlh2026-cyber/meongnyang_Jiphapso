@@ -17,6 +17,7 @@
 		<result property="odDetailNo" column="OD_DETAIL_NO" />
 		<result property="odProductTitle" column="OD_PRODUCT_TITLE" />
 		<result property="orNo" column="OR_NO" />
+		<result property="mId" column="M_ID" />
 	</resultMap>
 
 	<insert id="insertOrderCancel" parameterType="com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO"
@@ -93,15 +94,18 @@
 		order by oc.oc_re desc
 	</select>
 
-	<!-- 관리자 - 전체 취소 목록 -->
+	<!-- 관리자 - 전체 취소 목록 (상품명 + 신청한 회원아이디까지 조인해서 내려줌) -->
 	<select id="selectOrderCancelListAll" resultMap="orderCancelResultMap">
 		select
 			oc.oc_out_no, oc.oc_type, oc.oc_status, oc.oc_reason, oc.oc_quantity,
 			oc.oc_ramount, oc.oc_turn, oc.oc_point, oc.oc_coupon, oc.oc_re, oc.oc_pr, oc.od_detail_no,
 			od.od_product_name as OD_PRODUCT_TITLE,
-			od.or_no as OR_NO
+			od.or_no as OR_NO,
+			m.m_id as M_ID
 		from dc_order_cancel oc
 		join dc_order_detail od on oc.od_detail_no = od.od_detail_no
+		join dc_order ord on od.or_no = ord.or_no
+		join dc_member m on ord.m_no = m.m_no
 		order by oc.oc_re desc
 	</select>
 

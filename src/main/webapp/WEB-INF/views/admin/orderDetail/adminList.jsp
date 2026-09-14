@@ -18,6 +18,14 @@
 <c:set var="statusCodes" value="${fn:split('PAYMENT_PENDING,PAID,PREPARING,SHIPPING,DELIVERED,CONFIRMED,CANCELED', ',')}" />
 <c:set var="statusLabels" value="${fn:split('결제 대기 중,결제 완료,상품 준비 중,배송 중,배송 완료,구매 확정,주문 취소', ',')}" />
 
+<!-- 주문상태 필터 탭 : 전체 + 상태별 버튼 -->
+<div class="ord-tabs" id="ordTabs">
+    <button type="button" class="ord-tab active" data-status="ALL" onclick="filterByStatus('ALL', this)">전체</button>
+    <c:forEach var="code" items="${statusCodes}" varStatus="loop">
+        <button type="button" class="ord-tab" data-status="${code}" onclick="filterByStatus('${code}', this)">${statusLabels[loop.index]}</button>
+    </c:forEach>
+</div>
+
 <table class="admin-table">
     <thead>
     <tr>
@@ -34,14 +42,14 @@
         <th>관리</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody id="ordTbody">
     <c:choose>
         <c:when test="${empty orderDetailList}">
             <tr><td colspan="11">등록된 주문상세가 없어요.</td></tr>
         </c:when>
         <c:otherwise>
             <c:forEach var="detail" items="${orderDetailList}">
-                <tr id="row-${detail.odDetailNo}">
+                <tr id="row-${detail.odDetailNo}" class="ord-row" data-status="${detail.orStatus}">
                     <td>${detail.odDetailNo}</td>
                     <td><img src="${pageContext.request.contextPath}/images/products/main/${detail.PMainImg}" alt="${detail.odProductName}" class="thumb"></td>
                     <td>${detail.odProductName}</td>
@@ -61,12 +69,36 @@
                     </td>
                 </tr>
             </c:forEach>
+            <tr id="ordNoMatch" class="ord-no-match" style="display:none;">
+                <td colspan="11">해당 상태의 주문상세가 없어요.</td>
+            </tr>
         </c:otherwise>
     </c:choose>
     </tbody>
 </table>
 
 <script>
+    // 상태 탭 클릭 시 클라이언트에서 행 필터링 (서버 재조회 없음)
+    function filterByStatus(status, btnEl) {
+        var tabs = document.querySelectorAll('#ordTabs .ord-tab');
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        btnEl.classList.add('active');
+
+        var rows = document.querySelectorAll('#ordTbody .ord-row');
+        var visibleCount = 0;
+
+        rows.forEach(function (row) {
+            var match = (status === 'ALL') || (row.dataset.status === status);
+            row.style.display = match ? '' : 'none';
+            if (match) visibleCount++;
+        });
+
+        var noMatch = document.getElementById('ordNoMatch');
+        if (noMatch) {
+            noMatch.style.display = (visibleCount === 0) ? '' : 'none';
+        }
+    }
+
     // 주문상세 강제 삭제 - DELETE /admin/order-detail/{odDetailNo}
     function deleteOrderDetail(odDetailNo) {
         if (!confirm('해당 주문상세를 삭제할까요?')) return;

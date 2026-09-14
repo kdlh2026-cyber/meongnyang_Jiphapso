@@ -8,7 +8,7 @@ import lombok.Data;
 public class PaymentDTO {
 
     private Long payNo;         // 결제 번호
-    private String payMethod;   // 결제수단: TOSSPAY / PAYCO / KAKAOPAY / SMILEPAY / NAVERPAY
+    private String payMethod;   // 결제수
     private String payTno;      // PG사 거래ID (포트원 paymentId / txId)
     private Long payAmount;     // 상품 총 금액
     private Long payFee;        // 배송비
@@ -16,16 +16,17 @@ public class PaymentDTO {
     private Long payUsed;       // 포인트 사용 금액
     private Long payDis;        // 총 할인금액 (payDiscount + payUsed)
     private Long payRealAmt;    // 실 결제금액
-    private String payStatus;   // 결제상태: PENDING/PAID/FAILED/PARTIAL_REFUNDED/REFUNDED
+    private String payStatus;   // 결제상태
     private Date payAt;         // 결제완료일시
     private Date payReqAt;      // 결제요청일시
     private Long orNo;          // 주문 FK
     private Long mNo;           // 회원 FK
 
     // ----- 화면 표시/조인용 (저장컬럼 x) -----
-    private String easyPayProvider;  // 간편결제 PG사 코드 (포트원 V2 provider 값과 동일하게 사용)
+    private String easyPayProvider;  // 간편결제 PG사 코드 
     private String channelKey;       // 포트원 V2 채널키 (JS 결제창 호출용, DB 저장 안함)
     private String orderName;        // 결제창에 표시할 주문명
+    private String mId;              // 결제한 회원 아이디 
 
     public PaymentDTO() {}
 
@@ -79,6 +80,9 @@ public class PaymentDTO {
 
     public String getOrderName() { return orderName; }
     public void setOrderName(String orderName) { this.orderName = orderName; }
+
+    public String getMId() { return mId; }
+    public void setMId(String mId) { this.mId = mId; }
 
     @Override
     public String toString() {

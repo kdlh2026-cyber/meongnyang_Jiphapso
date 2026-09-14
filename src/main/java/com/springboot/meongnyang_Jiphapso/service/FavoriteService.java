@@ -1,9 +1,12 @@
 package com.springboot.meongnyang_Jiphapso.service;
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.springboot.meongnyang_Jiphapso.dao.IFavoriteDAO;
 import com.springboot.meongnyang_Jiphapso.dto.FavoriteDTO;
 
@@ -91,5 +94,9 @@ public class FavoriteService {
     /** 관리자 - 전체 목록 */
     public List<FavoriteDTO> getFavoriteListAll() {
         return favoriteDAO.selectFavoriteListAll();
+    }
+    /** 관리자 - 회원별 관심상품 요약 목록 */
+    public List<Map<String, Object>> getFavoriteMemberSummaryAll() {
+        return favoriteDAO.selectFavoriteMemberSummaryAll();
     }
 }

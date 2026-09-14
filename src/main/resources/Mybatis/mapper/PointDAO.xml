@@ -19,7 +19,8 @@
 	</resultMap>
 
 	<!-- 포인트 이력 1건 등록 -->
-	<insert id="insertPoint" parameterType="com.springboot.meongnyang_Jiphapso.dto.PointDTO">
+	<insert id="insertPoint" parameterType="com.springboot.meongnyang_Jiphapso.dto.PointDTO"
+			useGeneratedKeys="true" keyProperty="poNo" keyColumn="PO_NO">
 		insert into dc_point_history
 			(po_no, po_type, po_amount, po_after, po_reason, po_at, po_ex, po_order_no, m_no, ch_no, po_related_no)
 		values

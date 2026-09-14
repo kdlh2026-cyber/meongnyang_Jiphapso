@@ -31,7 +31,6 @@ public class LoginSessionListener implements ApplicationListener<AuthenticationS
             ServletRequestAttributes attrs =
                     (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             HttpSession session = attrs.getRequest().getSession();
-            // MemberDTO.m_no 타입(Integer)을 그대로 세션에 저장 - 다른 파트 코드가 이 타입 기준으로 짜여있을 수 있어서 강제 변환 안 함
             session.setAttribute(SessionConst.LOGIN_MEMBER_NO, member.getM_no());
         }
     }

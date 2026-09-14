@@ -1,12 +1,3 @@
-<%--
-  파일 위치: /WEB-INF/views/member/payment/cancelForm.jsp
-  용도    : 회원 - 결제취소 신청 페이지 (결제내역 목록의 "취소" 버튼 클릭 시 이동)
-
-  연동    : PaymentController
-             GET  /payment/cancelPage  -> 이 JSP 로 포워딩 (payNo 를 model 로 전달)
-             GET  /payment/detail      -> 화면 로드 후 ajax 로 결제 정보 조회 (금액 표시용)
-             POST /payment/cancel      -> 취소 신청 등록 (payNo, reason)
---%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="ko">

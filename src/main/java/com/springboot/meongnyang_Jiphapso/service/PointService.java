@@ -59,9 +59,10 @@ public class PointService {
 	// ================= 내부 공통 처리 =================
 
 	// 포인트 적립 공통 처리 (신규 적립 lot 생성, 만료일 = 오늘 + 1년)
-	private void earn(Long mNo, long amount, String reason, Long orderNo, Long chNo) {
+	// 반환값: 방금 생성된 이력의 po_no (useGeneratedKeys로 insertPoint 실행 후 dto에 채번됨) - 출석체크처럼 po_no를 다른 테이블에 역참조해야 할 때 사용
+	private Long earn(Long mNo, long amount, String reason, Long orderNo, Long chNo) {
 		if (amount <= 0) {
-			return; // 적립할 금액이 없으면 이력 남기지 않음
+			return null; // 적립할 금액이 없으면 이력 남기지 않음
 		}
 
 		long before = getCurrentBalance(mNo);
@@ -78,6 +79,7 @@ public class PointService {
 		dto.setChNo(chNo);
 
 		pointDAO.insertPoint(dto);
+		return dto.getPoNo();
 	}
 
 	// 포인트 사용 공통 처리 (음수 이력, 잔액 부족 시 예외)
@@ -148,9 +150,10 @@ public class PointService {
 	}
 
 	// 출석체크 적립 (DailyCheck Service에서 출석 처리 후 호출)
+	// 반환값: 생성된 point 이력의 po_no -> DailycheckService에서 dc_dailycheck.po_no 갱신할 때 사용
 	@Transactional
-	public void earnDailyCheckBonus(Long mNo, Long chNo) {
-		earn(mNo, PointPolicy.AMOUNT_DAILY_CHECK, PointPolicy.REASON_DAILY_CHECK, null, chNo);
+	public Long earnDailyCheckBonus(Long mNo, Long chNo) {
+		return earn(mNo, PointPolicy.AMOUNT_DAILY_CHECK, PointPolicy.REASON_DAILY_CHECK, null, chNo);
 	}
 
 	// 라운지 인기글 선정 적립 (관리자/배치가 인기글 선정 후 호출)

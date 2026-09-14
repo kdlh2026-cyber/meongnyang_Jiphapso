@@ -59,7 +59,7 @@
       <tr>
         <th>결제번호</th>
         <th>주문번호</th>
-        <th>회원번호</th>
+        <th>회원아이디</th>
         <th>결제수단</th>
         <th>거래ID</th>
         <th>실결제금액</th>
@@ -143,7 +143,7 @@
       tr.innerHTML =
         "<td>" + item.payNo + "</td>" +
         "<td>" + item.orNo + "</td>" +
-        "<td>" + item.mNo + "</td>" +
+        "<td>" + (item.mid || "-") + "</td>" +
         "<td>" + methodLabel + "</td>" +
         "<td>" + (item.payTno || "-") + "</td>" +
         "<td>" + formatPrice(item.payRealAmt) + "원</td>" +

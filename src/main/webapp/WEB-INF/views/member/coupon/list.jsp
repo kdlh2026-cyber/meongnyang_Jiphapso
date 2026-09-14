@@ -1,15 +1,3 @@
-<%--
-  파일 위치: /WEB-INF/views/member/coupon/list.jsp
-  용도    : 회원 - 쿠폰함 페이지 (다운로드 가능한 쿠폰 + 내 보유쿠폰함)
-  연동    : CouponController
-             GET  /coupon/list          -> 이 JSP 로 포워딩 (컨트롤러에서 로그인 체크 후 forward)
-             GET  /coupon/downloadable  -> 화면 로드 후 ajax 로 다운로드 가능한 쿠폰 목록 조회
-             GET  /coupon/my            -> 화면 로드 후 ajax 로 내 보유쿠폰함 목록 조회
-             POST /coupon/download      -> 다운로드 버튼 클릭 시 ajax 호출 (body: {coNo})
-
-  쿠폰 이미지: 할인율(coVal) 10/20/30/40/50 기준 /resources/images/coupon/coupon_{coVal}.png
-              (창히가 직접 제작한 디자인 에셋 사용, Service 에서 imageName 필드로 내려줌)
---%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -17,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>내 쿠폰함</title>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: #f7f7f8; color: #222; }
@@ -59,23 +48,26 @@
   }
   .cp-tab.active { background: #222; color: #fff; border-color: #222; }
 
-  /* ================= 안내메세지 토스트 (alert 대체) ================= */
+    /* ================= 안내메세지 토스트 (alert 대체) ================= */
   .cp-toast-wrap {
     position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
     z-index: 9999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center;
-    pointer-events: none;
+    pointer-events: none; width: auto;
   }
   .cp-toast {
-    min-width: 220px; max-width: 360px; padding: 14px 20px; border-radius: 10px;
-    background: #222; color: #fff; font-size: 14px; font-weight: 600; text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-    opacity: 0; transform: translateY(14px);
+    display: inline-flex; align-items: center; justify-content: center;
+    max-width: 320px; width: max-content;
+    padding: 12px 22px; border-radius: 999px;
+    background: #333; color: #fff; font-size: 13px; font-weight: 600; text-align: center;
+    line-height: 1.4; white-space: normal; word-break: keep-all;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    opacity: 0; transform: translateY(14px) scale(0.98);
     transition: opacity 0.25s ease, transform 0.25s ease;
     pointer-events: auto;
   }
-  .cp-toast.cp-toast-show { opacity: 1; transform: translateY(0); }
+  .cp-toast.cp-toast-show { opacity: 1; transform: translateY(0) scale(1); }
   .cp-toast-success { background: #f5c518; color: #222; }
-  .cp-toast-error   { background: #c0392b; }
+  .cp-toast-error   { background: #f5c518; color: #a34e1c; }
 </style>
 </head>
 <body>
@@ -94,8 +86,9 @@
   <!-- 보유쿠폰함 -->
   <h3 class="cp-section-title">보유 쿠폰함</h3>
   <div class="cp-tabs">
-    <button type="button" class="cp-tab active" data-filter="UNUSED" onclick="filterMyCoupon('UNUSED', this)">사용가능</button>
-    <button type="button" class="cp-tab" data-filter="ALL" onclick="filterMyCoupon('ALL', this)">전체</button>
+  	<button type="button" class="cp-tab" data-filter="ALL" onclick="filterMyCoupon('ALL', this)">전체</button>
+    <button type="button" class="cp-tab active" data-filter="UNUSED" onclick="filterMyCoupon('UNUSED', this)">사용가능한 쿠폰</button>
+    <button type="button" class="cp-tab" data-filter="USED" onclick="filterMyCoupon('USED', this)">사용한 쿠폰</button>
   </div>
   <div id="cpMyEmpty" class="cp-empty" style="display:none;">보유 중인 쿠폰이 없습니다.</div>
   <div id="cpMyGrid" class="cp-grid"></div>
@@ -128,7 +121,6 @@
     toast.textContent = message;
     wrap.appendChild(toast);
 
-    // 붙인 직후 바로 show 클래스를 주면 트랜지션이 안 걸려서, 한 프레임 쉬었다가 적용
     requestAnimationFrame(function () {
       toast.classList.add("cp-toast-show");
     });
@@ -145,7 +137,7 @@
       .then(function (res) { return res.json(); })
       .then(function (result) {
         if (!result.success) {
-          alert(result.message || "로그인이 필요합니다."); // 로그인페이지로 바로 이동하는 케이스라 토스트 대신 alert 유지
+          alert(result.message || "로그인이 필요합니다.");
           location.href = contextPath + "/member/login";
           return;
         }
@@ -281,5 +273,6 @@
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

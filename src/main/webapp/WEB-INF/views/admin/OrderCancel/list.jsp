@@ -29,6 +29,7 @@
   .oca-table thead th { background: #fafafa; color: #555; font-weight: 600; }
   .oca-table tbody tr:last-child td { border-bottom: none; }
   .oca-table .oca-reason { max-width: 160px; text-align: left; white-space: normal; word-break: break-all; color: #555; }
+  .oca-table .oca-product { max-width: 180px; text-align: left; white-space: normal; word-break: break-all; }
 
   .oca-status-select { padding: 5px 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; }
 
@@ -59,6 +60,8 @@
       <tr>
         <th>신청번호</th>
         <th>주문상세번호</th>
+        <th>상품명</th>
+        <th>취소한 아이디</th>
         <th>유형</th>
         <th>수량</th>
         <th>환불예정금액</th>
@@ -86,7 +89,7 @@
     loadAdminList();
   });
 
-  // 전체 취소/반품 목록 조회 
+  // 전체 취소/반품 목록 조회
   function loadAdminList() {
     fetch(contextPath + "/orderCancel/admin/list/data")
       .then(function (res) { return res.json(); })
@@ -137,6 +140,8 @@
       tr.innerHTML =
         "<td>" + item.ocOutNo + "</td>" +
         "<td>" + item.odDetailNo + "</td>" +
+        "<td class=\"oca-product\">" + escapeHtml(item.odProductTitle) + "</td>" +
+        "<td>" + escapeHtml(item.mid) + "</td>" +
         "<td>" + typeLabel + "</td>" +
         "<td>" + item.ocQuantity + "</td>" +
         "<td>" + formatPrice(item.ocRamount) + "원</td>" +

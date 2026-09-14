@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.meongnyang_Jiphapso.dao.IDailycheckDAO;
 import com.springboot.meongnyang_Jiphapso.dto.DailycheckDTO;
@@ -70,6 +71,7 @@ public class DailycheckService {
 	}
 
 	// 누적식 출석체크 처리
+	@Transactional
 	public DailycheckDTO checkIn(int m_no) throws Exception {
 		Date yearMonth = getMonthStart();
 		Date today = new Date();
@@ -85,8 +87,14 @@ public class DailycheckService {
 			ch_dto.setCh_end_date(today);
 			ch_dto.setCh_point_quantity(100); // 1회 출석당 100P
 			ch_dto.setM_no(m_no);
-			// TODO: pointService.earnDailyCheckBonus(m_no, ...) 호출 후 발급된 po_no 세팅
-			write(ch_dto);
+			write(ch_dto); // dc_dailycheck insert (ch_no 채번됨)
+
+			// 포인트 적립 - dc_point_history.ch_no를 방금 만든 dailycheck 행에 연결
+			Long poNo = pointService.earnDailyCheckBonus((long) m_no, (long) ch_dto.getCh_no());
+			if (poNo != null) {
+				ch_dto.setPo_no(poNo.intValue());
+				ch_dao.CheckUpdate(ch_dto); // dc_dailycheck.po_no 반영
+			}
 			return ch_dto;
 		}
 
@@ -97,7 +105,12 @@ public class DailycheckService {
 		existing.setCh_count(existing.getCh_count() + 1);
 		existing.setCh_end_date(today);
 		existing.setCh_point_quantity(existing.getCh_point_quantity() + 100);
-		// TODO: pointService.earnDailyCheckBonus(m_no, existing.getCh_no()) 호출
+
+		// 포인트 적립 - 이번 달 기존 dailycheck 행에 이번 적립 이력 연결
+		Long poNo = pointService.earnDailyCheckBonus((long) m_no, (long) existing.getCh_no());
+		if (poNo != null) {
+			existing.setPo_no(poNo.intValue());
+		}
 
 		ch_dao.CheckUpdate(existing);
 		ch_service.save(existing);

@@ -18,6 +18,7 @@
 		<result property="payReqAt"   column="pay_req_at" />
 		<result property="orNo"       column="or_no" />
 		<result property="mNo"        column="m_no" />
+		<result property="mId"        column="M_ID" />
 	</resultMap>
 
 	<!-- 결제요청 등록 (주문/결제 페이지에서 결제하기 버튼 클릭 시, 결제수단은 아래 5개 중 하나:
@@ -74,12 +75,14 @@
 		order by pay_req_at desc
 	</select>
 
-	<!-- 관리자 - 전체 결제 목록 (최신순) -->
+	<!-- 관리자 - 전체 결제 목록 (최신순) : 회원 아이디 표시를 위해 dc_member 조인 -->
 	<select id="selectPaymentListAll" resultMap="paymentResultMap">
-		select pay_no, pay_method, pay_tno, pay_amount, pay_fee, pay_discount, pay_used, pay_dis,
-			   pay_real_amt, pay_status, pay_at, pay_req_at, or_no, m_no
-		from dc_payment
-		order by pay_req_at desc
+		select p.pay_no, p.pay_method, p.pay_tno, p.pay_amount, p.pay_fee, p.pay_discount, p.pay_used, p.pay_dis,
+			   p.pay_real_amt, p.pay_status, p.pay_at, p.pay_req_at, p.or_no, p.m_no,
+			   m.m_id as M_ID
+		from dc_payment p
+		join dc_member m on p.m_no = m.m_no
+		order by p.pay_req_at desc
 	</select>
 
 	<!-- 삭제 (관리자 전용) -->
