@@ -24,7 +24,7 @@
                         <img src="/images/myProfile/${loginMember.m_img}" alt="프로필 사진" class="profile-img">
                     </c:when>
                     <c:otherwise>
-                        <img src="/images/myProfile/profil_image.png" alt="기본 프로필" class="profile-img">
+                        <img src="/images/main/user_profile.png" alt="기본 프로필" class="profile-img">
                     </c:otherwise>
                 </c:choose>
             </a>
@@ -40,17 +40,26 @@
                         <img src="/images/myProfile/${loginMember.m_img}" alt="프로필 사진" class="profile-img">
                     </c:when>
                     <c:otherwise>
-                        <img src="/images/myProfile/profil_image.png" alt="기본 프로필" class="profile-img">
+                        <img src="/images/main/creator_profile.png" alt="기본 프로필" class="profile-img">
                     </c:otherwise>
                 </c:choose>
             </a>
         </c:if>
+        <!-- 불량 회원 프로필 이미지 -->
+    <sec:authorize access="hasRole('BADMAN')">
+        <c:if test="${not empty loginMember}">
+        	<a href="/logout" class="logout">로그아웃</a>
+            <a href="/member/myPage/myPage" class="profile-img-link">
+            	<img src="/images/main/badman_profile.png" alt="기본 프로필" class="profile-img">
+            </a>
+        </c:if>
+       </sec:authorize>
         <!-- 관리자 프로필 이미지(관리자 페이지로 이동) -->
        </sec:authorize>
        <sec:authorize access="hasRole('ADMIN')">
        		<a href="/logout" class="logout">로그아웃</a>
        		<a href="/admin/adminPage" class="profile-img-link">
-       			<img src="/images/myProfile/profil_image_2.png" alt="관리자 프로필" class="profile-img">
+       			<img src="/images/main/admin_profile.png" alt="관리자 프로필" class="profile-img">
        		</a>
        </sec:authorize>
 
@@ -161,7 +170,7 @@
             크리에이터
           </h3>
           <ul>
-            <li><a href="#">크리에이터 신청</a></li>
+            <li><a href="/guest/creatorHire">크리에이터 모집</a></li>
           </ul>
         </div>
       </div>

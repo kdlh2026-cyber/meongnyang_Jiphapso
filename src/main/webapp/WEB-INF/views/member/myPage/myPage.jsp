@@ -60,31 +60,35 @@
   </nav>
 
   <div id="mp-content-area">
-	<table>
-		<tr>
-			<td><img src="/images/myProfile/${myId.m_img}" alt="${myId.m_img}"></td>
-		</tr>
-		<tr>
-			<td>${myId.m_id}</td>
-		</tr>
-		<tr>
-			<td>${myId.m_name}</td>
-		</tr>
-		<tr>
-			<td>${myId.m_email}</td>
-		</tr>
-		<tr>
-			<td>${myId.m_introduce}</td>
-		</tr>
-		<tr>
-			<td><fmt:formatDate value="${myId.m_birth}" pattern="yyyy-MM-dd" /></td>
-		</tr>
-		<tr>
-			<td>SNS 수신 동의 여부: ${myId.m_sns}</td>
-		</tr>
-	</table>
-	<a href="/member/myPage/myProfileUpdateForm">회원 정보 수정</a>
-	<!-- 크리에이터 신청 버튼 자리 -->
+   <table>
+      <tr>
+         <td><img src="/images/myProfile/${myId.m_img}" alt="${myId.m_img}"></td>
+      </tr>
+      <tr>
+         <td>${myId.m_id}</td>
+      </tr>
+      <tr>
+         <td>${myId.m_name}</td>
+      </tr>
+      <tr>
+         <td>${myId.m_email}</td>
+      </tr>
+      <tr>
+         <td>${myId.m_introduce}</td>
+      </tr>
+      <tr>
+         <td><fmt:formatDate value="${myId.m_birth}" pattern="yyyy-MM-dd" /></td>
+      </tr>
+      <tr>
+         <td>SNS 수신 동의 여부: ${myId.m_sns}</td>
+      </tr>
+   </table>
+   <a href="/member/myPage/myProfileUpdateForm">회원 정보 수정</a><br>
+	<a href="/dailycheck">출석체크 페이지</a>
+   <!-- 크리에이터 신청 버튼 자리 --><br>
+	<c:if test="${myId.m_cre_sub == 'F'}">
+		<a href="/creatorSubmit">크리에이터 신청</a>
+	</c:if>
   </div>
 
   <div class="mp-delete-row">
@@ -96,6 +100,10 @@
 function loadMpTab(btn) {
     const url = btn.dataset.url;
     if (url === '#') return;
+    if (url.indexOf('/point/list') !== -1 || url.indexOf('/coupon/list') !== -1) {
+        location.href = url;
+        return;
+    }
 
     // 포인트/쿠폰/주문내역
     if (url.indexOf('/point/list') !== -1

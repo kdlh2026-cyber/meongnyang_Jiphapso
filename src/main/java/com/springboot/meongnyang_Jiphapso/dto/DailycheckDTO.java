@@ -12,5 +12,8 @@ public class DailycheckDTO {
 	private Date ch_end_date;
 	private int ch_point_quantity;
 	private int m_no;
-	private int po_no;
+	private Integer po_no;
+	
+	public Integer getPo_no() { return po_no; }
+	public void setPo_no(Integer po_no) { this.po_no = po_no; }
 }
