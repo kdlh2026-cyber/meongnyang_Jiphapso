@@ -100,10 +100,6 @@
 function loadMpTab(btn) {
     const url = btn.dataset.url;
     if (url === '#') return;
-    if (url.indexOf('/point/list') !== -1 || url.indexOf('/coupon/list') !== -1) {
-        location.href = url;
-        return;
-    }
 
     // 포인트/쿠폰/주문내역
     if (url.indexOf('/point/list') !== -1
