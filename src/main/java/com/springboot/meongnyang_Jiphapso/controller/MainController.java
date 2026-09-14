@@ -39,8 +39,18 @@ public class MainController {
 	}
     
     @RequestMapping("/main")
-    public String main() {
-    	return "main";
+    public String main(Model model) {
+        // 추천 콘텐츠: 최신 커뮤니티 게시글 몇 개만
+        List<CommunityDTO> recommendContentList = comm_serv.list();
+        model.addAttribute("recommendContentList", recommendContentList);
+
+        // 추천 상품: 전체 상품 중 몇 개만 (ptype 조건 없이 전체 조회)
+        ShoppingListDto searchCond = new ShoppingListDto();
+        searchCond.setPtype(""); // LIKE '%' || '' || '%' → 전체 매칭
+        List<ShoppingListDto> recommendProductList = p_dao.ShoppingList(searchCond);
+        model.addAttribute("recommendProductList", recommendProductList);
+
+        return "main";
     }
 	
 	@RequestMapping("/loginForm")
@@ -50,12 +60,17 @@ public class MainController {
 	
 	@RequestMapping("/loginError")
 	public String loginError() {
-		return "/main";
+		return "redirect:/loginForm?error=true";
 	}
 	
 	@RequestMapping("/memberInsertForm")
 	public String insertForm() {
 		return "memberInsertForm";
+	}
+	
+	@RequestMapping("/jusoPopup")
+	public String jusopop() {
+		return "jusoPopup";
 	}
 	
 	@RequestMapping("/allSearch")

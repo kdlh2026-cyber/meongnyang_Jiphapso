@@ -1,0 +1,323 @@
+@charset "UTF-8";
+
+/* ===============================
+   취소 · 반품 내역 CSS
+   주문내역(list.css) 스타일 통일
+================================ */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Noto Sans KR', sans-serif;
+    background:#faf9f8;
+    color:#333;
+}
+
+/* ===============================
+   전체 영역
+================================ */
+
+.oc-wrap{
+    max-width:720px;
+    margin:35px auto 80px;
+    padding:0 20px;
+}
+
+/* 제목 */
+
+.oc-title{
+    font-size:22px;
+    font-weight:700;
+    color:#222;
+    margin-bottom:16px;
+}
+
+/* ===============================
+   상태 탭 (주문내역과 동일)
+================================ */
+
+.status-tabs{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+}
+
+.status-tabs a{
+    display:inline-block;
+    padding:8px 16px;
+    border:1px solid #dddddd;
+    border-radius:20px;
+    background:#fff;
+    color:#666;
+    font-size:12px;
+    text-decoration:none;
+    transition:all .2s ease;
+}
+
+.status-tabs a:hover{
+    border-color:#c17a52;
+    color:#c17a52;
+}
+
+.status-tabs a.active{
+    background:#222;
+    border-color:#222;
+    color:#fff;
+    font-weight:600;
+}
+
+/* ===============================
+   빈 목록 카드
+================================ */
+
+.oc-empty{
+    width:100%;
+    min-height:175px;
+    background:#fff;
+    border:1px solid #e5e5e5;
+    border-radius:8px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#888;
+    font-size:15px;
+    text-align:center;
+    line-height:1.7;
+}
+
+.oc-empty::before{
+    content:"✖";
+    color:#b97b55;
+    font-size:14px;
+    margin-right:6px;
+    font-weight:bold;
+}
+
+/* ===============================
+   테이블
+================================ */
+
+.oc-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border:1px solid #e5e5e5;
+    border-radius:8px;
+    overflow:hidden;
+}
+
+.oc-table thead{
+    background:#faf7f5;
+}
+
+.oc-table th{
+    padding:14px 10px;
+    border-bottom:1px solid #ececec;
+    color:#666;
+    font-size:13px;
+    font-weight:700;
+    text-align:center;
+}
+
+.oc-table td{
+    padding:16px 10px;
+    border-bottom:1px solid #f2f2f2;
+    color:#444;
+    font-size:13px;
+    text-align:center;
+}
+
+.oc-table tbody tr:last-child td{
+    border-bottom:none;
+}
+
+.oc-table tbody tr:hover{
+    background:#fcfcfc;
+}
+
+/* ===============================
+   상태 배지
+================================ */
+
+.oc-badge{
+    display:inline-block;
+    padding:5px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.oc-badge-requested{
+    background:#fff3d8;
+    color:#a97716;
+}
+
+.oc-badge-approved{
+    background:#e8f7ec;
+    color:#14804d;
+}
+
+.oc-badge-refunded{
+    background:#e6f0ff;
+    color:#2d63d6;
+}
+
+.oc-badge-rejected{
+    background:#fdeaea;
+    color:#c53b30;
+}
+
+/* ===============================
+   상세보기 버튼
+================================ */
+
+.oc-btn-detail{
+    padding:7px 14px;
+    border:1px solid #e2b89f;
+    background:#fff7f2;
+    color:#c17a52;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.oc-btn-detail:hover{
+    background:#c17a52;
+    color:#fff;
+}
+
+/* ===============================
+   상세보기 모달
+================================ */
+
+.oc-modal-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.45);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.oc-modal{
+    width:92%;
+    max-width:560px;
+    background:#fff;
+    border-radius:14px;
+    padding:26px;
+    position:relative;
+    animation:modalFade .2s ease;
+}
+
+.oc-modal h3{
+    font-size:20px;
+    margin-bottom:20px;
+    color:#222;
+}
+
+.oc-modal-close{
+    position:absolute;
+    top:15px;
+    right:18px;
+    background:none;
+    border:none;
+    font-size:28px;
+    color:#777;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.oc-modal-close:hover{
+    color:#000;
+}
+
+/* 상세 내용 */
+
+.oc-dl{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    column-gap:12px;
+    row-gap:14px;
+}
+
+.oc-dl dt{
+    font-weight:700;
+    color:#666;
+}
+
+.oc-dl dd{
+    margin:0;
+    color:#333;
+    word-break:break-word;
+}
+
+/* ===============================
+   모바일
+================================ */
+
+@media (max-width:768px){
+
+    .oc-wrap{
+        padding:0 15px;
+        margin:30px auto 60px;
+    }
+
+    .oc-title{
+        font-size:20px;
+    }
+
+    .status-tabs{
+        gap:6px;
+    }
+
+    .status-tabs a{
+        padding:7px 12px;
+        font-size:12px;
+    }
+
+    .oc-table{
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+    }
+
+    .oc-empty{
+        min-height:150px;
+        font-size:14px;
+    }
+
+    .oc-modal{
+        padding:20px;
+    }
+
+    .oc-dl{
+        grid-template-columns:90px 1fr;
+    }
+}
+
+/* ===============================
+   모달 애니메이션
+================================ */
+
+@keyframes modalFade{
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}

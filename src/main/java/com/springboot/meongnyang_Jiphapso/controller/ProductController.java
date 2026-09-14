@@ -116,20 +116,27 @@ public class ProductController {
 	public String ShoppingList(
 	        @RequestParam(value = "p_type", defaultValue = "강아지") String p_type,
 	        @RequestParam(value = "mode", required = false) String p_category,
-	        Model model) {
+	        @RequestParam(value = "keyword", required = false) String keyword,
+	        Model model) throws Exception {
+		
+		List<ShoppingListDto> p_list;
+		
+		if (keyword != null && !keyword.trim().isEmpty()) {
+			p_list = p_service.p_search(keyword);
+		}
+		else {
+			if (!"고양이".equals(p_type)) {
+		        p_type = "강아지";
+		    }
+		    
+		    ShoppingListDto paramDto = new ShoppingListDto();
+		    paramDto.setPtype(p_type);
+		    paramDto.setPcategory(p_category); // 카테고리(mode)가 없으면 null 혹은 빈값
 
-	    if (!"고양이".equals(p_type)) {
-	        p_type = "강아지";
-	    }
-	    
-	    ShoppingListDto paramDto = new ShoppingListDto();
-	    paramDto.setPtype(p_type);
-	    paramDto.setPcategory(p_category); // 카테고리(mode)가 없으면 null 혹은 빈값
-
-	    List<ShoppingListDto> allList = p_dao.ShoppingList(paramDto);
-	    
-	    model.addAttribute("ShoppingList", allList);
-	    
+		    p_list = p_dao.ShoppingList(paramDto);
+		}
+		
+		model.addAttribute("ShoppingList", p_list);
 	    return "products/ShoppingList";
 	}
 	
@@ -163,13 +170,6 @@ public class ProductController {
 	public String ProductDelete(@RequestParam("p_no") int p_no) {
 		p_dao.ProductDelete(p_no);
 		return "redirect:/productList";
-	}
-	
-	@RequestMapping("/products/search")
-	public String p_search(@RequestParam("keyword") String keyword, Model model) throws Exception {
-		List<ShoppingListDto> p_list = p_service.p_search(keyword);
-		model.addAttribute("ShoppingList", p_list);
-		return "products/ShoppingList";
 	}
 	
 	@ResponseBody

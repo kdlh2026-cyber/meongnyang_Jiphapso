@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,6 +14,9 @@
 <div class="login-page">
     <div class="login-card">
         <h2>로그인</h2>
+        <c:if test="${param.error == 'true'}">
+        	<p style="color:red;">아이디 또는 비밀번호가 올바르지 않습니다.</p>
+   	 	</c:if>
         <form id="loginForm" method="post" action="${pageContext.request.contextPath}/j_spring_security_check" data-loading>
             <div class="field">
                 <label for="m_id">아이디</label>

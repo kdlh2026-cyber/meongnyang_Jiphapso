@@ -47,6 +47,13 @@
 		where oc_out_no = #{ocOutNo}
 	</update>
 
+	<update id="updateOrderCancelForfeit">
+		update dc_order_cancel
+		set oc_point = #{ocPoint, jdbcType=NUMERIC},
+			oc_coupon = #{ocCoupon, jdbcType=NUMERIC}
+		where oc_out_no = #{ocOutNo}
+	</update>
+
 	<!-- 단건 조회 -->
 	<select id="selectOrderCancelOne" resultMap="orderCancelResultMap">
 		select
@@ -102,6 +109,14 @@
 	<delete id="deleteOrderCancel">
 		delete from dc_order_cancel
 		where oc_out_no = #{ocOutNo}
+	</delete>
+
+	<!-- 주문번호 기준 취소이력 일괄삭제 (관리자 - 주문 전체 삭제 시 자식 레코드 정리용) -->
+	<delete id="deleteOrderCancelListByOrder">
+		delete from dc_order_cancel
+		where od_detail_no in (
+			select od_detail_no from dc_order_detail where or_no = #{orNo}
+		)
 	</delete>
 
 </mapper>

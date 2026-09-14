@@ -44,8 +44,9 @@
 			<td>${list.m_age_upper}</td>
 			<td>${list.m_sns}</td>
 			<td>${list.m_authority}</td>
+			<!-- 크리에이터 신청 시 승인/거절 버튼 생성 자리 -->
 			<td>
-				<a href="#">수정</a>
+				<a href="/AmemUpdateForm?m_id=${list.m_id}">수정</a>
 			</td>
 			<td>
 				<a href="/AmemberDelete?m_id=${list.m_id}" onclick="return confirm('정말로 삭제하시겠습니까?\n삭제한 이후엔 회원 정보를 복구할 수 없습니다.');">삭제</button>

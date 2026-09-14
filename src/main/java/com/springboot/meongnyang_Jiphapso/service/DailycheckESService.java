@@ -34,7 +34,7 @@ public class DailycheckESService {
 		Map<String,Object> map=new HashMap<>();
 		map.put("ch_count", ch_dto.getCh_count());
 		map.put("ch_year_month",ch_dto.getCh_year_month());
-		map.put("ch_point_quentity",ch_dto.getCh_point_quentity());
+		map.put("ch_point_quantity",ch_dto.getCh_point_quantity());
 		
 		// IndexRequest(인덱스 요청) 생성하여 저장
 		IndexRequest request=new IndexRequest("dc_dailycheck").id(String.valueOf(ch_dto.getCh_no())).source(map);
@@ -54,7 +54,7 @@ public class DailycheckESService {
 		SearchSourceBuilder builder=new SearchSourceBuilder();
 				
 		// 키워드를 title 또는(OR) content 필드에서 검색
-		builder.query(QueryBuilders.multiMatchQuery(keyword,"ch_count","ch_year_month","ch_point_quentity"));
+		builder.query(QueryBuilders.multiMatchQuery(keyword,"ch_count","ch_year_month","ch_point_quantity"));
 		request.source(builder);
 		
 		// 엘라스틱서치에서 검색한 결과를 받아옴
@@ -69,7 +69,7 @@ public class DailycheckESService {
 			ch_dto.setCh_no(Integer.parseInt(hit.getId()));
 			ch_dto.setCh_count(Integer.parseInt(map.get("ch_count").toString()));
 			ch_dto.setCh_year_month(map.get("ch_year_month").toString());
-			ch_dto.setCh_point_quentity(Integer.parseInt(map.get("ch_point_quentity").toString()));
+			ch_dto.setCh_point_quantity(Integer.parseInt(map.get("ch_point_quantity").toString()));
 			list.add(ch_dto);
 	}
 		return list;

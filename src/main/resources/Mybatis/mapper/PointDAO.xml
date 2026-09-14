@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IPointDAO">
+
+	<resultMap id="pointMap" type="com.springboot.meongnyang_Jiphapso.dto.PointDTO">
+		<id     property="poNo"      column="po_no" />
+		<result property="poType"    column="po_type" />
+		<result property="poAmount"  column="po_amount" />
+		<result property="poAfter"   column="po_after" />
+		<result property="poReason"  column="po_reason" />
+		<result property="poAt"      column="po_at" />
+		<result property="poEx"      column="po_ex" />
+		<result property="poOrderNo" column="po_order_no" />
+		<result property="mNo"       column="m_no" />
+		<result property="chNo"      column="ch_no" />
+		<result property="mId"       column="m_id" />
+		<result property="mName"     column="m_name" />
+		<result property="poRelatedNo" column="po_related_no" />
+	</resultMap>
+
+	<!-- 포인트 이력 1건 등록 -->
+	<insert id="insertPoint" parameterType="com.springboot.meongnyang_Jiphapso.dto.PointDTO">
+		insert into dc_point_history
+			(po_no, po_type, po_amount, po_after, po_reason, po_at, po_ex, po_order_no, m_no, ch_no, po_related_no)
+		values
+			(
+				default,
+				#{poType, jdbcType=VARCHAR},
+				#{poAmount, jdbcType=NUMERIC},
+				#{poAfter, jdbcType=NUMERIC},
+				#{poReason, jdbcType=VARCHAR},
+				sysdate,
+				#{poEx, jdbcType=DATE},
+				#{poOrderNo, jdbcType=NUMERIC},
+				#{mNo, jdbcType=NUMERIC},
+				#{chNo, jdbcType=NUMERIC},
+				#{poRelatedNo, jdbcType=NUMERIC}
+			)
+	</insert>
+
+	<!-- 회원 기준 포인트 이력 (마이페이지, 최신순) -->
+	<select id="selectPointListByMember" resultMap="pointMap">
+		select po_no, po_type, po_amount, po_after, po_reason, po_at, po_ex, po_order_no, m_no, ch_no, po_related_no
+		from dc_point_history
+		where m_no = #{mNo}
+		order by po_at desc, po_no desc
+	</select>
+
+	<!-- 현재 보유 포인트 = 가장 최근 이력의 처리후잔액 -->
+	<select id="selectCurrentBalance" resultType="java.lang.Long">
+		select nvl(max(po_after) keep (dense_rank last order by po_at, po_no), 0)
+		from dc_point_history
+		where m_no = #{mNo}
+	</select>
+
+	<!-- 소멸예정 포인트 (N일 이내 만료 예정인 잔여분 합계) -->
+	<select id="selectExpireSoonAmount" resultType="java.lang.Long">
+		select nvl(sum(
+			greatest(
+				e.po_amount - greatest(u.total_used - (e.cum_earn - e.po_amount), 0),
+				0
+			)
+		), 0)
+		from (
+			select po_no, po_amount, po_ex,
+				   sum(po_amount) over (order by po_at, po_no rows unbounded preceding) as cum_earn
+			from dc_point_history
+			where m_no = #{mNo} and po_type in ('EARN', 'RESTORE')
+		) e,
+		(
+			select nvl(sum(abs(po_amount)), 0) as total_used
+			from dc_point_history
+			where m_no = #{mNo} and po_type in ('USE', 'EXPIRE')
+		) u
+		where e.po_ex is not null
+		  and e.po_ex between sysdate and sysdate + #{days}
+	</select>
+
+	<!-- 이미 기한이 지났지만 아직 소멸 처리되지 않은 잔여 포인트 합계 (배치용) -->
+	<select id="selectExpiredAmount" resultType="java.lang.Long">
+		select nvl(sum(
+			greatest(
+				e.po_amount - greatest(u.total_used - (e.cum_earn - e.po_amount), 0),
+				0
+			)
+		), 0)
+		from (
+			select po_no, po_amount, po_ex,
+				   sum(po_amount) over (order by po_at, po_no rows unbounded preceding) as cum_earn
+			from dc_point_history
+			where m_no = #{mNo} and po_type in ('EARN', 'RESTORE')
+		) e,
+		(
+			select nvl(sum(abs(po_amount)), 0) as total_used
+			from dc_point_history
+			where m_no = #{mNo} and po_type in ('USE', 'EXPIRE')
+		) u
+		where e.po_ex is not null
+		  and e.po_ex &lt; sysdate
+	</select>
+
+	<!-- 적립 이력이 있고 기한이 지난 회원번호 후보 (배치 대상) -->
+	<select id="selectMemberNosWithExpiredEarn" resultType="java.lang.Long">
+		select distinct m_no
+		from dc_point_history
+		where po_type in ('EARN', 'RESTORE')
+		  and po_ex is not null
+		  and po_ex &lt; sysdate
+	</select>
+
+	<!-- 관리자 - 전체 포인트 이력 (회원 아이디/이름 조인) -->
+	<select id="selectPointListAll" resultMap="pointMap">
+		select ph.po_no, ph.po_type, ph.po_amount, ph.po_after, ph.po_reason,
+			   ph.po_at, ph.po_ex, ph.po_order_no, ph.m_no, ph.ch_no, ph.po_related_no,
+			   m.m_id, m.m_name
+		from dc_point_history ph
+		join dc_member m on ph.m_no = m.m_no
+		order by ph.po_at desc, ph.po_no desc
+	</select>
+
+	<!-- 단건 조회 -->
+	<select id="selectPointOne" resultMap="pointMap">
+		select po_no, po_type, po_amount, po_after, po_reason, po_at, po_ex, po_order_no, m_no, ch_no, po_related_no
+		from dc_point_history
+		where po_no = #{poNo}
+	</select>
+
+	<!-- 관리자 - 이력 삭제 -->
+	<delete id="deletePoint">
+		delete from dc_point_history
+		where po_no = #{poNo}
+	</delete>
+
+	<!-- 1회성 적립 사유 중복 확인 (회원가입/첫리뷰 등) -->
+	<select id="countByMemberAndReason" resultType="int">
+		select count(*)
+		from dc_point_history
+		where m_no = #{mNo} and po_reason = #{poReason}
+	</select>
+
+	<!-- 주문 삭제 시 포인트 이력 자체는 보존하고 주문 연결만 끊음 (회계기록 보존, FK만 NULL 처리) -->
+	<update id="detachPointFromOrder">
+		update dc_point_history
+		set po_order_no = null
+		where po_order_no = #{orNo}
+	</update>
+
+</mapper>

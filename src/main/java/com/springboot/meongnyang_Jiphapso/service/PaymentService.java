@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.springboot.meongnyang_Jiphapso.dao.IPaymentDAO;
+import com.springboot.meongnyang_Jiphapso.dao.IProductDao;
+import com.springboot.meongnyang_Jiphapso.dto.OrderDTO;
+import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
 import com.springboot.meongnyang_Jiphapso.dto.PaymentDTO;
 
 @Service
@@ -27,6 +30,15 @@ public class PaymentService {
 
 	@Autowired
 	private CartService cartService;
+
+	@Autowired
+	private OrderDetailService orderDetailService; // 결제 승인 시 주문상세(옵션/수량) 조회용
+
+	@Autowired
+	private IProductDao productDao; // 결제 승인 시 옵션 재고(o_quantity) 차감용
+
+	@Autowired
+	private PointService pointService; // 결제 승인 시 사용 포인트 실제 차감용
 
 	// 포트원 V2 API 시크릿
 	@Value("${portone.api-secret}")
@@ -128,6 +140,9 @@ public class PaymentService {
 		if ("PAID".equals(status) && amountMatches) {
 			paymentDAO.updatePaymentComplete(payNo, portonePaymentId, "PAID");
 
+			// 재고 차감 + 포인트 사용은 주문이 아직 PAID가 아닐 때만 (웹훅/컨펌 이중 호출로 인한 중복처리 방지)
+			applyPaidSideEffectsIfFirstPaid(dto);
+
 			orderService.updateOrderStatus(dto.getOrNo(), "PAID");
 			cartService.deleteCartByOrder(dto.getOrNo());
 
@@ -183,9 +198,37 @@ public class PaymentService {
 		if ("PAID".equals(mappedStatus)) {
 			PaymentDTO dto = paymentDAO.selectPaymentOne(payNo);
 			if (dto != null) {
+				// 재고 차감 + 포인트 사용은 주문이 아직 PAID가 아닐 때만 (웹훅/컨펌 이중 호출로 인한 중복처리 방지)
+				applyPaidSideEffectsIfFirstPaid(dto);
+
 				orderService.updateOrderStatus(dto.getOrNo(), "PAID");
 				cartService.deleteCartByOrder(dto.getOrNo());
 			}
+		}
+	}
+
+	private void applyPaidSideEffectsIfFirstPaid(PaymentDTO payment) {
+
+		Long orNo = payment.getOrNo();
+
+		OrderDTO order = orderService.getOrderOne(orNo);
+		if (order != null && "PAID".equals(order.getOrStatus())) {
+			return; // 이미 결제완료 처리된 주문이면 재처리하지 않음
+		}
+
+		// 옵션 재고 차감
+		List<OrderDetailDTO> details = orderDetailService.getListByOrder(orNo);
+		if (details != null) {
+			for (OrderDetailDTO detail : details) {
+				if (detail.getONo() != null && detail.getOdQuantity() != null) {
+					productDao.decreaseOptionStock(detail.getONo(), detail.getOdQuantity());
+				}
+			}
+		}
+
+		// 사용 포인트 실제 차감 (결제요청 시점에 payUsed로 저장해둔 값)
+		if (payment.getPayUsed() != null && payment.getPayUsed() > 0) {
+			pointService.usePoint(payment.getMNo(), payment.getPayUsed(), orNo);
 		}
 	}
 

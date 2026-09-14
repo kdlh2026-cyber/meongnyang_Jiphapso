@@ -25,6 +25,7 @@ public class MemberDTO {
 	private String m_authority;
 	private MultipartFile m_upload;
 	private String m_img;
+	private String m_cre_sub;
 	
 	public String getM_id(){
 		return m_id;

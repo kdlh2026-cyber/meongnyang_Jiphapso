@@ -1,183 +1,207 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>장바구니</title>
-    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-	<link rel="stylesheet" href="/css/cart/cart_list.css">
+<meta charset="UTF-8">
+<title>장바구니</title>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp"%>
+<link rel="stylesheet" href="/css/cart/cart_list.css">
 </head>
 <body>
 
-<c:choose>
-    <%-- 장바구니가 비어있는 경우 --%>
-    <c:when test="${empty cartList}">
-        <div class="empty">
-            🛒 장바구니가 비어있어요
-            <div><a href="/products/ShoppingList" class="submit">쇼핑하러 가기</a></div>
-        </div>
-    </c:when>
+	<c:choose>
+		<%-- 장바구니가 비어있는 경우 --%>
+		<c:when test="${empty cartList}">
+			<div class="empty">
+				🛒 장바구니가 비어있어요
+				<div>
+					<a href="/products/ShoppingList" class="submit">쇼핑하러 가기</a>
+				</div>
+			</div>
+		</c:when>
 
-    <%-- 장바구니에 상품이 있는 경우 --%>
-    <c:otherwise>
+		<%-- 장바구니에 상품이 있는 경우 --%>
+		<c:otherwise>
 
-    <div class="cart-page" id="cartContent">
+			<div class="cart-page" id="cartContent">
 
-        <div class="cart-main">
-            <div class="cart-topbar">
-                <h2 class="cart-title">장바구니<span class="count-badge" id="cartCountBadge">${fn:length(cartList)}</span></h2>
-                <div class="cart-actions">
-                    <button type="button" onclick="deleteSelected()">선택 삭제</button>
-                    <button type="button" onclick="deleteSoldOut()">품절 삭제</button>
-                </div>
-            </div>
+				<div class="cart-main">
+					<div class="cart-topbar">
+						<h2 class="cart-title">
+							장바구니<span class="count-badge" id="cartCountBadge">${fn:length(cartList)}</span>
+						</h2>
+						<div class="cart-actions">
+							<button type="button" onclick="deleteSelected()">선택 삭제</button>
+							<button type="button" onclick="deleteSoldOut()">품절 삭제</button>
+						</div>
+					</div>
 
-            <div class="cart-selectall">
-                <input type="checkbox" id="checkAll">
-                <label for="checkAll">전체선택</label>
-            </div>
+					<div class="cart-selectall">
+						<input type="checkbox" id="checkAll"> <label
+							for="checkAll">전체선택</label>
+					</div>
 
-            <div class="free-shipping-banner" id="freeShippingBanner" onclick="goShopping()">
-                <span><span class="fs-icon">🚚</span><span id="freeShippingMsg"></span></span>
-                <span class="fs-arrow">›</span>
-            </div>
+					<div class="free-shipping-banner" id="freeShippingBanner"
+						onclick="goShopping()">
+						<span><span class="fs-icon">🚚</span><span
+							id="freeShippingMsg"></span></span> <span class="fs-arrow">›</span>
+					</div>
 
-            <c:set var="totalAmount" value="${0}" />
-            <div class="cart-list">
-            <c:forEach var="cart" items="${cartList}">
-                <c:set var="lineAmount" value="${cart.OPrice * cart.caQuantity}" />
-                <c:set var="totalAmount" value="${totalAmount + lineAmount}" />
-                <c:set var="isSoldOut" value="${empty cart.OQuantity or cart.OQuantity le 0}" />
+					<c:set var="totalAmount" value="${0}" />
+					<div class="cart-list">
+						<c:forEach var="cart" items="${cartList}">
+							<c:set var="lineAmount" value="${cart.OPrice * cart.caQuantity}" />
+							<c:set var="totalAmount" value="${totalAmount + lineAmount}" />
+							<c:set var="isSoldOut"
+								value="${empty cart.OQuantity or cart.OQuantity le 0}" />
 
-                <div class="cart-row" data-cano="${cart.caNo}" data-price="${cart.OPrice}" data-soldout="${isSoldOut}">
-                    <input type="checkbox" class="item-check row-check" value="${cart.caNo}">
+							<div class="cart-row" data-cano="${cart.caNo}"
+								data-price="${cart.OPrice}" data-soldout="${isSoldOut}">
+								<input type="checkbox" class="item-check row-check"
+									value="${cart.caNo}">
 
-                    <div class="cart-thumb" onclick="goDetail(${cart.PNo})">
-                        <img src="${pageContext.request.contextPath}/images/products/main/${cart.PMainImg}" alt="${cart.PName}">
-                    </div>
+								<div class="cart-thumb" onclick="goDetail(${cart.PNo})">
+									<img
+										src="${pageContext.request.contextPath}/images/products/main/${cart.PMainImg}"
+										alt="${cart.PName}">
+								</div>
 
-                    <div class="cart-info">
-                        <div class="cart-name" onclick="goDetail(${cart.PNo})">${cart.PName}</div>
+								<div class="cart-info">
+									<div class="cart-name" onclick="goDetail(${cart.PNo})">${cart.PName}</div>
 
-                        <c:if test="${not empty cart.OName}">
-                        <div class="cart-option">
-                            <span class="req-tag">필수</span>
-                            <span>${cart.OName}</span>
-                            <button type="button" class="opt-icon" title="옵션 변경" onclick="openOptionModal(${cart.caNo}, ${cart.PNo}, ${cart.caQuantity})">✎</button>
-                            <button type="button" class="opt-icon" title="이 옵션 삭제" onclick="deleteCart(${cart.caNo})">✕</button>
-                        </div>
-                        </c:if>
+									<c:if test="${not empty cart.OName}">
+										<div class="cart-option">
+											<span class="req-tag">필수</span> <span>${cart.OName}</span>
+											<button type="button" class="opt-icon" title="옵션 변경"
+												onclick="openOptionModal(${cart.caNo}, ${cart.PNo}, ${cart.caQuantity})">✎</button>
+											<button type="button" class="opt-icon" title="이 옵션 삭제"
+												onclick="deleteCart(${cart.caNo})">✕</button>
+										</div>
+									</c:if>
 
-                        <div class="cart-bottom-row">
-                            <div class="qty-box">
-                                <button type="button" onclick="changeQuantity(${cart.caNo}, -1)">-</button>
-                                <span id="qty-${cart.caNo}" data-qty="${cart.caQuantity}">${cart.caQuantity}</span>
-                                <button type="button" onclick="changeQuantity(${cart.caNo}, 1)">+</button>
-                            </div>
-                            <div class="cart-price"><fmt:formatNumber value="${lineAmount}" pattern="#,##0" />원</div>
-                        </div>
-                    </div>
+									<div class="cart-bottom-row">
+										<div class="qty-box">
+											<button type="button"
+												onclick="changeQuantity(${cart.caNo}, -1)">-</button>
+											<span id="qty-${cart.caNo}" data-qty="${cart.caQuantity}">${cart.caQuantity}</span>
+											<button type="button"
+												onclick="changeQuantity(${cart.caNo}, 1)">+</button>
+										</div>
+										<div class="cart-price">
+											<fmt:formatNumber value="${lineAmount}" pattern="#,##0" />
+											원
+										</div>
+									</div>
+								</div>
 
-                    <button type="button" class="cart-buynow" onclick="buyNow(${cart.caNo})">바로구매</button>
+								<button type="button" class="cart-buynow"
+									onclick="buyNow(${cart.caNo})">바로구매</button>
 
-                    <div class="cart-shipping">
-                        <span class="free ship-free" style="display:none;">무료</span>
-                        <span>택배</span>
-                    </div>
-                </div>
-            </c:forEach>
-            </div>
-        </div>
+								<div class="cart-shipping">
+									<span class="free ship-free" style="display: none;">무료</span> <span>택배</span>
+								</div>
+							</div>
+						</c:forEach>
+					</div>
+				</div>
 
-        <div class="cart-summary">
-            <p class="cart-summary-title">주문 예상 금액</p>
-            <div class="cart-summary-row">
-                <span>총 상품 금액</span>
-                <span id="summaryProductAmount"><fmt:formatNumber value="${totalAmount}" pattern="#,##0" />원</span>
-            </div>
-            <div class="cart-summary-row">
-                <span>배송비</span>
-                <span id="summaryShippingFee">무료</span>
-            </div>
-            <p class="cart-summary-shipping-hint" id="summaryShippingHint"></p>
-            <div class="cart-summary-total">
-                <span>총 주문금액</span>
-                <span class="amt" id="totalAmount"><fmt:formatNumber value="${totalAmount}" pattern="#,##0" />원</span>
-            </div>
+				<div class="cart-summary">
+					<p class="cart-summary-title">주문 예상 금액</p>
+					<div class="cart-summary-row">
+						<span>총 상품 금액</span> <span id="summaryProductAmount"><fmt:formatNumber
+								value="${totalAmount}" pattern="#,##0" />원</span>
+					</div>
+					<div class="cart-summary-row">
+						<span>배송비</span> <span id="summaryShippingFee">무료</span>
+					</div>
+					<p class="cart-summary-shipping-hint" id="summaryShippingHint"></p>
+					<div class="cart-summary-total">
+						<span>총 주문금액</span> <span class="amt" id="totalAmount"><fmt:formatNumber
+								value="${totalAmount}" pattern="#,##0" />원</span>
+					</div>
 
-            <div class="cart-summary-buttons">
-                <button type="button" class="btn-order" onclick="goCheckout()">주문하기 <span class="count" id="checkoutCount">${fn:length(cartList)}</span></button>
-            </div>
+					<div class="cart-summary-buttons">
+						<button type="button" class="btn-order" onclick="goCheckout()">
+							주문하기 <span class="count" id="checkoutCount">${fn:length(cartList)}</span>
+						</button>
+					</div>
 
-            <p class="cart-summary-note"> 쿠폰 적용 혹은 포인트 여부에 따라 예상 결제금액이 달라질 수 있어요.</p>
-        </div>
+					<p class="cart-summary-note">쿠폰 적용 혹은 포인트 여부에 따라 예상 결제금액이 달라질 수
+						있어요.</p>
+				</div>
 
-    </div>
+			</div>
 
-    <div class="empty" id="emptyState" style="display:none;">
-        🛒 장바구니가 비어있어요.
-        <div><a href="/products/ShoppingList" class="submit">쇼핑하러 가기</a></div>
-    </div>
+			<div class="empty" id="emptyState" style="display: none;">
+				🛒 장바구니가 비어있어요.
+				<div>
+					<a href="/products/ShoppingList" class="submit">쇼핑하러 가기</a>
+				</div>
+			</div>
 
-    </c:otherwise>
+		</c:otherwise>
 
-</c:choose>
+	</c:choose>
 
-<%-- 옵션 변경 모달 (연필 아이콘 클릭 시) --%>
-<div class="opt-modal-overlay" id="optionModalOverlay">
-    <div class="opt-modal">
-        <button type="button" class="opt-modal-close" onclick="closeOptionModal()">&times;</button>
-        <h3>옵션 변경</h3>
+	<%-- 옵션 변경 모달 (연필 아이콘 클릭 시) --%>
+	<div class="opt-modal-overlay" id="optionModalOverlay">
+		<div class="opt-modal">
+			<button type="button" class="opt-modal-close"
+				onclick="closeOptionModal()">&times;</button>
+			<h3>옵션 변경</h3>
 
-        <div class="opt-modal-product">
-            <img id="optModalThumb" src="" alt="">
-            <div>
-                <p id="optModalName" class="opt-modal-pname"></p>
-                <p id="optModalPrice" class="opt-modal-pprice"></p>
-            </div>
-        </div>
+			<div class="opt-modal-product">
+				<img id="optModalThumb" src="" alt="">
+				<div>
+					<p id="optModalName" class="opt-modal-pname"></p>
+					<p id="optModalPrice" class="opt-modal-pprice"></p>
+				</div>
+			</div>
 
-        <div class="opt-modal-row" id="optModalColorRow">
-            <label>색상 <span class="req">*</span></label>
-            <select id="optModalColor" onchange="onOptionSelectChange()"></select>
-        </div>
-        <div class="opt-modal-row" id="optModalSizeRow">
-            <label>사이즈 <span class="req">*</span></label>
-            <select id="optModalSize" onchange="onOptionSelectChange()"></select>
-        </div>
+			<div class="opt-modal-row" id="optModalColorRow">
+				<label>색상 <span class="req">*</span></label> <select
+					id="optModalColor" onchange="onOptionSelectChange()"></select>
+			</div>
+			<div class="opt-modal-row" id="optModalSizeRow">
+				<label>사이즈 <span class="req">*</span></label> <select
+					id="optModalSize" onchange="onOptionSelectChange()"></select>
+			</div>
 
-        <div class="opt-modal-selected" id="optModalSelectedBox" style="display:none;">
-            <div class="opt-modal-selected-top">
-                <span id="optModalSelectedLabel"></span>
-                <button type="button" onclick="clearOptionSelection()">&times;</button>
-            </div>
-            <div class="opt-modal-selected-bottom">
-                <div class="qty-box">
-                    <button type="button" onclick="optModalChangeQty(-1)">-</button>
-                    <span id="optModalQty">1</span>
-                    <button type="button" onclick="optModalChangeQty(1)">+</button>
-                </div>
-                <span id="optModalLinePrice">0원</span>
-            </div>
-        </div>
+			<div class="opt-modal-selected" id="optModalSelectedBox"
+				style="display: none;">
+				<div class="opt-modal-selected-top">
+					<span id="optModalSelectedLabel"></span>
+					<button type="button" onclick="clearOptionSelection()">&times;</button>
+				</div>
+				<div class="opt-modal-selected-bottom">
+					<div class="qty-box">
+						<button type="button" onclick="optModalChangeQty(-1)">-</button>
+						<span id="optModalQty">1</span>
+						<button type="button" onclick="optModalChangeQty(1)">+</button>
+					</div>
+					<span id="optModalLinePrice">0원</span>
+				</div>
+			</div>
 
-        <div class="opt-modal-total">
-            <span>총수량 <span id="optModalTotalCount">0</span>개</span>
-            <span id="optModalTotal" class="amt">0원</span>
-        </div>
+			<div class="opt-modal-total">
+				<span>총수량 <span id="optModalTotalCount">0</span>개
+				</span> <span id="optModalTotal" class="amt">0원</span>
+			</div>
 
-        <div class="opt-modal-buttons">
-            <button type="button" class="opt-btn-cancel" onclick="closeOptionModal()">취소</button>
-            <button type="button" class="opt-btn-confirm" id="optModalConfirmBtn" disabled onclick="confirmOptionChange()">변경</button>
-        </div>
-    </div>
-</div>
+			<div class="opt-modal-buttons">
+				<button type="button" class="opt-btn-cancel"
+					onclick="closeOptionModal()">취소</button>
+				<button type="button" class="opt-btn-confirm"
+					id="optModalConfirmBtn" disabled onclick="confirmOptionChange()">변경</button>
+			</div>
+		</div>
+	</div>
 
-<script>
+	<script>
     var contextPath = "${pageContext.request.contextPath}";
     var FREE_SHIPPING_THRESHOLD = 30000;
     var SHIPPING_FEE = 3000;
@@ -527,6 +551,6 @@
         location.href = contextPath + '/member/order/checkout?caNo=' + caNo;
     }
 </script>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+	<%@ include file="/WEB-INF/views/footer.jsp"%>
 </body>
 </html>

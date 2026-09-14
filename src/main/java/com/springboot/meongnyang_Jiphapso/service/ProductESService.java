@@ -27,7 +27,6 @@ public class ProductESService {
 	private RestHighLevelClient client; // 엘라스틱서치와 자동으로 연결
 	@Autowired
 	IProductDao p_dao;
-	
 
 	public void p_save(ProductDto p_dto) throws Exception{
 		// 인덱스 no 검증(null값 체크)
@@ -78,7 +77,7 @@ public class ProductESService {
 	        return new ArrayList<>();
 	    }
 	    
-	    // 3. DB에 pno 리스트를 던져서 상품의 모든 상세 정보를 가져옴
+	    // DB에 pno 리스트를 던져서 상품의 모든 상세 정보를 가져옴
 	    return p_dao.productSearchList(pnoList);
 	}
 

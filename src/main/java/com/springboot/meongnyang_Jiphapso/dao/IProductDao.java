@@ -36,4 +36,7 @@ public interface IProductDao {
 	// 엘라스틱 보낼 리스트, 검색한 리스트 저장
 	public List<ProductDto> p_list();
 	public List<ShoppingListDto> productSearchList(List<Integer> p_no);
+	
+	// 옵션 재고 차감
+    public int decreaseOptionStock(Long o_no, Integer o_quantity);
 }

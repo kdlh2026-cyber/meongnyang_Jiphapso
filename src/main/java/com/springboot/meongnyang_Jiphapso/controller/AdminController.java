@@ -3,6 +3,7 @@ package com.springboot.meongnyang_Jiphapso.controller;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -130,6 +131,7 @@ public class AdminController {
 
 	    return "redirect:/admin/mem/memberList";
 	}
+
 	
 	@RequestMapping("/AmemberDelete")
 	public String AmemDelte(@RequestParam("m_id") String m_id) {

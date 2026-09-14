@@ -5,11 +5,12 @@
 <head>
 <meta charset="UTF-8">
 <title>멍냥집합소</title>
+<script src="/js/main/memberCheck.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/loading_animal.jsp" %>
 <%@ include file="hamburger_menu.jsp" %>
-	<form id="memberInsertForm" method="post" action="/memberInsert" enctype="multipart/form-data" data-loading>
+	<form name="memberForm" method="post" action="/memberInsert" enctype="multipart/form-data" data-loading>
 		<table>
 			<tr>
 				<td>아이디</td>
@@ -29,7 +30,10 @@
 			</tr>
 			<tr>
 				<td>주소</td>
-				<td><input type="text" name="m_addr" placeholder="필수입력"></td>
+				<td>
+					<input type="text" name="m_addr" placeholder="필수입력">
+					<button type="button" onclick="goPopup();">주소검색</button>
+				</td>
 			</tr>
 			<tr>
 				<td>상세주소</td>
@@ -50,6 +54,14 @@
 			<tr>
 				<td>생년월일</td>
 				<td><input type="date" name="m_birth"></td>
+			</tr>
+			<tr>
+				<td>만 14세 이상</td>
+				<td><input type="checkbox" name="m_age_upper"></td>
+			</tr>
+			<tr>
+				<td>SNS 수신 동의 여부</td>
+				<td><input type="checkbox" name="m_sns"></td>
 			</tr>
 			<tr>
 				<td>프로필 사진</td>

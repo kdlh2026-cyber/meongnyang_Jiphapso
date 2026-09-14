@@ -27,6 +27,7 @@ import com.springboot.meongnyang_Jiphapso.dto.OrderDTO;
 import com.springboot.meongnyang_Jiphapso.service.CartService;
 import com.springboot.meongnyang_Jiphapso.service.OrderDetailService;
 import com.springboot.meongnyang_Jiphapso.service.OrderService;
+import com.springboot.meongnyang_Jiphapso.service.PointService;
 
 @Controller
 public class OrderController {
@@ -35,14 +36,17 @@ public class OrderController {
     private final CartService cartService;
     private final OrderDetailService orderDetailService; // 주문상세 페이지에서 라인아이템(취소버튼 포함) 목록 뿌려주려고 추가
     private final IMemberLookupDAO memberLookupDAO; // 주문/결제 페이지 주문자정보/배송정보 자동입력용 (회원 파트 건드리지 않고 조회 전용으로 분리)
+    private final PointService pointService; // 결제 페이지에 보유 포인트 표시용
 
     @Autowired
     public OrderController(OrderService orderService, CartService cartService,
-                           OrderDetailService orderDetailService, IMemberLookupDAO memberLookupDAO) {
+                           OrderDetailService orderDetailService, IMemberLookupDAO memberLookupDAO,
+                           PointService pointService) {
         this.orderService = orderService;
         this.cartService = cartService;
         this.orderDetailService = orderDetailService;
         this.memberLookupDAO = memberLookupDAO;
+        this.pointService = pointService;
     }
 
     private static class NotLoggedInException extends IllegalStateException {
@@ -95,9 +99,13 @@ public class OrderController {
         // 주문자 정보(이름/연락처) + 배송 정보(주소) 자동입력용 - 로그인 회원 정보 조회
         MemberDTO member = memberLookupDAO.selectMemberOne(mNo);
 
+        // 결제 페이지에서 포인트 사용 UI에 쓸 보유 포인트 조회
+        Long myPointBalance = pointService.getCurrentBalance(mNo);
+
         model.addAttribute("cartList", selected);
         model.addAttribute("productAmount", productAmount);
         model.addAttribute("member", member);
+        model.addAttribute("myPointBalance", myPointBalance);
 
         return "member/order/checkout";
     }
@@ -197,7 +205,13 @@ public class OrderController {
     public ApiResponse<Void> adminUpdateStatus(@PathVariable("orNo") Long orNo,
                                                @RequestBody Map<String, String> body) {
 
-        orderService.updateOrderStatus(orNo, body.get("orStatus"));
+        String orStatus = body.get("orStatus");
+
+        if ("CANCELED".equals(orStatus)) {
+            return ApiResponse.fail("주문 취소는 [취소/반품 관리] 메뉴에서 신청 승인 절차를 통해서만 처리할 수 있어요.");
+        }
+
+        orderService.updateOrderStatus(orNo, orStatus);
 
         return ApiResponse.ok(null);
     }

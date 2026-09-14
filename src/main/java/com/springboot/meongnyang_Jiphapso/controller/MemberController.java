@@ -90,7 +90,7 @@ public class MemberController {
     public String memberUpdateForm(Authentication auth, HttpServletRequest request, Model model) {
         String m_id = auth.getName();
         MemberDTO m_dto = m_dao.MemberFindId(m_id);
-        model.addAttribute("MemberUpdate", m_dto);
+        model.addAttribute("memberUpdate", m_dto);
         
         return "member/myPage/myProfileUpdateForm";
     }
@@ -203,6 +203,15 @@ public class MemberController {
 	@RequestMapping("/memberInsert")
 	public String login(@RequestParam("m_upload") MultipartFile m_upload,MemberDTO m_dto,Principal principal) throws Exception {
 		m_dto.setM_passwd(passwordEncoder.encode(m_dto.getM_passwd()));
+		
+		m_dto.setM_age_upper(m_dto.getM_age_upper() != null && m_dto.getM_age_upper().equals("on") ? "T":"F");
+		
+		m_dto.setM_sns(m_dto.getM_sns() != null && m_dto.getM_sns().equals("on") ? "T":"F");
+		
+		if(m_dto.getM_sns()==null) {
+			m_dto.setM_sns("F");
+		}
+		
 		m_dto.setM_authority("USER");
 		
 		if(!m_upload.isEmpty()) {
@@ -236,6 +245,8 @@ public class MemberController {
 	    } else {
 	        m_dto.setM_passwd(existing.getM_passwd());
 	    }
+	    
+	    m_dto.setM_sns(m_dto.getM_sns() != null && m_dto.getM_sns().equals("T") ? "T" : "F");
 
 	    // 3. 이미지: 새로 업로드했을 때만 교체, 아니면 기존 파일명 유지
 	    if (!m_upload.isEmpty()) {

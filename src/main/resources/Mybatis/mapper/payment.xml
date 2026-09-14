@@ -88,4 +88,10 @@
 		where pay_no = #{payNo}
 	</delete>
 
+	<!-- 주문번호 기준 결제내역 일괄삭제 (관리자 - 주문 전체 삭제 시 자식 레코드 정리용) -->
+	<delete id="deletePaymentByOrder">
+		delete from dc_payment
+		where or_no = #{orNo}
+	</delete>
+
 </mapper>

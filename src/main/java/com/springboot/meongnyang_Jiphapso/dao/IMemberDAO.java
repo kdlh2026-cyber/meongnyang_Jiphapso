@@ -24,4 +24,6 @@ public interface IMemberDAO {
 	public List<MemberDTO> MemberListView(String m_authority);
 	// 관리자용 회원 정보 수정
 	public int AMemUpdate(MemberDTO m_dto);
+	// 크리에이터 신청 조회
+	public List<MemberDTO> MemberCreatorApply(String m_cre_sub);
 }

@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>관리자 페이지</title>
 <style>
-	body{font-family: Arial, sans-serif;padding: 40px;background:#f5f5f5}
+	body{font-family: Arial, sans-serif;background:#f5f5f5}
 	ul, li, ol{list-style:none}
 	.accordion{padding: 0;margin: 0;max-width: 400px;}
 	.accordion li{border: 1px solid #ccc;margin-bottom: 10px;border-radius: 5px;overflow: hidden}
@@ -44,6 +44,7 @@
 		<button>입양 관리</button>
 		<div class="content">
 			<p><a href="/strayWriteForm">유기동물 등록</a></p>
+			<p><a href="/admin/stray/StrayListA">유기동물 리스트</a></p>
 		</div>
 	</li>
 	<li>
@@ -69,15 +70,15 @@
 	<li>
 		<button>쿠폰 / 포인트 관리</button>
 		<div class="content">
-			<p><a href ="#">쿠폰 리스트</a>
-			<p><a href ="#">회원 포인트 리스트</a>
-			<p><a href ="#">포인트 리스트</a>
+			<p><a href="/admin/coupon">쿠폰 리스트</a></p>
+			<p><a href ="/admin/point/list">포인트 리스트</a>
 		</div>
 	</li>
 	<li>
 		<button>그 외</button> <!-- 회사소개 이용약관 개인정보처리방침 등 -->
 		<div class="content">
-			<p>내용</p>
+			<p><a href="/admin/hospital/hospitalInsertForm">동물병원 등록</a></p>
+			<p><a href="/admin/hospital/hospitalList">동물병원 리스트</a></p>
 		</div>
 	</li>
 </ul>

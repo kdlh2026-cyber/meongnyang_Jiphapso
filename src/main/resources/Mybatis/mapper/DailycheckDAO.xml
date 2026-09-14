@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper 
+<!DOCTYPE mapper
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IDailycheckDAO">
@@ -11,29 +11,37 @@
 	<select id="CheckView" resultMap="dc_checkMap">
 		select *
 		from dc_dailycheck
-		where dc_no=#{dc_no}
-		order by ch_no desc
+		where ch_no=#{ch_no}
+	</select>
+	<select id="CheckViewByMemberMonth" resultMap="dc_checkMap">
+		select *
+		from dc_dailycheck
+		where m_no=#{m_no} and ch_year_month=#{ch_year_month,jdbcType=DATE}
 	</select>
 	<insert id="CheckWrite">
 		<selectKey keyProperty="ch_no" resultType="integer" order="BEFORE">
 			select dc_dailycheck_seq.NEXTVAL from dual
 		</selectKey>
-		insert into dc_dailycheck(ch_no,ch_count,ch_year_month,ch_start_date,ch_end_date,ch_point_quentity,m_no,po_no)
-		values(#{ch_no},#{ch_count},#{ch_year_month},#{ch_start_date},#{ch_end_date},#{ch_point_quentity},#{m_no},#{po_no})
+		insert into dc_dailycheck(ch_no,ch_count,ch_year_month,ch_start_date,ch_end_date,ch_point_quantity,m_no,po_no)
+		values(#{ch_no},#{ch_count},#{ch_year_month,jdbcType=DATE},#{ch_start_date,jdbcType=DATE},#{ch_end_date,jdbcType=DATE},#{ch_point_quantity},#{m_no},#{po_no,jdbcType=NUMERIC})
 	</insert>
 	<update id="CheckUpdate">
 		update dc_dailycheck
-		set ch_start_date=#{ch_start_date},ch_end_date=#{ch_end_date},ch_point_quentity=#{ch_point_quentity}
+		set ch_count=#{ch_count}, ch_end_date=#{ch_end_date,jdbcType=DATE}, ch_point_quantity=#{ch_point_quantity}, po_no=#{po_no,jdbcType=NUMERIC}
 		where ch_no=#{ch_no}
 	</update>
 	<delete id="CheckDelete">
-		delete dc_dailycheck
+		delete from dc_dailycheck
 		where ch_no=#{ch_no}
 	</delete>
 	<resultMap id="dc_checkMap" type="com.springboot.meongnyang_Jiphapso.dto.DailycheckDTO">
 		<id property="ch_no" column="ch_no" />
 		<result property="ch_count" column="ch_count" />
 		<result property="ch_year_month" column="ch_year_month" />
-		<result property="ch_point_quentity" column="ch_point_quentity" />
+		<result property="ch_start_date" column="ch_start_date" />
+		<result property="ch_end_date" column="ch_end_date" />
+		<result property="ch_point_quantity" column="ch_point_quantity" />
+		<result property="m_no" column="m_no" />
+		<result property="po_no" column="po_no" />
 	</resultMap>
 </mapper>

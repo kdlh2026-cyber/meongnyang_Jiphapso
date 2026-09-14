@@ -1,7 +1,6 @@
 package com.springboot.meongnyang_Jiphapso.dto;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -10,7 +9,7 @@ import lombok.Data;
 
 @Data
 public class StrayAnimalDto {
-	 private BigInteger stray_no;
+	 private Long stray_no;
 	 private String stray_category;
 	 private String stray_name;
 	 private String stray_age;
