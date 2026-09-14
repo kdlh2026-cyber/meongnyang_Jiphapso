@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.meongnyang_Jiphapso.dao.IBreedDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IPetDAO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
@@ -40,6 +41,9 @@ public class MemberController {
 	
 	@Autowired
 	PetService pet_serv;
+	
+	@Autowired
+	IBreedDAO b_dao;
 	
     private final PasswordEncoder passwordEncoder;
 
@@ -113,7 +117,9 @@ public class MemberController {
     }
     
     @RequestMapping("/member/myPage/myPetInsertForm")
-    public String myPetInsertForm() {
+    public String myPetInsertForm(Model model) {
+    	model.addAttribute("dogBreed",b_dao.BreedList("강아지"));
+    	model.addAttribute("catBreed",b_dao.BreedList("고양이"));
     	return "member/myPage/myPetInsertForm";
     }
     
@@ -229,6 +235,13 @@ public class MemberController {
 		mem_serv.write(m_dto);
 		
 		return "redirect:/main";
+	}
+	
+	@RequestMapping("/creatorSubmit")
+	public String cresub(Principal principal) {
+	    String m_id = principal.getName();
+	    m_dao.MemberCreatorApply(m_id);
+	    return "redirect:/main";
 	}
 	
 	@RequestMapping("/memberUpdate")

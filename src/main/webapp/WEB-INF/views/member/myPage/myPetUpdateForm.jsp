@@ -14,7 +14,20 @@
 		<table>
 			<tr>
 				<td>
-					<img src="/images/myPet/${petUpdate.pet_image}" width="100" alt="현재 이미지">
+					<c:choose>
+					    <c:when test="${not empty myPetPage.pet_image}">
+					        <img src="/images/myPet/${petUpdate.pet_image}" alt="${petUpdate.pet_name}" width="200">
+					    </c:when>
+					    <c:when test="${myPetPage.pet_type==고양이}">
+					        <img src="/images/stray/menu/cat_head.png" width="200">
+					    </c:when>
+					    <c:when test="${myPetPage.pet_type==강아지}">
+					        <img src="/images/stray/menu/dog_head.png" width="200">
+					    </c:when>
+					    <c:otherwise>
+					        <img src="/images/main/hamster_head.png" width="200">
+					    </c:otherwise>
+					</c:choose>
 				</td>
 			</tr>
 			<tr>

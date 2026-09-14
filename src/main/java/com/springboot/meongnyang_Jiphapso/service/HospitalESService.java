@@ -26,7 +26,7 @@ public class HospitalESService {
 	
 	public void save(HospitalDTO hp_dto) throws Exception{
 		// 인덱스 id 검증(null값 체크)
-		if(hp_dto.getHp_no()==0) {
+		if(hp_dto.getHp_no()==null) {
 			throw new IllegalStateException("dc_hspital 인덱스가 null입니다.");
 		}
 		

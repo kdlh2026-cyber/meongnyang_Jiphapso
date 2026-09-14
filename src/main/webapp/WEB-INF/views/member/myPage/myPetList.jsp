@@ -21,12 +21,28 @@
 		</tr>
 		<c:forEach var="list" items="${myPetList}">
 		<tr>
-			<td><a href="/member/myPage/myPetPage?pet_no=${list.pet_no}"><img src="/images/myPet/${list.pet_image}" alt="${list.pet_image}" width="80"></a></td>
+			<td><a href="/member/myPage/myPetPage?pet_no=${list.pet_no}">
+				<c:choose>
+					    <c:when test="${not empty list.pet_image}">
+					        <img src="/images/myPet/${list.pet_image}" alt="${list.pet_name}" width="80">
+					    </c:when>
+					    <c:when test="${myPetPage.pet_type==고양이}">
+					        <img src="/images/stray/menu/cat_head.png" width="80">
+					    </c:when>
+					    <c:when test="${myPetPage.pet_type==강아지}">
+					        <img src="/images/stray/menu/dog_head.png" width="80">
+					    </c:when>
+					    <c:otherwise>
+					        <img src="/images/main/hamster_head.png" width="80">
+					    </c:otherwise>
+					</c:choose>
+			</a></td>
 			<td><a href="/member/myPage/myPetPage?pet_no=${list.pet_no}">${list.pet_name}</a></td>
 			<td>${list.pet_type}</td>
 			<td>${list.pet_breed}</td>
 			<td>${list.pet_gender}</td>
 			<td>
+				<a href="/myPetUpdateForm?pet_no=${list.pet_no}">수정</a>
 				<a href="/myPetDelete?pet_no=${list.pet_no}">삭제</a>
 			</td>
 		</tr>

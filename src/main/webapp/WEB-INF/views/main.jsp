@@ -34,6 +34,30 @@
     border-radius: 6px;
 }
 </style>
+<sec:authorize access="hasAnyRole('USER','CREATOR')">
+<sec:authentication property="principal.username" var="loginId" />
+<script>
+var DC_STORAGE_KEY = "dailycheckDismissed_${loginId}";
+
+document.addEventListener("DOMContentLoaded", function () {
+    var today = new Date().toISOString().slice(0, 10);
+    var dismissedDate = localStorage.getItem(DC_STORAGE_KEY);
+
+    if (dismissedDate === today) {
+        return;
+    }
+
+    fetch("/dailycheckStatus")
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.needCheck) {
+                window.open("/dailycheckPopup", "dailycheckPopup",
+                    "width=360,height=460,resizable=no,scrollbars=no");
+            }
+        });
+});
+</script>
+</sec:authorize>
 </head>
 <body>
 <%@ include file="hamburger_menu.jsp" %>
@@ -46,8 +70,8 @@
 	
 	<!-- 일반 회원 영역 -->
 	<sec:authorize access="hasRole('USER')">
-		<img src="/images/main/LOGO_main.png" width="350px" height="auto"/><br>
-			회원님, 환영합니다.<br>
+			<img src="/images/main/LOGO_main.png" width="350px" height="auto"/><br>
+				회원님, 환영합니다.<br>
 	</sec:authorize>
 	
 	<!-- 관리자 영역 -->
@@ -67,7 +91,9 @@
 		</form>
 		
 	<!-- 광고바 삽입 영역 -->
-	<img src="/images/main/advertisement.png" width="800px" height="auto" /><br>
+	<a href="/guest/etc/advertisementLink">
+		<img src="/images/main/advertisement.png" width="1000px" height="auto" /><br>
+	</a>
 	
 	<!-- 추천 게시글 표시 영역 -->
 		<h3>추천 게시글</h3>
@@ -75,7 +101,7 @@
 		    <p>등록된 게시글이 없습니다.</p>
 		</c:if>
 		<div class="content-list">
-		    <c:forEach var="cm" items="${recommendContentList}" end="4">
+		    <c:forEach var="cm" items="${recommendContentList}" begin="0" end="3">
 		        <div class="content-item">
 		            <c:if test="${not empty cm.comm_img}">
 		                <img src="${board.comm_img}" width="120" height="120">

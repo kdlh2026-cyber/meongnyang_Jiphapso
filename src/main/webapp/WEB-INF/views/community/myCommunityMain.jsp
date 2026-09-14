@@ -71,7 +71,7 @@
 
         <!-- [특정 탭]일 때 상세 리스트 조각 불러오기 -->
         <c:if test="${not empty param.comm_type}">
-            <jsp:include page="/WEB-INF/views/community/fragment/postList.jsp" />
+            <!-- <jsp:include page="/WEB-INF/views/community/fragment/postList.jsp" /> -->
         </c:if>
     </div>
 

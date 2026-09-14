@@ -25,10 +25,10 @@ public class DailycheckESService {
 	private RestHighLevelClient client;  // 엘라스틱 서치와 자동으로 연결
 	
 	public void save(DailycheckDTO ch_dto) throws Exception{
-		// 인덱스 id 검증(null값 체크)
-		if(ch_dto.getCh_no()==0) {
-			throw new IllegalStateException("dc_dailycheck 인덱스가 없습니다.");
-		}
+	    // 인덱스 id 검증(0 이하면 아직 채번 안 된 것으로 간주)
+	    if(ch_dto.getCh_no() <= 0) {
+	        throw new IllegalStateException("dc_dailycheck 인덱스가 없습니다.");
+	    }
 		
 		// 엘라스틱서치에 저장할 문서 생성
 		Map<String,Object> map=new HashMap<>();
