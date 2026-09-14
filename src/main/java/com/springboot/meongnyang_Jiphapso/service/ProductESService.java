@@ -87,7 +87,7 @@ public class ProductESService {
 		
 		// 엘라스틱 서치에서 검색 요청의 본문을 만드는 객체 생성(SQL의 select문)
 		SearchSourceBuilder source=new SearchSourceBuilder();
-		source.size(10);
+		source.size(15);
 		
 		// prefix(접두어) 검색(스 -> 스프 -> 스프링)
 		source.query(QueryBuilders.matchPhrasePrefixQuery("p_title",keyword));

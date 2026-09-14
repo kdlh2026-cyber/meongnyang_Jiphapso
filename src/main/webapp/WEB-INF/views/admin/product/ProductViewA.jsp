@@ -98,7 +98,7 @@ const contextPath = '${pageContext.request.contextPath}';
 
 // 서버(JSTL)의 옵션 리스트
 const options = [
-    <c:forEach var="opt" items="${ShoppingView.option}" varStatus="status">
+    <c:forEach var="opt" items="${ProductView.option}" varStatus="status">
     {
         no: '${opt.o_no}',
         size: '${opt.o_type_size}',
@@ -184,6 +184,27 @@ function selectOption(type, value) {
     }
 }
 
+//상품 수정 페이지 이동 함수
+function goToUpdateForm() {
+    if (!confirm('이 상품을 수정하시겠습니까?')) {
+        return;
+    }
+
+    // p_no는 상단에 선언된 productPNo 사용
+    const pNo = productPNo;
+    
+    // 선택된 옵션이 있으면 그 옵션의 o_no, 없으면 첫 번째 기본 옵션의 o_no 사용
+    const oNo = (currentOption && currentOption.no) ? currentOption.no : '${ProductView.option[0].o_no}';
+
+    if (!oNo) {
+        alert('옵션 정보를 찾을 수 없습니다.');
+        return;
+    }
+
+    // p_no와 o_no를 쿼리스트링으로 함께 전달
+    location.href = contextPath + '/ProductUpdateForm?p_no=' + pNo + '&o_no=' + oNo;
+}
+
 function showTab(tabName) {
     const productinfo = document.getElementById('productinfo');
     const review = document.getElementById('review');
@@ -201,7 +222,7 @@ function showTab(tabName) {
 // 아래부터 장바구니 / 관심상품 연동 
 // ===================================================================
 
-const productPNo = ${ShoppingView.pno};
+const productPNo = ${ProductView.pno};
 let toastTimer = null;
 
 // 수량 +/- 조절 (qtyInput 값만 갱신, 최소 1개)
@@ -317,38 +338,38 @@ function showActionBanner(icon, message, action) {
 }
 </script>
 <meta charset="UTF-8">
-<title>${ShoppingView.ptitle}</title>
+<title>${ProductView.ptitle}</title>
 </head>
 <body>
-<%@ include file="../hamburger_menu.jsp" %>
+<%@ include file="../../hamburger_menu.jsp" %>
 <div>
     <div>
         <div>
             <div class="image-wrap">
-                <img id="mainProductImage" alt="이미지" src="${pageContext.request.contextPath}/images/products/main/${fn:replace(ShoppingView.option[0].o_main_img, '%', '%25')}">
+                <img id="mainProductImage" alt="이미지" src="${pageContext.request.contextPath}/images/products/main/${fn:replace(ProductView.option[0].o_main_img, '%', '%25')}">
                 <button type="button" id="favoriteBtn" class="fav-heart-btn" onclick="toggleFavorite()">♥</button>
             </div>
         </div>
         <div>
-            <h1>${ShoppingView.ptitle}</h1>
+            <h1>${ProductView.ptitle}</h1>
             
             <div>판매가
-                <span id="salePriceDisplay"><fmt:formatNumber value="${ShoppingView.option[0].o_price}" />원</span>
+                <span id="salePriceDisplay"><fmt:formatNumber value="${ProductView.option[0].o_price}" />원</span>
             </div>
             
-            <c:if test="${not empty ShoppingView.option[0].o_origin_price and ShoppingView.option[0].o_origin_price ne ShoppingView.option[0].o_price}">
-            <div><span><fmt:formatNumber value="${((ShoppingView.option[0].o_origin_price - ShoppingView.option[0].o_price) / ShoppingView.option[0].o_origin_price) * 100}" pattern="0" />%</span>
-                <span id="originPriceDisplay"><fmt:formatNumber value="${ShoppingView.option[0].o_origin_price}" />원</span>
+            <c:if test="${not empty ProductView.option[0].o_origin_price and ProductView.option[0].o_origin_price ne ProductView.option[0].o_price}">
+            <div><span><fmt:formatNumber value="${((ProductView.option[0].o_origin_price - ProductView.option[0].o_price) / ProductView.option[0].o_origin_price) * 100}" pattern="0" />%</span>
+                <span id="originPriceDisplay"><fmt:formatNumber value="${ProductView.option[0].o_origin_price}" />원</span>
             </div>
             </c:if>
             
-            <c:if test="${not empty ShoppingView.option[0].o_type_size or not empty ShoppingView.option[0].o_color}">
+            <c:if test="${not empty ProductView.option[0].o_type_size or not empty ProductView.option[0].o_color}">
 			<div>선택</div>
-			    <c:if test="${not empty ShoppingView.option[0].o_type_size}">
+			    <c:if test="${not empty ProductView.option[0].o_type_size}">
 			        <div style="margin-top: 10px;">사이즈</div>
 			        <c:set var="uniqueSizes" value="" />
 			        <div>
-			            <c:forEach var="opt" items="${ShoppingView.option}">
+			            <c:forEach var="opt" items="${ProductView.option}">
 			                <c:set var="checkSize" value="|${opt.o_type_size}|" />
 			                <c:if test="${not fn:contains(uniqueSizes, checkSize)}">
 			                    <button onclick="selectOption('size', '${opt.o_type_size}')">
@@ -360,11 +381,11 @@ function showActionBanner(icon, message, action) {
 			        </div>
 			    </c:if>
 			    
-			    <c:if test="${not empty ShoppingView.option[0].o_color}">
+			    <c:if test="${not empty ProductView.option[0].o_color}">
 			        <div style="margin-top: 10px;">색상</div>
 			        <c:set var="uniqueColors" value="" />
 			        <div>
-			            <c:forEach var="opt" items="${ShoppingView.option}">
+			            <c:forEach var="opt" items="${ProductView.option}">
 			                <c:set var="checkColor" value="|${opt.o_color}|" />
 			                <c:if test="${not fn:contains(uniqueColors, checkColor)}">
 			                    <button onclick="selectOption('color', '${opt.o_color}')">
@@ -375,11 +396,12 @@ function showActionBanner(icon, message, action) {
 			            </c:forEach>
 			        </div>
 			    </c:if>
-			</c:if>
-            ${ShoppingView.pcontent} 
-
+			</c:if>          
+              
+            ${ProductView.pcontent}
+            
             <%-- 페이지 최초 로드 시 첫번째 옵션의 품절 여부를 판별하여 초기 화면 세팅 --%>
-            <c:set var="isSoldOut" value="${ShoppingView.option[0].o_price eq 0 or ShoppingView.option[0].o_quantity le 0}" />
+            <c:set var="isSoldOut" value="${ProductView.option[0].o_price eq 0 or ProductView.option[0].o_quantity le 0}" />
 
             <!-- 수량 조절 UI (품절일 시 숨김) -->
             <div id="qtySection" style="display: ${isSoldOut ? 'none' : 'block'};">
@@ -400,6 +422,11 @@ function showActionBanner(icon, message, action) {
                 <button type="button" id="cartBtn" class="btn-cart-outline" onclick="addToCart()" style="display: ${isSoldOut ? 'none' : 'inline-flex'};">🛒 장바구니</button>
                 <button type="button" id="buyNowBtn" class="btn-buy-now" onclick="buyNow()" style="display: ${isSoldOut ? 'none' : 'inline-flex'};">바로 구매하기</button>
             </div>
+            <div style="margin-top: 15px;">
+			    <button type="button" onclick="goToUpdateForm()" style="padding: 8px 16px; cursor: pointer;">
+			        상품 수정
+			    </button>
+			</div>
         </div>
         
         <div>
@@ -410,8 +437,8 @@ function showActionBanner(icon, message, action) {
 		    
 		    <div id="productinfo" class="tab-content" style="display: block;">
 		        <div class="image">
-		            <c:if test="${not empty ShoppingView.detailImages}">
-		                <c:forEach var="detail" items="${ShoppingView.detailImages}">
+		            <c:if test="${not empty ProductView.detailImages}">
+		                <c:forEach var="detail" items="${ProductView.detailImages}">
 		                    <img src="${pageContext.request.contextPath}/images/products/info/${detail.img_url}">
 		                </c:forEach>
 		            </c:if>

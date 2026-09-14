@@ -16,12 +16,9 @@
 	
 	<select id="StrayAnimalPageList" resultMap="dc_stray_animalMap">
 	    SELECT * FROM dc_stray_animal
+	    where stray_category = #{stray_category}
 	    ORDER BY stray_no DESC
 	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
-	</select>
-
-	<select id="StrayAnimalCount" resultType="int">
-	    select count(*) from dc_stray_animal
 	</select>
 	
 	<select id="StrayView" resultMap="dc_stray_animalMap">
@@ -32,6 +29,16 @@
 	<delete id="StrayAnimalDelete">
 		delete from dc_stray_animal where stray_no = #{stray_no}
 	</delete>
+	
+	<select id="StrayAnimalCount" parameterType="String" resultType="int">
+    select count(*) 
+    from dc_stray_animal
+    <where>
+        <if test="stray_category != null and stray_category != ''">
+            and stray_category = #{stray_category}
+        </if>
+    </where>
+	</select>
 	
 	<resultMap id="dc_stray_animalMap" type="com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto">
 		<id property="stray_no" column="stray_no" />
