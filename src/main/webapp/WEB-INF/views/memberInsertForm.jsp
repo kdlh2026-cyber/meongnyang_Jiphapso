@@ -10,7 +10,7 @@
 <body>
 <%@ include file="/WEB-INF/views/loading_animal.jsp" %>
 <%@ include file="hamburger_menu.jsp" %>
-	<form name="memberForm" method="post" action="/memberInsert" enctype="multipart/form-data" data-loading>
+	<form name="memberForm" method="post" action="/memberInsert" enctype="multipart/form-data" onsubmit="return mInsertcheck();" data-loading>
 		<table>
 			<tr>
 				<td>아이디</td>
@@ -19,6 +19,10 @@
 			<tr>
 				<td>비밀번호</td>
 				<td><input type="password" name="m_passwd"></td>
+			</tr>
+			<tr>
+				<td>비밀번호 확인</td>
+				<td><input type="password" name="m_passwd1"></td>
 			</tr>
 			<tr>
 				<td>이름</td>

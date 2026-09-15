@@ -11,7 +11,8 @@
 <%@ include file="/WEB-INF/views/loading_animal.jsp" %>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 	<form name="AmemUpdateForm" method="post" action="/AmemUpdate" enctype="multipart/form-data" data-loading>
-		<input type="hidden" name="m_id" value="${AmemUpdate.m_id}">
+		<input type="hidden" name="m_id" value="${AmemUpdate.m_id}"> 
+		<input type="hidden" name="m_cre_sub" value="${AmemUpdate.m_cre_sub}"> 
 		<table>
 			<tr>
 				<td><img src="/images/myProfile/${AmemUpdate.m_img}" alt="${AmemUpdate.m_img}" width="150px"></td>
@@ -29,20 +30,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td><input type="m_name" value="${AmemUpdate.m_name}"></td>
-			</tr>
-			<tr>
-				<td>${AmemUpdate.m_email}</td> <!-- **처리 필요 -->
+				<td><input type="text" name="m_name" value="${AmemUpdate.m_name}"></td>
 			</tr>
 			<tr>
 				<td><textarea name="m_introduce">${AmemUpdate.m_introduce}</textarea></td>
-			</tr>
-			<tr>
-				<td><fmt:formatDate value="${AmemUpdate.m_birth}" pattern="yyyy-MM-dd" /></td>
-			</tr> <!-- **처리 필요 -->
-			<tr>
-				<td>SNS 수신 동의 여부: ${AmemUpdate.m_sns}</td>
-			</tr>			
+			</tr>		
 			<tr>
 				<td><input type="file" name="m_upload"></td>
 			</tr>

@@ -1,0 +1,209 @@
+@charset "UTF-8";
+	.content-list,
+	.product-list {
+	    display: grid;
+	    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	    gap: 16px;
+	    margin-bottom: 24px;
+	}
+	
+	.content-item,
+	.product-item {
+	    border: 1px solid #eee;
+	    border-radius: 8px;
+	    padding: 10px;
+	    box-sizing: border-box;
+	}
+	
+	.content-item img,
+	.product-item .image img {
+	    width: 100%;
+	    aspect-ratio: 4 / 3.5;
+	    object-fit: cover;
+	    border-radius: 6px;
+	    display: block;
+	}
+
+/* 중앙 검색창 */
+    .search-section {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0 35px;
+        position: relative;
+    }
+    .search-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+    }
+    .search-input-box {
+	    display: flex;
+	    align-items: center;
+	    width: 100%;
+	    border: 3px solid #FDCC61;
+	    border-radius: 30px;
+	    padding: 6px 14px 6px 20px;
+	    background: #fff;
+	}
+    .search-input-box input[type="text"] {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 15px;
+    }
+	.search-input-box button[type="submit"] {
+	    background: transparent;
+	    border: none;
+	    cursor: pointer;
+	    font-size: 15px;
+	    font-weight: bold;
+	    padding: 4px 6px;
+	    white-space: nowrap;
+	}
+    #suggestions {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        z-index: 100;
+        max-height: 250px;
+        overflow-y: auto;
+    }
+    #suggestions .item {
+        padding: 10px 18px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    #suggestions .item:hover { background-color: #f8f9fa; }
+    /* 상단 로고+타이틀 영역 */
+	.main-header {
+	    text-align: center;
+	    margin-bottom: 4px;
+	}
+	.hover-image-box {
+	    position: relative;
+	    display: inline-block;
+	    width: 100%;
+	    max-width: 400px;
+	    margin: 0 auto;
+	}
+	
+	.main-header-img {
+	    width: 100%;
+	    display: block;
+	    object-fit: cover;
+	    /* transition 제거 → 즉시 전환 */
+	}
+	
+	.hover-image-box .origin-img {
+	    position: relative;
+	    z-index: 1;
+	}
+	
+	.hover-image-box .hover-img {
+	    position: absolute;
+	    top: 0;
+	    left: 0;
+	    z-index: 2;
+	    opacity: 0;
+	}
+	
+	.hover-image-box:hover .origin-img {
+	    opacity: 0;
+	}
+	
+	.hover-image-box:hover .hover-img {
+	    opacity: 1;
+	}
+	
+	/* 검색창 */
+	.search-section {
+	    display: flex;
+	    justify-content: center;
+	    margin: 0 0 35px;
+	    position: relative;
+	}
+	.search-wrapper {
+	    position: relative;
+	    width: 100%;
+	    max-width: 800px;
+	    padding: 0 16px;
+	    box-sizing: border-box;
+	}
+	.search-input-box {
+	    display: flex;
+	    align-items: center;
+	    width: 100%;
+	    border: 3px solid #FDCC61;
+	    border-radius: 30px;
+	    padding: 6px 6px 6px 20px;
+	    background: #fff;
+	    box-sizing: border-box;
+	}
+	.search-input-box input[type="text"] {
+	    flex: 1;
+	    min-width: 0;
+	    border: none;
+	    outline: none;
+	    font-size: 15px;
+	}
+	.search-input-box button[type="submit"] {
+	    background: #FDCC61;
+	    color: #ffffff;
+	    border: none;
+	    border-radius: 20px;
+	    cursor: pointer;
+	    font-size: 14px;
+	    font-weight: bold;
+	    padding: 8px 16px;
+	    white-space: nowrap;
+	}
+	
+	/* 광고 배너 */
+	.ad-section {
+	    display: flex;
+	    justify-content: center;
+	    margin-bottom: 24px;
+	}
+	.ad-section img {
+	    width: 100%;
+	    max-width: 800px;
+	    height: auto;
+	    border-radius: 8px;
+	}
+	
+	/* 추천 게시글/상품 카테고리 박스 */
+	.category-box {
+	    max-width: 1000px;
+	    margin: 0 auto 24px;
+	    border: 1px solid #eee;
+	    border-radius: 12px;
+	    padding: 16px;
+	    box-sizing: border-box;
+	    background-color: #FFFBF5;
+	}
+	.category-box h3 {
+	    margin-top: 0;
+	}
+	/* 추천 게시글/상품 이미지 */
+	.content-item img,
+	.product-item .image img {
+	    width: 100%;
+	    aspect-ratio: 4 / 3.5;
+	    object-fit: cover;
+	    border-radius: 6px;
+	}
+	/* ---- z-index 정리: 겹침 방지 ---- */
+	/* 본문 컨텐츠는 topbar/drawer보다 항상 아래에 있도록 고정 */
+	main, .search-section, .category-box, .ad-section {
+	    position: relative;
+	    z-index: 1;
+	}
+	/* 검색 자동완성 드롭다운은 본문보다는 위, topbar(1000)보다는 아래 */
+	#suggestions {
+	    z-index: 500;
+	}

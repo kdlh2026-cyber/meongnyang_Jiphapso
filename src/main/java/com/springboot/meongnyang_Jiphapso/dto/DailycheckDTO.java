@@ -10,6 +10,7 @@ public class DailycheckDTO {
 	private Date ch_year_month;
 	private Date ch_start_date;
 	private Date ch_end_date;
+	private String ch_checked_days;
 	private int ch_point_quantity;
 	private int m_no;
 	private Integer po_no;

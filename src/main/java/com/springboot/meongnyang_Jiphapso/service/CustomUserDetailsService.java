@@ -23,6 +23,10 @@ public class CustomUserDetailsService implements UserDetailsService{
 			throw new UsernameNotFoundException("사용자가 없습니다");
 		}
 		
+		if("WITHDRAWN".equals(m_dto.getM_authority())) {
+			throw new UsernameNotFoundException("탈퇴한 회원입니다.");
+		}
+		
 		return User.builder()
 				   .username(m_dto.getM_id())
 				   .password(m_dto.getM_passwd())

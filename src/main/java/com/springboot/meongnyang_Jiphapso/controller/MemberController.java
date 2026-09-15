@@ -291,7 +291,7 @@ public class MemberController {
 
 	    return "redirect:main";
 	}
-	
+	// 탈퇴가 아닌 비활성화 처리
 	@RequestMapping("/memberDelete")
 	public String memDelete(@RequestParam("m_id") String m_id) {
 		m_dao.MemberDelete(m_id);

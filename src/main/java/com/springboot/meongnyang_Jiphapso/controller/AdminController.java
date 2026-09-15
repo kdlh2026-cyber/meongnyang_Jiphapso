@@ -153,7 +153,7 @@ public class AdminController {
 	
 	@RequestMapping("/AmemberDelete")
 	public String AmemDelte(@RequestParam("m_id") String m_id) {
-		m_dao.MemberDelete(m_id);
+		m_dao.MemberWithout(m_id);
 		
 		return "redirect:/admin/mem/memberList";
 	}

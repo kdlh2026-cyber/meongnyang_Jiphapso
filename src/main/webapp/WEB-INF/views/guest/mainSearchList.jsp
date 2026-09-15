@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,7 +51,11 @@
 	</c:if>
 	<c:forEach var="pd" items="${PDList}" end="5">
 		<div class="pd-item">
-			<div class="image"><img src="${pageContext.request.contextPath}/images/products/main/${pd.omainimg}"></div>
+			<div class="image">
+		            	<a href="/products/ShoppingView?p_no=${pd.pno}">
+		                	<div class="image"><img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(pd.omainimg, '%', '%25')}" width="120"></div>
+		            	</a>
+		            </div>
 			<div>${pd.pbrand}</div>
 			<div><a href="/products/ShoppingView?p_no=${pd.pno}">${pd.ptitle}</a></div>
 			<div>판매가

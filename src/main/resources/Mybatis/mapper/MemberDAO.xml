@@ -65,6 +65,13 @@
 	    set m_cre_sub = 'F'
 	    where m_id = #{m_id}
 	</update>
+	<!-- 회원 탈퇴(자식키 때문에 delete 불가능) -->
+	<update id="MemberWithout">
+	    update dc_member
+	    set m_passwd = 'WITHOUT', m_name = 'WITHOUT', m_email = null, m_tel = 'WITHOUT', m_addr = 'WITHOUT', m_addr_detail = 'WITHOUT', m_zipno=-0, m_introduce=null,m_birth=null,m_date=null,m_age_upper=null,m_sns=null,m_img=null, m_cre_sub=null,
+	        m_authority = 'WITHOUT'
+	    where m_id = #{m_id}
+	</update>
 	
 	<delete id="MemberDelete">
 		delete from dc_member where m_id=#{m_id}

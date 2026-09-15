@@ -15,7 +15,7 @@ public class MemberDTO {
 	private String m_tel;
 	private String m_addr;
 	private String m_addr_detail;
-	private int m_zipno;
+	private String m_zipno;
 	private String m_email;
 	private String m_introduce;
 	private Date m_birth;
