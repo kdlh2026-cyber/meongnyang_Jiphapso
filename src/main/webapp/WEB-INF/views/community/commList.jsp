@@ -38,12 +38,12 @@
 	<a href="/communityCrawlingWriteForm">글쓰기(크롤링용)</a> | <a href="/commWriteForm">글쓰기(실제)</a>
 	<div class="category_tabs">
         <a href="/community/commList" class="${empty param.comm_type ? 'active' : ''}">전체</a>
-        <a href="/community/commList?comm_type=Q%26A" class="${param.comm_type eq 'Q&A' ? 'active' : ''}">Q&amp;A</a>
+        <a href="/community/commList?comm_type=QNA" class="${param.comm_type eq 'QNA' ? 'active' : ''}">Q&amp;A</a>
         <a href="/community/commList?comm_type=라운지" class="${param.comm_type eq '라운지' ? 'active' : ''}">라운지</a>
         <a href="/community/commList?comm_type=콘텐츠" class="${param.comm_type eq '콘텐츠' ? 'active' : ''}">콘텐츠</a>
     </div>
     
-	<c:if test="${empty param.comm_type or param.comm_type eq 'Q&A' or param.comm_type eq '라운지'}">
+	<c:if test="${empty param.comm_type or param.comm_type eq 'QNA' or param.comm_type eq '라운지'}">
         <div class="sub_filter">
             <select name="sort" onchange="location.href='/community/commList?comm_type=${empty param.comm_type ? '' : param.comm_type}&amp;sort='+this.value+'&amp;comm_pet_type=${param.comm_pet_type}'">
                 <option value="latest" ${param.sort eq 'latest' ? 'selected' : ''}>최신순</option>
@@ -73,7 +73,16 @@
 	<table border="1" width="700">
 	<c:forEach var="board" items="${list}">
 		<tr>
-			<td>${board.comm_type} ${board.comm_pet_type} ${board.comm_breed}</td>
+			<td>
+            <c:choose>
+                <c:when test="${board.comm_type == '콘텐츠'}">
+                    ${board.comm_detail}
+                </c:when>
+                <c:otherwise>
+                    ${board.comm_type == 'QNA' ? 'Q&amp;A' : board.comm_type} ${board.comm_pet_type} ${board.comm_breed}
+                </c:otherwise>
+            </c:choose>
+       	 </td>
 			<td rowspan="4">
 			<c:if test="${not empty board.comm_img}">
 			<img src="${board.comm_img}" width="100" height="100">
@@ -81,7 +90,21 @@
 			</td>
 		</tr>
 		<tr>
-			<td><a href="/community/commView?comm_no=${board.comm_no}">${board.comm_title}</a></td>
+			<td>
+				<c:if test="${board.comm_adpick eq 'Y'}">
+				    <span style="background: #ff5a1f; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 5px;">
+				        <c:choose>
+				            <c:when test="${not empty board.admin_name}">
+				                ${board.admin_name} PICK
+				            </c:when>
+				            <c:otherwise>
+				                PICK
+				            </c:otherwise>
+				        </c:choose>
+				    </span>
+				</c:if>
+				<a href="/community/commView?comm_no=${board.comm_no}">${board.comm_title}</a>
+			</td>
 		</tr>
 		<tr>
 			<td class="preview_content">${board.comm_content}</td>

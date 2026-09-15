@@ -357,6 +357,15 @@ public class CommunityService {
 	    return top10List;
 	}
 	
+	public int adminCommunityDelete(int comm_no) {
+        // 만약 게시글 삭제 시 연관된 이미지 파일이나 댓글 등을 같이 지워야 한다면 여기서 추가 로직 수행 가능
+        return dao.adminCommunityDelete(comm_no);
+    }
+	
+	public int updateAdPick(int comm_no) {
+        return dao.updateAdPick(comm_no);
+    }
+	
 	// 커뮤니티 글(리뷰) insert 성공 직후, 대상 금액의 3% 적립
 	// pointService.earnCommunityBonus(mNo, baseAmount);
 

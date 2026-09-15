@@ -40,7 +40,7 @@
     <!-- 상단 탭 -->
   	<div class="header-section">
         <div class="tab-menu">
-            <a href="${pageContext.request.contextPath}/admin/community/communityManage/manageDetails?comm_type=Q%26A" class="${activeQnA}">Q&A</a>
+            <a href="${pageContext.request.contextPath}/admin/community/communityManage/manageDetails?comm_type=QNA" class="${activeQnA}">Q&A</a>
             <a href="${pageContext.request.contextPath}/admin/community/communityManage/manageDetails?comm_type=라운지" class="${activeLounge}">라운지</a>
             <a href="${pageContext.request.contextPath}/admin/community/communityManage/manageDetails?comm_type=콘텐츠" class="${activeContent}">콘텐츠</a>
         </div>

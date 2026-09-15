@@ -76,6 +76,12 @@ public class CommentService {
         return result;
     }
     
+    // 상품 리뷰 작성
+    public void ReviewWrite(CommentDTO dto) throws Exception{
+		dao.ReviewWrite(dto);
+		esService.save(dto);
+	}
+    
     // 내가 쓴 특정 상품 리뷰 조회
     public CommentDTO getReviewByDetailNo(Long odDetailNo) {
         return dao.selectReviewByDetailNo(odDetailNo);

@@ -57,7 +57,7 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-	<div class="dashbord-wrap">
+	<div class="dashboard-wrap">
 		<!-- 전체 게시글 등록 현황 -->
 	    <div class="status-header">
 	        <h3>전체 게시글 등록 현황</h3>
@@ -69,7 +69,8 @@
 	    <div class="status-box">
 	        <div class="status-item">
 	            <div class="label">Q&amp;A</div>
-	            <div class="count">${categoryCounts['Q&A']}개</div>
+	            <!-- 키값을 'QNA'로 매칭 -->
+	            <div class="count">${categoryCounts['QNA']}개</div>
 	        </div>
 	        <div class="status-item">
 	            <div class="label">라운지</div>
@@ -81,23 +82,20 @@
 	        </div>
 	    </div>
 
-	
+	 <a href="/admin/communityUpdate">게시글 관리</a>	      		
 	 <div class="panel-row">
 
 	     <!-- 게시글 관리 -->
 	     <div class="panel">
 	         <div class="panel-header">
-	             <h4>게시글 관리</h4>
-	             <a href="/community/commList">커뮤니티 바로가기</a>
+	             <h4>게시글 등록 현황</h4>
 	         </div>
 	
 	         <div class="tab-group">
-	             <c:forEach var="type" items="['Q&A','라운지','콘텐츠']">
-	             </c:forEach>
-	
-	             <button type="button" class="tab-btn manage-tab active" data-type="Q&amp;A" onclick="switchTab(this, 'manage')">
+	             <!-- data-type과 뱃지 키값을 'QNA'로 변경 -->
+	             <button type="button" class="tab-btn manage-tab active" data-type="QNA" onclick="switchTab(this, 'manage')">
 	                 Q&amp;A
-	                 <c:if test="${todayCounts['Q&A'] > 0}"><span class="badge">${todayCounts['Q&A']}</span></c:if>
+	                 <c:if test="${todayCounts['QNA'] > 0}"><span class="badge">${todayCounts['QNA']}</span></c:if>
 	             </button>
 	             <button type="button" class="tab-btn manage-tab" data-type="라운지" onclick="switchTab(this, 'manage')">
 	                 라운지
@@ -134,11 +132,11 @@
         <div class="panel">
             <div class="panel-header">
                 <h4>인기 top10</h4>
-                <a href="/community/commList">커뮤니티 바로가기</a>
             </div>
 
             <div class="tab-group">
-                <button type="button" class="tab-btn top-tab active" data-type="Q&amp;A" onclick="switchTab(this, 'top')">Q&amp;A</button>
+                <!-- 인기 top10 탭의 data-type도 'QNA'로 변경 -->
+                <button type="button" class="tab-btn top-tab active" data-type="QNA" onclick="switchTab(this, 'top')">Q&amp;A</button>
                 <button type="button" class="tab-btn top-tab" data-type="라운지" onclick="switchTab(this, 'top')">라운지</button>
                 <button type="button" class="tab-btn top-tab" data-type="콘텐츠" onclick="switchTab(this, 'top')">콘텐츠</button>
             </div>
@@ -159,7 +157,7 @@
                                 <td><a href="/community/commView?comm_no=${item.comm_no}">${item.comm_title}</a></td>
                                 <td>${item.comm_writer}</td>
                                 <td>${item.comm_good}</td>
-                                <td>${item.comm_view}
+                                <td>${item.comm_view}</td>
                             </tr>
                         </c:forEach>
                     </table>
@@ -167,6 +165,7 @@
             </c:forEach>
         </div>
     </div>
+</div>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 <script>
