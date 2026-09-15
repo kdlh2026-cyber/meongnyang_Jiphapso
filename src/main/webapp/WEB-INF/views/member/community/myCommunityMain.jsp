@@ -22,7 +22,6 @@
 
 <!-- 2. 하단 레이아웃 (왼쪽 사이드바 + 오른쪽 본문) -->
 <div class="my-page-body-container">
-    
     <!-- 왼쪽 사이드바 (고정 틀) -->
     <div class="sidebar-area">
         <div class="side-menu">
@@ -231,34 +230,50 @@
                     </c:if>
                     
                     <!-- 리뷰 카테고리일 때 -->
-                    <c:if test="${param.comm_type eq '리뷰'}">
-                        <div class="comment-card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
-                            <div class="comment-header-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            	<span style="color: #f59e0b; font-size: 15px; letter-spacing: 2px; margin-right: 8px;">
-							        <c:choose>
-							            <c:when test="${item.cmt_score == 5}">★★★★★</c:when>
-							            <c:when test="${item.cmt_score == 4}">★★★★☆</c:when>
-							            <c:when test="${item.cmt_score == 3}">★★★☆☆</c:when>
-							            <c:when test="${item.cmt_score == 2}">★★☆☆☆</c:when>
-							            <c:otherwise>★☆☆☆☆</c:otherwise>
-							        </c:choose>
-							    </span>
-                                <span class="comment-date" style="font-size: 12px; color: #888;">
-                                    <fmt:formatDate value="${item.cmt_date}" pattern="yyyy-MM-dd HH:mm" />
-                                </span>
-                                <span class="badge-category-outline" style="font-size: 11px; padding: 2px 6px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">상품 리뷰</span>
-                            </div>
-                
-                            <div class="my-comment-text" style="font-size: 14px; color: #333; line-height: 1.5; margin-bottom: 10px;">
-                                ${item.cmt_content}
-                            </div>
-                            
-							<div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
-							    <button type="button" onclick="location.href='/member/order/${item.cmt_type_no}'" style="padding: 5px 10px; cursor: pointer; background: #f1f3f5; border: 1px solid #dcdcdc; border-radius: 4px; font-size: 12px;">주문상세로 이동</button>
-							    <button type="button" onclick="if(confirm('정말 리뷰를 삭제하시겠습니까?')) { location.href='/community/reviewDelete?cmt_no=${item.cmt_no}'; }" style="padding: 5px 10px; cursor: pointer; background: #fff5f5; border: 1px solid #ffa8a8; color: #e03131; border-radius: 4px; font-size: 12px;">삭제하기</button>
-							</div>
-                        </div>
-                    </c:if>
+					<c:if test="${param.comm_type eq '리뷰'}">
+					    <div class="comment-card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
+					        
+					        <!-- 상품 정보 영역 (이미지 + 타이틀 가로 정렬) -->
+					        <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #f1f3f5;">
+					            <!-- 상품 이미지 -->
+					            <a href="${pageContext.request.contextPath}/products/ShoppingView?p_no=${item.p_no}" style="flex-shrink: 0; display: block; width: 60px; height: 60px;">
+					                <img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(item.o_main_img, '%', '%25')}" alt="${item.p_title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid #eee;">
+					            </a>
+					        
+					            <!-- 상품 타이틀 -->
+					            <div style="font-size: 15px; font-weight: 600; color: #222; line-height: 1.4;">
+					                <a href="${pageContext.request.contextPath}/products/ShoppingView?p_no=${item.p_no}" style="text-decoration: none; color: inherit;">
+					                    ${item.p_title}
+					                </a>
+					            </div>
+					        </div>
+					                        	
+					        <div class="comment-header-row" style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
+					            <span style="color: #f59e0b; font-size: 15px; letter-spacing: 2px; margin-right: 8px;">
+					                <c:choose>
+					                    <c:when test="${item.cmt_score == 5}">★★★★★</c:when>
+					                    <c:when test="${item.cmt_score == 4}">★★★★☆</c:when>
+					                    <c:when test="${item.cmt_score == 3}">★★★☆☆</c:when>
+					                    <c:when test="${item.cmt_score == 2}">★★☆☆☆</c:when>
+					                    <c:otherwise>★☆☆☆☆</c:otherwise>
+					                </c:choose>
+					            </span>
+					            <span class="comment-date" style="font-size: 12px; color: #888;">
+					                <fmt:formatDate value="${item.cmt_date}" pattern="yyyy-MM-dd HH:mm" />
+					            </span>
+					            <span class="badge-category-outline" style="font-size: 11px; padding: 2px 6px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">상품 리뷰</span>
+					        </div>
+					
+					        <div class="my-comment-text" style="font-size: 14px; color: #333; line-height: 1.5; margin-bottom: 10px;">
+					            ${item.cmt_content}
+					        </div>
+					        
+					        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
+					            <button type="button" onclick="location.href='/member/order/${item.cmt_type_no}'" style="padding: 5px 10px; cursor: pointer; background: #f1f3f5; border: 1px solid #dcdcdc; border-radius: 4px; font-size: 12px;">주문상세로 이동</button>
+					            <button type="button" onclick="if(confirm('정말 리뷰를 삭제하시겠습니까?')) { location.href='/community/reviewDelete?cmt_no=${item.cmt_no}'; }" style="padding: 5px 10px; cursor: pointer; background: #fff5f5; border: 1px solid #ffa8a8; color: #e03131; border-radius: 4px; font-size: 12px;">삭제하기</button>
+					        </div>
+					    </div>
+					</c:if>
                 
                     <!-- 일반 게시글 카테고리(Q&A, 라운지, 콘텐츠)일 때 -->
                     <c:if test="${param.comm_type ne '댓글' && param.comm_type ne '리뷰'}">

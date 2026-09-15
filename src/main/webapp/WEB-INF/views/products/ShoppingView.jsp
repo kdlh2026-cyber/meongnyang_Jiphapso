@@ -418,9 +418,51 @@ function showActionBanner(icon, message, action) {
 		        </div>
 		    </div>
 		
-		    <div id="review" class="tab-content" style="display: none;">
+		    		    <div id="review" class="tab-content" style="display: none;">
 		        <div class="review-list">
-		        
+		            
+		            <%-- 1. 리뷰 목록이 비어있는 경우 --%>
+		            <c:if test="${empty reviewList}">
+		                <div style="padding: 30px; text-align: center; color: #888; font-size: 14px;">
+		                    등록된 리뷰가 없어요. 첫 리뷰를 남겨보세요!
+		                </div>
+		            </c:if>
+		
+		            <%-- 2. 리뷰 목록이 존재하는 경우 반복 출력 --%>
+		            <c:if test="${not empty reviewList}">
+		                <div style="padding: 10px 0; font-size: 15px; font-weight: bold; margin-bottom: 15px;">
+		                    리뷰 <span style="color: #e0402e;">${fn:length(reviewList)}</span>개
+		                </div>
+		
+		                <c:forEach var="rev" items="${reviewList}">
+		                    <div style="border-bottom: 1px solid #eee; padding: 16px 0;">
+		                        <!-- 상단: 별점 + 작성자/날짜 -->
+		                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+		                            <!-- 별점 표시 -->
+		                            <span style="color: #f59e0b; font-size: 14px; letter-spacing: 2px;">
+		                                <c:choose>
+		                                    <c:when test="${rev.cmt_score == 5}">★★★★★</c:when>
+		                                    <c:when test="${rev.cmt_score == 4}">★★★★☆</c:when>
+		                                    <c:when test="${rev.cmt_score == 3}">★★★☆☆</c:when>
+		                                    <c:when test="${rev.cmt_score == 2}">★★☆☆☆</c:when>
+		                                    <c:otherwise>★☆☆☆☆</c:otherwise>
+		                                </c:choose>
+		                            </span>
+		                            
+		                            <!-- 작성자 및 날짜 -->
+		                            <div style="font-size: 12px; color: #888;">
+		                                <span style="font-weight: 600; color: #555; margin-right: 8px;">${rev.cmt_writer}</span>
+		                                <fmt:formatDate value="${rev.cmt_date}" pattern="yyyy.MM.dd" />
+		                            </div>
+		                        </div>
+		
+		                        <!-- 리뷰 내용 -->
+		                        <div style="font-size: 13px; color: #333; line-height: 1.5; white-space: pre-line;">
+		                            ${rev.cmt_content}
+		                        </div>
+		                    </div>
+		                </c:forEach>
+		            </c:if>		
 		        </div>
 		    </div>
 		</div>

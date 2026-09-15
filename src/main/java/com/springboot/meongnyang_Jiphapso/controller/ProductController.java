@@ -163,6 +163,10 @@ public class ProductController {
 	@RequestMapping("/products/ShoppingView")
 	public String ShoppingView(@RequestParam("p_no") int p_no, Model model) {
 		model.addAttribute("ShoppingView", p_dao.ShoppingView(p_no));
+		
+		//상품 리뷰 조회
+		List<CommentDTO> reviewList = cmt_service.selectReviewListByProductNo(p_no);
+	    model.addAttribute("reviewList", reviewList);
 		return "products/ShoppingView";
 	}
 	

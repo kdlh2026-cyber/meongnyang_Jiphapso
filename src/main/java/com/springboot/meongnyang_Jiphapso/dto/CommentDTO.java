@@ -26,5 +26,8 @@ public class CommentDTO {
 	private Integer comment_count;
 	private String comm_type;
 	
+	private String p_title;
+	private String o_main_img;
+	
 	private Integer reply_count;
 }
