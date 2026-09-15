@@ -1,6 +1,8 @@
 package com.springboot.meongnyang_Jiphapso.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +69,17 @@ public class DailycheckESService {
 			Map<String,Object> map=hit.getSourceAsMap();
 			DailycheckDTO ch_dto=new DailycheckDTO();
 			ch_dto.setCh_no(Integer.parseInt(hit.getId()));
-			ch_dto.setCh_count(Integer.parseInt(map.get("ch_count").toString()));
-			ch_dto.setCh_year_month(map.get("ch_year_month").toString());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+
+			if (map.get("ch_count") != null) {
+			    ch_dto.setCh_count(Integer.parseInt(map.get("ch_count").toString()));
+			}
+
+			if (map.get("ch_year_month") != null) {
+			    Date date = sdf.parse(map.get("ch_year_month").toString());
+			    ch_dto.setCh_year_month(date);
+			}
+			
 			ch_dto.setCh_point_quantity(Integer.parseInt(map.get("ch_point_quantity").toString()));
 			list.add(ch_dto);
 	}
