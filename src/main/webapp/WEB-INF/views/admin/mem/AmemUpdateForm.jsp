@@ -29,7 +29,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><input type="m_name" value="${AmemUpdate.m_name}"></td> <!-- **처리 필요 -->
+				<td><input type="m_name" value="${AmemUpdate.m_name}"></td>
 			</tr>
 			<tr>
 				<td>${AmemUpdate.m_email}</td> <!-- **처리 필요 -->
