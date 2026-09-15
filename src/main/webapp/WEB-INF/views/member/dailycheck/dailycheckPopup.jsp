@@ -20,15 +20,31 @@
 </head>
 <body>
 <div class="dc-wrap">
-  <img src="/images/main/dailycheckboard.png" alt="출석체크" class="dc-img">
+  <img src="/images/main/dailycheck2.png" alt="출석체크" id="dc-img", class="dc-img">
   <h3>오늘의 출석체크</h3>
   <p class="dc-info" id="dc-info">아래 버튼으로 출석체크를 진행해주세요.</p>
 
   <button type="button" class="dc-btn-main" onclick="doCheck()">출석체크 하기</button>
   <button type="button" class="dc-btn-sub" onclick="goPage()">출석체크 페이지로 이동</button>
 </div>
+<footer>
+    <label>
+        <input type="checkbox" id="dontShowToday"> 오늘 하루는 열지 않기
+    </label>
+</footer>
 
 <script>
+window.resizeTo(450, 600);
+window.moveTo(500, 150);
+function goPage() {
+    if (window.opener && !window.opener.closed) {
+        window.opener.location.href = "/dailycheck";
+        window.opener.focus();
+    } else {
+        window.location.href = "/dailycheck";
+    }
+    window.close();
+}
 function doCheck() {
     var info = document.getElementById("dc-info");
 
@@ -36,7 +52,19 @@ function doCheck() {
         .then(function (res) { return res.text(); })
         .then(function (result) {
             if (result === "success") {
+            	document.getElementById("dc-img").src = "/images/main/dailycheck1.png";
                 info.innerText = "출석체크가 완료되었습니다!";
+                
+                setTimeout(function () {
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.location.href = "/dailycheck";
+                        window.opener.focus();
+                    } else {
+                        window.location.href = "/dailycheck";
+                    }
+                    window.close();
+                }, 1200);
+                
                 if (window.opener && !window.opener.closed) {
                     var today = new Date().toISOString().slice(0, 10);
                     var key = window.opener.DC_STORAGE_KEY || "dailycheckDismissed";
@@ -52,15 +80,16 @@ function doCheck() {
         });
 }
 
-function goPage() {
-    if (window.opener && !window.opener.closed) {
-        window.opener.location.href = "/dailycheck";
-        window.opener.focus();
-    } else {
-        window.location.href = "/dailycheck";
+
+function saveDismissIfChecked() {
+    var checkbox = document.getElementById("dontShowToday");
+    if (checkbox && checkbox.checked && window.opener && !window.opener.closed) {
+        var today = new Date().toISOString().slice(0, 10);
+        var key = window.opener.DC_STORAGE_KEY || "dailycheckDismissed";
+        window.opener.localStorage.setItem(key, today);
     }
-    window.close();
 }
+window.addEventListener("beforeunload", saveDismissIfChecked);
 </script>
 </body>
 </html>

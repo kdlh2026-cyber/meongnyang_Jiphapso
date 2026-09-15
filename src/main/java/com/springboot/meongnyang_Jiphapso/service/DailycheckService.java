@@ -73,53 +73,74 @@ public class DailycheckService {
       return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
          && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
    }
+   
+   private java.util.Set<Integer> parseDays(String str) {
+	    java.util.Set<Integer> set = new java.util.TreeSet<>();
+	    if (str != null && !str.isBlank()) {
+	        for (String s : str.split(",")) {
+	            set.add(Integer.parseInt(s.trim()));
+	        }
+	    }
+	    return set;
+	}
 
-   // 누적식 출석체크 처리
+	private String joinDays(java.util.Set<Integer> days) {
+	    return days.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(","));
+	}
+   
+	// 출석체크 처리 (월별 누적 카운트 + 날짜별 체크 기록)
    @Transactional
    public DailycheckDTO checkIn(int m_no) throws Exception {
-      Date yearMonth = getMonthStart();
-      Date today = new Date();
+	    Date yearMonth = getMonthStart();
+	    Date today = new Date();
 
-      DailycheckDTO existing = viewByMemberMonth(m_no, yearMonth);
+	    Calendar todayCal = Calendar.getInstance();
+	    todayCal.setTime(today);
+	    int todayDay = todayCal.get(Calendar.DAY_OF_MONTH);
 
-      if (existing == null) {
-         // 이번 달 첫 출석
-         DailycheckDTO ch_dto = new DailycheckDTO();
-         ch_dto.setCh_count(1);
-         ch_dto.setCh_year_month(yearMonth);
-         ch_dto.setCh_start_date(today);
-         ch_dto.setCh_end_date(today);
-         ch_dto.setCh_point_quantity(100); // 1회 출석당 100P
-         ch_dto.setM_no(m_no);
-         write(ch_dto); // dc_dailycheck insert (ch_no 채번됨)
+	    DailycheckDTO existing = viewByMemberMonth(m_no, yearMonth);
 
-         // 포인트 적립 - dc_point_history.ch_no를 방금 만든 dailycheck 행에 연결
-         Long poNo = pointService.earnDailyCheckBonus((long) m_no, (long) ch_dto.getCh_no());
+	    if (existing == null) {
+	        DailycheckDTO ch_dto = new DailycheckDTO();
+	        ch_dto.setCh_count(1);
+	        ch_dto.setCh_year_month(yearMonth);
+	        ch_dto.setCh_start_date(today);
+	        ch_dto.setCh_end_date(today);
+	        ch_dto.setCh_point_quantity(100);
+	        ch_dto.setM_no(m_no);
+	        ch_dto.setCh_checked_days(String.valueOf(todayDay));
+	        write(ch_dto);
 
-         if (poNo == null) {
-             // PointPolicy.AMOUNT_DAILY_CHECK가 0/미설정일 때를 대비한 임시 보정
-             // (팀원이 정책 값 확정하면 이 블록은 제거)
-             pointService.adjustPointByAdmin((long) m_no, 100, "출석체크(임시보정)");
-         }
-         return ch_dto;
-      }
+	        Long poNo = pointService.earnDailyCheckBonus((long) m_no, (long) ch_dto.getCh_no());
+	        if (poNo == null) {
+	            pointService.adjustPointByAdmin((long) m_no, 100, "출석체크(임시보정)");
+	        } else {
+	            ch_dto.setPo_no(poNo.intValue());
+	            ch_dao.CheckUpdate(ch_dto);
+	        }
+	        return ch_dto;
 
-      if (isSameDay(existing.getCh_end_date(), today)) {
-         throw new IllegalStateException("오늘은 이미 출석체크를 완료했습니다.");
-      }
+	    } else {
+	        java.util.Set<Integer> days = parseDays(existing.getCh_checked_days());
 
-      existing.setCh_count(existing.getCh_count() + 1);
-      existing.setCh_end_date(today);
-      existing.setCh_point_quantity(existing.getCh_point_quantity() + 100);
+	        if (days.contains(todayDay)) {
+	            throw new IllegalStateException("오늘은 이미 출석체크를 완료했습니다.");
+	        }
 
-      // 포인트 적립 - 이번 달 기존 dailycheck 행에 이번 적립 이력 연결
-      Long poNo = pointService.earnDailyCheckBonus((long) m_no, (long) existing.getCh_no());
-      if (poNo != null) {
-         existing.setPo_no(poNo.intValue());
-      }
+	        days.add(todayDay);
+	        existing.setCh_checked_days(joinDays(days));
+	        existing.setCh_count(existing.getCh_count() + 1);
+	        existing.setCh_end_date(today);
+	        existing.setCh_point_quantity(existing.getCh_point_quantity() + 100);
 
-      ch_dao.CheckUpdate(existing);
-      ch_service.save(existing);
-      return existing;
-   }
-} 
+	        Long poNo = pointService.earnDailyCheckBonus((long) m_no, (long) existing.getCh_no());
+	        if (poNo != null) {
+	            existing.setPo_no(poNo.intValue());
+	        }
+
+	        ch_dao.CheckUpdate(existing);
+	        ch_service.save(existing);
+	        return existing;
+	    }
+	}
+}

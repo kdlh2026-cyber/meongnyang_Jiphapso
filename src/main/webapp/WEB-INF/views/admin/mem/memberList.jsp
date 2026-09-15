@@ -38,8 +38,18 @@
 		<c:forEach var="list" items="${memberList}">
 		<tr>
 			<td><a href="/admin/mem/AmemDetail?m_id=${list.m_id}">${list.m_id}</a></td>
-			<td>${list.m_name}</td> <!-- 부분 익명 처리 필요 -->
-			<td>${list.m_email}</td>
+			<td>
+				<c:choose>
+					<c:when test="${fn:length(list.m_name) >= 2}">
+						${fn:substring(list.m_name, 0, 1)}*${fn:substring(list.m_name, 2, fn:length(list.m_name))}
+					</c:when>
+					<c:otherwise>${list.m_name}</c:otherwise>
+				</c:choose>
+			</td>
+			<td>
+				<c:set var="atIdx" value="${fn:indexOf(list.m_email, '@')}" />
+				${fn:substring(list.m_email, 0, 3)}****${fn:substring(list.m_email, atIdx, -1)}
+			</td>
 			<td>${list.m_date}</td>
 			<td>${list.m_age_upper}</td>
 			<td>${list.m_sns}</td>
@@ -117,6 +127,54 @@
 		                rows += "<td>" + m.m_age_upper + "</td>";
 		                rows += "<td>" + m.m_sns + "</td>";
 		                rows += "<td><button type='button' onclick='#'>삭제</button></td>";
+		                rows += "</tr>";
+		            });
+		            $("#memberTableBody").html(rows);
+		        },
+		        error: function(){
+		            console.log("search error");
+		        }
+		    });
+		});
+		function maskName(name) {
+		    if (!name || name.length < 2) return name;
+		    return name.charAt(0) + "*" + name.substring(2);
+		}
+
+		function maskEmail(email) {
+		    if (!email || email.indexOf("@") === -1) return email;
+		    let atIdx = email.indexOf("@");
+		    return email.substring(0, 3) + "****" + email.substring(atIdx);
+		}
+
+		$("#memberSearchForm").on("submit", function(e){
+		    e.preventDefault();
+
+		    let keyword = $("#keyword").val().trim();
+		    $("#suggestions").empty();
+
+		    // 빈 검색어 처리
+		    if (keyword === "") {
+		        location.href = "/admin/mem/memberList";
+		        return;
+		    }
+
+		    $.ajax({
+		        url: "/memSearchAjax",
+		        data: { keyword: keyword },
+		        success: function(list){
+		            let rows = "";
+		            list.forEach(function(m){
+		                rows += "<tr>";
+		                rows += "<td><a href='/admin/mem/AmemDetail?m_id=" + m.m_id + "'>" + m.m_id + "</a></td>";
+		                rows += "<td>" + maskName(m.m_name) + "</td>";
+		                rows += "<td>" + maskEmail(m.m_email) + "</td>";
+		                rows += "<td>" + (m.m_date || "") + "</td>";
+		                rows += "<td>" + m.m_age_upper + "</td>";
+		                rows += "<td>" + m.m_sns + "</td>";
+		                rows += "<td>" + m.m_authority + "</td>";
+		                rows += "<td><a href='/AmemUpdateForm?m_id=" + m.m_id + "'>수정</a></td>";
+		                rows += "<td><a href='/AmemberDelete?m_id=" + m.m_id + "' onclick=\"return confirm('정말로 삭제하시겠습니까?\\n삭제한 이후엔 회원 정보를 복구할 수 없습니다.');\">삭제</a></td>";
 		                rows += "</tr>";
 		            });
 		            $("#memberTableBody").html(rows);

@@ -9,31 +9,7 @@
 <head>
 <meta charset="UTF-8">
 <title>멍냥집합소</title>
-<style>
-.content-list,
-.product-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.content-item,
-.product-item {
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.content-item img,
-.product-item .image img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 6px;
-}
-</style>
+<link rel="stylesheet" href="/css/etc/main.css">
 <sec:authorize access="hasAnyRole('USER','CREATOR')">
 <sec:authentication property="principal.username" var="loginId" />
 <script>
@@ -61,77 +37,80 @@ document.addEventListener("DOMContentLoaded", function () {
 </head>
 <body>
 <%@ include file="hamburger_menu.jsp" %>
-	<h1>메인페이지</h1>
-	
-	<!-- 비회원 영역 -->
-	<sec:authorize access="isAnonymous()">
-	<img src="/images/main/LOGO_main.png" width="350px" height="auto"/><br>
-	</sec:authorize>
-	
-	<!-- 일반 회원 영역 -->
-	<sec:authorize access="hasRole('USER')">
-			<img src="/images/main/LOGO_main.png" width="350px" height="auto"/><br>
-				회원님, 환영합니다.<br>
-	</sec:authorize>
-	
-	<!-- 관리자 영역 -->
-	<sec:authorize access="hasRole('ADMIN')">
-		<img src="/images/main/LOGO_main.png" width="350px" height="auto"/><br>
-		관리자님, 환영합니다.<br>
-	</sec:authorize>
-	
+
+<div class="main-header">
+	<br>
+	<br>
+	<br>
+	<div class="hover-image-box">
+		<img src="/images/main/LOGO_main.png" class="main-header-img origin-img"/>
+		<img src="/images/main/LOGO_main_2.png" class="main-header-img hover-img"/>
+	</div>
+</div>
+
 <!-- 공통 표시 영역 -->
-	
-	<!-- 통합 검색창(커뮤니티+상품) -->
-		<form name="allSearch" type="get" action="/allSearch" style="position:relative">
-			<p><input type="text" name="keyword" id="keyword" autocomplete="off">
-			<input type="submit" value="통합검색">
-			<div id="suggestions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">
-			</div>
-		</form>
-		
-	<!-- 광고바 삽입 영역 -->
+
+<!-- 통합 검색창(커뮤니티+상품) -->
+<div class="search-section">
+    <div class="search-wrapper">
+        <form name="allSearch" method="get" action="/allSearch" class="search-input-box">
+            <input type="text" name="keyword" id="keyword" autocomplete="off" required>
+            <button type="submit">검색&#128062;</button>
+        </form>
+        <div id="suggestions"></div>
+    </div>
+</div>
+
+<!-- 광고바 삽입 영역 -->
+<div class="ad-section">
 	<a href="/guest/etc/advertisementLink">
-		<img src="/images/main/advertisement.png" width="1000px" height="auto" /><br>
+		<img src="/images/main/advertisement.png" alt="광고">
 	</a>
-	
-	<!-- 추천 게시글 표시 영역 -->
-		<h3>추천 게시글</h3>
-		<c:if test="${empty recommendContentList}">
-		    <p>등록된 게시글이 없습니다.</p>
-		</c:if>
-		<div class="content-list">
-		    <c:forEach var="cm" items="${recommendContentList}" begin="0" end="3">
-		        <div class="content-item">
-		            <c:if test="${not empty cm.comm_img}">
-		                <img src="${board.comm_img}" width="120" height="120">
-		            </c:if>
-		            <div><a href="/community/commView?comm_no=${cm.comm_no}">${cm.comm_title}</a></div>
-		            <div>${cm.comm_writer}</div>
-		        </div>
-		    </c:forEach>
-		</div>
-		
-		<!-- 추천 상품 표시 영역 -->
-		<h3>추천 상품</h3>
-		<c:if test="${empty recommendProductList}">
-		    <p>등록된 상품이 없습니다.</p>
-		</c:if>
-		<div class="product-list">
-		    <c:forEach var="pd" items="${recommendProductList}" end="5">
-		        <div class="product-item">
-		            <div class="image">
-		            	<a href="/products/ShoppingView?p_no=${pd.pno}">
-		                	<div class="image"><img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(pd.omainimg, '%', '%25')}" width="120"></div>
-		            	</a>
-		            </div>
-		            <div>${pd.pbrand}</div>
-		            <div><a href="/products/ShoppingView?p_no=${pd.pno}">${pd.ptitle}</a></div>
-		            <div><fmt:formatNumber value="${pd.oprice}" />원</div>
-		        </div>
-		    </c:forEach>
-		</div>
-	
+</div>
+
+<!-- 추천 게시글 표시 영역 -->
+<div class="category-box">
+	<h3>추천 게시글</h3>
+	<c:if test="${empty recommendContentList}">
+	    <p>등록된 게시글이 없습니다.</p>
+	</c:if>
+	<div class="content-list">
+	    <c:forEach var="cm" items="${recommendContentList}" begin="0" end="7">
+	        <div class="content-item">
+	            <c:if test="${not empty cm.comm_img}">
+	                <img src="${board.comm_img}" width="500" height="300">
+	            </c:if>
+	            <c:if test="${empty cm.comm_img}">
+	            	<img src="/images/main/admin_profile.png" width="500" height="300">
+	            </c:if>
+	            <div><a href="/community/commView?comm_no=${cm.comm_no}">${cm.comm_title}</a></div>
+	            <div>${cm.comm_writer}</div>
+	        </div>
+	    </c:forEach>
+	</div>
+</div>
+
+<!-- 추천 상품 표시 영역 -->
+<div class="category-box">
+	<h3>추천 상품</h3>
+	<c:if test="${empty recommendProductList}">
+	    <p>등록된 상품이 없습니다.</p>
+	</c:if>
+	<div class="product-list">
+	    <c:forEach var="pd" items="${recommendProductList}" begin="0" end="7">
+	        <div class="product-item">
+	            <div class="image">
+	            	<a href="/products/ShoppingView?p_no=${pd.pno}">
+	                	<div class="image"><img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(pd.omainimg, '%', '%25')}" width="120"></div>
+	            	</a>
+	            </div>
+	            <div>${pd.pbrand}</div>
+	            <div><a href="/products/ShoppingView?p_no=${pd.pno}">${pd.ptitle}</a></div>
+	            <div><fmt:formatNumber value="${pd.oprice}" />원</div>
+	        </div>
+	    </c:forEach>
+	</div>
+</div>
 <%@ include file="footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
