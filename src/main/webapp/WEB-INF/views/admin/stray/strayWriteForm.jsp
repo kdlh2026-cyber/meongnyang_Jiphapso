@@ -20,7 +20,7 @@
 		<input type="text" name="stray_category" required>
 	</div>
 	<div>
-		유기동물 이름 :
+		유기동물 품종 :
 		<input type="text" name="stray_name" required>
 	</div>
 	<div>
