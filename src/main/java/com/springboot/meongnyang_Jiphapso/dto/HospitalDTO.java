@@ -13,7 +13,7 @@ public class HospitalDTO {
 	private String hp_sp_clinic;
 	private String hp_keyword;
 	
-	public int getHp_no() {
+	public Integer getHp_no() {
 		return hp_no;
 	}
 }

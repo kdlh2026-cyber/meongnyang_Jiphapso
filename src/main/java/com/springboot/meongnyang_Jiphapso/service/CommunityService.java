@@ -31,7 +31,7 @@ public class CommunityService {
 	ICommentDAO cmt_dao;
 
 	@Autowired
-	private PointService pointService; 
+	private PointService pointService;
 	
 	public void write(CommunityDTO dto, MultipartFile[] uploadImages, MultipartFile[] uploadVideo) throws Exception {
 	    
