@@ -1,14 +1,232 @@
 @charset "UTF-8";
+/* 동물 카드 그리드 컨테이너 */
+.stray-grid-wrap {
+    max-width: 960px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+.stray-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+@media (max-width: 768px) {
+    .stray-card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stray-card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 개별 카드 */
+.stray-card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stray-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* 상단 썸네일 (카드 안쪽에 여백을 두고 둥글게 배치) */
+.stray-card .card-thumb-wrap {
+    padding: 12px 12px 0 12px;
+}
+
+.stray-card .card-thumb {
+    width: 100%;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f7f7f7;
+}
+
+.stray-card .card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 본문 영역 */
+.stray-card .card-body {
+    padding: 14px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 연노랑 보호중 뱃지 (본문 좌측 상단) */
+.stray-card .badge-status {
+    align-self: flex-start;
+    background-color: #fff4cc;
+    color: #a46b00;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+
+/*  품종 | 나이 */
+.stray-card .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stray-card .card-title a {
+    text-decoration: none;
+    color: #222;
+}
+
+.stray-card .card-title a:hover {
+    color: #f6c728;
+}
+
+.stray-card .card-title .divider {
+    color: #ccc;
+    margin: 0 5px;
+    font-weight: 400;
+}
+
+/* 상세 정보: 성별 · 중성화 */
+.stray-card .card-info {
+    font-size: 12px;
+    color: #555;
+    font-weight: 500;
+}
+
+/* 하단 지역 표시 바 */
+.stray-card .card-footer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #f0f0f0;
+    padding: 12px 16px;
+    margin-top: auto;
+    background-color: #fff;
+    min-height: 48px;
+}
+
+.stray-card .card-addr {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+    max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 우측 하단 빼꼼 캐릭터 */
+.stray-card .peek-character {
+    position: absolute;
+    right: 14px;
+    bottom: -1px;
+    width: 48px;
+    height: auto;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 관리자 삭제 버튼 */
+.card-admin-bar {
+    padding: 0 16px 12px;
+    background-color: #fff;
+}
+
+.card-delete-btn {
+    width: 100%;
+    padding: 6px 0;
+    background-color: #fff;
+    border: 1px solid #ff7875;
+    color: #ff4d4f;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.card-delete-btn:hover {
+    background-color: #ff4d4f;
+    color: #fff;
+}
+
+/* 필터 아이콘 CSS 배경 처리 */
+.filter-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='4' y1='21' x2='4' y2='14'/%3E%3Cline x1='4' y1='10' x2='4' y2='3'/%3E%3Cline x1='12' y1='21' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12' y2='3'/%3E%3Cline x1='20' y1='21' x2='20' y2='16'/%3E%3Cline x1='20' y1='12' x2='20' y2='3'/%3E%3Cline x1='1' y1='14' x2='7' y2='14'/%3E%3Cline x1='9' y1='8' x2='15' y2='8'/%3E%3Cline x1='17' y1='16' x2='23' y2='16'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.pagination a, .pagination strong {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%; /* 동그란 버튼 모양 */
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    border: 1px solid #dfdfdf;
+    background-color: #fff;
+    cursor: pointer;
+}
+.pagination strong {
+    background-color: #ffc107; /* 활성화된 페이지 노란색 배경 */
+    color: #000;
+    border: 1px solid #ffc107;
+}
+.pagination a:hover {
+    background-color: #f5f5f5;
+}
+.pagination .arrow {
+    color: #888;
+    border: 2px solid #ccc;
+}
 /* 기본 폰트 및 공통 설정 */
 * {
     box-sizing: border-box;
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
 }
 
-/* 필터 전체 컨테이너 */
+/* 필터 및 컨텐츠 전체 */
 .adoption-search-wrap {
     max-width: 960px;
-    margin: 40px auto 20px;
+    margin: 40px auto 0;
     padding: 0 15px;
 }
 
@@ -20,9 +238,9 @@
     margin-bottom: 50px;
 }
 
-/* 베이지/연노랑 메인 박스 */
+/* 베이지/연노랑 메인 필터 박스 */
 .filter-card {
-    position: relative; /* 캐릭터 이미지 배치를 위해 필수 */
+    position: relative;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -33,7 +251,7 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
-/* 상단에 걸쳐진 캐릭터 이미지 */
+/* 상단 걸쳐진 캐릭터 이미지 */
 .character-banner-img {
     position: absolute;
     right: 40px;
@@ -41,7 +259,7 @@
     width: 140px;
     height: auto;
     z-index: 2;
-    pointer-events: none; /* 클릭 통과 */
+    pointer-events: none;
 }
 
 /* 강아지/고양이 탭 버튼 */
@@ -75,13 +293,12 @@
     margin-bottom: 4px;
 }
 
-/* 선택된 탭 */
 .animal-tab.active {
     background-color: #fcedb6;
     border-color: #edd999;
 }
 
-/* 품종 / 지역 노란 알약 버튼 공통 */
+/* 알약 버튼 공통 */
 .pill-btn {
     display: flex;
     justify-content: space-between;
@@ -102,12 +319,32 @@
     background-color: #fce79f;
 }
 
-/* 품종 영역 (너비 확장) */
-.breed-filter {
+/* 품종 영역 */
+.breed-filter-wrap {
+    position: relative;
     flex: 1.5;
 }
+.breed-btn {
+    width: 100%;
+}
+.breed-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    width: 290px;
+    background-color: #ffffff;
+    border: 2px solid #f6cf4c;
+    border-radius: 16px;
+    padding: 22px 20px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+}
+.breed-dropdown.show {
+    display: block !important;
+}
 
-/* 지역 영역 및 팝업 래퍼 */
+/* 지역 영역 */
 .region-filter-wrap {
     position: relative;
     flex: 1;
@@ -117,23 +354,25 @@
     width: 100%;
 }
 
-/* 화살표 아이콘 모양 (CSS 드로잉) */
 .arrow-icon {
     display: inline-block;
     width: 8px;
     height: 8px;
     border-right: 2px solid #333;
     border-bottom: 2px solid #333;
-    transform: rotate(45deg); /* 기본 아래(down) 화살표 */
-    transition: transform 0.2s;
+    transform: rotate(45deg);
+    transition: transform 0.25s ease;
+    margin-bottom: 2px;
 }
 
-.arrow-icon.up {
-    transform: rotate(-135deg); /* 위(up) 화살표 */
+.region-btn.active .arrow-icon,
+.breed-btn.active .arrow-icon {
+    transform: rotate(-135deg);
+    margin-bottom: -2px;
 }
 
-/* 지역 드롭다운 팝업 레이어 */
 .region-dropdown {
+    display: none;
     position: absolute;
     top: calc(100% + 12px);
     right: 0;
@@ -144,6 +383,10 @@
     padding: 22px 20px;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
     z-index: 100;
+}
+
+.region-dropdown.show {
+    display: block !important;
 }
 
 .dropdown-group {
@@ -175,7 +418,6 @@
     border-color: #f6cf4c;
 }
 
-/* 적용 버튼 */
 .dropdown-submit-btn {
     display: block;
     margin: 10px auto 0;
@@ -195,38 +437,186 @@
     background-color: #e5b61a;
 }
 
-/* 하단 부가 정보 및 필터 바 */
-.filter-sub-bar {
+.filter-sub-wrap {
+    max-width: 960px;
+    margin: 25px auto 20px auto;
+    padding: 0 15px;
     display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-top: 25px;
+    flex-direction: column;
+    gap: 16px;
 }
 
+/* 윗줄: 필터 버튼과 펼쳐지는 바 */
+.filter-action-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* [필터] 버튼 */
 .simple-filter-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 16px;
+    height: 40px;
+    padding: 0 16px;
     background-color: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
-    color: #333;
+    font-weight: 700;
+    color: #222;
     cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
 }
 
+.simple-filter-btn:hover,
+.simple-filter-btn.active {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* 펼쳐지는 상세 필터 알약 바 (상태 | 나이 | 성별 | 중성화) */
+.detail-filter-panel {
+    display: none; /* 기본 숨김 */
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    height: 40px;
+    padding: 0 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* 필터 버튼 클릭 시 펼쳐짐 */
+.detail-filter-panel.show {
+    display: inline-flex !important;
+}
+
+/* 각 드롭다운 셀렉트 박스 스타일 */
+.filter-select-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.filter-select-item select {
+    border: none;
+    background: transparent;
+    padding: 6px 24px 6px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* 커스텀 화살표 아이콘 */
+.filter-select-item .arrow {
+    position: absolute;
+    right: 8px;
+    pointer-events: none;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid #555;
+    border-bottom: 2px solid #555;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+
+/* 항목 사이 구분선 (|) */
+.filter-divider {
+    width: 1px;
+    height: 14px;
+    background-color: #e2e8f0;
+    margin: 0 4px;
+}
+/* 선택된 필터 태그 컨테이너 */
+.selected-tags-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: -4px;
+}
+
+/* 태그 알약 */
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+/* ✕ 버튼 */
+.filter-tag-del {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #cbd5e1;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    line-height: 1;
+    transition: background-color 0.15s ease;
+}
+
+.filter-tag-del:hover {
+    background-color: #ef4444;
+}
+
+/* 전체 초기화 링크 */
+.filter-reset-btn {
+    font-size: 12px;
+    color: #888;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 6px;
+}
+
+.filter-reset-btn:hover {
+    color: #111;
+}
+
+/* 아랫줄: 마리 수 안내 텍스트 */
 .stray-count-info {
     font-size: 15px;
+    font-weight: 500;
     color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.stray-count-info .yellow-dot {
-    color: #f6c728;
-    font-size: 18px;
-    vertical-align: middle;
-    margin-right: 2px;
+.stray-count-info .yellow-dots {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.stray-count-info .yellow-dots span {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    background-color: #f6c728;
+    border-radius: 50%;
 }
 
 .stray-count-info strong {

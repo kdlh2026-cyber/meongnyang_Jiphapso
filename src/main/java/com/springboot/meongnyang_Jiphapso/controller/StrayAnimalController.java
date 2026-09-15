@@ -2,16 +2,21 @@ package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.meongnyang_Jiphapso.dao.IStrayAnimalDao;
 import com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto;
+import com.springboot.meongnyang_Jiphapso.dto.StraySearchDto;
 import com.springboot.meongnyang_Jiphapso.service.StrayService;
 
 @Controller
@@ -49,42 +54,38 @@ public class StrayAnimalController {
 	}
 	
 	@RequestMapping("/admin/stray/StrayListA")
-	public String StrayListA(Model model,
-	        @RequestParam(value = "page", defaultValue = "1") int page,
-	        @RequestParam(value = "category", required = false, defaultValue = "DOG") String stray_category) {
-	    
-	    int pageSize = 15; // 한 페이지에 보여줄 데이터 수
-	    int blockSize = 5; // 하단에 보여줄 페이지 버튼 개수
-	    int offset = (page - 1) * pageSize;
+	public String strayListA(@ModelAttribute("searchDto") StraySearchDto searchDto, Model model) {
 
-	    List<StrayAnimalDto> strayList = stray_dao.StrayAnimalPageList(offset, pageSize, stray_category);
-	    
-	    int totalCount = stray_dao.StrayAnimalCount(stray_category); 
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-
-	    // 페이지 번호 계산
-	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
-	    int endPage = startPage + blockSize - 1;
-	    
-	    if (endPage > totalPages) {
-	        endPage = totalPages;
+	    if (searchDto.getStray_category() == null || searchDto.getStray_category().trim().isEmpty()) {
+	        searchDto.setStray_category("DOG");
 	    }
-	    
-	    boolean hasPrev = startPage > 1;
-	    boolean hasNext = endPage < totalPages;
+
+	    int blockSize = 5;
+	    int totalCount = stray_dao.StrayAnimalCount(searchDto); 
+	    int totalPages = (totalCount == 0) ? 1 : (int) Math.ceil((double) totalCount / searchDto.getPageSize());
+
+	    List<StrayAnimalDto> strayList = stray_dao.StrayAnimalPageList(searchDto);
+
+	    int startPage = ((searchDto.getPage() - 1) / blockSize) * blockSize + 1;
+	    int endPage = startPage + blockSize - 1;
+	    if (endPage > totalPages) endPage = totalPages;
 
 	    model.addAttribute("StrayAnimalList", strayList);
-	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalCount", totalCount);
 	    model.addAttribute("totalPages", totalPages);
-	    
 	    model.addAttribute("startPage", startPage);
 	    model.addAttribute("endPage", endPage);
-	    model.addAttribute("hasPrev", hasPrev);
-	    model.addAttribute("hasNext", hasNext);
-	    model.addAttribute("totalCount", totalCount);
-	    model.addAttribute("category", stray_category);
+	    model.addAttribute("hasPrev", startPage > 1);
+	    model.addAttribute("hasNext", endPage < totalPages);
+	    model.addAttribute("currentPage", searchDto.getPage());
 	    
 	    return "admin/stray/StrayListA";
+	}
+	
+	@GetMapping("/api/breeds")
+	@ResponseBody
+	public List<String> getBreeds(@RequestParam(value = "stray_category", required = false) String stray_category) {
+	    return stray_service.getListCategory(stray_category); 
 	}
 	
 	@RequestMapping("/StrayAnimalDelete")
@@ -94,40 +95,31 @@ public class StrayAnimalController {
 	}
 	
 	@RequestMapping("/guest/StrayList")
-	public String StrayList(Model model,
-	        @RequestParam(value = "page", defaultValue = "1") int page,
-	        @RequestParam(value = "category", required = false, defaultValue = "DOG") String category) {
+	public String StrayList(@ModelAttribute("searchDto") StraySearchDto searchDto, Model model) {
 	    
-	    int pageSize = 15; // 한 페이지에 보여줄 데이터 수
-	    int blockSize = 5; // 하단에 보여줄 페이지 버튼 개수
-	    int offset = (page - 1) * pageSize;
-
-	    List<StrayAnimalDto> strayList = stray_dao.StrayAnimalPageList(offset, pageSize, category);
-	    
-	    int totalCount = stray_dao.StrayAnimalCount(category); 
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-
-	    // 페이지 제한
-	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
-	    int endPage = startPage + blockSize - 1;
-	    
-	    // 끝 페이지가 실제 총 페이지 수보다 커지지 않도록 처리
-	    if (endPage > totalPages) {
-	        endPage = totalPages;
+	    // 기본값 강아지 설정
+	    if (searchDto.getStray_category() == null || searchDto.getStray_category().trim().isEmpty()) {
+	        searchDto.setStray_category("DOG");
 	    }
-	    
-	    // 이전/다음 화살표 활성화 여부
-	    boolean hasPrev = startPage > 1;
-	    boolean hasNext = endPage < totalPages;
+
+	    int blockSize = 5;
+	    int totalCount = stray_dao.StrayAnimalCount(searchDto); 
+	    int totalPages = (totalCount == 0) ? 1 : (int) Math.ceil((double) totalCount / searchDto.getPageSize());
+
+	    List<StrayAnimalDto> strayList = stray_dao.StrayAnimalPageList(searchDto);
+
+	    int startPage = ((searchDto.getPage() - 1) / blockSize) * blockSize + 1;
+	    int endPage = startPage + blockSize - 1;
+	    if (endPage > totalPages) endPage = totalPages;
 
 	    model.addAttribute("StrayAnimalList", strayList);
-	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalCount", totalCount);
 	    model.addAttribute("totalPages", totalPages);
-	    
 	    model.addAttribute("startPage", startPage);
 	    model.addAttribute("endPage", endPage);
-	    model.addAttribute("hasPrev", hasPrev);
-	    model.addAttribute("hasNext", hasNext);
+	    model.addAttribute("hasPrev", startPage > 1);
+	    model.addAttribute("hasNext", endPage < totalPages);
+	    model.addAttribute("currentPage", searchDto.getPage());
 	    
 	    return "guest/StrayList";
 	}
@@ -138,4 +130,36 @@ public class StrayAnimalController {
 		return "guest/StrayView";
 	}
 	
+	@RequestMapping("/strayUpdateForm")
+	public String strayUpdateForm(@RequestParam("stray_no") Long stray_no, Model model) {
+		model.addAttribute("StrayUpdate", stray_dao.StrayView(stray_no));
+		return "admin/stray/strayUpdateForm";
+	}
+	
+	@RequestMapping("/StrayAnimalUpdate")
+	public String StrayAnimalUpdate(StrayAnimalDto stray_dto,
+			@RequestParam(value = "main_img", required = false) MultipartFile main_img,
+			@RequestParam(value = "existing_stray_img", required = false) String existing_stray_img)
+			throws Exception {
+			
+		if (main_img != null && !main_img.isEmpty()) {
+	        String originalFilename = main_img.getOriginalFilename();
+	        String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
+
+	        String uploadFolder = "C:/upload/stray/";
+	        File uploadPath = new File(uploadFolder);
+	        if (!uploadPath.exists()) {
+	            uploadPath.mkdirs();
+	        }
+
+	        main_img.transferTo(new File(uploadPath, savedFilename));
+	        stray_dto.setStray_img(savedFilename);
+	    } else {
+	        stray_dto.setStray_img(existing_stray_img);
+	    }
+
+	    stray_dao.StrayAnimalUpdate(stray_dto);
+		
+		return "redirect:/admin/stray/StrayListA";
+	}
 }
