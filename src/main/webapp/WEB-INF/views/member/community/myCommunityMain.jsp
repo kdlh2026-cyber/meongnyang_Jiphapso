@@ -11,7 +11,6 @@
 <link rel="stylesheet" href="/css/community/myCommunity.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 <!-- 1. 최상단 타이틀 영역 (고정 틀) -->
 <div class="my-page-top-container">
     <div class="page-top-header">
@@ -22,15 +21,16 @@
 
 <!-- 2. 하단 레이아웃 (왼쪽 사이드바 + 오른쪽 본문) -->
 <div class="my-page-body-container">
+    
     <!-- 왼쪽 사이드바 (고정 틀) -->
     <div class="sidebar-area">
         <div class="side-menu">
-            <a href="/community/myCommunity" class="${empty param.comm_type ? 'active' : ''}">전체</a>
-            <a href="/community/myCommunity?comm_type=Q%26A" class="${param.comm_type eq 'Q&A' ? 'active' : ''}">Q&A</a>
-            <a href="/community/myCommunity?comm_type=라운지" class="${param.comm_type eq '라운지' ? 'active' : ''}">라운지</a>
-            <a href="/community/myCommunity?comm_type=콘텐츠" class="${param.comm_type eq '콘텐츠' ? 'active' : ''}">콘텐츠</a>
-            <a href="/community/myCommunity?comm_type=댓글" class="${param.comm_type eq '댓글' ? 'active' : ''}">댓글</a>
-            <a href="/community/myCommunity?comm_type=리뷰" class="${param.comm_type eq 'REVIEW' ? 'active' : ''}">리뷰</a>
+            <a href="/community/myCommunity" data-mp-category="true" class="${empty param.comm_type ? 'active' : ''}">전체</a>
+            <a href="/community/myCommunity?comm_type=Q%26A" data-mp-category="true" class="${param.comm_type eq 'Q&A' ? 'active' : ''}">Q&A</a>
+            <a href="/community/myCommunity?comm_type=라운지" data-mp-category="true" class="${param.comm_type eq '라운지' ? 'active' : ''}">라운지</a>
+            <a href="/community/myCommunity?comm_type=콘텐츠" data-mp-category="true" class="${param.comm_type eq '콘텐츠' ? 'active' : ''}">콘텐츠</a>
+            <a href="/community/myCommunity?comm_type=댓글" data-mp-category="true" class="${param.comm_type eq '댓글' ? 'active' : ''}">댓글</a>
+            <a href="/community/myCommunity?comm_type=리뷰" data-mp-category="true" class="${param.comm_type eq 'REVIEW' ? 'active' : ''}">리뷰</a>
         </div>
     </div>
 
@@ -45,7 +45,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>Q&amp;A <span>${qnaCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=Q%26A" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=Q%26A" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestQna}">
@@ -71,7 +71,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>라운지 <span>${loungeCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=라운지" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=라운지" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestLounge}">
@@ -97,7 +97,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>콘텐츠 <span>${contentCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=콘텐츠" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=콘텐츠" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestContent}">
@@ -122,7 +122,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>댓글 <span>${commentCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=댓글" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=댓글" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestComment}">
@@ -159,7 +159,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>리뷰 <span>${reviewAll}</span></h3>
-                        <a href="/community/myCommunity?comm_type=리뷰" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=리뷰" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestReview}">
@@ -230,50 +230,34 @@
                     </c:if>
                     
                     <!-- 리뷰 카테고리일 때 -->
-					<c:if test="${param.comm_type eq '리뷰'}">
-					    <div class="comment-card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
-					        
-					        <!-- 상품 정보 영역 (이미지 + 타이틀 가로 정렬) -->
-					        <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #f1f3f5;">
-					            <!-- 상품 이미지 -->
-					            <a href="${pageContext.request.contextPath}/products/ShoppingView?p_no=${item.p_no}" style="flex-shrink: 0; display: block; width: 60px; height: 60px;">
-					                <img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(item.o_main_img, '%', '%25')}" alt="${item.p_title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid #eee;">
-					            </a>
-					        
-					            <!-- 상품 타이틀 -->
-					            <div style="font-size: 15px; font-weight: 600; color: #222; line-height: 1.4;">
-					                <a href="${pageContext.request.contextPath}/products/ShoppingView?p_no=${item.p_no}" style="text-decoration: none; color: inherit;">
-					                    ${item.p_title}
-					                </a>
-					            </div>
-					        </div>
-					                        	
-					        <div class="comment-header-row" style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
-					            <span style="color: #f59e0b; font-size: 15px; letter-spacing: 2px; margin-right: 8px;">
-					                <c:choose>
-					                    <c:when test="${item.cmt_score == 5}">★★★★★</c:when>
-					                    <c:when test="${item.cmt_score == 4}">★★★★☆</c:when>
-					                    <c:when test="${item.cmt_score == 3}">★★★☆☆</c:when>
-					                    <c:when test="${item.cmt_score == 2}">★★☆☆☆</c:when>
-					                    <c:otherwise>★☆☆☆☆</c:otherwise>
-					                </c:choose>
-					            </span>
-					            <span class="comment-date" style="font-size: 12px; color: #888;">
-					                <fmt:formatDate value="${item.cmt_date}" pattern="yyyy-MM-dd HH:mm" />
-					            </span>
-					            <span class="badge-category-outline" style="font-size: 11px; padding: 2px 6px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">상품 리뷰</span>
-					        </div>
-					
-					        <div class="my-comment-text" style="font-size: 14px; color: #333; line-height: 1.5; margin-bottom: 10px;">
-					            ${item.cmt_content}
-					        </div>
-					        
-					        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
-					            <button type="button" onclick="location.href='/member/order/${item.cmt_type_no}'" style="padding: 5px 10px; cursor: pointer; background: #f1f3f5; border: 1px solid #dcdcdc; border-radius: 4px; font-size: 12px;">주문상세로 이동</button>
-					            <button type="button" onclick="if(confirm('정말 리뷰를 삭제하시겠습니까?')) { location.href='/community/reviewDelete?cmt_no=${item.cmt_no}'; }" style="padding: 5px 10px; cursor: pointer; background: #fff5f5; border: 1px solid #ffa8a8; color: #e03131; border-radius: 4px; font-size: 12px;">삭제하기</button>
-					        </div>
-					    </div>
-					</c:if>
+                    <c:if test="${param.comm_type eq '리뷰'}">
+                        <div class="comment-card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
+                            <div class="comment-header-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            	<span style="color: #f59e0b; font-size: 15px; letter-spacing: 2px; margin-right: 8px;">
+							        <c:choose>
+							            <c:when test="${item.cmt_score == 5}">★★★★★</c:when>
+							            <c:when test="${item.cmt_score == 4}">★★★★☆</c:when>
+							            <c:when test="${item.cmt_score == 3}">★★★☆☆</c:when>
+							            <c:when test="${item.cmt_score == 2}">★★☆☆☆</c:when>
+							            <c:otherwise>★☆☆☆☆</c:otherwise>
+							        </c:choose>
+							    </span>
+                                <span class="comment-date" style="font-size: 12px; color: #888;">
+                                    <fmt:formatDate value="${item.cmt_date}" pattern="yyyy-MM-dd HH:mm" />
+                                </span>
+                                <span class="badge-category-outline" style="font-size: 11px; padding: 2px 6px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">상품 리뷰</span>
+                            </div>
+                
+                            <div class="my-comment-text" style="font-size: 14px; color: #333; line-height: 1.5; margin-bottom: 10px;">
+                                ${item.cmt_content}
+                            </div>
+                            
+							<div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
+							    <button type="button" onclick="location.href='/member/order/${item.cmt_type_no}'" style="padding: 5px 10px; cursor: pointer; background: #f1f3f5; border: 1px solid #dcdcdc; border-radius: 4px; font-size: 12px;">주문상세로 이동</button>
+							    <button type="button" onclick="if(confirm('정말 리뷰를 삭제하시겠습니까?')) { location.href='/community/reviewDelete?cmt_no=${item.cmt_no}'; }" style="padding: 5px 10px; cursor: pointer; background: #fff5f5; border: 1px solid #ffa8a8; color: #e03131; border-radius: 4px; font-size: 12px;">삭제하기</button>
+							</div>
+                        </div>
+                    </c:if>
                 
                     <!-- 일반 게시글 카테고리(Q&A, 라운지, 콘텐츠)일 때 -->
                     <c:if test="${param.comm_type ne '댓글' && param.comm_type ne '리뷰'}">
@@ -300,6 +284,5 @@
     </div>
 
 </div>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

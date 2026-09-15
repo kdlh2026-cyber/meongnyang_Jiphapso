@@ -103,7 +103,7 @@
 				<div class="form-row-top">
 					<div class="catgogry_box step-active" id="step1Box">
 					    <div class="category_name" style="font-weight: bold; margin-bottom: 8px; color: #ff6f61;">Step 1. 게시판 선택</div>
-					    <input type="radio" name="comm_type" value="Q&A" onclick="checkStep1()"> Q&amp;A |
+					    <input type="radio" name="comm_type" value="QNA" onclick="checkStep1()"> Q&amp;A |
 					    <input type="radio" name="comm_type" value="라운지" onclick="checkStep1()"> 라운지 |
 					
 					    <sec:authorize access="hasAnyRole('CREATOR', 'ADMIN')">
@@ -120,10 +120,10 @@
 					<div class="pet_choice_box step-locked" id="step2Box">
 						<div class="category_name" style="font-weight: bold; margin-bottom: 8px; color: #ff6f61;">Step 2. 동물 종류 및 품종 선택</div> 
 						<div style="margin-bottom: 8px;">
-							<input type="radio" name="comm_pet_type" value="dog" onclick="toggleBreed(); checkStep2();"> 강아지
-							<input type="radio" name="comm_pet_type" value="cat" onclick="toggleBreed(); checkStep2();"> 고양이
-							<input type="radio" name="comm_pet_type" value="small" onclick="toggleBreed(); checkStep2();"> 소동물
-							<input type="radio" name="comm_pet_type" value="etc" onclick="toggleBreed(); checkStep2();"> 기타
+							<input type="radio" name="comm_pet_type" value="강아지" onclick="toggleBreed(); checkStep2();"> 강아지
+							<input type="radio" name="comm_pet_type" value="고양이" onclick="toggleBreed(); checkStep2();"> 고양이
+							<input type="radio" name="comm_pet_type" value="소동물" onclick="toggleBreed(); checkStep2();"> 소동물
+							<input type="radio" name="comm_pet_type" value="기타" onclick="toggleBreed(); checkStep2();"> 기타
 						</div>
 						
 						<div id="breedWrapper" style="display: none;">
@@ -143,15 +143,21 @@
 						</div>
 					</div>
 					
-										<!-- [2단계-B] 콘텐츠 카테고리 선택 (콘텐츠 전용, 처음엔 숨김) -->
+					<!-- [2단계-B] 콘텐츠 카테고리 선택 (콘텐츠 전용, 처음엔 숨김) -->
 					<div class="pet_choice_box step-locked" id="step2ContentBox" style="display: none;">
 					    <div class="category_name" style="font-weight: bold; margin-bottom: 8px; color: #ff6f61;">Step 2. 콘텐츠 카테고리 선택</div>
 					    <div>
-					        <input type="radio" name="comm_category" value="강아지연구소" onclick="checkStep2Content()"> 강아지연구소
-					        <input type="radio" name="comm_category" value="고양이연구소" onclick="checkStep2Content()"> 고양이연구소
-					        <input type="radio" name="comm_category" value="제품연구소" onclick="checkStep2Content()"> 제품연구소
-					        <input type="radio" name="comm_category" value="제보" onclick="checkStep2Content()"> 제보
-					        <input type="radio" name="comm_category" value="뉴스/브랜드" onclick="checkStep2Content()"> 뉴스/브랜드
+					        <input type="radio" name="comm_category" value="강아지연구소" onclick="changeCategorySub(); checkStep2Content();"> 강아지연구소
+					        <input type="radio" name="comm_category" value="고양이연구소" onclick="changeCategorySub(); checkStep2Content();"> 고양이연구소
+					        <input type="radio" name="comm_category" value="제품연구소" onclick="changeCategorySub(); checkStep2Content();"> 제품연구소
+					        <input type="radio" name="comm_category" value="제보" onclick="changeCategorySub(); checkStep2Content();"> 제보
+					        <input type="radio" name="comm_category" value="뉴스/브랜드" onclick="changeCategorySub(); checkStep2Content();"> 뉴스/브랜드
+					    </div>
+					    
+					    <!-- 하위 카테고리가 동적으로 들어갈 박스 -->
+					    <div id="sub-category-box" style="margin-top: 15px; display: none; padding: 10px; background-color: #f1f1f1; border-radius: 4px;">
+					        <strong style="font-size: 13px; display: block; margin-bottom: 5px;">상세 분야:</strong>
+					        <span id="sub-category-options"></span>
 					    </div>
 					</div>
 				</div>
@@ -230,8 +236,13 @@ function checkStep1() {
     const step2Box = document.getElementById('step2Box');
     const step2ContentBox = document.getElementById('step2ContentBox');
 
+    // 게시판 변경 시 하위 선택값들 초기화
+    const subBox = document.getElementById('sub-category-box');
+    const subOptions = document.getElementById('sub-category-options');
+    subOptions.innerHTML = '';
+    subBox.style.display = 'none';
+
     if (selectedCommType) {
-        // Step1은 "선택은 했지만 아직 완료 확정 아님" 상태 -> 중립 스타일로 (active 강조 제거)
         step1Box.className = "catgogry_box";
 
         if (selectedCommType.value === '콘텐츠') {
@@ -296,14 +307,12 @@ function checkStep2() {
     }
 
     if (selectedPetType && isBreedValid) {
-        // Step2 완료 -> 그제서야 Step1도 완료 색상 확정
         step1Box.className = "catgogry_box step-completed";
         step2Box.className = "pet_choice_box step-completed";
 
         step3Box.classList.remove('step-locked');
         step3Box.classList.add('step-active');
     } else {
-        // Step2 미완료 -> Step1은 중립 상태 유지 (active 아님), Step2만 강조
         step1Box.className = "catgogry_box";
 
         if (!step2Box.classList.contains('step-locked')) {
@@ -314,13 +323,68 @@ function checkStep2() {
     }
 }
 
+// 1차 카테고리 선택 시 하위 카테고리(comm_detail) 구성을 동적으로 변경하는 함수
+function changeCategorySub() {
+    const selectedCategory = document.querySelector('input[name="comm_category"]:checked');
+    const subBox = document.getElementById('sub-category-box');
+    const subOptions = document.getElementById('sub-category-options');
+    
+    subOptions.innerHTML = ''; // 초기화
+
+    if (!selectedCategory) {
+        subBox.style.display = 'none';
+        return;
+    }
+
+    const categoryVal = selectedCategory.value;
+    let subList = [];
+
+    // 대분류별 하위 카테고리 목록 정의
+    if (categoryVal === '강아지연구소') {
+    subList = ['강아지 건강', '강아지 음식', '강아지 연구소', '강아지 제품', '강아지 데일리케어', '강아지 행동', '강아지 질병사전', '견종백과', '강아지 훈련'];
+	} else if (categoryVal === '고양이연구소') {
+	    subList = ['고양이 음식', '고양이 식생활', '고양이 연구소', '고양이 제품', '고양이 데일리케어', '고양이 행동', '고양이 질병사전', '묘종백과', '고양이 건강'];
+	} else if (categoryVal === '제품연구소') {
+	    subList = ['사료/간식', '용품추천', '리뷰/체험단'];
+	} else if (categoryVal === '뉴스/브랜드') {
+	    subList = ['뉴스', '브랜드 스토리'];
+	} else {
+	    // 하위 카테고리가 필요 없는 대분류 (제보 등)
+	    subList = [];
+	}
+
+    if (subList.length > 0) {
+        subList.forEach(function(item) {
+            let radioHtml = '<label style="margin-right: 15px; cursor: pointer;">' +
+                            '<input type="radio" name="comm_detail" value="' + item + '" onclick="checkStep2Content()"> ' + 
+                            item + '</label>';
+            subOptions.insertAdjacentHTML('beforeend', radioHtml);
+        });
+        subBox.style.display = 'block';
+    } else {
+        subBox.style.display = 'none';
+    }
+}
+
+// 콘텐츠 카테고리 단계 검증 함수
 function checkStep2Content() {
     const selectedCategory = document.querySelector('input[name="comm_category"]:checked');
     const step1Box = document.getElementById('step1Box');
     const step2ContentBox = document.getElementById('step2ContentBox');
     const step3Box = document.getElementById('step3Box');
+    
+    let isSubValid = true;
+    const subBox = document.getElementById('sub-category-box');
+    
+    // 만약 하위 카테고리 박스가 노출되어 있는 상태라면, 하위 라디오 버튼도 반드시 골라야 함
+    if (subBox.style.display !== 'none') {
+        const selectedSub = document.querySelector('input[name="comm_detail"]:checked');
+        if (!selectedSub) {
+            isSubValid = false;
+        }
+    }
 
-    if (selectedCategory) {
+    if (selectedCategory && isSubValid) {
         step1Box.className = "catgogry_box step-completed";
         step2ContentBox.className = "pet_choice_box step-completed";
 
@@ -431,6 +495,43 @@ function validateForm() {
         alert("게시판을 선택해주세요.");
         return false;
     }
+
+    if (selectedCommType.value === '콘텐츠') {
+        const selectedCategory = document.querySelector('input[name="comm_category"]:checked');
+        if (!selectedCategory) {
+            alert("콘텐츠 카테고리를 선택해주세요.");
+            return false;
+        }
+        const subBox = document.getElementById('sub-category-box');
+        if (subBox.style.display !== 'none') {
+            const selectedSub = document.querySelector('input[name="comm_detail"]:checked');
+            if (!selectedSub) {
+                alert("상세 분야(하위 카테고리)를 선택해주세요.");
+                return false;
+            }
+        }
+    } else {
+        const selectedPetType = document.querySelector('input[name="comm_pet_type"]:checked');
+        if (!selectedPetType) {
+            alert("동물 종류를 선택해주세요.");
+            return false;
+        }
+    }
+
+    const titleInput = document.querySelector('input[name="comm_title"]');
+    if (!titleInput.value.trim()) {
+        alert("제목을 입력해주세요.");
+        titleInput.focus();
+        return false;
+    }
+
+    const contentInput = document.querySelector('textarea[name="comm_content"]');
+    if (contentInput.value.trim().length < 5) {
+        alert("내용을 5자 이상 입력해주세요.");
+        contentInput.focus();
+        return false;
+    }
+
     return true;
 }
 </script>

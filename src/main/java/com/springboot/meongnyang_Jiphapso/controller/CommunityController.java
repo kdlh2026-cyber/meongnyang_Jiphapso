@@ -25,9 +25,11 @@ import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
+import com.springboot.meongnyang_Jiphapso.service.BookMarkService;
 import com.springboot.meongnyang_Jiphapso.service.CommentService;
 import com.springboot.meongnyang_Jiphapso.service.CommunityService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -37,6 +39,9 @@ public class CommunityController {
 	
 	@Autowired
 	CommentService cmt_service;
+	
+	@Autowired
+	BookMarkService bookmarkService;
 	
 	@Autowired
 	ICommunityDAO comm_dao;
@@ -175,7 +180,8 @@ public class CommunityController {
 	
 	// 게시글 내용 상세보기
 	@RequestMapping("/community/commView")
-	public String communityView(@RequestParam("comm_no") Integer comm_no, Model model, HttpSession session) {
+	public String communityView(@RequestParam("comm_no") Integer comm_no,
+								Model model, HttpSession session) {
 
 	    comm_dao.CommunityHit(comm_no);
 	    CommunityDTO view = com_service.viewList(comm_no);
@@ -186,12 +192,11 @@ public class CommunityController {
 
 	    Integer loginMno = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
 	    model.addAttribute("loginMno", loginMno);
-
-	    System.out.println("===== 게시글 상세보기 디버그 =====");
-	    System.out.println("loginMno: " + loginMno);
-	    System.out.println("view.getM_no(): " + view.getM_no());
-	    System.out.println("두 값 같은가: " + (loginMno != null && loginMno.equals(view.getM_no())));
-	    System.out.println("================================");
+	    
+	    if (loginMno != null) {
+	        boolean isBookmarked = bookmarkService.isBookmarked(comm_no, loginMno);
+	        model.addAttribute("isBookmarked", isBookmarked);
+	    }
 
 	    return "community/commView";
 	}
@@ -333,6 +338,8 @@ public class CommunityController {
 		
 		return "member/community/myCommunityMain";
 	}
+	
+
 	
 	@RequestMapping("/community/delete")
 	public String communityDelete(@RequestParam("comm_no") int comm_no,

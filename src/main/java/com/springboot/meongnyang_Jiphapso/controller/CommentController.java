@@ -150,7 +150,7 @@ public class CommentController {
 			dto.setCmt_answer_no(null);
 		}
 		
-		service.write(dto);	
+		service.ReviewWrite(dto);
 		
 		return "redirect:/member/order/" + orNo;
 	}

@@ -206,26 +206,37 @@
 					조회 ${view.comm_view}
 				</td>
 			</tr>
+			<c:if test="${view.comm_type eq '콘텐츠'}">
 			<tr>
+				<td>
+					<button type="button" id="bookmark-btn" onclick="fnBookmark()" style="${isBookmarked ? 'background-color: #ffeb3b;' : ''}">
+			            <span id="bookmark-text">${isBookmarked ? '북마크 취소' : '북마크'}</span>
+			        </button>
+				</td>
+			</tr>
+			</c:if>
 				<td>
 					${view.comm_content}
 				</td>
 			</tr>
 			<tr>
-				<td>
-
-					<div class="video-container">
-					    <video width="640" height="360" controls>
-					        <source src="/images/community/${view.comm_video}" type="video/mp4">
-					    </video>
-					</div>
-					 <!-- 다수의 이미지를 순서대로 출력 -->
-					<c:forEach var="imgUrl" items="${view.img_url_list}">
-						<div>
-							<img src="${imgUrl}" width="400" alt="상세 이미지">
-						</div>
-					</c:forEach>
-				</td>
+			    <td>
+			        <!-- 비디오 파일명이 존재할 때만 비디오 영역 출력 -->
+			        <c:if test="${not empty view.comm_video}">
+			            <div class="video-container">
+			                <video width="640" height="360" controls>
+			                    <source src="/images/community/${view.comm_video}" type="video/mp4">
+			                </video>
+			            </div>
+			        </c:if>
+			
+			         <!-- 다수의 이미지를 순서대로 출력 -->
+			        <c:forEach var="imgUrl" items="${view.img_url_list}">
+			            <div>
+			                <img src="${imgUrl}" width="400" alt="상세 이미지">
+			            </div>
+			        </c:forEach>
+			    </td>
 			</tr>
 			<tr>
 				<td>
@@ -491,6 +502,51 @@ function fnDeletePost(comm_no) {
     if (confirm("정말 이 게시글을 삭제하시겠습니까?")) {
         location.href = '/community/delete?comm_no=' + comm_no;
     }
+}
+
+function fnBookmark() {
+    let commNo = "${view.comm_no}";
+    
+    var csrfToken = "${_csrf != null ? _csrf.token : ''}";
+    var csrfHeader = "${_csrf != null && not empty _csrf.headerName ? _csrf.headerName : 'X-CSRF-TOKEN'}";
+
+    let ajaxConfig = {
+        url: "/community/bookmark",
+        type: "POST",
+        data: { comm_no: commNo },
+        success: function(response) {
+            if (response === "LOGIN_REQUIRED") {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/loginForm";
+                return;
+            }
+            
+            let $btn = $("#bookmark-btn");
+            let $text = $("#bookmark-text");
+
+            if (response === "ADDED") {
+                alert("북마크에 추가되었습니다.");
+                $btn.css("background-color", "#ffeb3b"); // 예시: 노란색으로 변경
+                $text.text("북마크 취소");
+            } else if (response === "DELETED") {
+                alert("북마크가 해제되었습니다.");
+                $btn.css("background-color", ""); // 원래 색으로 복구
+                $text.text("북마크");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+            alert("오류가 발생했습니다.");
+        }
+    };
+
+    if (csrfHeader && csrfToken) {
+        ajaxConfig.beforeSend = function(xhr) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        };
+    }
+
+    $.ajax(ajaxConfig);
 }
 </script>
 </html>

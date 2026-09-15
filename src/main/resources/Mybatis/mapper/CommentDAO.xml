@@ -33,12 +33,13 @@
 	        cmt_content, cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no
 	    from dc_comment
 	    where cmt_type_no = #{comm_no, jdbcType=INTEGER}
+	    	AND cmt_type != 'REVIEW'
 	    order by cmt_date desc
 	</select>
 	
 	<!-- 댓글 총 개수 조회 -->
 	<select id="CommentCount" resultType="int">
-	    select count(*) from dc_comment where cmt_type_no = #{comm_no, jdbcType=INTEGER}
+	    select count(*) from dc_comment where cmt_type_no = #{comm_no, jdbcType=INTEGER} AND cmt_type != 'REVIEW'
 	</select>
 	
 	<select id="myComment" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
@@ -99,6 +100,27 @@
 	    SELECT COUNT(*) FROM dc_comment 
 	    WHERE cmt_type = 'event' AND cmt_type_no = #{event_no}
 	</select>
+	
+	<!-- 상품 리뷰 작성용 -->
+	<insert id="ReviewWrite" parameterType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
+	    <selectKey keyProperty="cmt_no" resultType="int" order="BEFORE">
+	        select dc_comment_seq.NEXTVAL FROM DUAL
+	    </selectKey>
+	    
+	    insert into dc_comment(cmt_no, cmt_writer, cmt_type, cmt_type_no, cmt_content,
+	                    cmt_date, cmt_deleted, m_no, cmt_score, p_no)
+	        values(#{cmt_no, jdbcType=INTEGER},
+	                #{cmt_writer, jdbcType=VARCHAR},
+	                'REVIEW', 
+	                #{cmt_type_no, jdbcType=INTEGER},
+	                #{cmt_content, jdbcType=VARCHAR},
+	                SYSDATE,
+	                'N',
+	                #{m_no, jdbcType=INTEGER},
+	                #{cmt_score, jdbcType=INTEGER},
+	                #{p_no, jdbcType=INTEGER}
+	                )
+	</insert>
 	
 	<!-- 특정 주문 상품(odDetailNo)에 작성된 리뷰 조회 -->
 	<select id="selectReviewByDetailNo" parameterType="long" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">

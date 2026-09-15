@@ -201,7 +201,7 @@ public class AdminController {
 	@RequestMapping("/admin/communityManage")
 	public String communityManage(Model model) {
 		
-		List<String> commTypes = Arrays.asList("Q&A", "라운지", "콘텐츠");
+		List<String> commTypes = Arrays.asList("QNA", "라운지", "콘텐츠");
         model.addAttribute("commTypes", commTypes);
 
         String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -243,7 +243,7 @@ public class AdminController {
 	
 	@GetMapping("/admin/community/communityManage/manageDetails")
     public String communityManageDetails(
-            @RequestParam(value = "comm_type", required = false, defaultValue = "Q&A") String commType,
+            @RequestParam(value = "comm_type", required = false, defaultValue = "QNA") String commType,
             Model model) throws Exception {
         
         // 1. 방금 만든 서비스 메서드를 호출하여 통계 데이터를 Map으로 받아옴
@@ -255,11 +255,67 @@ public class AdminController {
         model.addAttribute("commType", commType);
         
         // 탭별 active 여부를 명시적으로 판별해서 전달 (이 방법이 제일 안전합니다)
-        model.addAttribute("activeQnA", "Q&A".equals(commType) ? "active" : "");
+        model.addAttribute("activeQnA", "QNA".equals(commType) ? "active" : "");
         model.addAttribute("activeLounge", "라운지".equals(commType) ? "active" : "");
         model.addAttribute("activeContent", "콘텐츠".equals(commType) ? "active" : "");
         
         // 3. 기존 JSP 경로 반환
         return "admin/community/communityManage/manageDetails";
     }
+	
+	@RequestMapping("/admin/communityUpdate")
+	public String communityUpdate(@RequestParam(value = "comm_type", required = false) String comm_type,
+						          @RequestParam(value = "comm_pet_type", required = false) String comm_pet_type,
+						          @RequestParam(value = "comm_category", required = false) String comm_category,
+						          @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
+						          @RequestParam(value = "page", defaultValue = "1") int page,
+						          Model model) {
+		
+	    // 1. 한 페이지에 보여줄 게시글 개수
+	    int pageSize = 10; 
+	    
+	    // 2. 페이징 계산을 위한 시작/끝 행 번호 구하기 (오라클 ROWNUM 기준 예시)
+	    int startRow = (page - 1) * pageSize + 1;
+	    int endRow = page * pageSize;
+
+	    // 3. 목록 조회 (파라미터에 페이징 정보 추가 전달)
+	    List<CommunityDTO> list = com_service.selectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
+	    
+	    // 4. 전체 게시글 개수 구하기 (페이징 바를 그리기 위해 필요)
+	    int totalCount = com_service.getTotalCount(comm_type, comm_pet_type, comm_category);
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    
+	    model.addAttribute("list", list);
+	    model.addAttribute("pageNum", page);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("totalCount", totalCount);
+	    
+	    return "admin/community/communityManage/communityUpdate";
+	}
+	
+	@GetMapping("/admin/community/delete")
+	public String adminCommunityDelete(
+	        @RequestParam("comm_no") int comm_no,
+	        @RequestParam(value = "comm_type", required = false) String comm_type,
+	        @RequestParam(value = "page", defaultValue = "1") int page) {
+
+	    // 삭제 실행
+		com_service.adminCommunityDelete(comm_no); // 또는 communityDao.adminCommunityDelete(comm_no)
+
+	    // 삭제 후 기존 보고 있던 탭과 페이지 상태를 유지하며 목록으로 리다이렉트
+	    return "redirect:/admin/communityUpdate?comm_type=" + (comm_type != null ? comm_type : "") + "&page=" + page;
+	}
+	
+	@GetMapping("/admin/community/pickToggle")
+	public String pickToggle(
+	        @RequestParam("comm_no") int comm_no,
+	        @RequestParam(value = "comm_type", required = false) String comm_type,
+	        @RequestParam(value = "page", defaultValue = "1") int page) {
+
+	    // PICK 상태 토글 실행
+		com_service.updateAdPick(comm_no);
+
+	    // 기존 페이지 및 필터 상태 유지하며 리다이렉트
+	    return "redirect:/admin/communityUpdate?comm_type=" + (comm_type != null ? comm_type : "") + "&page=" + page;
+	}
 }

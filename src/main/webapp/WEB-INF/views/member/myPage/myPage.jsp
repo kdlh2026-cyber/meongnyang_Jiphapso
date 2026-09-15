@@ -52,7 +52,7 @@
     <button class="mp-tab active" data-url="/member/myPage/myProfile?m_id=${myId.m_id}" onclick="loadMpTab(this)">프로필</button>
     <button class="mp-tab" data-url="/member/myPage/myPetList?m_no=${myId.m_no}" onclick="loadMpTab(this)">반려동물 프로필</button>
     <button class="mp-tab" data-url="/community/myCommunity?m_no=${myId.m_no}" onclick="loadMpTab(this)">내가 작성한 글</button>
-    <button class="mp-tab" data-url="#" onclick="loadMpTab(this)">북마크 글</button>
+    <button class="mp-tab" data-url="/member/myBookmarks" onclick="loadMpTab(this)">북마크 글</button>
     <button class="mp-tab" data-url="/member/order/list?m_no=${myId.m_no}" onclick="loadMpTab(this)">주문 내역</button>
     <button class="mp-tab" data-url="/favorite/list" onclick="loadMpTab(this)">관심 상품</button>
     <button class="mp-tab" data-url="${pageContext.request.contextPath}/point/list" onclick="loadMpTab(this)">포인트</button>
@@ -99,32 +99,69 @@
 <script>
 function loadMpTab(btn) {
     const url = btn.dataset.url;
+
     if (url === '#') return;
-    if (url.indexOf('/point/list') !== -1 || url.indexOf('/coupon/list') !== -1) {
+
+    // 포인트 / 쿠폰 / 주문 내역은 페이지 이동
+    if (
+        url.indexOf('/point/list') !== -1 ||
+        url.indexOf('/coupon/list') !== -1 ||
+        url.indexOf('/member/order/list') !== -1
+    ) {
         location.href = url;
         return;
     }
 
-    // 포인트/쿠폰/주문내역
-    if (url.indexOf('/point/list') !== -1
-        || url.indexOf('/coupon/list') !== -1
-        || url.indexOf('/member/order/list') !== -1) {
-        location.href = url;
-        return;
-    }
+    document.querySelectorAll('.mp-tab')
+        .forEach(el => el.classList.remove('active'));
 
-    document.querySelectorAll('.mp-tab').forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
 
     sessionStorage.setItem('lastMpTab', url);
 
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('mp-content-area').innerHTML = html;
-        })
-        .catch(err => console.error('Error loading tab:', err));
+    loadMpContent(url);
 }
+
+
+// 마이페이지 본문만 불러오는 함수
+function loadMpContent(url) {
+
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('페이지를 불러오지 못했습니다.');
+        }
+
+        return response.text();
+    })
+    .then(html => {
+        document.getElementById('mp-content-area').innerHTML = html;
+    })
+    .catch(err => {
+        console.error('Error loading tab:', err);
+    });
+}
+
+//내가 작성한 글 내부의 카테고리 링크 클릭 처리
+document.getElementById('mp-content-area')
+    .addEventListener('click', function(e) {
+
+        const link = e.target.closest('a[data-mp-category]');
+
+        if (!link) return;
+
+        // 실제 페이지 이동 막기
+        e.preventDefault();
+
+        const url = link.getAttribute('href');
+
+        // 카테고리 본문만 다시 불러오기
+        loadMpContent(url);
+    });
 </script>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>

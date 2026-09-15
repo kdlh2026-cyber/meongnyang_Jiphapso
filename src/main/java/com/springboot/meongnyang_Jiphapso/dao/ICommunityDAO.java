@@ -87,6 +87,12 @@ public interface ICommunityDAO {
     // 관리자용
     public int getTodayCountByType(@Param("comm_type") String comm_type);
     
+    // 관리자용 지우기
+    public int adminCommunityDelete(int comm_no);
+    
+    // 관리자 픽
+    public int updateAdPick(int comm_no);
+    
     // 통계용
     List<CommunityDTO> getCommunityListForStats(@Param("comm_type") String comm_type);
 }

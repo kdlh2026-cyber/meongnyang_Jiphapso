@@ -44,6 +44,9 @@ public interface ICommentDAO {
 	public List<CommentDTO> EventCommentList(@Param("event_no") Integer event_no);
     public int EventCommentCount(@Param("event_no") Integer event_no);
     
+    // 상품 리뷰 작성
+    public int ReviewWrite(CommentDTO cmtDto);
+    
     // 내가 쓴 특정 상품 리뷰 조회
     public CommentDTO selectReviewByDetailNo(@Param("odDetailNo") Long odDetailNo);
     
