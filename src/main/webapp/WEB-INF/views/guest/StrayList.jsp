@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     <!-- 상단 노란 필터 카드 -->
     <div class="filter-card">
-        <img src="/images/stray/menu/regist_samsek_lili.6c16a730.png" class="character-banner-img" alt="캐릭터">      
+        <img src="/images/stray/menu/cat_n_dog.png" class="character-banner-img" alt="캐릭터">      
         <!-- 강아지 / 고양이 탭 (두 가지 모델 변수 형태 모두 대응) -->
 		<div class="animal-tabs">
 		    <button type="button" 
