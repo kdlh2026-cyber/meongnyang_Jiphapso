@@ -61,6 +61,9 @@ public class CommunityESService {
 	    map.put("comm_score", dto.getComm_score() != null ? dto.getComm_score() : 0f);
 	    map.put("comm_breed", nullToEmpty(dto.getComm_breed()));
 	    map.put("comm_img", nullToEmpty(dto.getComm_img()));
+	    map.put("comm_video", nullToEmpty(dto.getComm_video())); 
+	    map.put("comm_adpick", nullToEmpty(dto.getComm_adpick()));    
+	    map.put("comm_detail", nullToEmpty(dto.getComm_detail()));
 	    map.put("comm_date", dto.getComm_date());
 	    map.put("comm_count", dto.getComm_count() != null ? dto.getComm_count() : 0);
 	    map.put("comm_view", dto.getComm_view() != null ? dto.getComm_view() : 0);
@@ -167,5 +170,64 @@ public class CommunityESService {
 		}
 		
 		return result;
+	}
+	
+	// 관리자용 게시글 검색 및 목록 조회
+	public List<Map<String, Object>> adminSearchCommunity(String searchType, String keyword, String sort, int page, int size) throws Exception {
+	    SearchRequest request = new SearchRequest("dc_community");
+	    SearchSourceBuilder source = new SearchSourceBuilder();
+	    
+	    // 1. 페이징 설정 (page는 1부터 시작한다고 가정)
+	    int from = (page - 1) * size;
+	    source.from(from);
+	    source.size(size);
+	    // 2. 검색 조건(Query) 설정
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        if ("title".equals(searchType)) {
+	            source.query(QueryBuilders.matchQuery("comm_title", keyword));
+	        } else if ("writer".equals(searchType)) {
+	            source.query(QueryBuilders.matchQuery("comm_writer", keyword));
+	        } else if ("comm_pet_type".equals(searchType)) {
+	            source.query(QueryBuilders.termQuery("comm_pet_type", keyword));
+	        } else {
+	            // ⭐️ 통합검색(else) 시 제목, 내용뿐만 아니라 작성자(comm_writer)도 함께 검색되도록 추가!
+	            source.query(QueryBuilders.multiMatchQuery(keyword, "comm_title", "comm_content", "comm_writer"));
+	        }
+	    }
+	    
+	    // 3. 정렬 설정 (최신순 vs 인기순)
+	    if ("popular".equals(sort)) {
+	        source.sort("comm_good", org.elasticsearch.search.sort.SortOrder.DESC);
+	        source.sort("comm_view", org.elasticsearch.search.sort.SortOrder.DESC);
+	    } else {
+	        source.sort("comm_no", org.elasticsearch.search.sort.SortOrder.DESC); // 최신순 (기본)
+	    }
+	    
+	    // 4. 하이라이트 기능 필요시 유지
+	    HighlightBuilder highlight = new HighlightBuilder();
+	    highlight.field(new HighlightBuilder.Field("comm_title"));
+	    highlight.preTags("<span style='color:red;'>");
+	    highlight.postTags("</span>");
+	    source.highlighter(highlight);
+	    
+	    request.source(source);
+	    
+	    // 5. 결과 매핑
+	    SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+	    List<Map<String, Object>> result = new ArrayList<>();
+	    
+	    for (SearchHit hit : response.getHits().getHits()) {
+	        Map<String, Object> sourceMap = hit.getSourceAsMap();
+	        
+	        // 필요한 경우 하이라이트 결과 덮어쓰기
+	        if (hit.getHighlightFields().get("comm_title") != null) {
+	            String highlightedTitle = hit.getHighlightFields().get("comm_title").fragments()[0].string();
+	            sourceMap.put("comm_title_hl", highlightedTitle); // 하이라이트된 제목 별도 저장
+	        }
+	        
+	        result.add(sourceMap);
+	    }
+	    
+	    return result;
 	}
 }

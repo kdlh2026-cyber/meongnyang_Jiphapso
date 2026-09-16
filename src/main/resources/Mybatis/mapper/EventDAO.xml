@@ -18,10 +18,26 @@
 		select * from dc_event_report
 	</select>
 	
- 	<!--이벤트 조회-->
- 	<select id="eventList" resultType="com.springboot.meongnyang_Jiphapso.dto.EventDTO">
- 		select * from dc_event
- 	</select>
+	<!-- 이벤트 조회 (필터링 조건 및 정렬 추가) -->
+	<select id="eventList" parameterType="map" resultType="com.springboot.meongnyang_Jiphapso.dto.EventDTO">
+	    SELECT * FROM dc_event
+	    <where>
+	        <!-- 온라인 / 오프라인 필터 조건 -->
+	        <if test="event_onoff != null and event_onoff != ''">
+	            AND event_onoff = #{event_onoff}
+	        </if>
+	        
+	        <!-- 반려동물 종류 필터 조건 (강아지 또는 고양이) -->
+	        <if test="event_pet_type != null and event_pet_type != ''">
+	            AND event_pet_type = #{event_pet_type}
+	        </if>
+	    </where>
+	    
+	    <!-- 정렬 조건 추가 -->
+	    ORDER BY 
+	        CASE WHEN event_all = 'Y' THEN 0 ELSE 1 END ASC,
+	        event_start asc
+	</select>
  	
  	<!--이벤트 상세 조회-->
  	<select id="eventDetail" parameterType="int" resultType="com.springboot.meongnyang_Jiphapso.dto.EventDTO">

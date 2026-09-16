@@ -200,45 +200,55 @@ public class AdminController {
 	
 	@RequestMapping("/admin/communityManage")
 	public String communityManage(Model model) {
-		
-		List<String> commTypes = Arrays.asList("QNA", "라운지", "콘텐츠");
-        model.addAttribute("commTypes", commTypes);
-
-        String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        model.addAttribute("todayStr", todayStr);
-
-        // 전체 총합 개수
-        int totalCount = com_service.getTotalCount(null, null, null);
-        model.addAttribute("totalCount", totalCount);
-
-        Map<String, Integer> categoryCounts = new HashMap<>();
-        Map<String, Integer> todayCounts = new HashMap<>();
-        Map<String, List<CommunityDTO>> latestByType = new HashMap<>();
-        Map<String, List<CommunityDTO>> topByType = new HashMap<>();
-
-        for (String type : commTypes) {
-            // 카테고리별 전체 개수
-            categoryCounts.put(type, com_service.getTotalCount(type, null, null));
-            
-            // 오늘 등록된 개수 (DAO에 메서드가 없다면 서비스나 쿼리 추가 필요)
-            todayCounts.put(type, com_service.getTodayCountByType(type));
-            
-            // 게시글 관리 영역: 최신순 무조건 1~10개 고정
-            latestByType.put(type, com_service.selectList(type, null, null, "latest", 1, 10));
-
-            // 인기 Top 10 영역: 인기순(도움돼요순) 무조건 1~10개 고정
-            Map<String, Object> params = new HashMap<>();
-            params.put("comm_type", type);
-            topByType.put(type, com_service.getPopularList(params));
-        }
-
-        model.addAttribute("categoryCounts", categoryCounts);
-        model.addAttribute("todayCounts", todayCounts);
-        model.addAttribute("latestByType", latestByType);
-        model.addAttribute("topByType", topByType);
 	    
-		
-		return "admin/community/communityManage/communityManage";
+	    List<String> commTypes = Arrays.asList("QNA", "라운지", "콘텐츠");
+	    model.addAttribute("commTypes", commTypes);
+
+	    String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	    model.addAttribute("todayStr", todayStr);
+
+	    // 전체 총합 개수 (전체 통계는 기존 메서드 유지 혹은 전체 count 쿼리 활용)
+	    int totalCount = com_service.getTotalCount(null, null, null);
+	    model.addAttribute("totalCount", totalCount);
+
+	    Map<String, Integer> categoryCounts = new HashMap<>();
+	    Map<String, Integer> todayCounts = new HashMap<>();
+	    Map<String, List<CommunityDTO>> latestByType = new HashMap<>();
+	    Map<String, List<CommunityDTO>> topByType = new HashMap<>();
+
+	    // ⭐️ 1. 통계 데이터를 단 1번의 쿼리로 조회해옴 (DB 접근 최소화)
+	    List<Map<String, Object>> statsList = com_service.getAllCategoryStats();
+	    
+	    // 조회해온 리스트를 루프를 돌며 Map에 매핑 (DB 접근이 아니라 자바 메모리 연산이므로 매우 빠름)
+	    for (Map<String, Object> stat : statsList) {
+	        String type = (String) stat.get("COMM_TYPE"); // 오라클은 대문자로 반환될 수 있음 ("COMM_TYPE" 또는 "comm_type")
+	        
+	        // BigDecimal 또는 Number 형태로 올 수 있으므로 안전하게 형변환
+	        int tCount = stat.get("TOTAL_COUNT") != null ? ((Number) stat.get("TOTAL_COUNT")).intValue() : 0;
+	        int dCount = stat.get("TODAY_COUNT") != null ? ((Number) stat.get("TODAY_COUNT")).intValue() : 0;
+	        
+	        categoryCounts.put(type, tCount);
+	        todayCounts.put(type, dCount);
+	    }
+
+	    // ⭐️ 2. 게시글 목록(최신순, 인기순)은 각 타입별로 가져와야 하므로 유지하되, 
+	    //        각각 최적화된 쿼리(ROWNUM <= 10 등)를 타도록 구성
+	    for (String type : commTypes) {
+	        // 게시글 관리 영역: 최신순 1~10개 고정
+	        latestByType.put(type, com_service.selectList(type, null, null, "latest", 1, 10));
+
+	        // 인기 Top 10 영역: 인기순 1~10개 고정
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("comm_type", type);
+	        topByType.put(type, com_service.getPopularList(params));
+	    }
+
+	    model.addAttribute("categoryCounts", categoryCounts);
+	    model.addAttribute("todayCounts", todayCounts);
+	    model.addAttribute("latestByType", latestByType);
+	    model.addAttribute("topByType", topByType);
+	    
+	    return "admin/community/communityManage/communityManage";
 	}
 	
 	@GetMapping("/admin/community/communityManage/manageDetails")
@@ -264,34 +274,54 @@ public class AdminController {
     }
 	
 	@RequestMapping("/admin/communityUpdate")
-	public String communityUpdate(@RequestParam(value = "comm_type", required = false) String comm_type,
-						          @RequestParam(value = "comm_pet_type", required = false) String comm_pet_type,
-						          @RequestParam(value = "comm_category", required = false) String comm_category,
-						          @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
-						          @RequestParam(value = "page", defaultValue = "1") int page,
-						          Model model) {
-		
-	    // 1. 한 페이지에 보여줄 게시글 개수
-	    int pageSize = 10; 
-	    
-	    // 2. 페이징 계산을 위한 시작/끝 행 번호 구하기 (오라클 ROWNUM 기준 예시)
-	    int startRow = (page - 1) * pageSize + 1;
-	    int endRow = page * pageSize;
+    public String communityUpdate(@RequestParam(value = "comm_type", required = false) String comm_type,
+                                  @RequestParam(value = "comm_pet_type", required = false) String comm_pet_type,
+                                  @RequestParam(value = "comm_category", required = false) String comm_category,
+                                  @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
+                                  @RequestParam(value = "page", defaultValue = "1") int page,
+                                  Model model) {
+        
+        // 1. 한 페이지에 보여줄 게시글 개수
+        int pageSize = 10; 
+        
+        // 2. 페이징 계산을 위한 시작/끝 행 번호 구하기 (오라클 ROWNUM 기준 예시)
+        int startRow = (page - 1) * pageSize + 1;
+        int endRow = page * pageSize;
 
-	    // 3. 목록 조회 (파라미터에 페이징 정보 추가 전달)
-	    List<CommunityDTO> list = com_service.selectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
-	    
-	    // 4. 전체 게시글 개수 구하기 (페이징 바를 그리기 위해 필요)
-	    int totalCount = com_service.getTotalCount(comm_type, comm_pet_type, comm_category);
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-	    
-	    model.addAttribute("list", list);
-	    model.addAttribute("pageNum", page);
-	    model.addAttribute("totalPages", totalPages);
-	    model.addAttribute("totalCount", totalCount);
-	    
-	    return "admin/community/communityManage/communityUpdate";
-	}
+        // 3. 목록 조회 (파라미터에 페이징 정보 추가 전달)
+        List<CommunityDTO> list = com_service.selectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
+        
+        // 4. 전체 게시글 개수 구하기 (페이징 바를 그리기 위해 필요)
+        int totalCount = com_service.getTotalCount(comm_type, comm_pet_type, comm_category);
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+        if (totalPages == 0) totalPages = 1; // 데이터가 없을 때 방어 코드
+
+        // ★ 5. 10단위 블록 페이징 계산 로직 추가
+        int blockSize = 10; // 한 화면에 보여줄 페이지 번호 개수
+        int endPage = (int) (Math.ceil(page / (double) blockSize) * blockSize);
+        int startPage = (endPage - blockSize) + 1;
+        
+        if (endPage > totalPages) {
+            endPage = totalPages; // 마지막 블록이 총 페이지 수보다 크면 보정
+        }
+        
+        boolean prev = startPage > 1;                  // 이전 블록 존재 여부
+        boolean next = endPage < totalPages;           // 다음 블록 존재 여부
+
+        // 6. 모델에 데이터 담기
+        model.addAttribute("list", list);
+        model.addAttribute("pageNum", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        
+        // JSP로 넘길 페이징 블록 관련 속성들
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("prev", prev);
+        model.addAttribute("next", next);
+        
+        return "admin/community/communityManage/communityUpdate";
+    }
 	
 	@GetMapping("/admin/community/delete")
 	public String adminCommunityDelete(

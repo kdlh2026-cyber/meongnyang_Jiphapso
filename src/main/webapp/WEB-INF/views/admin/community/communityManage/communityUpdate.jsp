@@ -100,20 +100,40 @@
          </c:if>
 
          <!-- 검색 및 자동완성 폼 -->
-         <form name="community_search" method="get" action="/admin/community/list" class="search-form">
-             <!-- 기존 필터 상태 유지용 숨은값 -->
-             <input type="hidden" name="comm_type" value="${param.comm_type}">
-             <input type="hidden" name="comm_pet_type" value="${param.comm_pet_type}">
-             <input type="hidden" name="comm_category" value="${param.comm_category}">
-             
-             <input type="text" name="keyword" id="keyword" value="${param.keyword}" placeholder="검색어 입력" autocomplete="off">
-             <input type="submit" value="검색">
-             <div id="suggestions"></div>
-         </form>
+	     <form name="community_search" method="get" action="/admin/community/searchList" class="search-form" style="display: flex; gap: 5px; align-items: center;">
+	         <!-- 기존 필터 상태 유지용 숨은값 -->
+	         <input type="hidden" name="comm_type" value="${param.comm_type}">
+	         <input type="hidden" name="comm_pet_type" value="${param.comm_pet_type}">
+	         <input type="hidden" name="comm_category" value="${param.comm_category}">
+	         <input type="hidden" name="sort" value="${param.sort}">
+	         
+	         <!-- 검색 필터 (제목, 작성자, 카테고리, 통합) -->
+	         <select name="searchType" style="padding: 6px 8px; border-radius: 4px; border: 1px solid #ddd; font-size: 13px;">
+	             <option value="" ${empty param.searchType ? 'selected' : ''}>통합검색</option>
+	             <option value="title" ${param.searchType eq 'title' ? 'selected' : ''}>제목</option>
+	             <option value="writer" ${param.searchType eq 'writer' ? 'selected' : ''}>작성자</option>
+	             <option value="category" ${param.searchType eq 'category' ? 'selected' : ''}>카테고리</option>
+	         </select>
+	         
+	         <input type="text" name="keyword" id="keyword" value="${param.keyword}" placeholder="검색어 입력" autocomplete="off">
+	         <input type="submit" value="검색">
+	         <div id="suggestions"></div>
+	     </form>
      </div>
 
-     <div class="total-count">전체 ${totalCount}개</div>
-
+     <!-- 정렬 필터 및 전체 개수 영역 -->
+	<div class="filter_area" style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+	    <div>전체 ${totalCount}개</div>
+	    
+	    <!-- 최신순 / 인기순 셀렉트박스 -->
+	    <div>
+	        <select name="sort" onchange="changeSort(this.value)" style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ddd;">
+	            <option value="latest" ${param.sort eq 'latest' or empty param.sort ? 'selected' : ''}>최신순</option>
+	            <option value="popular" ${param.sort eq 'popular' ? 'selected' : ''}>인기순</option>
+	        </select>
+	    </div>
+	</div>
+	
      <div>
      	 <table>
              <thead>
@@ -176,17 +196,24 @@
          </table>
      </div>
      
-     <!-- 3. 페이징 네비게이션 -->
+    <!-- 3. 페이징 네비게이션 (10개 단위 블록) -->
      <c:if test="${not empty totalPages and totalPages > 1}">
          <div class="pagination">
-             <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&page=${pageNum > 1 ? pageNum - 1 : 1}">PREV</a>
+             <%-- 이전 블록 이동 버튼 --%>
+             <c:if test="${prev}">
+                 <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&sort=${param.sort}&page=${startPage - 1}">PREV</a>
+             </c:if>
              
-             <c:forEach var="i" begin="1" end="${totalPages}">
-                 <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&page=${i}" 
+             <%-- 10개 단위 번호 반복 출력 --%>
+             <c:forEach var="i" begin="${startPage}" end="${endPage}">
+                 <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&sort=${param.sort}&page=${i}" 
                     class="${pageNum eq i ? 'active' : ''}">${i}</a>
              </c:forEach>
              
-             <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&page=${pageNum < totalPages ? pageNum + 1 : totalPages}">NEXT</a>
+             <%-- 다음 블록 이동 버튼 --%>
+             <c:if test="${next}">
+                 <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&sort=${param.sort}&page=${endPage + 1}">NEXT</a>
+             </c:if>
          </div>
      </c:if>
 </div>
@@ -232,6 +259,14 @@
             $("#suggestions").empty();
         }
     });
+    
+ 	// 정렬 셀렉트박스 변경 시 현재 선택된 검색 조건(게시판 종류, 동물 종류 등)을 유지한 채 페이지 이동
+    function changeSort(sortValue) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sort', sortValue);
+        urlParams.set('page', '1'); // 정렬을 바꿨을 때 1페이지로 초기화
+        window.location.href = window.location.pathname + '?' + urlParams.toString();
+    }
 </script>
 </body>
 </html>

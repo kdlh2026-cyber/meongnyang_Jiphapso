@@ -41,14 +41,7 @@ public class MainController {
     @RequestMapping("/main")
     public String main(Model model) {
     	// 추천 콘텐츠: 최신 커뮤니티 게시글 조회 후 인기순 정렬
-        List<CommunityDTO> recommendContentList = comm_serv.list();
-        recommendContentList.sort(
-        	    Comparator.<CommunityDTO, Integer>comparing(
-        	            cm -> cm.getComm_good() != null ? cm.getComm_good() : 0)
-        	        .thenComparing(
-        	            cm -> cm.getComm_view() != null ? cm.getComm_view() : 0)
-        	        .reversed()
-        	);
+        List<CommunityDTO> recommendContentList = comm_serv.getRecommendList();
         model.addAttribute("recommendContentList", recommendContentList);
 
         // 추천 상품: 전체 상품 중 몇 개만 (ptype 조건 없이 전체 조회)

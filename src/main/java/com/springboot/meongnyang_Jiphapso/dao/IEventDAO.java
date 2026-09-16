@@ -1,6 +1,7 @@
 package com.springboot.meongnyang_Jiphapso.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -10,7 +11,7 @@ import com.springboot.meongnyang_Jiphapso.dto.EventReportDTO;
 @Mapper
 public interface IEventDAO {
 	// 이벤트 조회
-	public List<EventDTO> eventList();
+	public List<EventDTO> eventList(Map<String, Object> params);
 	
 	// 이벤트 상세보기
 	public EventDTO eventDetail(int event_no);

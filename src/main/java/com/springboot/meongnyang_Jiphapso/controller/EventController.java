@@ -1,6 +1,8 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -40,9 +42,20 @@ public class EventController {
 	CommentService service;
 	
 	@RequestMapping("/event/eventList")
-	public String eventList(Model model) {
-		model.addAttribute("list", dao.eventList());
-		return "event/eventList";
+	public String eventList(
+	        @RequestParam(value = "event_onoff", required = false) String eventOnoff,
+	        @RequestParam(value = "event_pet_type", required = false) String eventPetType,
+	        Model model) {
+	    
+	    // 1. 전달받은 필터 조건을 Map에 담기
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("event_onoff", eventOnoff);
+	    params.put("event_pet_type", eventPetType);
+	    
+	    // 2. Map을 파라미터로 DAO에 전달하여 필터링된 목록 조회
+	    model.addAttribute("list", dao.eventList(params));
+	    
+	    return "event/eventList";
 	}
 	
 	@RequestMapping("/event/eventReport")
@@ -68,11 +81,22 @@ public class EventController {
 	}
 	
 	@RequestMapping("/admin/eventManage")
-	public String eventManage(EventReportDTO er_dto,
+	public String eventManage(@RequestParam(value = "event_onoff", required = false) String eventOnoff,
+							 @RequestParam(value = "event_pet_type", required = false) String eventPetType,
 							 Model model) {		
-		model.addAttribute("report", dao.eventReportList());
-		model.addAttribute("write", dao.eventList());
-		return "admin/community/event/eventManage";
+	    
+	    // 1. 제보 목록 조회
+	    model.addAttribute("report", dao.eventReportList());
+	    
+	    // 2. 필터 파라미터를 Map에 담기
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("event_onoff", eventOnoff);
+	    params.put("event_pet_type", eventPetType);
+	    
+	    // 3. 조건에 맞는 이벤트 목록 조회 후 전달
+	    model.addAttribute("write", dao.eventList(params));
+	    
+	    return "admin/community/event/eventManage";
 	}
 	
 	@RequestMapping("/admin/eventWriteForm")

@@ -35,7 +35,7 @@
 		</div>
 	</form>
 	
-	<a href="/communityCrawlingWriteForm">글쓰기(크롤링용)</a> | <a href="/commWriteForm">글쓰기(실제)</a>
+	<a href="/commWriteForm">글쓰기</a>
 	<div class="category_tabs">
         <a href="/community/commList" class="${empty param.comm_type ? 'active' : ''}">전체</a>
         <a href="/community/commList?comm_type=QNA" class="${param.comm_type eq 'QNA' ? 'active' : ''}">Q&amp;A</a>
@@ -93,14 +93,7 @@
 			<td>
 				<c:if test="${board.comm_adpick eq 'Y'}">
 				    <span style="background: #ff5a1f; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 5px;">
-				        <c:choose>
-				            <c:when test="${not empty board.admin_name}">
-				                ${board.admin_name} PICK
-				            </c:when>
-				            <c:otherwise>
-				                PICK
-				            </c:otherwise>
-				        </c:choose>
+				                멍냥 PICK
 				    </span>
 				</c:if>
 				<a href="/community/commView?comm_no=${board.comm_no}">${board.comm_title}</a>
@@ -123,14 +116,21 @@
 	</table>
 	
 	<div class="pagination">
-        <a href="/community/commList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&sort=${param.sort}&page=${pageNum > 1 ? pageNum - 1 : 1}">PREV</a>
+        <%-- 이전 블록 이동 (원하실 경우 추가) --%>
+        <c:if test="${startPage > 1}">
+            <a href="/community/commList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&sort=${param.sort}&page=${startPage - 1}">PREV</a>
+        </c:if>
         
-        <c:forEach var="i" begin="1" end="${totalPages}">
+        <%-- 10개씩 끊어서 출력 --%>
+        <c:forEach var="i" begin="${startPage}" end="${endPage}">
             <a href="/community/commList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&sort=${param.sort}&page=${i}" 
                class="${pageNum eq i ? 'active' : ''}">${i}</a>
         </c:forEach>
         
-        <a href="/community/commList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&sort=${param.sort}&page=${pageNum < totalPages ? pageNum + 1 : totalPages}">NEXT</a>
+        <%-- 다음 블록 이동 (원하실 경우 추가) --%>
+        <c:if test="${endPage < totalPages}">
+            <a href="/community/commList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&sort=${param.sort}&page=${endPage + 1}">NEXT</a>
+        </c:if>
     </div>
     
 <%@ include file="../footer.jsp" %>

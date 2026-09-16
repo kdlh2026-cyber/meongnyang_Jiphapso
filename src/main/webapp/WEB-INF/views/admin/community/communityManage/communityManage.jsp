@@ -153,7 +153,7 @@
                         </tr>
                         <c:forEach var="item" items="${topByType[type]}">
                             <tr>
-                                <td>${item.comm_type}</td>
+                                <td>${item.comm_type == 'QNA' ? 'Q&amp;A' : item.comm_type}</td>
                                 <td><a href="/community/commView?comm_no=${item.comm_no}">${item.comm_title}</a></td>
                                 <td>${item.comm_writer}</td>
                                 <td>${item.comm_good}</td>
