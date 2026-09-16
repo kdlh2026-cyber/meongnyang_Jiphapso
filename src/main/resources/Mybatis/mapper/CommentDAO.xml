@@ -8,23 +8,26 @@
 	        select dc_comment_seq.NEXTVAL FROM DUAL
 	    </selectKey>
 	 	
-	 	insert into dc_comment(cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no, cmt_content,
-						cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no, cmt_score, p_no)
-			values(#{cmt_no, jdbcType=INTEGER},
-					#{cmt_answer_no, jdbcType=INTEGER},
-					#{cmt_writer, jdbcType=VARCHAR},
-					#{cmt_type, jdbcType=VARCHAR},
-					#{cmt_type_no, jdbcType=INTEGER},
-					#{cmt_content, jdbcType=VARCHAR},
-					#{cmt_good, jdbcType=INTEGER},
-					#{cmt_choice, jdbcType=VARCHAR},
-					#{cmt_img, jdbcType=VARCHAR},
-					SYSDATE,
-					#{cmt_deleted, jdbcType=VARCHAR},
-					#{m_no, jdbcType=INTEGER},
-					#{cmt_score, jdbcType=INTEGER},
-					#{p_no, jdbcType=INTEGER}
-					)
+	 	insert into dc_comment(
+	 	    cmt_no, cmt_answer_no, cmt_writer, cmt_type, cmt_type_no, cmt_content,
+			cmt_good, cmt_choice, cmt_img, cmt_date, cmt_deleted, m_no, cmt_score, p_no
+		)
+		values(
+			#{cmt_no, jdbcType=INTEGER},
+			#{cmt_answer_no, jdbcType=INTEGER},
+			#{cmt_writer, jdbcType=VARCHAR},
+			#{cmt_type, jdbcType=VARCHAR},
+			#{cmt_type_no, jdbcType=INTEGER},
+			#{cmt_content, jdbcType=VARCHAR},
+			0,                                    <!-- 공감수 초기값 -->
+			#{cmt_choice, jdbcType=VARCHAR},
+			#{cmt_img, jdbcType=VARCHAR},
+			SYSDATE,
+			#{cmt_deleted, jdbcType=VARCHAR},
+			#{m_no, jdbcType=INTEGER},
+			0,                                    <!-- 일반 댓글이므로 평점은 0 고정 -->
+			NULL                                  <!-- 일반 댓글이므로 상품번호는 NULL 고정 -->
+		)
 	</insert>
 	
 	<!-- 댓글 목록 조회 -->
@@ -43,15 +46,17 @@
 	</select>
 	
 	<select id="myComment" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
-	    select cm.comm_no, cm.comm_title, cm.comm_img,
+	    SELECT 
 	        cmt.cmt_no, cmt.cmt_content, cmt.cmt_writer,
 	        cmt.cmt_date, cmt.cmt_type, cmt.cmt_type_no, cmt.cmt_img, cmt.cmt_deleted,
-	        (SELECT COUNT(*) FROM dc_comment WHERE cmt_type_no = cm.comm_no) as reply_count
-	    from dc_community cm
-	    left join dc_comment cmt
-	    on cm.comm_no = cmt.cmt_type_no
-	    where cmt.m_no = #{m_no}
-	    order by cmt.cmt_date desc
+	        cm.comm_no, cm.comm_title, cm.comm_img AS comm_img,
+	        ev.event_no, ev.event_title, ev.event_thumb AS event_img  
+	    FROM dc_comment cmt
+	    -- 커뮤니티가 아닌 경우(예: 이벤트 등) 커뮤니티 조인이 꼬이지 않도록 조건 분기 또는 각각 조인
+	    LEFT JOIN dc_community cm ON cmt.cmt_type_no = cm.comm_no AND cmt.cmt_type != '이벤트'
+	    LEFT JOIN dc_event ev ON cmt.cmt_type_no = ev.event_no AND cmt.cmt_type = '이벤트'	    
+	    WHERE cmt.m_no = #{m_no}
+	    ORDER BY cmt.cmt_date DESC
 	</select>
 
 	<update id="CommentUpdate">
@@ -91,14 +96,14 @@
 	<!-- 이벤트 댓글 조회 -->
 	<select id="EventCommentList" resultType="com.springboot.meongnyang_Jiphapso.dto.CommentDTO">
 	    SELECT * FROM dc_comment 
-	    WHERE cmt_type = 'event' AND cmt_type_no = #{event_no}
+	    WHERE cmt_type = '이벤트' AND cmt_type_no = #{event_no}
 	    ORDER BY cmt_date DESC
 	</select>
 	
 	<!-- 이벤트 댓글 개수 조회 -->
 	<select id="EventCommentCount" resultType="int">
 	    SELECT COUNT(*) FROM dc_comment 
-	    WHERE cmt_type = 'event' AND cmt_type_no = #{event_no}
+	    WHERE cmt_type = '이벤트' AND cmt_type_no = #{event_no}
 	</select>
 	
 	<!-- 상품 리뷰 작성용 -->

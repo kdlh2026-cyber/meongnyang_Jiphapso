@@ -24,8 +24,8 @@ public class WebSecurityConfig {
 					.requestMatchers("/favicon.ico", "/css/**", "/js/**", "/images/**", "/error", "/medias/**", "/upload/**").permitAll() // 정적 리소스 및 파비콘 모두 허용
 					.requestMatchers("/css/**","/js/**","/images/**","/error","/medias/**","/uploadImages/**").permitAll() // 정적(static)리소스 모두 허용
 					.requestMatchers("/guest/**").permitAll() // guest 폴더는 모두 허용(게스트 페이지)
-					.requestMatchers("/commWriteForm","/community/comment/write-auth", "/community/comment/reply-auth", "/comment/**", "/community/replyWrite", "/event/eventReport").authenticated()
-					.requestMatchers("/favorite/**", "/cart/**","/products/**","/community/**","/event/**").permitAll() // 장바구니/관심상품 AJAX 액션은 회원·비회원 둘 다 호출하므로 인증 필터 없이 허용
+					.requestMatchers("/commWriteForm","/community/comment/write-auth", "/community/comment/reply-auth", "/comment/**", "/community/replyWrite", "/event/eventReport", "/event/write-auth", "/community/comment/write-auth").authenticated()
+					.requestMatchers("/favorite/**", "/cart/**","/products/**","/community/**","/event/**").permitAll()
 					.requestMatchers("/member/**", "/member/mypage/**").hasAnyRole("USER","CREATOR","ADMIN") // member 폴더는 USER, ADMIN만 허용(회원페이지)
 					.requestMatchers("/admin/**","/AdminMDelete").hasAnyRole("ADMIN") // admin 폴더는 ADMIN만 허용(관리자 페이지)
 					.anyRequest().authenticated() //나머지 모두 인증이 필요	

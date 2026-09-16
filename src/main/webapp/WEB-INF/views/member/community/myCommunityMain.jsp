@@ -26,7 +26,7 @@
     <div class="sidebar-area">
         <div class="side-menu">
             <a href="/community/myCommunity" data-mp-category="true" class="${empty param.comm_type ? 'active' : ''}">전체</a>
-            <a href="/community/myCommunity?comm_type=Q%26A" data-mp-category="true" class="${param.comm_type eq 'Q&A' ? 'active' : ''}">Q&A</a>
+            <a href="/community/myCommunity?comm_type=QNA" data-mp-category="true" class="${param.comm_type eq 'QNA' ? 'active' : ''}">Q&A</a>
             <a href="/community/myCommunity?comm_type=라운지" data-mp-category="true" class="${param.comm_type eq '라운지' ? 'active' : ''}">라운지</a>
             <a href="/community/myCommunity?comm_type=콘텐츠" data-mp-category="true" class="${param.comm_type eq '콘텐츠' ? 'active' : ''}">콘텐츠</a>
             <a href="/community/myCommunity?comm_type=댓글" data-mp-category="true" class="${param.comm_type eq '댓글' ? 'active' : ''}">댓글</a>
@@ -45,7 +45,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>Q&amp;A <span>${qnaCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=Q%26A" data-mp-category="true" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=QNA" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestQna}">

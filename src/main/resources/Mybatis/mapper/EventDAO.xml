@@ -36,7 +36,7 @@
 	    <!-- 정렬 조건 추가 -->
 	    ORDER BY 
 	        CASE WHEN event_all = 'Y' THEN 0 ELSE 1 END ASC,
-	        event_start asc
+	        event_start desc
 	</select>
  	
  	<!--이벤트 상세 조회-->

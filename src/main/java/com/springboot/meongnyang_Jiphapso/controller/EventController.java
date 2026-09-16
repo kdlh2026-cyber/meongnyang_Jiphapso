@@ -158,6 +158,13 @@ public class EventController {
 	    return "event/eventView";
 	}
 	
+	// 로그인 후 이벤트 상세 페이지로 리다이렉트 해주는 안전장치 메서드(이벤트)
+    @GetMapping("/event/write-auth")
+    public String eventWriteAuthRedirect(@RequestParam(value = "cmt_type_no", required = false) String cmt_type_no) {
+        return "redirect:/event/eventView?event_no=" + cmt_type_no;
+    }
+	
+	
 	// [추가] 이벤트 댓글 달기
 	@PostMapping("/eventCommentWrite")
 	public String eventCommentWrite(CommentDTO dto,
