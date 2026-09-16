@@ -20,13 +20,6 @@
 		<div id="suggestions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">
 		</div>
 	</form>
-
-		<ul>
-			<li>전체</li>
-			<li>포스트</li>
-			<li>크리에이터즈</li>
-			<li>커뮤니티</li>
-		</ul>
 		<hr>
 	<h3>커뮤니티 (${cmTotal})</h3>
 	<c:if test="${empty CMList}">
@@ -35,7 +28,7 @@
 	<c:forEach var="cm" items="${CMList}" end="4">
 		<div class="cm-item">
 			<a href="/community/commView?comm_no=${cm.comm_no}">${cm.comm_title}</a>
-			<p>${cm.comm_content}</p>
+			<p>${fn:substring(cm.comm_content,0,200)}<span style="color:#FFC9CE;">...</span></p>
 		</div>
 	</c:forEach>
 	<c:if test="${cmTotal > 5}">

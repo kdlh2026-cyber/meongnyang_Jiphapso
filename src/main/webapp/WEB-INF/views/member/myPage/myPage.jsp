@@ -59,37 +59,7 @@
     <button class="mp-tab" data-url="${pageContext.request.contextPath}/coupon/list" onclick="loadMpTab(this)">쿠폰</button>
   </nav>
 
-  <div id="mp-content-area">
-   <table>
-      <tr>
-         <td><img src="/images/myProfile/${myId.m_img}" alt="${myId.m_img}"></td>
-      </tr>
-      <tr>
-         <td>${myId.m_id}</td>
-      </tr>
-      <tr>
-         <td>${myId.m_name}</td>
-      </tr>
-      <tr>
-         <td>${myId.m_email}</td>
-      </tr>
-      <tr>
-         <td>${myId.m_introduce}</td>
-      </tr>
-      <tr>
-         <td><fmt:formatDate value="${myId.m_birth}" pattern="yyyy-MM-dd" /></td>
-      </tr>
-      <tr>
-         <td>SNS 수신 동의 여부: ${myId.m_sns}</td>
-      </tr>
-   </table>
-   <a href="/member/myPage/myProfileUpdateForm">회원 정보 수정</a><br>
-	<a href="/dailycheck">출석체크 페이지</a>
-   <!-- 크리에이터 신청 버튼 자리 --><br>
-	<c:if test="${myId.m_cre_sub == 'F'}">
-		<a href="/creatorSubmit">크리에이터 신청</a>
-	</c:if>
-  </div>
+  <div id="mp-content-area"></div>
 
   <div class="mp-delete-row">
     <a class="mp-delete-link" href="/memberDelete?m_id=${myId.m_id}" onclick="return confirm('정말로 탈퇴하시겠습니까?');">계정 탈퇴</a>
@@ -162,6 +132,11 @@ document.getElementById('mp-content-area')
         // 카테고리 본문만 다시 불러오기
         loadMpContent(url);
     });
+    
+	window.addEventListener('DOMContentLoaded', function () {
+	    const profileUrl = document.querySelector('.mp-tab.active').dataset.url;
+	    loadMpContent(profileUrl);
+	});
 </script>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>

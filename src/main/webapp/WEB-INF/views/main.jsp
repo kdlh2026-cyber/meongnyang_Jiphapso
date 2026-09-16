@@ -39,9 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <%@ include file="hamburger_menu.jsp" %>
 
 <div class="main-header">
-	<br>
-	<br>
-	<br>
+	<br><br><br>
 	<div class="hover-image-box">
 		<img src="/images/main/LOGO_main.png" class="main-header-img origin-img"/>
 		<img src="/images/main/LOGO_main_2.png" class="main-header-img hover-img"/>
@@ -68,6 +66,10 @@ document.addEventListener("DOMContentLoaded", function () {
 	</a>
 </div>
 
+<!-- 콘텐츠 영역 -->
+<!-- 추천글이나 추천상품이랑 다르게 커다랗게 두개 정도만 띄우면 어떨까 싶슴다 -->
+
+
 <!-- 추천 게시글 표시 영역 -->
 <div class="category-box">
 	<h3>추천 게시글</h3>
@@ -78,10 +80,14 @@ document.addEventListener("DOMContentLoaded", function () {
 	    <c:forEach var="cm" items="${recommendContentList}" begin="0" end="7">
 	        <div class="content-item">
 	            <c:if test="${not empty cm.comm_img}">
+	               <a href="/community/commView?comm_no=${cm.comm_no}">
 	                <img src="${cm.comm_img}" width="500" height="300">
+	               </a>
 	            </c:if>
 	            <c:if test="${empty cm.comm_img}">
+	               <a href="/community/commView?comm_no=${cm.comm_no}">
 	            	<img src="/images/main/admin_profile.png" width="500" height="300">
+	               </a>
 	            </c:if>
 	            <div><a href="/community/commView?comm_no=${cm.comm_no}">${cm.comm_title}</a></div>
 	            <div>${cm.comm_writer}</div>
