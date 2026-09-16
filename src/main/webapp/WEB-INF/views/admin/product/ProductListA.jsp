@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <a href="${pageContext.request.contextPath}/cart/list" class="toast-link toast-link-cart">장바구니 보기</a>
     <a href="${pageContext.request.contextPath}/favorite/list" class="toast-link toast-link-fav">관심상품 보기</a>
 </div>
-
+<%@ include file="../../footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // 카테고리 활성화 로직
@@ -373,4 +373,4 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 </script>
 </body>
-
+</html>

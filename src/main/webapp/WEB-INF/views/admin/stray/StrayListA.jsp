@@ -627,5 +627,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="javascript:void(0);" onclick="goPage(${endPage + 1})" class="arrow">&gt;</a>
     </c:if>
 </div>
+<%@ include file="../../footer.jsp" %>
 </body>
 </html>

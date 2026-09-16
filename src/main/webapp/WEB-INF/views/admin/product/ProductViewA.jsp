@@ -408,5 +408,6 @@ function showActionBanner(icon, message, action) {
     <a href="${pageContext.request.contextPath}/cart/list" class="toast-link toast-link-cart">장바구니 보기</a>
     <a href="${pageContext.request.contextPath}/favorite/list" class="toast-link toast-link-fav">관심상품 보기</a>
 </div>
+<%@ include file="../../footer.jsp" %>
 </body>
 </html>
