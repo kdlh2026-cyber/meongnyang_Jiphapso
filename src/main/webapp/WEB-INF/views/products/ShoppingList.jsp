@@ -8,6 +8,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/css/product/shoppinglist.css">
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const product_size = 10; // 스크롤 시 추가로 노출할 개수
+    const sentinel = document.getElementById("scrollSentinel");
+
+    function revealNextBatch() {
+        const hiddenCards = document.querySelectorAll(".product-card.is-hidden");
+        if (hiddenCards.length === 0) {
+            if (observer && sentinel) observer.unobserve(sentinel);
+            return;
+        }
+
+        // 최대 10개씩 숨김 해제
+        const limit = Math.min(product_size, hiddenCards.length);
+        for (let i = 0; i < limit; i++) {
+            hiddenCards[i].classList.remove("is-hidden");
+        }
+    }
+
+    // 바닥 감지 설정
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                revealNextBatch();
+            }
+        });
+    }, {
+        rootMargin: "200px" // 바닥에 닿기 200px 전에 미리 다음 10개를 불러와 부드럽게 연결
+    });
+
+    if (sentinel) {
+        observer.observe(sentinel);
+    }
+});
+</script>
 <c:set var="currentType" value="${empty param.p_type ? '강아지' : param.p_type}" />
 <title>${currentType} ${param.mode} 추천 | 쇼핑리스트</title>
 </head>
@@ -176,10 +211,11 @@
         <span class="product-count">전체 ${fn:length(ShoppingList)}개</span>
     </div>
 
-    <!-- 상품 5열  -->
-    <div class="product-grid">
-        <c:forEach var="list" items="${ShoppingList}">
-            <div class="product-card">
+   <!-- 상품 5열 -->
+    <div class="product-grid" id="productGrid">
+        <c:forEach var="list" items="${ShoppingList}" varStatus="status">
+            <!-- 20개(index 0~19) 초과분은 초기 숨김 처리 -->
+            <div class="product-card ${status.index >= 20 ? 'is-hidden' : ''}">
                 <div class="product-thumb">
                     <a href="/products/ShoppingView?p_no=${list.pno}">
                         <img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(list.omainimg, '%', '%25')}" alt="${list.ptitle}">
@@ -199,6 +235,9 @@
             </div>
         </c:forEach>
     </div>
+    
+    <!-- 스크롤 감지용 센티넬 (바닥 감지 태그) -->
+    <div id="scrollSentinel" style="height: 20px;"></div>
 </div>
 
 <!-- 공용 토스트 안내창 -->

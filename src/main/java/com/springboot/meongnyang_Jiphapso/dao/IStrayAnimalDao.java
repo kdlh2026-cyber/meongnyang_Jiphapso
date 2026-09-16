@@ -18,6 +18,7 @@ public interface IStrayAnimalDao {
 	
 	//상세보기
 	public StrayAnimalDto StrayView(Long stray_no);
+	public List<StrayAnimalDto> StrayRandomView(String stray_category);
 	
 	//등록
 	public int StrayAnimalWrite(StrayAnimalDto stray_dto);

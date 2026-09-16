@@ -51,7 +51,18 @@ function submitFilterForm(page) {
     if (page) {
         document.getElementById('formPage').value = page;
     }
-    document.getElementById('filterForm').submit();
+    
+    const form = document.getElementById('filterForm');
+    const inputs = form.querySelectorAll('input');
+    
+    // 빈 값은 전송 파라미터에서 제외 (URL 정리)
+    inputs.forEach(input => {
+        if (!input.value) {
+            input.disabled = true;
+        }
+    });
+    
+    form.submit();
 }
 
 // 강아지/고양이 탭 선택 (stray_category)
@@ -333,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <body>
 <%@ include file="../../hamburger_menu.jsp" %>
-<form id="filterForm" action="/admin/stray/StrayListA" method="post" style="display:none;">
+<form id="filterForm" action="/admin/stray/StrayListA" method="get" style="display:none;">
     <input type="hidden" name="page" id="formPage" value="${empty currentPage ? 1 : currentPage}">
     <input type="hidden" name="stray_category" id="formStrayCategory" value="${not empty stray_category ? stray_category : (empty param.stray_category ? 'DOG' : param.stray_category)}">
     <input type="hidden" name="stray_name" id="formBreed" value="${not empty stray_name ? stray_name : param.stray_name}">
@@ -353,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- 상단 노란 필터 카드 -->
     <div class="filter-card">
         <img src="/images/stray/menu/cat_n_dog.png" class="character-banner-img" alt="캐릭터">      
-        <!-- 강아지 / 고양이 탭 (두 가지 모델 변수 형태 모두 대응) -->
+        <!-- 강아지 / 고양이 탭 -->
 		<div class="animal-tabs">
 		    <button type="button" 
 		            class="animal-tab ${(searchDto.stray_category == 'DOG') ? 'active' : ''}" 
@@ -508,19 +519,21 @@ document.addEventListener('DOMContentLoaded', () => {
             <c:set var="currentYear" value="<%= java.time.LocalDate.now().getYear() %>" />
             <c:set var="age" value="${currentYear - list.stray_age}" />
             <c:set var="addrParts" value="${fn:split(list.stray_shelter_addr, ' ')}" />
-            <c:url var="imgSrc" value="/uploadImages/${list.stray_img}" />
-
+            
+			<c:set var="cardImg" value="${fn:replace(list.stray_img, '[', '%5B')}" />
+            <c:set var="cardImg" value="${fn:replace(cardImg, ']', '%5D')}" />
+   			
             <div class="stray-card">
                 <div class="card-thumb-wrap">
                     <div class="card-thumb">
 				    <c:choose>
 				        <%-- DB에 아예 없으면 표시 --%>
 				        <c:when test="${empty list.stray_img}">
-				            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='100%25' height='100%25'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23aaa' font-size='14'%3E이미지 준비중%3E%3C/text%3E%3C/svg%3E" alt="준비중">
+				            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='100%25' height='100%25'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23aaa' font-size='14'%3E이미지 준비중%3C/text%3E%3C/svg%3E" alt="준비중">
 				        </c:when>
-				        <%-- on error로 시도 한번해보고 null이면 이미지 없음 출력 --%>
+				        <%-- onerror 처리 및 인코딩된 경로 사용 --%>
 				        <c:otherwise>
-				            <img src="${imgSrc}"
+				            <img src="/uploadImages/${cardImg}"
 				                 alt="${list.stray_name}" 
 				                 loading="lazy"
 				                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 200\' width=\'100%25\' height=\'100%25\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23aaa\' font-size=\'14\'%3E이미지 없음%3C/text%3E%3C/svg%3E';">

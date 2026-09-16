@@ -101,4 +101,8 @@ public interface ICommunityDAO {
     
     // 통계용
     List<CommunityDTO> getCommunityListForStats(@Param("comm_type") String comm_type);
+    
+    // 입양동물 출력
+    List<CommunityDTO> strayContentView(@Param("comm") CommunityDTO comm_dto,
+    		@Param("pet_type") String pet_type);
 }

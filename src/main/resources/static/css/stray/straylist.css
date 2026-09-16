@@ -158,8 +158,8 @@
     width: 100%;
     padding: 6px 0;
     background-color: #fff;
-    border: 1px solid #ff7875;
-    color: #ff4d4f;
+    border: 1px solid #FDA58F;
+    color: #FDA58F;
     border-radius: 8px;
     font-size: 12px;
     font-weight: 600;
@@ -168,7 +168,7 @@
 }
 
 .card-delete-btn:hover {
-    background-color: #ff4d4f;
+    background-color: #FDA58F;
     color: #fff;
 }
 

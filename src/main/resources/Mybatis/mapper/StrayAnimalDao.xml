@@ -68,6 +68,13 @@
 		where stray_no = #{stray_no}
 	</select>
 	
+	<select id="StrayRandomView" resultMap="dc_stray_animalMap">
+		select * from dc_stray_animal
+		where stray_category = #{stray_category}
+		order by DBMS_RANDOM.VALUE
+	    FETCH FIRST 5 ROWS ONLY
+	</select>
+	
 	<delete id="StrayAnimalDelete">
 		delete from dc_stray_animal where stray_no = #{stray_no}
 	</delete>

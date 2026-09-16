@@ -129,8 +129,11 @@ public class ProductController {
 		return "admin/product/ProductUpdateForm";
 	}
 	
-	@RequestMapping("/products/ProductViewA")
+	@RequestMapping("/product/ProductViewA")
 	public String ProductViewA(@RequestParam("p_no") int p_no, Model model) {
+
+		List<CommentDTO> reviewList = cmt_service.selectReviewListByProductNo(p_no);
+		model.addAttribute("reviewList", reviewList);
 		model.addAttribute("ProductView", p_dao.ShoppingView(p_no));
 		return "admin/product/ProductViewA";
 	}

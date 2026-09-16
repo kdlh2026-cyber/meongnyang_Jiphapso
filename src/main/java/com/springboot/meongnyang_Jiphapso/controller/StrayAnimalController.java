@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.meongnyang_Jiphapso.dao.ICommunityDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IStrayAnimalDao;
+import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
 import com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto;
 import com.springboot.meongnyang_Jiphapso.dto.StraySearchDto;
 import com.springboot.meongnyang_Jiphapso.service.StrayService;
@@ -25,6 +27,9 @@ public class StrayAnimalController {
 	IStrayAnimalDao stray_dao;
 	@Autowired
 	private StrayService stray_service;
+	
+	@Autowired
+	ICommunityDAO comm_dao;
 	
 	@RequestMapping("/strayWriteForm")
 	public String strayWriteForm() {
@@ -125,8 +130,24 @@ public class StrayAnimalController {
 	}
 	
 	@RequestMapping("/guest/StrayView")
-	public String StrayView(@RequestParam("stray_no") Long stray_no, Model model) {
-		model.addAttribute("StrayView", stray_dao.StrayView(stray_no));
+	public String StrayView(@RequestParam("stray_no") Long stray_no,
+			CommunityDTO comm_dto,
+			Model model) {
+		StrayAnimalDto strayView = stray_dao.StrayView(stray_no);
+		String stray_category = (strayView != null) ? strayView.getStray_category() : null;
+		String pet_type = "";
+		if(stray_category.equals("DOG")) {
+			pet_type = "강아지";
+		}
+		else if(stray_category.equals("CAT")) {
+			pet_type = "고양이";	
+		}
+		
+		List<CommunityDTO> contentList = comm_dao.strayContentView(comm_dto, pet_type);
+		List<StrayAnimalDto> randomList = stray_dao.StrayRandomView(stray_category);
+		model.addAttribute("ContentList", contentList);
+		model.addAttribute("StrayRandomView", randomList);
+		model.addAttribute("StrayView", strayView);
 		return "guest/StrayView";
 	}
 	
