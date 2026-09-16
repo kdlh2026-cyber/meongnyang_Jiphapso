@@ -13,39 +13,39 @@
 	<form name="memberForm" method="post" action="/memberInsert" enctype="multipart/form-data" onsubmit="return mInsertcheck();" data-loading>
 		<table>
 			<tr>
-				<td>아이디</td>
+				<td><span style="color:#ff0000;">*</span>아이디</td>
 				<td><input type="text" name="m_id"></td>
 			</tr>
 			<tr>
-				<td>비밀번호</td>
+				<td><span style="color:#ff0000;">*</span>비밀번호</td>
 				<td><input type="password" name="m_passwd"></td>
 			</tr>
 			<tr>
-				<td>비밀번호 확인</td>
+				<td><span style="color:#ff0000;">*</span>비밀번호 확인</td>
 				<td><input type="password" name="m_passwd1"></td>
 			</tr>
 			<tr>
-				<td>이름</td>
-				<td><input type="text" name="m_name" placeholder="필수입력"></td>
+				<td><span style="color:#ff0000;">*</span>이름</td>
+				<td><input type="text" name="m_name"></td>
 			</tr>
 			<tr>
-				<td>전화번호</td>
-				<td><input type="text" name="m_tel" placeholder="필수입력"></td>
+				<td><span style="color:#ff0000;">*</span>전화번호</td>
+				<td><input type="text" name="m_tel"></td>
 			</tr>
 			<tr>
-				<td>주소</td>
+				<td><span style="color:#ff0000;">*</span>주소</td>
 				<td>
-					<input type="text" name="m_addr" placeholder="필수입력">
+					<input type="text" name="m_addr" readonly>
 					<button type="button" onclick="goPopup();">주소검색</button>
 				</td>
 			</tr>
 			<tr>
-				<td>상세주소</td>
-				<td><input type="text" name="m_addr_detail" placeholder="필수입력"></td>
+				<td><span style="color:#ff0000;">*</span>상세주소</td>
+				<td><input type="text" name="m_addr_detail"></td>
 			</tr>
 			<tr>
-				<td>우편번호</td>
-				<td><input type="text" name="m_zipno" placeholder="필수입력"></td>
+				<td><span style="color:#ff0000;">*</span>우편번호</td>
+				<td><input type="text" name="m_zipno"></td>
 			</tr>
 			<tr>
 				<td>이메일</td>
@@ -62,6 +62,14 @@
 			<tr>
 				<td>만 14세 이상</td>
 				<td><input type="checkbox" name="m_age_upper"></td>
+			</tr>
+			<tr>
+				<td><span style="color:#ff0000;">*</span>서비스 이용약관 동의 여부</td>
+				<td><input type="checkbox" name="m_ser_agree">(<a href="/guest/etc/ToS">약관 보기</a>)</td>
+			</tr>
+			<tr>
+				<td><span style="color:#ff0000;">*</span>회원 정보 수집 동의 여부</td>
+				<td><input type="checkbox" name="m_pub_agree">(<a href="/guest/etc/privacyPolicy">약관 보기</a>)</td>
 			</tr>
 			<tr>
 				<td>SNS 수신 동의 여부</td>

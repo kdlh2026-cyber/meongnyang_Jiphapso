@@ -7,6 +7,25 @@
 <meta charset="UTF-8">
 <title>멍냥집합소</title>
 <link rel="stylesheet" href="/css/etc/login.css">
+<script>
+function loginCheck(){
+    let m_id = document.getElementById("m_id");
+    let m_passwd = document.getElementById("m_passwd");
+
+    if(!m_id.value.trim()){
+        alert("아이디를 입력하시길 바랍니다.");
+        m_id.focus();
+        return false;
+    }
+    if(!m_passwd.value.trim()){
+        alert("비밀번호를 입력하시길 바랍니다.");
+        m_passwd.focus();
+        return false;
+    }
+
+    return true;
+}
+</script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/loading_animal.jsp" %>
@@ -17,7 +36,7 @@
         <c:if test="${param.error == 'true'}">
         	<p style="color:red;">아이디 또는 비밀번호가 올바르지 않습니다.</p>
    	 	</c:if>
-        <form id="loginForm" method="post" action="${pageContext.request.contextPath}/j_spring_security_check" data-loading>
+        <form id="loginForm" method="post" action="${pageContext.request.contextPath}/j_spring_security_check" onsubmit="return loginCheck();"  data-loading>
             <div class="field">
                 <label for="m_id">아이디</label>
                 <input type="text" id="m_id" name="m_id">
