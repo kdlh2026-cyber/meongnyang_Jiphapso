@@ -297,5 +297,15 @@
 	    SET comm_adpick = DECODE(comm_adpick, 'Y', 'N', 'Y') 
 	    WHERE comm_no = #{comm_no}
 	</update>
+	
+	<select id="strayContentView" resultType="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO">
+	    select * from dc_community
+	    where comm_type = '콘텐츠' 
+    <if test="pet_type != null and pet_type != ''">
+        and comm_title like '%' || #{pet_type} || '%'
+    </if>
+	    order by DBMS_RANDOM.VALUE
+	    FETCH FIRST 3 ROWS ONLY
+	</select>
 
 </mapper>
