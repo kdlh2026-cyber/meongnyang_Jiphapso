@@ -35,6 +35,12 @@ public interface ICommunityDAO {
 							 @Param("comm_category") String comm_category);
 	
 	
+	// 검색 및 필터링된 조건에 맞는 전체 게시글 개수 조회
+    public int getSearchTotalCount(@Param("keyword") String keyword,
+		                            @Param("comm_type") String comm_type,
+		                            @Param("comm_pet_type") String comm_pet_type,
+		                            @Param("comm_category") String comm_category);
+	
 	// 게시글 상세보기 조회(select)
 	public CommunityDTO CommunityView(int comm_no);
 	

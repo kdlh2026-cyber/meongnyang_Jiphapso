@@ -6,211 +6,187 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>커뮤니티 게시글(포스트, Q&A, 라운지)</title>
+<title>커뮤니티 게시글 수정</title>
 <link rel="stylesheet" href="/css/community/commWriteForm.css">
-<style>
-.form-row-top {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-.form-row-top > div {
-    flex: 1;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s ease;
-    background: #ffffff; /* 기본은 흰색 */
-}
-
-/* 🔒 1단계도 아직 안 탔거나, 다음 단계가 잠겼을 때의 스타일 */
-.step-locked {
-    background: #f1f3f5 !important;
-    opacity: 0.4;
-    pointer-events: none;
-    box-shadow: none !important;
-}
-
-/* ✨ 현재 집중해서 입력해야 하는 활성 단계 (색상 + 볼륨감) */
-.step-active {
-    background: #fff5f3 !important; /* 은은하고 부드러운 피치/오렌지빛 배경색 */
-    opacity: 1;
-    pointer-events: auto;
-    border: 2px solid #ff6f61 !important; /* 포인트 테두리 */
-    box-shadow: 0 8px 20px rgba(255, 111, 97, 0.15); /* 입체적인 볼륨감(그림자) */
-}
-
-/* ✔️ 완료된 이전 단계 (흰색 배경으로 돌아가 깔끔하게 유지) */
-.step-completed {
-    background: #ffffff !important;
-    opacity: 1;
-    pointer-events: auto;
-    border: 1px solid #d1d5db !important;
-    box-shadow: none !important;
-}
-
-.form-row-bottom {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-.form-row-bottom > div {
-    flex: 1;
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    transition: all 0.3s ease;
-}
-.title input, .body_content textarea {
-    width: 100%;
-    box-sizing: border-box;
-}
-.submit-btn-area {
-    text-align: center;
-    margin-top: 30px;
-}
-.submit-btn-area input[type="submit"] {
-    width: 100%;
-    padding: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    background-color: #ff6f61;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(255, 111, 97, 0.3);
-}
-.submit-btn-area input[type="submit"]:hover {
-    background-color: #e05b4c;
-}
-.catgogry_box, .pet_choice_box {
-    transition: border-color 0.3s ease, background-color 0.3s ease;
-}
-</style>
 </head>
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
-	<div style="max-width: 900px; margin: 0 auto; padding: 20px;">
-		<div><h1>게시글 수정하기</h1></div>
-		<div style="margin-bottom: 20px; color: #666;">반려동물에 대한 궁금증을 가장 빠르게 답변 받아보세요!</div>
+	<div class="write_main_container">
+		<!-- 최상단 타이틀 영역 -->
+		<div class="write_top_header">
+			<div class="write_title_area">
+				<h1 class="write_main_title">게시글 수정하기</h1>
+				<span class="write_sub_desc">반려동물에 대한 궁금증을 가장 빠르게 답변 받아보세요!</span>
+			</div>
+		</div>
 		
 		<div>
-			<form name="communityUpdateForm" method="post" action="/community/update" enctype="multipart/form-data">
+			<form name="communityUpdateForm" method="post" action="/community/update" enctype="multipart/form-data" onsubmit="return validateForm()">
 				<input type="hidden" name="comm_no" value="${update.comm_no}">
-				<!-- [1단계] 게시판 선택 -->
-				<div class="form-row-top">
-					<div class="catgogry_box step-active" id="step1Box">
-					    <div class="category_name" style="font-weight: bold; margin-bottom: 8px; color: #ff6f61;">Step 1. 게시판 선택</div>
-					    <input type="radio" name="comm_type" value="Q&A" onclick="checkStep1()"> Q&amp;A |
-					    <input type="radio" name="comm_type" value="라운지" onclick="checkStep1()"> 라운지 |
-					
-					    <sec:authorize access="hasAnyRole('CREATOR', 'ADMIN')">
-					        <input type="radio" name="comm_type" value="콘텐츠" onclick="checkStep1()"> 콘텐츠
-					    </sec:authorize>
-					
-					    <sec:authorize access="!hasAnyRole('CREATOR', 'ADMIN')">
-					        <input type="radio" name="comm_type" value="콘텐츠" disabled> 콘텐츠
-					        <br><span style="font-size: 11px; color: #888;">(크리에이터 전용)</span>
-					    </sec:authorize>
-					</div>
-					
-					<!-- [2단계] 동물 종류 및 품종 선택 (처음엔 잠김) -->
-					<div class="pet_choice_box step-locked" id="step2Box">
-						<div class="category_name" style="font-weight: bold; margin-bottom: 8px; color: #ff6f61;">Step 2. 동물 종류 및 품종 선택</div> 
-						<div style="margin-bottom: 8px;">
-							<input type="radio" name="comm_pet_type" value="dog" onclick="toggleBreed(); checkStep2();"> 강아지
-							<input type="radio" name="comm_pet_type" value="cat" onclick="toggleBreed(); checkStep2();"> 고양이
-							<input type="radio" name="comm_pet_type" value="small" onclick="toggleBreed(); checkStep2();"> 소동물
-							<input type="radio" name="comm_pet_type" value="etc" onclick="toggleBreed(); checkStep2();"> 기타
-						</div>
-						
-						<div id="breedWrapper" style="display: none;">
-							<select name="comm_breed" id="dogBreedSelect" style="width: 100%; padding: 5px; display: none;" onchange="checkStep2()">
-								<option value="">강아지 품종 선택</option>
-								<c:forEach var="breed" items="${dogBreed}">
-									<option value="${breed.breed_name}">${breed.breed_name}</option>
-								</c:forEach>
-							</select>
-
-							<select name="comm_breed" id="catBreedSelect" style="width: 100%; padding: 5px; display: none;" disabled onchange="checkStep2()">
-								<option value="">고양이 품종 선택</option>
-								<c:forEach var="breed" items="${catBreed}">
-									<option value="${breed.breed_name}">${breed.breed_name}</option>
-								</c:forEach>
-							</select>
-						</div>
-					</div>
-					
-										<!-- [2단계-B] 콘텐츠 카테고리 선택 (콘텐츠 전용, 처음엔 숨김) -->
-					<div class="pet_choice_box step-locked" id="step2ContentBox" style="display: none;">
-					    <div class="category_name" style="font-weight: bold; margin-bottom: 8px; color: #ff6f61;">Step 2. 콘텐츠 카테고리 선택</div>
-					    <div>
-					        <input type="radio" name="comm_category" value="강아지연구소" onclick="checkStep2Content()"> 강아지연구소
-					        <input type="radio" name="comm_category" value="고양이연구소" onclick="checkStep2Content()"> 고양이연구소
-					        <input type="radio" name="comm_category" value="제품연구소" onclick="checkStep2Content()"> 제품연구소
-					        <input type="radio" name="comm_category" value="제보" onclick="checkStep2Content()"> 제보
-					        <input type="radio" name="comm_category" value="뉴스/브랜드" onclick="checkStep2Content()"> 뉴스/브랜드
-					    </div>
-					</div>
-				</div>
 				
-				<!-- [3단계] 본문 작성 및 첨부 영역 (처음엔 잠김) -->
-				<div id="step3Box" class="step-locked" style="padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; transition: all 0.3s ease;">
-					<div style="font-weight: bold; margin-bottom: 12px; color: #ff6f61;">Step 3. 내용 작성 및 첨부</div>
+				<div class="community_write_form_layout">
 					
-					<!-- [제목 영역] -->
-					<div class="title" style="margin-bottom: 15px;">
-						<input type="text" name="comm_title" value="${update.comm_title}" style="padding: 12px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px;">
-					</div>	
-					<div class="explain" style="font-size: 12px; color: #777; margin-bottom: 20px;">
-						<span class="sub_explain">! 질병 관련 질문 시 지역명을 함께 적어주시면 수의사분들의 빠른 답변을 받아보실 수 있습니다.</span>
-						(예: [부산 서면] 슬개골 탈구 관련 병원 안내 부탁드려요.)
-					</div>
-					
-					<!-- [내용 입력 영역] -->
-					<div class="body_content" style="margin-bottom: 20px;">
-						<textarea rows="15" name="comm_content" style="padding: 12px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; resize: vertical;">${update.comm_content}</textarea>
-					</div>
-					
-					<!-- [태그 / 사진 / 동영상 하단 배치] -->
-					<div class="form-row-bottom">
-						<!-- 태그 입력 -->
-						<div class="tag_section">
-							<div class="category_name" style="font-weight: bold; margin-bottom: 8px;">태그 입력</div> 
-							<div class="tag_box" id="tag_box" style="display: flex; gap: 5px; margin-bottom: 8px;">
-								<input type="text" id="tagInput" placeholder="# 태그 입력 후 enter" style="flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px;"
-								       onkeydown="if(event.key === 'Enter'){ event.preventDefault(); clickAddTag(); }">
-								<button type="button" class="tag-add-btn" onclick="clickAddTag()" style="padding: 6px 10px; cursor: pointer;">추가</button>
-							</div>
-							<div class="tag_list_area" id="tagListArea" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
-							<input type="hidden" name="comm_tag" id="commTagHidden">
+					<!-- [왼쪽 영역] Step 1 & Step 2 세로 배치 -->
+					<div class="form-column-left">
+						<!-- [1단계] 게시판 선택 (카드형 라디오 적용) -->
+						<div class="catgogry_box step-active" id="step1Box">
+						    <div class="category_name step_title">Step 1. 게시판 선택</div>
+						    <div class="card-radio-group">
+							    <label class="card-radio-item">
+							        <input type="radio" name="comm_type" value="Q&A" <c:if test="${update.comm_type eq 'Q&A'}">checked</c:if> onclick="checkStep1()">
+							        <span class="card-label">Q&amp;A</span>
+							    </label>
+							    <label class="card-radio-item">
+							        <input type="radio" name="comm_type" value="라운지" <c:if test="${update.comm_type eq '라운지'}">checked</c:if> onclick="checkStep1()">
+							        <span class="card-label">라운지</span>
+							    </label>
+								
+							    <sec:authorize access="hasAnyRole('CREATOR', 'ADMIN')">
+								    <label class="card-radio-item">
+								        <input type="radio" name="comm_type" value="콘텐츠" <c:if test="${update.comm_type eq '콘텐츠'}">checked</c:if> onclick="checkStep1()">
+								        <span class="card-label">콘텐츠</span>
+								    </label>
+							    </sec:authorize>
+							
+							    <sec:authorize access="!hasAnyRole('CREATOR', 'ADMIN')">
+								    <label class="card-radio-item" style="opacity: 0.5; cursor: not-allowed;">
+								        <input type="radio" name="comm_type" value="콘텐츠" disabled>
+								        <span class="card-label">콘텐츠 <span class="creator_notice" style="margin:0;">(크리에이터 전용)</span></span>
+								    </label>
+							    </sec:authorize>
+						    </div>
 						</div>
 						
-						<!-- 사진 첨부 -->
-						<div class="file_section_img">
-							<div class="category_name" style="font-weight: bold; margin-bottom: 8px;">사진 첨부</div>
-							<label for="uploadImages" class="file_custom_btn" style="display: inline-block; padding: 8px 12px; background: #eee; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; margin-bottom: 5px;">사진 선택</label>
-							<input type="file" id="uploadImages" name="uploadImages" class="file_input_hidden" style="display:none;" multiple accept="image/*">
-							<div class="file_guide" style="font-size: 11px; color: #666;">최대 10장 · 20MB 이하</div>
+						<!-- [2단계] 동물 종류 및 품종 선택 (카드형 라디오 적용) -->
+						<div class="pet_choice_box step-locked" id="step2Box">
+							<div class="category_name step_title">Step 2. 동물 종류 선택</div> 
+							<div class="card-radio-group card-radio-grid">
+								<label class="card-radio-item">
+									<input type="radio" name="comm_pet_type" value="dog" <c:if test="${update.comm_pet_type eq 'dog'}">checked</c:if> onclick="toggleBreed(); checkStep2();">
+									<span class="card-label">🐶 강아지</span>
+								</label>
+								<label class="card-radio-item">
+									<input type="radio" name="comm_pet_type" value="cat" <c:if test="${update.comm_pet_type eq 'cat'}">checked</c:if> onclick="toggleBreed(); checkStep2();">
+									<span class="card-label">🐱 고양이</span>
+								</label>
+								<label class="card-radio-item">
+									<input type="radio" name="comm_pet_type" value="small" <c:if test="${update.comm_pet_type eq 'small'}">checked</c:if> onclick="toggleBreed(); checkStep2();">
+									<span class="card-label">🐹 소동물</span>
+								</label>
+								<label class="card-radio-item">
+									<input type="radio" name="comm_pet_type" value="etc" <c:if test="${update.comm_pet_type eq 'etc'}">checked</c:if> onclick="toggleBreed(); checkStep2();">
+									<span class="card-label">🐾 기타</span>
+								</label>
+							</div>
+							
+							<div id="breedWrapper" class="breed_wrapper">
+								<select name="comm_breed" id="dogBreedSelect" class="breed_select" onchange="checkStep2()">
+									<option value="">강아지 품종 선택</option>
+									<c:forEach var="breed" items="${dogBreed}">
+										<option value="${breed.breed_name}" <c:if test="${update.comm_breed eq breed.breed_name}">selected</c:if>>${breed.breed_name}</option>
+									</c:forEach>
+								</select>
+
+								<select name="comm_breed" id="catBreedSelect" class="breed_select" disabled onchange="checkStep2()">
+									<option value="">고양이 품종 선택</option>
+									<c:forEach var="breed" items="${catBreed}">
+										<option value="${breed.breed_name}" <c:if test="${update.comm_breed eq breed.breed_name}">selected</c:if>>${breed.breed_name}</option>
+									</c:forEach>
+								</select>
+							</div>
 						</div>
 						
-						<!-- 동영상 첨부 -->
-						<div class="file_section_video">
-							<div class="category_name" style="font-weight: bold; margin-bottom: 8px;">동영상 첨부</div>
-							<label for="uploadVideo" class="file_custom_btn" style="display: inline-block; padding: 8px 12px; background: #eee; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; margin-bottom: 5px;">동영상 선택</label>
-							<input type="file" id="uploadVideo" name="uploadVideo" class="file_input_hidden" style="display:none;" multiple accept="video/*">
-							<div class="file_guide" style="font-size: 11px; color: #666;">
-								최대 65MB · 1개
+						<!-- [2단계-B] 콘텐츠 카테고리 선택 (카드형 라디오 적용 - 띄어쓰기 반영) -->
+						<div class="pet_choice_box step-locked" id="step2ContentBox" style="display: none;">
+						    <div class="category_name step_title">Step 2. 콘텐츠 카테고리</div>
+						    <div class="card-radio-group">
+						        <label class="card-radio-item">
+						            <input type="radio" name="comm_category" value="강아지 연구소" <c:if test="${update.comm_category eq '강아지 연구소'}">checked</c:if> onclick="changeCategorySub(); checkStep2Content();">
+						            <span class="card-label">강아지 연구소</span>
+						        </label>
+						        <label class="card-radio-item">
+						            <input type="radio" name="comm_category" value="고양이 연구소" <c:if test="${update.comm_category eq '고양이 연구소'}">checked</c:if> onclick="changeCategorySub(); checkStep2Content();">
+						            <span class="card-label">고양이 연구소</span>
+						        </label>
+						        <label class="card-radio-item">
+						            <input type="radio" name="comm_category" value="제품 연구소" <c:if test="${update.comm_category eq '제품 연구소'}">checked</c:if> onclick="changeCategorySub(); checkStep2Content();">
+						            <span class="card-label">제품 연구소</span>
+						        </label>
+						        <label class="card-radio-item">
+						            <input type="radio" name="comm_category" value="제보" <c:if test="${update.comm_category eq '제보'}">checked</c:if> onclick="changeCategorySub(); checkStep2Content();">
+						            <span class="card-label">제보</span>
+						        </label>
+						        <label class="card-radio-item">
+						            <input type="radio" name="comm_category" value="뉴스/브랜드" <c:if test="${update.comm_category eq '뉴스/브랜드'}">checked</c:if> onclick="changeCategorySub(); checkStep2Content();">
+						            <span class="card-label">뉴스/브랜드</span>
+						        </label>
+						    </div>
+						    
+						    <!-- 하위 카테고리 영역 -->
+						    <div id="sub-category-box" class="sub_category_box">
+						        <strong class="sub_category_label">상세 분야:</strong>
+						        <div id="sub-category-options" class="card-radio-group"></div>
+						    </div>
+						</div>
+					</div>
+					
+					<!-- [오른쪽 영역] Step 3 본문 작성 및 첨부 영역 -->
+					<div class="form-column-right">
+						<div id="step3Box" class="step-locked step3_box_container">
+							<div class="step_title">Step 3. 내용 작성 및 첨부</div>
+							
+							<!-- [제목 영역] -->
+							<div class="title">
+								<input type="text" name="comm_title" value="${update.comm_title}" placeholder="제목을 입력해주세요">
+							</div>	
+							<div class="explain">
+								<span class="sub_explain">! 질병 관련 질문 시 지역명을 함께 적어주시면 수의사분들의 빠른 답변을 받아보실 수 있습니다.</span>
+								(예: [부산 서면] 슬개골 탈구 관련 병원 안내 부탁드려요.)
+							</div>
+							
+							<!-- [내용 입력 영역] -->
+							<div class="body_content">
+								<textarea rows="15" name="comm_content" placeholder="5자 이상의 질문 내용을 입력해주세요.">${update.comm_content}</textarea>
+							</div>
+							
+							<!-- [태그 / 사진 / 동영상 하단 배치] -->
+							<div class="form-row-bottom">
+								<!-- 태그 입력 -->
+								<div class="tag_section">
+									<div class="category_name tag_section_title">태그 입력</div> 
+									<div class="tag_box" id="tag_box">
+										<input type="text" id="tagInput" placeholder="# 태그 입력 후 enter"
+										       onkeydown="if(event.key === 'Enter'){ event.preventDefault(); clickAddTag(); }">
+										<button type="button" class="tag-add-btn" onclick="clickAddTag()">추가</button>
+									</div>
+									<div class="tag-list_area" id="tagListArea"></div>
+									<input type="hidden" name="comm_tag" id="commTagHidden" value="${update.comm_tag}">
+								</div>
+								
+								<!-- 사진 첨부 -->
+								<div class="file_section_img">
+									<div class="category_name file_section_title">사진 첨부</div>
+									<label for="uploadImages" class="file_custom_btn">사진 선택</label>
+									<input type="file" id="uploadImages" name="uploadImages" class="file_input_hidden" multiple accept="image/*">
+									<div class="file_guide">최대 10장 · 20MB 이하</div>
+								</div>
+								
+								<!-- 동영상 첨부 -->
+								<div class="file_section_video">
+									<div class="category_name file_section_title">동영상 첨부</div>
+									<label for="uploadVideo" class="file_custom_btn">동영상 선택</label>
+									<input type="file" id="uploadVideo" name="uploadVideo" class="file_input_hidden" multiple accept="video/*">
+									<div class="file_guide">최대 65MB · 1개</div>
+								</div>
+							</div>
+							
+							<!-- [수정 완료 버튼] -->
+							<div class="submit-btn-area">
+								<input type="submit" value="수정 완료">
 							</div>
 						</div>
 					</div>
 					
-					<!-- [질문 등록 버튼] -->
-					<div class="submit-btn-area">
-						<input type="submit" value="질문 등록">
-					</div>
 				</div>
 			</form>
 		</div>
@@ -218,9 +194,26 @@
 	<hr>
 <%@ include file="../footer.jsp" %>
 
-<!-- 자바스크립트 단계별 스타일 전환 제어 로직 -->
+<!-- 자바스크립트 제어 로직 -->
 <script>
 window.onload = function(){
+    // 기존 등록된 태그 문자열이 있다면 파싱하여 배열에 담기
+    let initialTagStr = "${update.comm_tag}";
+    if(initialTagStr) {
+        let tagArray = initialTagStr.split(',');
+        tagArray.forEach(function(t){
+            if(t.trim() !== '') {
+                tags.push(t.trim());
+            }
+        });
+        renderTags();
+    }
+
+    // 수정 폼 진입 시 기존 선택된 값 기준으로 단계를 바인딩하기 위해 토글 실행
+    toggleBreed();
+    if(document.querySelector('input[name="comm_category"]:checked')) {
+        changeCategorySub();
+    }
     checkStep1();
 };
 
@@ -230,8 +223,10 @@ function checkStep1() {
     const step2Box = document.getElementById('step2Box');
     const step2ContentBox = document.getElementById('step2ContentBox');
 
+    const subBox = document.getElementById('sub-category-box');
+    const subOptions = document.getElementById('sub-category-options');
+    
     if (selectedCommType) {
-        // Step1은 "선택은 했지만 아직 완료 확정 아님" 상태 -> 중립 스타일로 (active 강조 제거)
         step1Box.className = "catgogry_box";
 
         if (selectedCommType.value === '콘텐츠') {
@@ -243,10 +238,6 @@ function checkStep1() {
             step2ContentBox.classList.remove('step-locked');
             step2ContentBox.classList.add('step-active');
 
-            document.querySelectorAll('input[name="comm_pet_type"]').forEach(el => el.checked = false);
-            document.querySelectorAll('select[name="comm_breed"]').forEach(el => el.selectedIndex = 0);
-            document.querySelectorAll('input[name="comm_category"]').forEach(el => el.checked = false);
-
             checkStep2Content();
         } else {
             step2ContentBox.style.display = 'none';
@@ -257,16 +248,10 @@ function checkStep1() {
             step2Box.classList.remove('step-locked');
             step2Box.classList.add('step-active');
 
-            document.querySelectorAll('input[name="comm_pet_type"]').forEach(el => el.checked = false);
-            document.querySelectorAll('select[name="comm_breed"]').forEach(el => el.selectedIndex = 0);
-            document.getElementById('breedWrapper').style.display = 'none';
-            document.querySelectorAll('input[name="comm_category"]').forEach(el => el.checked = false);
-
             checkStep2();
         }
     } else {
         step1Box.className = "catgogry_box step-active";
-
         step2Box.classList.add('step-locked');
         step2Box.classList.remove('step-active');
         step2ContentBox.classList.add('step-locked');
@@ -296,16 +281,13 @@ function checkStep2() {
     }
 
     if (selectedPetType && isBreedValid) {
-        // Step2 완료 -> 그제서야 Step1도 완료 색상 확정
         step1Box.className = "catgogry_box step-completed";
         step2Box.className = "pet_choice_box step-completed";
 
         step3Box.classList.remove('step-locked');
         step3Box.classList.add('step-active');
     } else {
-        // Step2 미완료 -> Step1은 중립 상태 유지 (active 아님), Step2만 강조
         step1Box.className = "catgogry_box";
-
         if (!step2Box.classList.contains('step-locked')) {
             step2Box.className = "pet_choice_box step-active";
         }
@@ -314,13 +296,66 @@ function checkStep2() {
     }
 }
 
+function changeCategorySub() {
+    const selectedCategory = document.querySelector('input[name="comm_category"]:checked');
+    const subBox = document.getElementById('sub-category-box');
+    const subOptions = document.getElementById('sub-category-options');
+    
+    // 이전에 선택된 상세 분야 값을 기억하기 위함
+    const currentDetailVal = "${update.comm_detail}";
+    subOptions.innerHTML = '';
+
+    if (!selectedCategory) {
+        subBox.style.display = 'none';
+        return;
+    }
+
+    const categoryVal = selectedCategory.value;
+    let subList = [];
+
+    if (categoryVal === '강아지 연구소') {
+        subList = ['강아지 건강', '강아지 음식', '강아지 연구소', '강아지 제품', '강아지 데일리케어', '강아지 행동', '강아지 질병사전', '견종백과', '강아지 훈련'];
+	} else if (categoryVal === '고양이 연구소') {
+	    subList = ['고양이 음식', '고양이 식생활', '고양이 연구소', '고양이 제품', '고양이 데일리케어', '고양이 행동', '고양이 질병사전', '묘종백과', '고양이 건강'];
+	} else if (categoryVal === '제품 연구소') {
+	    subList = ['사료/간식', '용품추천', '리뷰/체험단'];
+	} else if (categoryVal === '뉴스/브랜드') {
+	    subList = ['뉴스', '브랜드 스토리'];
+	} else {
+	    subList = [];
+	}
+
+    if (subList.length > 0) {
+        subList.forEach(function(item) {
+            let isChecked = (item === currentDetailVal) ? 'checked' : '';
+            let radioHtml = '<label class="card-radio-item">' +
+                            '<input type="radio" name="comm_detail" value="' + item + '" ' + isChecked + ' onclick="checkStep2Content()"> ' + 
+                            '<span class="card-label">' + item + '</span></label>';
+            subOptions.insertAdjacentHTML('beforeend', radioHtml);
+        });
+        subBox.style.display = 'block';
+    } else {
+        subBox.style.display = 'none';
+    }
+}
+
 function checkStep2Content() {
     const selectedCategory = document.querySelector('input[name="comm_category"]:checked');
     const step1Box = document.getElementById('step1Box');
     const step2ContentBox = document.getElementById('step2ContentBox');
     const step3Box = document.getElementById('step3Box');
+    
+    let isSubValid = true;
+    const subBox = document.getElementById('sub-category-box');
+    
+    if (subBox.style.display !== 'none') {
+        const selectedSub = document.querySelector('input[name="comm_detail"]:checked');
+        if (!selectedSub) {
+            isSubValid = false;
+        }
+    }
 
-    if (selectedCategory) {
+    if (selectedCategory && isSubValid) {
         step1Box.className = "catgogry_box step-completed";
         step2ContentBox.className = "pet_choice_box step-completed";
 
@@ -328,7 +363,6 @@ function checkStep2Content() {
         step3Box.classList.add('step-active');
     } else {
         step1Box.className = "catgogry_box";
-
         if (!step2ContentBox.classList.contains('step-locked')) {
             step2ContentBox.className = "pet_choice_box step-active";
         }
@@ -375,13 +409,11 @@ function clickAddTag() {
         if (!val.startsWith('#')) {
             val = '#' + val;
         }
-        
         if (tags.includes(val)) {
             alert('이미 추가된 태그입니다.');
             tagInput.value = '';
             return;
         }
-        
         tags.push(val);
         renderTags();
         tagInput.value = '';
@@ -398,18 +430,12 @@ function renderTags() {
     const commTagHidden = document.getElementById('commTagHidden');
 
     tagListArea.innerHTML = '';
-
     tags.forEach((tag, index) => {
         const tagItem = document.createElement('div');
         tagItem.className = 'tag-item';
-        tagItem.style.background = '#ffeb3b';
-        tagItem.style.padding = '2px 6px';
-        tagItem.style.borderRadius = '4px';
-        tagItem.style.fontSize = '12px';
-        tagItem.innerHTML = tag + ' <span class="tag-close" style="cursor:pointer; font-weight:bold;" onclick="removeTag(' + index + ')">&times;</span>';
+        tagItem.innerHTML = tag + ' <span class="tag-close" onclick="removeTag(' + index + ')">&times;</span>';
         tagListArea.appendChild(tagItem);
     });
-
     commTagHidden.value = tags.join(',');
 }
 
@@ -419,7 +445,6 @@ document.getElementById('uploadImages').addEventListener('change', function(e){
 	for(const file of e.target.files){
 		selectedFiles.push(file);
 	}
-	
 	const dataTransfer = new DataTransfer();
 	selectedFiles.forEach(file => dataTransfer.items.add(file));
 	e.target.files = dataTransfer.files;
@@ -431,6 +456,35 @@ function validateForm() {
         alert("게시판을 선택해주세요.");
         return false;
     }
+
+    if (selectedCommType.value === '콘텐츠') {
+        const selectedCategory = document.querySelector('input[name="comm_category"]:checked');
+        if (!selectedCategory) {
+            alert("콘텐츠 카테고리를 선택해주세요.");
+            return false;
+        }
+    } else {
+        const selectedPetType = document.querySelector('input[name="comm_pet_type"]:checked');
+        if (!selectedPetType) {
+            alert("동물 종류를 선택해주세요.");
+            return false;
+        }
+    }
+
+    const titleInput = document.querySelector('input[name="comm_title"]');
+    if (!titleInput.value.trim()) {
+        alert("제목을 입력해주세요.");
+        titleInput.focus();
+        return false;
+    }
+
+    const contentInput = document.querySelector('textarea[name="comm_content"]');
+    if (contentInput.value.trim().length < 5) {
+        alert("내용을 5자 이상 입력해주세요.");
+        contentInput.focus();
+        return false;
+    }
+
     return true;
 }
 </script>

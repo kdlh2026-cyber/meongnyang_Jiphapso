@@ -169,6 +169,11 @@ public class CommunityService {
 		return dao.getTotalCount(comm_type, comm_pet_type, comm_category);
 	}
 	
+	
+	public int getSearchTotalCount(String keyword, String comm_type, String comm_pet_type, String comm_category) {
+	    return dao.getSearchTotalCount(keyword, comm_type, comm_pet_type, comm_category);
+	}
+	
 	public CommunityDTO viewList(int comm_no) {
 		return dao.CommunityView(comm_no);
 	}
