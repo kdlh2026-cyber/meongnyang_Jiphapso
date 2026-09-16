@@ -8,12 +8,15 @@ import org.apache.ibatis.annotations.Param;
 
 import com.springboot.meongnyang_Jiphapso.dto.CommImageDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
+import com.springboot.meongnyang_Jiphapso.dto.CommunityRecommendDTO;
 
 @Mapper
 public interface ICommunityDAO {
 	// 게시글 전체 조회(select)
 	public List<CommunityDTO> CommunityAllList();
 
+	// 메인 추천 게시글 상위 8개 조회
+    public List<CommunityDTO> recommendContentList();
 	
 	// 목록에서 게시글 필터(카테고리와 펫 타입)하여 조회(select)
 	public List<CommunityDTO> CommunitySelectList(@Param("comm_type") String comm_type,
@@ -92,6 +95,9 @@ public interface ICommunityDAO {
     
     // 관리자 픽
     public int updateAdPick(int comm_no);
+    
+    // 관리자 게시글 관리 접속시(최적화)
+    public List<Map<String, Object>> getAllCategoryStats();
     
     // 통계용
     List<CommunityDTO> getCommunityListForStats(@Param("comm_type") String comm_type);

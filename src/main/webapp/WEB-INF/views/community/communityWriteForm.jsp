@@ -295,10 +295,10 @@ function checkStep2() {
 
     if (selectedPetType) {
         const typeVal = selectedPetType.value;
-        if (typeVal === 'dog') {
+        if (typeVal === '강아지') {
             const dogSelect = document.getElementById('dogBreedSelect');
             if (dogSelect.value === "") isBreedValid = false;
-        } else if (typeVal === 'cat') {
+        } else if (typeVal === '고양이') {
             const catSelect = document.getElementById('catBreedSelect');
             if (catSelect.value === "") isBreedValid = false;
         }
@@ -410,13 +410,13 @@ function toggleBreed(){
     const dogSelect = document.getElementById('dogBreedSelect');
     const catSelect = document.getElementById('catBreedSelect');
 
-    if(selectedType === 'dog'){
+    if(selectedType === '강아지'){
         breedWrapper.style.display = 'block';
         dogSelect.style.display = 'inline-block';
         dogSelect.disabled = false;
         catSelect.style.display = 'none';
         catSelect.disabled = true;
-    } else if(selectedType === 'cat'){
+    } else if(selectedType === '고양이'){
         breedWrapper.style.display = 'block';
         catSelect.style.display = 'inline-block';
         catSelect.disabled = false;

@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	    <c:forEach var="cm" items="${recommendContentList}" begin="0" end="7">
 	        <div class="content-item">
 	            <c:if test="${not empty cm.comm_img}">
-	                <img src="${board.comm_img}" width="500" height="300">
+	                <img src="${cm.comm_img}" width="500" height="300">
 	            </c:if>
 	            <c:if test="${empty cm.comm_img}">
 	            	<img src="/images/main/admin_profile.png" width="500" height="300">

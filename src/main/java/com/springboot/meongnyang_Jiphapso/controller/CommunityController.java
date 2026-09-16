@@ -24,12 +24,12 @@ import com.springboot.meongnyang_Jiphapso.dao.ICommunityDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
+import com.springboot.meongnyang_Jiphapso.dto.CommunityRecommendDTO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.service.BookMarkService;
 import com.springboot.meongnyang_Jiphapso.service.CommentService;
 import com.springboot.meongnyang_Jiphapso.service.CommunityService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -131,14 +131,16 @@ public class CommunityController {
 	// 게시글 목록으로 이동
 	@RequestMapping("/community/commList") 
 	public String commList(@RequestParam(value = "comm_type", required = false) String comm_type,
+							@RequestParam(value = "comm_no", required = false) Integer comm_no,
 					       @RequestParam(value = "comm_pet_type", required = false) String comm_pet_type,
 					       @RequestParam(value = "comm_category", required = false) String comm_category,
 					       @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
 					       @RequestParam(value = "page", defaultValue = "1") int page,
 					       Model model) {
 		
-	    // 1. 한 페이지에 보여줄 게시글 개수
+	    // 1. 한 페이지에 보여줄 게시글 개수 및 블록 크기
 	    int pageSize = 10; 
+	    int blockSize = 10; // ★ 10단위 블록 크기
 	    
 	    // 2. 페이징 계산을 위한 시작/끝 행 번호 구하기 (오라클 ROWNUM 기준 예시)
 	    int startRow = (page - 1) * pageSize + 1;
@@ -147,14 +149,29 @@ public class CommunityController {
 	    // 3. 목록 조회 (파라미터에 페이징 정보 추가 전달)
 	    List<CommunityDTO> list = com_service.selectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
 	    
-	    // 4. 전체 게시글 개수 구하기 (페이징 바를 그리기 위해 필요)
+	    // 4. 전체 게시글 개수 구하기 및 총 페이지 수 계산
 	    int totalCount = com_service.getTotalCount(comm_type, comm_pet_type, comm_category);
 	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    if (totalPages == 0) totalPages = 1; // 게시글이 0개일 때 1페이지로 설정
+
+	    // 5. ★ 10단위 블록 페이징 계산 로직 추가
+	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
+	    int endPage = startPage + blockSize - 1;
 	    
+	    // 계산된 endPage가 실제 총 페이지 수보다 크면 보정
+	    if (endPage > totalPages) {
+	        endPage = totalPages;
+	    }
+	    
+	    // 6. 모델에 데이터 담기
 	    model.addAttribute("list", list);
 	    model.addAttribute("pageNum", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("totalCount", totalCount);
+	    
+	    // ★ JSP에서 페이징 바를 그리기 위해 필수적인 속성 추가
+	    model.addAttribute("startPage", startPage);
+	    model.addAttribute("endPage", endPage);
 	    
 	    return "community/commList";
 	}
@@ -165,8 +182,7 @@ public class CommunityController {
 	public List<Map<String,String>> autocomplete(@RequestParam("keyword") String keyword) throws Exception{
 		return com_service.autocomplete(keyword);
 	}
-	
-	
+
 	// 서치 리스트 불러오기
 	@RequestMapping("/community/search")
 	public String search(@RequestParam("keyword") String keyword,
@@ -176,6 +192,38 @@ public class CommunityController {
 		model.addAttribute("list", list);
 		
 		return "community/comm_searchList";
+	}
+	
+	// 관리자용 검색 및 목록 조회
+	@RequestMapping("/admin/community/searchList")
+	public String adminCommunityList(
+	        @RequestParam(value = "comm_type", required = false) String comm_type,
+	        @RequestParam(value = "comm_pet_type", required = false) String comm_pet_type,
+	        @RequestParam(value = "comm_category", required = false) String comm_category,
+	        @RequestParam(value = "searchType", required = false) String searchType, // 👈 추가
+	        @RequestParam(value = "keyword", required = false) String keyword,       // 👈 추가
+	        @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
+	        @RequestParam(value = "page", defaultValue = "1") int page,
+	        Model model) throws Exception {
+	    
+	    // 키워드가 존재할 때는 엘라스틱서치 검색 메서드 호출
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        List<Map<String, Object>> searchList = com_service.adminSearchCommunity(searchType, keyword, sort, page, 10);
+	        model.addAttribute("list", searchList);
+	    } else {
+	    	// 수정 권장 (마지막 인자를 고정 크기 값인 10 등으로 변경)
+	    	int size = 10;
+	    	List<CommunityDTO> list = com_service.selectList(comm_type, comm_pet_type, comm_category, sort, page, size);
+	        model.addAttribute("list", list);
+	    }
+	    
+	    // 검색 조건 및 파라미터 유지용 모델 담기
+	    model.addAttribute("searchType", searchType);
+	    model.addAttribute("keyword", keyword);
+	    model.addAttribute("sort", sort);
+	    model.addAttribute("pageNum", page);
+	    
+	    return "admin/community/communityManage/communityUpdateSearch";
 	}
 	
 	// 게시글 내용 상세보기
