@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <title>장바구니</title>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp"%>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 <link rel="stylesheet" href="/css/cart/cart_list.css">
 </head>
 <body>

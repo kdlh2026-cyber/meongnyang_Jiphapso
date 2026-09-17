@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>[관리자] 취소 ◦ 반품 관리</title>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 <link rel="stylesheet" href="/css/orderCancel/adminList.css">
 <style>
   /* 모바일 반응형 - 이 페이지에서만 쓰는 거라 별도 파일로 안 빼고 여기 인라인으로 둠 */

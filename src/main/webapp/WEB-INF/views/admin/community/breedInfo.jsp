@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="/css/breedInfo/breedInfo.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 	<div class="breed_wrap">
 		<h3>DOG 견종 관리</h3>
 		<div class="dogInfo_section">

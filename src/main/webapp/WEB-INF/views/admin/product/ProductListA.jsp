@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <title>${currentType} ${param.mode} 추천 | 쇼핑리스트</title>
 </head>
 <body>
-<%@ include file="../../hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 <div class="shop-container">
     <!-- 강아지 / 고양이 선택 탭 -->
     <div class="type-btn-wrap">

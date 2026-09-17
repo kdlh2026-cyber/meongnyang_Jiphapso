@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>관리자 - 관심상품 관리</title>
-    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+    <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
     <link rel="stylesheet" href="/css/favorite/adminList.css">
 </head>
 <body>

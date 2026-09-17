@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <body>
-<%@ include file="../../hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 <form id="filterForm" action="/admin/stray/StrayListA" method="get" style="display:none;">
     <input type="hidden" name="page" id="formPage" value="${empty currentPage ? 1 : currentPage}">
     <input type="hidden" name="stray_category" id="formStrayCategory" value="${not empty stray_category ? stray_category : (empty param.stray_category ? 'DOG' : param.stray_category)}">
