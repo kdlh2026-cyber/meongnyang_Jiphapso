@@ -18,7 +18,7 @@
 		select dc_hospital_seq.NEXTVAL from dual
 		</selectKey>
 		insert into dc_hospital(hp_no,hp_name,hp_addr,hp_tel,hp_url,hp_hour,hp_sp_clinic,hp_keyword,hp_lat,hp_lng)
-		values(#{hp_no},#{hp_name},#{hp_addr},#{hp_tel},#{hp_url,jdbcType=VARCHAR},#{hp_hour,jdbcType=CLOB},#{hp_sp_clinic,jdbcType=VARCHAR},#{hp_keyword,jdbcType=VARCHAR},#{hp_lat}m#{hp_lng})
+		values(#{hp_no},#{hp_name},#{hp_addr},#{hp_tel},#{hp_url,jdbcType=VARCHAR},#{hp_hour,jdbcType=CLOB},#{hp_sp_clinic,jdbcType=VARCHAR},#{hp_keyword,jdbcType=VARCHAR},#{hp_lat},#{hp_lng})
 	</insert>
 	<update id="HospitalUpdate">
 		update dc_hospital

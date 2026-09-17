@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,7 +16,14 @@
     <table class="member-detail-table">
         <tr>
             <td colspan="2" class="img-cell">
+            <c:choose>
+            <c:when test="${not empty memDetail.m_img}">
                 <img src="/images/myProfile/${memDetail.m_img}" alt="${memDetail.m_img}" class="member-profile-img">
+            </c:when>
+            <c:otherwise>
+            	<img src="/images/main/user_profile.png" alt="기본 프로필" class="member-profile-img">
+            </c:otherwise>
+            </c:choose>
             </td>
         </tr>
         <tr><td class="label">아이디</td><td>${memDetail.m_id}</td></tr>
