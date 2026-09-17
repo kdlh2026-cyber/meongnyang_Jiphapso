@@ -1,0 +1,174 @@
+@charset "UTF-8";
+
+/* clone-ham-menu.css의 body 배경(peach)을 이 페이지에서만 흰색으로 덮어씀 */
+html body {
+    background: #fff;
+}
+
+/* 회원 리스트 페이지와 동일한 컨테이너 규칙 */
+.admin-content-wrap {
+    max-width: 640px;
+    margin: 30px auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+    padding: 0 16px;
+    box-sizing: border-box;
+}
+
+.admin-content-wrap h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #4A3226;
+    margin: 0 0 20px;
+}
+
+/* ---- 프로필 이미지 (상세/수정 공통) ---- */
+.member-profile-img {
+    display: block;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #FADCCF;
+    margin: 0 auto 24px;
+}
+
+/* ---- 회원 상세정보 테이블 (라벨 + 값 2단 구조) ---- */
+.member-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.member-detail-table tr {
+    border-bottom: 1px solid #F5D9CB;
+}
+
+.member-detail-table tr:last-child {
+    border-bottom: none;
+}
+
+.member-detail-table td {
+    padding: 12px 8px;
+    color: #333;
+    vertical-align: middle;
+}
+
+.member-detail-table td.label {
+    width: 130px;
+    font-weight: 700;
+    color: #4A3226;
+}
+
+.member-detail-table td.img-cell {
+    padding-top: 0;
+}
+
+/* ---- 회원 정보 수정 폼 (라벨 + 인풋 2단 구조) ---- */
+.admin-form-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.admin-form-table tr {
+    border-bottom: 1px solid #F5D9CB;
+}
+
+.admin-form-table tr:last-child {
+    border-bottom: none;
+}
+
+.admin-form-table td {
+    padding: 12px 8px;
+    vertical-align: middle;
+}
+
+.admin-form-table td.label {
+    width: 130px;
+    font-weight: 700;
+    color: #4A3226;
+}
+
+.admin-form-table td.img-cell {
+    padding-top: 0;
+}
+
+.admin-form-table input[type="text"],
+.admin-form-table select,
+.admin-form-table textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #FADCCF;
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.admin-form-table input[type="text"]:focus,
+.admin-form-table select:focus,
+.admin-form-table textarea:focus {
+    border-color: #FDA58F;
+}
+
+.admin-form-table textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.admin-form-table input[type="file"] {
+    font-size: 13.5px;
+}
+
+/* ---- 버튼 ---- */
+.btn-edit {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 10px 22px;
+    border-radius: 20px;
+    background: #FDA58F;
+    color: #4A3226;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.btn-edit:hover {
+    background: #FF8C7A;
+}
+
+.btn-submit {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 20px;
+    background: #FDA58F;
+    color: #4A3226;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background: #FF8C7A;
+}
+
+/* 목록으로 돌아가는 링크 (회원 리스트 페이지의 btn-list와 동일 톤) */
+.btn-list {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 10px 22px;
+    border-radius: 20px;
+    background: #4A3226;
+    color: #FFFBF5;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.btn-list:hover {
+    background: #5c4432;
+}

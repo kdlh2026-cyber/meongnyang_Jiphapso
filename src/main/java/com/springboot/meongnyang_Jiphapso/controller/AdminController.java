@@ -54,6 +54,16 @@ public class AdminController {
 		return "admin/adminPage";
 	}
 	
+	@RequestMapping("/admin/clone/main")
+	public String clonepage() {
+		return "admin/clone/main";
+	}
+	
+	@RequestMapping("/admin/clone/adminIPage")
+	public String AIP() {
+		return "admin/clone/adminIPage";
+	}
+	
 	// ------------------ 회원 관리 ------------------ //
 	
 	@RequestMapping("/admin/mem/memberList")
