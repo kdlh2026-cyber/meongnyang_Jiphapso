@@ -1,10 +1,4 @@
 @charset "UTF-8";
-@charset "UTF-8";
-/* /css/coupon/list.css */
-/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
-   -> 이 페이지는 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)와 body에
-      직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 *, body에 걸려있던 규칙을
-      전부 .cp-wrap / #cpToastWrap 스코프로만 한정함. */
 .cp-wrap, .cp-wrap *,
 #cpToastWrap, #cpToastWrap * { box-sizing: border-box; }
 
@@ -21,7 +15,7 @@
   background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
 }
 
-.cp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.cp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 
 .cp-card { position: relative; border-radius: 10px; overflow: hidden; background: #FFFBF5; box-shadow: 0 1px 4px rgba(74, 50, 38, 0.08); }
 .cp-card img { width: 100%; display: block; }

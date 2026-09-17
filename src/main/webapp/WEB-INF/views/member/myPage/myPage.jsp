@@ -70,17 +70,7 @@ function loadMpTab(btn) {
     const url = btn.dataset.url;
 
     if (url === '#') return;
-
-    // 포인트 / 쿠폰 / 주문 내역은 페이지 이동
-    if (
-        url.indexOf('/point/list') !== -1 ||
-        url.indexOf('/coupon/list') !== -1 ||
-        url.indexOf('/member/order/list') !== -1
-    ) {
-        location.href = url;
-        return;
-    }
-
+    
     // 탭 active 클래스 갱신 (선택사항이지만 있으면 좋음)
     document.querySelectorAll('.mp-tab').forEach(function (t) {
         t.classList.remove('active');

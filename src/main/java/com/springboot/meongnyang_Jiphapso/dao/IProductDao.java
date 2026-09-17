@@ -39,4 +39,5 @@ public interface IProductDao {
     // 5. 삭제 및 재고
     public int ProductDelete(int p_no);
     public int decreaseOptionStock(Long o_no, Integer o_quantity);
+    public int increaseOptionStock(Long o_no, Integer o_quantity); // 주문취소 승인 시 재고 복구용
 }

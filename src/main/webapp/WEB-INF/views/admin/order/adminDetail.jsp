@@ -68,7 +68,7 @@
                 <c:forEach var="item" items="${orderDetailList}">
                     <c:set var="totalAmt" value="${totalAmt + item.odAmount}" />
                     <div class="od-product-row">
-                        <img src="${pageContext.request.contextPath}/images/products/main/${item.PMainImg}" alt="${item.odProductName}">
+                        <img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(item.PMainImg, '%', '%25')}" alt="${item.odProductName}">
                         <div class="od-product-info">
                             <div class="od-product-name">${item.odProductName}</div>
                             <c:if test="${not empty item.odOptionName}">

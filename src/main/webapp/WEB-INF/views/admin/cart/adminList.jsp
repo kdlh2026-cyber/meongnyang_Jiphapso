@@ -94,6 +94,10 @@
 </div><!-- /.ca-page -->
 
 <script>
+    // 상품 이미지 경로 - 파일명에 "%"가 들어있으면 URL 인코딩이 깨지는 문제 때문에
+    // 다른 화면들과 동일하게 contextPath + "%" -> "%25" 치환 규칙을 적용함
+    var contextPath = "${pageContext.request.contextPath}";
+
     // ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) =====
     function showAlert(message, callback) {
         var overlay = document.getElementById('axAlertOverlay');
@@ -160,11 +164,15 @@
             var amount = (cart.oprice || 0) * (cart.caQuantity || 0);
             var bagLabel = (cart.caYn === 'Y') ? ('Y (' + cart.caQty + '개)') : 'N';
 
+            // 파일명에 "%"가 있으면 그대로 URL에 넣었을 때 인코딩이 깨지므로 "%25"로 치환
+            // (JSTL fn:replace(detail.PMainImg, '%', '%25') 와 동일한 처리를 JS로)
+            var imgUrl = contextPath + '/images/products/main/' + String(cart.pmainImg || '').replace(/%/g, '%25');
+
             var tr = document.createElement('tr');
             tr.id = 'row-' + cart.caNo;
             tr.innerHTML =
                 '<td>' + cart.caNo + '</td>' +
-                '<td><img src="/images/products/main/' + cart.pmainImg + '" alt="' + cart.pname + '"></td>' +
+                '<td><img src="' + imgUrl + '" alt="' + cart.pname + '"></td>' +
                 '<td>' + cart.pname + '</td>' +
                 '<td>' + (cart.oname || '-') + '</td>' +
                 '<td>' + Number(cart.oprice || 0).toLocaleString('ko-KR') + '원</td>' +
