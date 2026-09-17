@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <!-- 중앙 검색창 -->
     <div class="search-section">
         <div class="search-wrapper">
-            <form name="p_search" method="get" action="/products/ShoppingList" class="search-input-box">
+            <form name="p_search" method="get" action="/ProductListA" class="search-input-box">
                 <input type="hidden" name="p_type" value="${currentType}">
                 <input type="text" name="keyword" id="keyword" autocomplete="off" placeholder="쇼핑 검색">
                 <button type="submit">🔍</button>
@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <span class="category-name">장난감</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=집/하우스'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-cage.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-house.png"></div>
             <span class="category-name">집/하우스</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=패션'">
