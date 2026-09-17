@@ -139,58 +139,57 @@ public class CommunityService {
         return dao.CommunitySelectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
     }
 
-	public Map<String, Object> getPagingInfo(String comm_type, String comm_pet_type, String comm_category, int page) {
-	    return getPagingInfo(comm_type, comm_pet_type, comm_category, page, null);
-	}
-	
-	public Map<String, Object> getPagingInfo(String comm_type, 
-											 String comm_pet_type,
-											 String comm_category,
-											 int page,
-											 String keyword) {
-	    int pageSize = 10; 
-	    int blockSize = 10; 
-	    int totalCount = 0;
-	    
-	    if (keyword != null && !keyword.trim().isEmpty()) {
-	        try {
-	            // 기존 esService의 검색 결과 크기를 활용하거나 검색 개수 메서드 호출
-	            List<CommunityDTO> searchList = esService.search(keyword);
-	            totalCount = searchList.size(); 
-	        } catch (Exception e) {
-	            totalCount = 0;
-	        }
-	    } else {
-	        totalCount = dao.getTotalCount(comm_type, comm_pet_type, comm_category);
-	    }
-	    
+	public Map<String, Object> searchWithPaging(String keyword, int page) throws Exception {
+	    int pageSize = 10;
+	    int blockSize = 10;
+
+	    Map<String, Object> esResult = esService.search(keyword, page, pageSize);
+	    List<CommunityDTO> list = (List<CommunityDTO>) esResult.get("list");
+	    long totalCount = (long) esResult.get("totalCount");
 	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-	    if (totalPages == 0) totalPages = 1; 
+	    if (totalPages == 0) totalPages = 1;
 
 	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
-	    int endPage = startPage + blockSize - 1;
-	    
-	    if (endPage > totalPages) {
-	        endPage = totalPages;
-	    }
-	    
-	    // 💡 1. DAO의 selectPopular 메서드가 Map을 받으므로 파라미터를 Map에 담아줍니다.
+	    int endPage = Math.min(startPage + blockSize - 1, totalPages);
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("list", list);
+	    result.put("pageNum", page);
+	    result.put("totalCount", totalCount);
+	    result.put("totalPages", totalPages);
+	    result.put("startPage", startPage);
+	    result.put("endPage", endPage);
+	    result.put("prev", startPage > 1);
+	    result.put("next", endPage < totalPages);
+	    return result;
+	}
+	
+	// 비검색용 페이징 정보 (일반 목록, 관리자 목록에서 사용)
+	public Map<String, Object> getPagingInfo(String comm_type, String comm_pet_type, String comm_category, int page) {
+	    int pageSize = 10;
+	    int blockSize = 10;
+
+	    int totalCount = dao.getTotalCount(comm_type, comm_pet_type, comm_category);
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    if (totalPages == 0) totalPages = 1;
+
+	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
+	    int endPage = Math.min(startPage + blockSize - 1, totalPages);
+
 	    Map<String, Object> paramMap = new HashMap<>();
 	    paramMap.put("comm_type", comm_type);
 	    paramMap.put("comm_pet_type", comm_pet_type);
-	    
-	    List<CommunityDTO> popularList = dao.selectPopular(paramMap); 
-	    List<CommunityDTO> recommendList = dao.recommendContentTen();
-	    
-	    // 💡 2. 뷰로 전달할 페이징 정보 및 인기글 목록 구성
+
 	    Map<String, Object> pagingMap = new HashMap<>();
 	    pagingMap.put("pageNum", page);
 	    pagingMap.put("totalPages", totalPages);
 	    pagingMap.put("totalCount", totalCount);
 	    pagingMap.put("startPage", startPage);
 	    pagingMap.put("endPage", endPage);
-	    pagingMap.put("popularList", popularList); // 인기글 목록 담기
-	    pagingMap.put("recommendList", recommendList); // 추천
+	    pagingMap.put("popularList", dao.selectPopular(paramMap));
+	    pagingMap.put("recommendList", dao.recommendContentTen());
+	    pagingMap.put("prev", startPage > 1);
+	    pagingMap.put("next", endPage < totalPages);
 	    return pagingMap;
 	}
 	
@@ -206,10 +205,6 @@ public class CommunityService {
 	
 	public CommunityDTO viewList(int comm_no) {
 		return dao.CommunityView(comm_no);
-	}
-	
-	public List<CommunityDTO> search(String keyword) throws Exception{
-		return esService.search(keyword);
 	}
 	
 	// 내 게시글 삭제
@@ -233,14 +228,20 @@ public class CommunityService {
     }
 	
 	// 관리자용 게시글 검색 및 목록 조회 (필터, 정렬, 페이징 지원)
-	public List<Map<String, Object>> adminSearchCommunity(String searchType, String keyword, String sort, Integer page, Integer size) throws Exception {
-	    // 1. 페이징 및 정렬 기본값 방어 코드
+	public Map<String, Object> adminSearchCommunity(String searchType,
+													String keyword, String sort,
+													Integer page, Integer size,
+													String comm_type, 
+													String comm_pet_type,
+													String comm_category) throws Exception {
+		
 	    int pageNum = (page == null || page <= 0) ? 1 : page;
 	    int pageSize = (size == null || size <= 0) ? 10 : size;
+	    int blockSize = 10;
 	    String sortOption = (sort == null || sort.trim().isEmpty()) ? "latest" : sort;
-	    
-	    // 2. 엘라스틱서치 서비스(esService) 호출
-	    List<Map<String, Object>> searchList = esService.adminSearchCommunity(searchType, keyword, sortOption, pageNum, pageSize);
+
+	    Map<String, Object> esResult = esService.adminSearchCommunity(searchType, keyword, sortOption, pageNum, pageSize);
+	    List<Map<String, Object>> searchList = (List<Map<String, Object>>) esResult.get("list");
 	    
 	    // 3. ⭐️ 엘라스틱서치에서 문자열로 넘어온 날짜(comm_date)를 java.util.Date 객체로 변환
 	    if (searchList != null && !searchList.isEmpty()) {
@@ -263,7 +264,21 @@ public class CommunityService {
 	        }
 	    }
 	    
-	    return searchList;
+	    // ⭐️ 페이징 계산 추가
+	    long totalCount = (long) esResult.get("totalCount");
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    if (totalPages == 0) totalPages = 1;
+
+	    int startPage = ((pageNum - 1) / blockSize) * blockSize + 1;
+	    int endPage = Math.min(startPage + blockSize - 1, totalPages);
+
+	    esResult.put("list", searchList);
+	    esResult.put("totalPages", totalPages);
+	    esResult.put("startPage", startPage);
+	    esResult.put("endPage", endPage);
+	    esResult.put("prev", startPage > 1);
+	    esResult.put("next", endPage < totalPages);
+	    return esResult;
 	}
 	
 	// 목록 조회

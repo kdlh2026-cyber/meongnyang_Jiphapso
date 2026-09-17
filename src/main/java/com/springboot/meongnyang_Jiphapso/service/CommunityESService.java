@@ -91,23 +91,20 @@ public class CommunityESService {
 	    return (value == null) ? "" : value;
 	}
 	
-	public List<CommunityDTO> search(String keyword) throws Exception{
-		SearchRequest request = new SearchRequest("dc_community");
-		
-		// 엘라스틱 서치에서 검색 요청의 본문을 만드는 객체 생성 (SQL의 select 문)
-		SearchSourceBuilder builder = new SearchSourceBuilder();
-		
-		// 키워드를 title 또는 content 필드에서 검색
-		//builder.query(QueryBuilders.multiMatchQuery(keyword, "title","content").operator(Operator.AND));
-		//builder.query(QueryBuilders.multiMatchQuery(keyword, "title","content").operator(Operator.OR));
-		builder.query(QueryBuilders.multiMatchQuery(keyword, "comm_title","comm_content"));
-		request.source(builder);
-		
-		// 엘라스틱 서치에서 검색한 결과를 받아온다.
-		SearchResponse response = client.search(request, RequestOptions.DEFAULT);
-		
-		// 검색한 결과 객체를 생성
-		List<CommunityDTO> list = new ArrayList<>();
+	// 검색
+	public Map<String, Object> search(String keyword, int page, int pageSize) throws Exception {
+	    SearchRequest request = new SearchRequest("dc_community");
+	    SearchSourceBuilder builder = new SearchSourceBuilder();
+
+	    builder.query(QueryBuilders.multiMatchQuery(keyword, "comm_title", "comm_content"));
+	    builder.from((page - 1) * pageSize);
+	    builder.size(pageSize);
+	    builder.trackTotalHits(true); // 10,000건 넘어가도 정확한 카운트 필요하면 필수
+
+	    request.source(builder);
+	    SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+
+	    List<CommunityDTO> list = new ArrayList<>();
 		
 		// 출력
 		for(SearchHit hit:response.getHits().getHits()) {
@@ -126,7 +123,10 @@ public class CommunityESService {
 		    list.add(dto);
 		}
 		
-		return list;
+		Map<String, Object> result = new HashMap<>();
+	    result.put("list", list);
+	    result.put("totalCount", response.getHits().getTotalHits().value);
+	    return result;
 	}
 	
 	// 자동완성 + 하이라이트
@@ -172,15 +172,15 @@ public class CommunityESService {
 		return result;
 	}
 	
-	// 관리자용 게시글 검색 및 목록 조회
-	public List<Map<String, Object>> adminSearchCommunity(String searchType, String keyword, String sort, int page, int size) throws Exception {
+	// CommunityESService
+	public Map<String, Object> adminSearchCommunity(String searchType, String keyword, String sort, int page, int size) throws Exception {
 	    SearchRequest request = new SearchRequest("dc_community");
 	    SearchSourceBuilder source = new SearchSourceBuilder();
 	    
-	    // 1. 페이징 설정 (page는 1부터 시작한다고 가정)
-	    int from = (page - 1) * size;
-	    source.from(from);
+	    source.from((page - 1) * size);
 	    source.size(size);
+	    source.trackTotalHits(true);
+	    
 	    // 2. 검색 조건(Query) 설정
 	    if (keyword != null && !keyword.trim().isEmpty()) {
 	        if ("title".equals(searchType)) {
@@ -211,10 +211,9 @@ public class CommunityESService {
 	    source.highlighter(highlight);
 	    
 	    request.source(source);
-	    
-	    // 5. 결과 매핑
 	    SearchResponse response = client.search(request, RequestOptions.DEFAULT);
-	    List<Map<String, Object>> result = new ArrayList<>();
+	    
+	    List<Map<String, Object>> list = new ArrayList<>();
 	    
 	    for (SearchHit hit : response.getHits().getHits()) {
 	        Map<String, Object> sourceMap = hit.getSourceAsMap();
@@ -225,9 +224,12 @@ public class CommunityESService {
 	            sourceMap.put("comm_title_hl", highlightedTitle); // 하이라이트된 제목 별도 저장
 	        }
 	        
-	        result.add(sourceMap);
+	        list.add(sourceMap);
 	    }
 	    
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("list", list);
+	    result.put("totalCount", response.getHits().getTotalHits().value);
 	    return result;
 	}
 }

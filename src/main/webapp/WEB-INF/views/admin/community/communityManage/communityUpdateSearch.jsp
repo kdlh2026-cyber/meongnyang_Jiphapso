@@ -45,9 +45,9 @@
          <c:if test="${param.comm_type eq '콘텐츠'}">
              <div class="sub_filter">
                  <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=" class="${empty param.comm_category ? 'active' : ''}">전체</a>
-                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=강아지연구소" class="${param.comm_category eq '강아지연구소' ? 'active' : ''}">강아지연구소</a>
-                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=고양이연구소" class="${param.comm_category eq '고양이연구소' ? 'active' : ''}">고양이연구소</a>
-                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=제품연구소" class="${param.comm_category eq '제품연구소' ? 'active' : ''}">제품연구소</a>
+                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=강아지 연구소" class="${param.comm_category eq '강아지 연구소' ? 'active' : ''}">강아지연구소</a>
+                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=고양이 연구소" class="${param.comm_category eq '고양이 연구소' ? 'active' : ''}">고양이연구소</a>
+                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=제품연구소" class="${param.comm_category eq '제품 연구소' ? 'active' : ''}">제품연구소</a>
                  <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=제보" class="${param.comm_category eq '제보' ? 'active' : ''}">제보</a>
                  <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=뉴스/브랜드" class="${param.comm_category eq '뉴스/브랜드' ? 'active' : ''}">뉴스/브랜드</a>
              </div>
@@ -155,18 +155,18 @@
          <div class="pagination">
              <%-- 이전 블록 이동 버튼 --%>
              <c:if test="${prev}">
-                 <a href="/admin/community/searchList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${startPage - 1}">PREV</a>
+                 <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${startPage - 1}">PREV</a>
              </c:if>
              
              <%-- 10개 단위 번호 반복 출력 --%>
              <c:forEach var="i" begin="${startPage}" end="${endPage}">
-                 <a href="/admin/community/searchList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${i}" 
+                 <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${i}" 
                     class="${pageNum eq i ? 'active' : ''}">${i}</a>
              </c:forEach>
              
              <%-- 다음 블록 이동 버튼 --%>
              <c:if test="${next}">
-                 <a href="/admin/community/searchList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${endPage + 1}">NEXT</a>
+                 <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${endPage + 1}">NEXT</a>
              </c:if>
          </div>
      </c:if>
