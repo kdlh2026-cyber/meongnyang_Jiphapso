@@ -5,42 +5,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>[관리자] 결제 관리</title>
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: #f7f7f8; color: #222; }
-
-  .pa-wrap { max-width: 1300px; margin: 40px auto; padding: 0 20px 60px; }
-  .pa-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; }
-
-  .pa-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
-  .pa-tab {
-    padding: 8px 16px; border: 1px solid #ddd; background: #fff; border-radius: 20px;
-    font-size: 13px; cursor: pointer; color: #555;
-  }
-  .pa-tab.active { background: #222; color: #fff; border-color: #222; }
-
-  .pa-empty {
-    padding: 80px 0; text-align: center; color: #888; font-size: 15px;
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
-  }
-
-  .pa-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; font-size: 13px; }
-  .pa-table th, .pa-table td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #eee; }
-  .pa-table thead th { background: #fafafa; color: #555; font-weight: 600; }
-  .pa-table tbody tr:last-child td { border-bottom: none; }
-
-  .pa-status-select { padding: 5px 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; }
-
-  .pa-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; margin: 0 2px; }
-  .pa-btn-save { border-color: #1a56db; color: #1a56db; }
-  .pa-btn-save:hover { background: #1a56db; color: #fff; }
-  .pa-btn-delete { border-color: #c0392b; color: #c0392b; }
-  .pa-btn-delete:hover { background: #c0392b; color: #fff; }
-</style>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<link rel="stylesheet" href="/css/payment/adminList.css">
 </head>
 <body>
 
-<div class="pa-wrap">
+<div class="pa-page">
+<div class="pa-inner">
   <h2 class="pa-title">결제 관리</h2>
 
   <div class="pa-tabs" id="paTabs">
@@ -71,9 +42,62 @@
     </thead>
     <tbody id="paTbody"></tbody>
   </table>
+</div><!-- /.pa-inner -->
+
+<!-- 커스텀 알림 모달 (기본 alert 대체) -->
+<div class="ax-modal-overlay" id="axAlertOverlay">
+  <div class="ax-modal">
+    <div class="ax-modal-message" id="axAlertMessage"></div>
+    <div class="ax-modal-actions">
+      <button type="button" class="ax-btn ax-btn-primary" id="axAlertOkBtn">확인</button>
+    </div>
+  </div>
 </div>
 
+<!-- 커스텀 확인 모달 (기본 confirm 대체) -->
+<div class="ax-modal-overlay" id="axConfirmOverlay">
+  <div class="ax-modal">
+    <div class="ax-modal-message" id="axConfirmMessage"></div>
+    <div class="ax-modal-actions">
+      <button type="button" class="ax-btn" id="axConfirmCancelBtn">취소</button>
+      <button type="button" class="ax-btn ax-btn-primary" id="axConfirmOkBtn">확인</button>
+    </div>
+  </div>
+</div>
+</div><!-- /.pa-page -->
+
 <script>
+  // ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) =====
+  function showAlert(message, callback) {
+    var overlay = document.getElementById("axAlertOverlay");
+    document.getElementById("axAlertMessage").textContent = message;
+    document.getElementById("axAlertOkBtn").onclick = function () {
+      overlay.classList.remove("show");
+      if (typeof callback === "function") callback();
+    };
+    overlay.classList.add("show");
+  }
+
+  function showConfirm(message, onConfirm, options) {
+    options = options || {};
+    var overlay = document.getElementById("axConfirmOverlay");
+    document.getElementById("axConfirmMessage").textContent = message;
+
+    var okBtn = document.getElementById("axConfirmOkBtn");
+    okBtn.textContent = options.okText || "확인";
+    okBtn.className = "ax-btn " + (options.danger ? "ax-btn-danger" : "ax-btn-primary");
+    okBtn.onclick = function () {
+      overlay.classList.remove("show");
+      if (typeof onConfirm === "function") onConfirm();
+    };
+
+    document.getElementById("axConfirmCancelBtn").onclick = function () {
+      overlay.classList.remove("show");
+    };
+
+    overlay.classList.add("show");
+  }
+
   var contextPath = "${pageContext.request.contextPath}";
   var fullList = [];
   var currentFilter = "ALL";
@@ -95,13 +119,17 @@
   // 전체 결제 목록 조회 (PaymentController#selectPaymentListAll)
   function loadAdminList() {
     fetch(contextPath + "/payment/admin/list/data")
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+        return res.json();
+      })
       .then(function (result) {
         fullList = result.data || [];
         renderList();
       })
       .catch(function (err) {
         console.error("결제 전체 목록 조회 실패", err);
+        showAlert("목록 조회 중 오류가 발생했습니다.\n" + err.message);
       });
   }
 
@@ -150,10 +178,26 @@
         "<td>" + formatDate(item.payReqAt) + "</td>" +
         "<td>" + (item.payAt ? formatDate(item.payAt) : "-") + "</td>" +
         "<td>" + buildStatusSelect(item.payNo, item.payStatus) + "</td>" +
-        "<td>" +
-          "<button type=\"button\" class=\"pa-btn pa-btn-save\" onclick=\"saveStatus(" + item.payNo + ")\">저장</button>" +
-          "<button type=\"button\" class=\"pa-btn pa-btn-delete\" onclick=\"removeItem(" + item.payNo + ")\">삭제</button>" +
-        "</td>";
+        "<td></td>";
+
+      // 저장/삭제 버튼은 클로저로 안전하게 연결 (문자열 onclick의 따옴표 이스케이프 문제 방지)
+      var manageTd = tr.lastElementChild;
+
+      var saveBtn = document.createElement("button");
+      saveBtn.type = "button";
+      saveBtn.className = "pa-btn pa-btn-save";
+      saveBtn.textContent = "저장";
+      saveBtn.onclick = function () { saveStatus(item.payNo); };
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "pa-btn pa-btn-delete";
+      delBtn.textContent = "삭제";
+      delBtn.onclick = function () { removeItem(item.payNo, item.orNo); };
+
+      manageTd.appendChild(saveBtn);
+      manageTd.appendChild(delBtn);
+
       tbody.appendChild(tr);
     });
   }
@@ -182,44 +226,50 @@
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: params.toString()
     })
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+        return res.json();
+      })
       .then(function (result) {
-        alert(result.message);
-        if (result.success) {
-          loadAdminList();
-        }
+        showAlert(result.message, function () {
+          if (result.success) {
+            loadAdminList();
+          }
+        });
       })
       .catch(function (err) {
         console.error("처리상태 변경 실패", err);
-        alert("처리상태 변경 중 오류가 발생했습니다.");
+        showAlert("처리상태 변경 중 오류가 발생했습니다.\n" + err.message);
       });
   }
 
   // 삭제 (PaymentController#deletePayment)
-  function removeItem(payNo) {
-    if (!confirm("해당 결제 내역을 삭제하시겠습니까?")) {
-      return;
-    }
+  function removeItem(payNo, orNo) {
+    showConfirm(orNo + "번 주문의 결제 내역을 삭제하시겠습니까?", function () {
+      var params = new URLSearchParams();
+      params.append("payNo", payNo);
 
-    var params = new URLSearchParams();
-    params.append("payNo", payNo);
-
-    fetch(contextPath + "/payment/admin/delete", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString()
-    })
-      .then(function (res) { return res.json(); })
-      .then(function (result) {
-        alert(result.message);
-        if (result.success) {
-          loadAdminList();
-        }
+      fetch(contextPath + "/payment/admin/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
       })
-      .catch(function (err) {
-        console.error("삭제 실패", err);
-        alert("삭제 중 오류가 발생했습니다.");
-      });
+        .then(function (res) {
+          if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+          return res.json();
+        })
+        .then(function (result) {
+          showAlert(result.message, function () {
+            if (result.success) {
+              loadAdminList();
+            }
+          });
+        })
+        .catch(function (err) {
+          console.error("삭제 실패", err);
+          showAlert("삭제 중 오류가 발생했습니다.\n" + err.message);
+        });
+    }, { danger: true, okText: "삭제" });
   }
 
   function formatPrice(v) {
@@ -237,5 +287,6 @@
     return yyyy + "." + mm + "." + dd;
   }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

@@ -1,0 +1,80 @@
+@charset "UTF-8";
+@charset "UTF-8";
+/* /css/payment/adminList.css */
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   -> 이 페이지는 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유해서,
+      :root 변수 + body/* 전역 스타일을 쓰면 색이 안 먹히거나 헤더 레이아웃이 깨짐.
+      그래서 리터럴 색상값 + .pa-page 스코프로만 스타일을 한정하고,
+      .pa-page 자체를 화면 전체 높이로 채워서 바깥에 회색 배경이 비치지 않게 함. */
+.pa-page, .pa-page * { box-sizing: border-box; }
+.pa-page {
+  min-height: 100vh;
+  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  background: #FFFBF5;
+  color: #4A3226;
+  padding: 56px 20px 60px;
+}
+.pa-inner { max-width: 1300px; margin: 0 auto; }
+.pa-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; color: #4A3226; }
+
+.pa-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.pa-tab {
+  padding: 8px 16px; border: 1px solid #FFC9CE; background: #FFFBF5; border-radius: 20px;
+  font-size: 13px; cursor: pointer; color: #4A3226; font-weight: 600;
+}
+.pa-tab.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; }
+
+.pa-empty {
+  padding: 80px 0; text-align: center; color: #4A3226; opacity: 0.6; font-size: 15px;
+  background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
+}
+
+.pa-table { width: 100%; border-collapse: collapse; background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px; overflow: hidden; font-size: 13px; }
+.pa-table th, .pa-table td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #FFF3D8; color: #4A3226; }
+.pa-table thead th { background: #FFF3D8; color: #4A3226; font-weight: 700; }
+.pa-table tbody tr:last-child td { border-bottom: none; }
+.pa-table tbody tr:hover { background: rgba(255, 243, 216, 0.5); }
+
+.pa-status-select { padding: 5px 6px; border: 1px solid #FFC9CE; border-radius: 5px; font-size: 12px; background: #FFFBF5; color: #4A3226; }
+
+.pa-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226; margin: 0 2px; font-weight: 600; }
+.pa-btn:hover { background: #FFF3D8; }
+.pa-btn-save { border-color: #FDCC61; color: #4A3226; }
+.pa-btn-save:hover { background: #FDCC61; color: #4A3226; }
+.pa-btn-delete { border-color: #FDA58F; color: #FDA58F; }
+.pa-btn-delete:hover { background: #FDA58F; color: #fff; }
+
+/* ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) ===== */
+.ax-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+}
+.ax-modal-overlay.show { display: flex; }
+.ax-modal {
+  width: 380px; max-width: 88vw;
+  background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 12px;
+  padding: 26px 22px 20px; text-align: center;
+  box-shadow: 0 10px 30px rgba(74, 50, 38, 0.2);
+}
+.ax-modal-message { font-size: 14px; color: #4A3226; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+.ax-modal-actions { display: flex; gap: 8px; justify-content: center; }
+.ax-btn {
+  padding: 9px 20px; border-radius: 6px; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
+  min-width: 88px;
+}
+.ax-btn:hover { background: #FFF3D8; }
+.ax-btn-primary { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
+.ax-btn-primary:hover { background: #FDA58F; color: #fff; }
+.ax-btn-danger { background: #FFFBF5; border-color: #FDA58F; color: #FDA58F; }
+.ax-btn-danger:hover { background: #FDA58F; color: #fff; }
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .pa-page { padding: 56px 12px 40px; }
+  .pa-title { font-size: 18px; }
+  .pa-tabs { gap: 6px; }
+  .pa-tab { padding: 7px 12px; font-size: 12px; }
+  .pa-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .ax-modal { padding: 20px 16px 16px; }
+}

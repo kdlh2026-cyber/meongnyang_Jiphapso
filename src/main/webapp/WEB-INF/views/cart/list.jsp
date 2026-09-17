@@ -67,7 +67,7 @@
 
 								<div class="cart-thumb" onclick="goDetail(${cart.PNo})">
 									<img
-										src="${pageContext.request.contextPath}/images/products/main/${cart.PMainImg}"
+										src="${pageContext.request.contextPath}/images/products/main/${fn:replace(cart.PMainImg, '%', '%25')}"
 										alt="${cart.PName}">
 								</div>
 
@@ -202,6 +202,17 @@
 		</div>
 	</div>
 
+	<%-- 삭제 확인 모달 (confirm() 대체) - 옵션 변경 모달과 동일한 opt-modal 스타일 재사용 --%>
+	<div class="opt-modal-overlay" id="confirmModalOverlay">
+		<div class="opt-modal" style="width: 320px; text-align: center;">
+			<p id="confirmModalMessage" style="font-size: 14px; color: #333; margin: 6px 0 22px; line-height: 1.5;"></p>
+			<div class="opt-modal-buttons">
+				<button type="button" class="opt-btn-cancel" onclick="closeConfirmModal(false)">취소</button>
+				<button type="button" class="opt-btn-confirm" onclick="closeConfirmModal(true)">확인</button>
+			</div>
+		</div>
+	</div>
+
 	<script>
     function showToast(message, type) {
         var wrap = document.getElementById('cartToastWrap');
@@ -220,6 +231,26 @@
         }, 2200);
     }
 
+    // ================= 삭제 확인 모달 (window.confirm 대체) =================
+    // showConfirm('메시지').then(ok => { ok면 true, 취소면 false }) 형태로 사용
+    var confirmResolve = null;
+
+    function showConfirm(message) {
+        document.getElementById('confirmModalMessage').textContent = message;
+        document.getElementById('confirmModalOverlay').classList.add('show');
+        return new Promise(function (resolve) {
+            confirmResolve = resolve;
+        });
+    }
+
+    function closeConfirmModal(result) {
+        document.getElementById('confirmModalOverlay').classList.remove('show');
+        if (confirmResolve) {
+            confirmResolve(result);
+            confirmResolve = null;
+        }
+    }
+
     var contextPath = "${pageContext.request.contextPath}";
     var FREE_SHIPPING_THRESHOLD = 30000;
     var SHIPPING_FEE = 3000;
@@ -233,7 +264,7 @@
         chk.addEventListener('change', recalcTotal);
     });
 
-    recalcTotal(); 
+    recalcTotal();
 
     function goDetail(pNo) {
         location.href = contextPath + '/products/ShoppingView?p_no=' + pNo;
@@ -489,8 +520,9 @@
         });
     }
 
-    function deleteCart(caNo) {
-        if (!confirm('장바구니에서 삭제할까요?')) return;
+    async function deleteCart(caNo) {
+        const ok = await showConfirm('장바구니에서 삭제할까요?');
+        if (!ok) return;
 
         fetch(contextPath + '/cart/' + caNo, { method: 'DELETE' })
             .then(res => res.json())
@@ -525,7 +557,7 @@
         });
     }
 
-    function deleteSelected() {
+    async function deleteSelected() {
         const caNoList = Array.from(document.querySelectorAll('.item-check:checked'))
             .map(chk => Number(chk.value));
 
@@ -533,13 +565,15 @@
             showToast('삭제할 상품을 선택해주세요.', 'error');
             return;
         }
-        if (!confirm(caNoList.length + '개 상품을 삭제할까요?')) return;
+
+        const ok = await showConfirm(caNoList.length + '개 상품을 삭제할까요?');
+        if (!ok) return;
 
         deleteCartList(caNoList);
     }
 
     // 품절된(재고 0) 상품만 골라서 삭제
-    function deleteSoldOut() {
+    async function deleteSoldOut() {
         const caNoList = Array.from(document.querySelectorAll('.cart-row[data-soldout="true"]'))
             .map(row => Number(row.dataset.cano));
 
@@ -547,7 +581,9 @@
             showToast('품절된 상품이 없습니다.', 'error');
             return;
         }
-        if (!confirm('품절된 상품 ' + caNoList.length + '개를 삭제할까요?')) return;
+
+        const ok = await showConfirm('품절된 상품 ' + caNoList.length + '개를 삭제할까요?');
+        if (!ok) return;
 
         deleteCartList(caNoList);
     }

@@ -1,74 +1,82 @@
+@charset "UTF-8";
+/* /css/point/point_list.css */
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   -> 이 페이지도 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)와 body에
+      직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 *, body에 걸려있던 규칙을
+      전부 .pt-wrap 스코프로만 한정함. */
+.pt-wrap, .pt-wrap * { box-sizing: border-box; }
 
- 	* { box-sizing: border-box; }
-body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: #fffdf5; color: #222; }
-
-.pt-wrap { max-width: 780px; margin: 40px auto; padding: 0 20px 60px; }
-.pt-title { font-size: 20px; font-weight: 700; margin: 0 0 24px; }
+.pt-wrap {
+  max-width: 780px; margin: 40px auto; padding: 0 20px 60px;
+  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  color: #4A3226;
+}
+.pt-title { font-size: 20px; font-weight: 700; margin: 0 0 24px; color: #4A3226; }
 
 .pt-summary-box {
-  border: 1px solid #f0e6c8; border-radius: 10px; padding: 20px;
+  border: 1px solid #FFC9CE; border-radius: 10px; padding: 20px; background: #FFFBF5;
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
 }
-.pt-summary-label { font-size: 14px; font-weight: 600; color: #333; }
-.pt-summary-value { font-size: 22px; font-weight: 700; }
-.pt-summary-value .pt-unit { color: #e0a800; margin-left: 2px; }
-.pt-summary-box.warn .pt-summary-value { color: #d9534f; }
+.pt-summary-label { font-size: 14px; font-weight: 600; color: #4A3226; }
+.pt-summary-value { font-size: 22px; font-weight: 700; color: #4A3226; }
+.pt-summary-value .pt-unit { color: #FDA58F; margin-left: 2px; }
+.pt-summary-box.warn .pt-summary-value { color: #FDA58F; }
 
-.pt-history-title { font-size: 16px; font-weight: 700; margin: 32px 0 14px; }
+.pt-history-title { font-size: 16px; font-weight: 700; margin: 32px 0 14px; color: #4A3226; }
 
 .pt-empty {
-  padding: 60px 0; text-align: center; color: #888; font-size: 14px;
-  background: #fff; border: 1px solid #eee; border-radius: 8px;
+  padding: 60px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 14px;
+  background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
 }
 
 /* 포인트 내역 - 클릭 시 아래로 펼쳐지는 아코디언 구조 */
-.pt-accordion { border: 1px solid #eee; border-radius: 8px; background: #fff; overflow: hidden; }
+.pt-accordion { border: 1px solid #FFC9CE; border-radius: 8px; background: #FFFBF5; overflow: hidden; }
 
-.pt-item { border-bottom: 1px solid #f2f2f2; }
+.pt-item { border-bottom: 1px solid #FFF3D8; }
 .pt-item:last-child { border-bottom: none; }
 
 .pt-item-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px; cursor: pointer; font-size: 13px; user-select: none;
 }
-.pt-item-head:hover { background: #fbfbfb; }
+.pt-item-head:hover { background: #FFF3D8; }
 
 .pt-item-head-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .pt-item-type {
   flex-shrink: 0; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
-  background: #f5f0dc; color: #a3790c;
+  background: #FFF3D8; color: #4A3226;
 }
-.pt-item-reason { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #333; }
+.pt-item-reason { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #4A3226; }
 
 .pt-item-head-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .pt-item-amount { font-weight: 700; font-size: 14px; }
 
 .pt-item-arrow {
-  display: inline-block; width: 8px; height: 8px; border-right: 2px solid #999; border-bottom: 2px solid #999;
+  display: inline-block; width: 8px; height: 8px; border-right: 2px solid rgba(74, 50, 38, 0.5); border-bottom: 2px solid rgba(74, 50, 38, 0.5);
   transform: rotate(45deg); transition: transform 0.2s ease; margin-right: 2px;
 }
 .pt-item.open .pt-item-arrow { transform: rotate(-135deg); }
 
 .pt-item-body {
   max-height: 0; overflow: hidden; transition: max-height 0.2s ease;
-  background: #fafafa; font-size: 13px;
+  background: #FFF3D8; font-size: 13px;
 }
 .pt-item.open .pt-item-body { max-height: 200px; }
 
 .pt-item-body-inner { padding: 14px 16px; display: grid; grid-template-columns: 90px 1fr; row-gap: 8px; }
-.pt-item-body-inner dt { color: #888; }
-.pt-item-body-inner dd { margin: 0; color: #222; }
+.pt-item-body-inner dt { color: rgba(74, 50, 38, 0.55); }
+.pt-item-body-inner dd { margin: 0; color: #4A3226; }
 
-.pt-amount-plus  { color: #1a56db; }
-.pt-amount-minus { color: #c0392b; }
+.pt-amount-plus  { color: #FDA58F; }
+.pt-amount-minus { color: rgba(74, 50, 38, 0.55); }
 
 /* 관리자가 취소 처리한 원본 항목 - 취소선 + 옆에 취소 사유 표시 */
 .pt-item.cancelled .pt-item-reason,
 .pt-item.cancelled .pt-item-amount {
-  text-decoration: line-through; color: #aaa;
+  text-decoration: line-through; color: rgba(74, 50, 38, 0.35);
 }
 .pt-item-cancel-note {
-  font-size: 12px; color: #c0392b; margin-left: 8px; text-decoration: none;
+  font-size: 12px; color: #FDA58F; margin-left: 8px; text-decoration: none;
   flex-shrink: 0;
 }
 
@@ -77,13 +85,13 @@ body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; back
 .pt-section { margin-bottom: 14px; }
 .pt-section-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; background: #fff; border: 1px solid #eee; border-radius: 8px;
-  cursor: pointer; user-select: none; font-size: 14px; font-weight: 700;
+  padding: 14px 16px; background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
+  cursor: pointer; user-select: none; font-size: 14px; font-weight: 700; color: #4A3226;
 }
-.pt-section-header:hover { background: #fbfbfb; }
-.pt-section-count { font-weight: 400; color: #888; font-size: 13px; margin-left: 4px; }
+.pt-section-header:hover { background: #FFF3D8; }
+.pt-section-count { font-weight: 400; color: rgba(74, 50, 38, 0.55); font-size: 13px; margin-left: 4px; }
 .pt-section-arrow {
-  display: inline-block; width: 8px; height: 8px; border-right: 2px solid #999; border-bottom: 2px solid #999;
+  display: inline-block; width: 8px; height: 8px; border-right: 2px solid rgba(74, 50, 38, 0.5); border-bottom: 2px solid rgba(74, 50, 38, 0.5);
   transform: rotate(45deg); transition: transform 0.2s ease;
 }
 .pt-section.open .pt-section-arrow { transform: rotate(-135deg); }
@@ -93,11 +101,38 @@ body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; back
 .pt-section.open .pt-section-body { display: block; }
 
 /* 취소 내역 섹션의 항목 (읽기전용 로그 - 클릭 펼침 없이 바로 표시) */
-.pt-cancel-log { border: 1px solid #eee; border-top: none; border-radius: 0 0 8px 8px; background: #fff; overflow: hidden; }
+.pt-cancel-log { border: 1px solid #FFC9CE; border-top: none; border-radius: 0 0 8px 8px; background: #FFFBF5; overflow: hidden; }
 .pt-cancel-row {
-  padding: 14px 16px; border-bottom: 1px solid #f2f2f2; font-size: 13px;
+  padding: 14px 16px; border-bottom: 1px solid #FFF3D8; font-size: 13px;
 }
 .pt-cancel-row:last-child { border-bottom: none; }
 .pt-cancel-row-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
-.pt-cancel-row-reason { color: #c0392b; font-weight: 600; }
-.pt-cancel-row-original { color: #888; font-size: 12px; }
+.pt-cancel-row-reason { color: #FDA58F; font-weight: 600; }
+.pt-cancel-row-original { color: rgba(74, 50, 38, 0.55); font-size: 12px; }
+.pt-cancel-empty { text-align: center; color: rgba(74, 50, 38, 0.5); }
+
+/* ================= 안내메세지 토스트 (alert 대체) ================= */
+.pt-toast-wrap {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  z-index: 9999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center;
+  pointer-events: none; width: auto;
+}
+.pt-toast {
+  display: inline-flex; align-items: center; justify-content: center;
+  max-width: 320px; width: max-content;
+  padding: 12px 22px; border-radius: 999px;
+  background: #4A3226; color: #FFFFFF; font-size: 13px; font-weight: 600; text-align: center;
+  line-height: 1.4; white-space: normal; word-break: keep-all;
+  box-shadow: 0 6px 16px rgba(74, 50, 38, 0.15);
+  opacity: 0; transform: translateY(14px) scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: auto;
+}
+.pt-toast.pt-toast-show { opacity: 1; transform: translateY(0) scale(1); }
+.pt-toast-error { background: #FDA58F; color: #4A3226; }
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .pt-wrap { margin: 24px auto; padding: 0 14px 40px; }
+  .pt-summary-box { flex-direction: column; align-items: flex-start; gap: 6px; }
+}

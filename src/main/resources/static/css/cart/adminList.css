@@ -1,0 +1,80 @@
+@charset "UTF-8";
+        .ca-page, .ca-page * { box-sizing: border-box; }
+
+        .ca-page {
+            font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+            min-height: 100vh;
+            background: #FFFBF5; color: #4A3226;
+            padding: 56px 20px 60px;
+        }
+        .ca-inner { max-width: 1100px; margin: 0 auto; }
+        .ca-page h2 { margin: 0 0 8px; font-size: 22px; font-weight: 700; color: #4A3226; }
+        .ca-page table { width: 100%; border-collapse: collapse; font-size: 14px; background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px; overflow: hidden; }
+        .ca-page th, .ca-page td { padding: 10px 8px; border-bottom: 1px solid #FFF3D8; text-align: center; color: #4A3226; }
+        .ca-page th { background: #FFF3D8; color: #4A3226; font-weight: 700; }
+        .ca-page tbody tr:last-child td { border-bottom: none; }
+        .ca-page tbody tr:hover { background: rgba(255, 243, 216, 0.5); }
+        .ca-page td img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; vertical-align: middle; background: #FFF3D8; }
+        .ca-page .btn-sm { padding: 5px 10px; border: 1px solid #FFC9CE; border-radius: 4px; background: #FFFBF5; color: #4A3226; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .ca-page .btn-sm:hover { background: #FFF3D8; }
+        .ca-page .btn-danger { color: #FDA58F; border-color: #FDA58F; }
+        .ca-page .btn-danger:hover { background: #FDA58F; color: #fff; }
+        .ca-page .empty { text-align: center; color: #4A3226; opacity: 0.6; padding: 60px 0; background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px; }
+        .ca-page .count { color: #4A3226; opacity: 0.7; font-size: 13px; margin-bottom: 16px; }
+
+        /* 상세보기 모달 */
+        .ca-modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 1000;
+            background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+        }
+        .ca-modal-overlay.show { display: flex; }
+        .ca-modal {
+            width: 860px; max-width: 92vw; max-height: 82vh; overflow-y: auto;
+            background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 10px; padding: 24px; position: relative;
+        }
+        .ca-modal-close {
+            position: absolute; top: 14px; right: 16px; border: none; background: none;
+            font-size: 22px; cursor: pointer; color: #4A3226; opacity: 0.6; line-height: 1;
+        }
+        .ca-modal-close:hover { opacity: 1; color: #FDA58F; }
+        .ca-modal h4 { margin: 0 0 16px; font-size: 16px; color: #4A3226; }
+        .ca-modal-empty { text-align: center; color: #4A3226; opacity: 0.6; padding: 40px 0; font-size: 13px; }
+        .ca-modal table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .ca-modal th, .ca-modal td { padding: 10px 8px; border-bottom: 1px solid #FFF3D8; text-align: center; color: #4A3226; }
+        .ca-modal th { background: #FFF3D8; color: #4A3226; font-weight: 700; }
+
+        /* 단가/합계 칸 줄바꿈 방지 */
+        #caModalTable th:nth-child(5),
+        #caModalTable td:nth-child(5),
+        #caModalTable th:nth-child(7),
+        #caModalTable td:nth-child(7) {
+            white-space: nowrap;
+            min-width: 82px;
+        }
+
+        /* ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) ===== */
+        .ax-modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 2000;
+            /* 이 페이지의 알림/확인창은 항상 장바구니 상세 모달(.ca-modal-overlay) 위에 겹쳐서 뜨기 때문에
+               어두운 막이 두 겹 겹치지 않도록 여기서는 더 옅게 잡음(다른 독립 페이지는 0.32 사용) */
+            background: rgba(74, 50, 38, 0.15); align-items: center; justify-content: center;
+        }
+        .ax-modal-overlay.show { display: flex; }
+        .ax-modal {
+            width: 380px; max-width: 88vw;
+            background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 12px;
+            padding: 26px 22px 20px; text-align: center;
+            box-shadow: 0 10px 30px rgba(74, 50, 38, 0.35);
+        }
+        .ax-modal-message { font-size: 14px; color: #4A3226; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+        .ax-modal-actions { display: flex; gap: 8px; justify-content: center; }
+        .ax-btn {
+            padding: 9px 20px; border-radius: 6px; font-size: 13px; font-weight: 700;
+            cursor: pointer; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
+            min-width: 88px;
+        }
+        .ax-btn:hover { background: #FFF3D8; }
+        .ax-btn-primary { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
+        .ax-btn-primary:hover { background: #FDA58F; color: #fff; }
+        .ax-btn-danger { background: #FFFBF5; border-color: #FDA58F; color: #FDA58F; }
+        .ax-btn-danger:hover { background: #FDA58F; color: #fff; }

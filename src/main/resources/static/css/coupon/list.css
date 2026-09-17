@@ -1,0 +1,79 @@
+@charset "UTF-8";
+@charset "UTF-8";
+/* /css/coupon/list.css */
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   -> 이 페이지는 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)와 body에
+      직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 *, body에 걸려있던 규칙을
+      전부 .cp-wrap / #cpToastWrap 스코프로만 한정함. */
+.cp-wrap, .cp-wrap *,
+#cpToastWrap, #cpToastWrap * { box-sizing: border-box; }
+
+.cp-wrap {
+  max-width: 1100px; margin: 40px auto; padding: 0 20px 60px;
+  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  color: #4A3226;
+}
+.cp-title { font-size: 22px; font-weight: 700; margin: 0 0 8px; color: #4A3226; }
+.cp-section-title { font-size: 17px; font-weight: 700; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 2px solid #4A3226; color: #4A3226; }
+
+.cp-empty {
+  padding: 60px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 14px;
+  background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
+}
+
+.cp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+.cp-card { position: relative; border-radius: 10px; overflow: hidden; background: #FFFBF5; box-shadow: 0 1px 4px rgba(74, 50, 38, 0.08); }
+.cp-card img { width: 100%; display: block; }
+.cp-card.cp-inactive img { filter: grayscale(1); opacity: 0.55; }
+
+.cp-meta { padding: 12px 14px 14px; }
+.cp-meta-name { font-size: 14px; font-weight: 700; margin: 0 0 6px; color: #4A3226; }
+.cp-meta-sub { font-size: 12px; color: rgba(74, 50, 38, 0.6); margin: 2px 0; }
+
+.cp-status { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #FFFFFF; }
+.cp-status-unused  { background: #FDA58F; }
+.cp-status-used    { background: rgba(74, 50, 38, 0.45); }
+.cp-status-expired { background: #4A3226; }
+
+.cp-download-btn {
+  display: block; width: calc(100% - 28px); margin: 0 14px 14px; padding: 10px 0;
+  background: #FDCC61; color: #4A3226; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.cp-download-btn:hover { background: #FDA58F; color: #FFFFFF; }
+.cp-download-btn:disabled { background: #FFF3D8; color: rgba(74, 50, 38, 0.4); cursor: default; }
+
+.cp-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.cp-tab {
+  padding: 8px 16px; border: 1px solid #FFC9CE; background: #FFFBF5; border-radius: 20px;
+  font-size: 13px; cursor: pointer; color: #4A3226; font-weight: 600;
+}
+.cp-tab.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; }
+
+/* ================= 안내메세지 토스트 (alert 대체) ================= */
+.cp-toast-wrap {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  z-index: 9999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center;
+  pointer-events: none; width: auto;
+}
+.cp-toast {
+  display: inline-flex; align-items: center; justify-content: center;
+  max-width: 320px; width: max-content;
+  padding: 12px 22px; border-radius: 999px;
+  background: #4A3226; color: #FFFFFF; font-size: 13px; font-weight: 600; text-align: center;
+  line-height: 1.4; white-space: normal; word-break: keep-all;
+  box-shadow: 0 6px 16px rgba(74, 50, 38, 0.15);
+  opacity: 0; transform: translateY(14px) scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: auto;
+}
+.cp-toast.cp-toast-show { opacity: 1; transform: translateY(0) scale(1); }
+.cp-toast-success { background: #FDCC61; color: #4A3226; }
+.cp-toast-error   { background: #FDA58F; color: #4A3226; }
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .cp-wrap { margin: 24px auto; padding: 0 14px 40px; }
+  .cp-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .cp-tabs { flex-wrap: wrap; }
+}

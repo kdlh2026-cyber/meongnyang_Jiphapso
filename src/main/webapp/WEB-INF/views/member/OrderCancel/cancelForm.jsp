@@ -50,43 +50,60 @@
 
 <style>
   .occf-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    position: fixed; inset: 0; background: rgba(74, 50, 38, 0.4);
+    display: flex; align-items: center; justify-content: center; z-index: 4000;
   }
-  .occf-modal { background: #fff; width: 400px; max-width: 90vw; border-radius: 10px; padding: 28px; position: relative; }
-  .occf-modal h3 { margin: 0 0 20px; font-size: 18px; }
+  .occf-modal {
+    background: #FFFBF5; width: 400px; max-width: 90vw; border-radius: 10px; padding: 28px; position: relative;
+    box-shadow: 0 8px 24px rgba(74, 50, 38, 0.22);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  }
+  .occf-modal h3 { margin: 0 0 20px; font-size: 18px; color: #4A3226; }
   .occf-close {
     position: absolute; top: 14px; right: 16px; border: none; background: none;
-    font-size: 22px; cursor: pointer; color: #999; line-height: 1;
+    font-size: 22px; cursor: pointer; color: rgba(74, 50, 38, 0.5); line-height: 1;
   }
+  .occf-close:hover { color: #FDA58F; }
 
   .occf-row { margin-bottom: 16px; }
-  .occf-row label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; }
-  .occf-readonly { margin: 0; font-size: 14px; font-weight: 600; color: #222; }
+  .occf-row label { display: block; font-size: 13px; color: rgba(74, 50, 38, 0.6); margin-bottom: 6px; }
+  .occf-readonly { margin: 0; font-size: 14px; font-weight: 600; color: #4A3226; }
 
   .occf-row select,
   .occf-row input[type="number"] {
-    width: 100%; padding: 9px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;
+    width: 100%; padding: 9px 10px; border: 1px solid #FFC9CE; border-radius: 6px; font-size: 14px;
+    color: #4A3226; background: #FFFFFF; font-family: inherit;
   }
+  .occf-row select:focus,
+  .occf-row input[type="number"]:focus { outline: none; border-color: #FDA58F; }
   .occf-etc {
-    width: 100%; margin-top: 8px; padding: 9px 10px; border: 1px solid #ccc; border-radius: 6px;
-    font-size: 14px; min-height: 60px; resize: vertical; font-family: inherit;
+    width: 100%; margin-top: 8px; padding: 9px 10px; border: 1px solid #FFC9CE; border-radius: 6px;
+    font-size: 14px; min-height: 60px; resize: vertical; font-family: inherit; color: #4A3226; background: #FFFFFF;
   }
-  .occf-hint { display: inline-block; margin-top: 6px; font-size: 12px; color: #999; }
+  .occf-etc:focus { outline: none; border-color: #FDA58F; }
+  .occf-hint { display: inline-block; margin-top: 6px; font-size: 12px; color: rgba(74, 50, 38, 0.5); }
 
   .occf-buttons { display: flex; gap: 8px; margin-top: 22px; margin-bottom: 0; }
   .occf-btn-cancel, .occf-btn-submit {
-    flex: 1; padding: 11px 0; border-radius: 6px; font-size: 14px; cursor: pointer; border: none;
+    flex: 1; padding: 11px 0; border-radius: 6px; font-size: 14px; cursor: pointer; border: 1px solid transparent;
   }
-  .occf-btn-cancel { background: #eee; color: #444; }
-  .occf-btn-submit { background: #222; color: #fff; }
-  .occf-btn-submit:hover { background: #000; }
+  .occf-btn-cancel { background: #FFFBF5; color: #4A3226; border-color: #FFC9CE; }
+  .occf-btn-cancel:hover { background: #FFF3D8; }
+  .occf-btn-submit { background: #4A3226; color: #FFFBF5; }
+  .occf-btn-submit:hover { background: #FDA58F; color: #FFFFFF; }
 </style>
 
 <script>
   (function () {
     var occfContextPath = "${pageContext.request.contextPath}";
     var occfMaxQuantity = 1;
+    function occfToast(message, type) {
+      if (typeof showToast === "function") {
+        showToast(message, type);
+      } else {
+        alert(message);
+      }
+    }
 
     // 주문상세 페이지에서 취소/반품/교환 버튼 클릭 시 호출
     window.openCancelModal = function (odDetailNo, productName, maxQuantity) {
@@ -121,7 +138,7 @@
 
       var qty = Number(document.getElementById("occfQuantity").value);
       if (qty < 1 || qty > occfMaxQuantity) {
-        alert("수량은 1 ~ " + occfMaxQuantity + " 사이로 입력해주세요.");
+        occfToast("수량은 1 ~ " + occfMaxQuantity + " 사이로 입력해주세요.", "error");
         return false;
       }
 
@@ -130,7 +147,7 @@
       var reason = (reasonSelect === "ETC") ? reasonEtc : reasonSelect;
 
       if (reasonSelect === "ETC" && reason === "") {
-        alert("사유를 입력해주세요.");
+        occfToast("사유를 입력해주세요.", "error");
         return false;
       }
 
@@ -147,20 +164,21 @@
       })
         .then(function (res) { return res.json(); })
         .then(function (result) {
-          alert(result.message);
+          occfToast(result.message, result.success ? "success" : "error");
           if (result.success) {
             closeCancelModal();
-            // 신청 후 화면 갱신: 페이지에 refreshOrderDetail() 이 정의돼 있으면 그걸 사용, 없으면 새로고침
-            if (typeof refreshOrderDetail === "function") {
-              refreshOrderDetail();
-            } else {
-              location.reload();
-            }
+            setTimeout(function () {
+              if (typeof refreshOrderDetail === "function") {
+                refreshOrderDetail();
+              } else {
+                location.reload();
+              }
+            }, 700);
           }
         })
         .catch(function (err) {
           console.error("취소/반품 신청 실패", err);
-          alert("신청 중 오류가 발생했습니다.");
+          occfToast("신청 중 오류가 발생했습니다.", "error");
         });
 
       return false;

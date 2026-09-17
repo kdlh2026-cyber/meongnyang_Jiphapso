@@ -1,0 +1,116 @@
+@charset "UTF-8";
+  :root {
+    --color-yellow: #FDCC61; /* 메인 옐로우 */
+    --color-coral:  #FDA58F; /* 코랄 핑크 */
+    --color-brown:  #4A3226; /* 딥 브라운 */
+    --color-cream:  #FFF3D8; /* 웜 크림 */
+    --color-pink:   #FFC9CE; /* 소프트 핑크 */
+    --color-white:  #FFFBF5; /* 웜 화이트 */
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: var(--color-white); color: var(--color-brown); }
+
+  .cpa-wrap { max-width: 1300px; margin: 40px auto; padding: 0 20px 60px; }
+  .cpa-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; color: var(--color-brown); }
+  .cpa-section-title { font-size: 16px; font-weight: 700; margin: 36px 0 14px; padding-bottom: 10px; border-bottom: 2px solid var(--color-brown); color: var(--color-brown); }
+
+  .cpa-form {
+    background: var(--color-cream); border: 1px solid var(--color-pink); border-radius: 8px; padding: 20px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 16px;
+  }
+  .cpa-field { display: flex; flex-direction: column; gap: 6px; }
+  .cpa-field label { font-size: 12px; color: var(--color-brown); opacity: 0.75; font-weight: 600; }
+  .cpa-field input, .cpa-field select {
+    padding: 8px 10px; border: 1px solid var(--color-pink); border-radius: 6px; font-size: 13px;
+    background: var(--color-white); color: var(--color-brown);
+  }
+  .cpa-field.cpa-span2 { grid-column: span 2; }
+  .cpa-field.cpa-span4 { grid-column: span 4; }
+  .cpa-submit-row { grid-column: span 4; text-align: right; }
+  .cpa-btn-submit {
+    padding: 10px 24px; background: var(--color-yellow); color: var(--color-brown); border: none; border-radius: 6px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .cpa-btn-submit:hover { background: var(--color-coral); color: #fff; }
+
+  .cpa-empty {
+    padding: 60px 0; text-align: center; color: var(--color-brown); opacity: 0.6; font-size: 14px;
+    background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 8px;
+  }
+
+  .cpa-table { width: 100%; border-collapse: collapse; background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 8px; overflow: hidden; font-size: 13px; }
+  .cpa-table th, .cpa-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--color-cream); color: var(--color-brown); }
+  .cpa-table thead th { background: var(--color-cream); font-weight: 700; }
+  .cpa-table tbody tr:last-child td { border-bottom: none; }
+  .cpa-table img { width: 90px; border-radius: 4px; }
+
+  .cpa-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid var(--color-coral); color: var(--color-coral); background: var(--color-white); font-weight: 600; }
+  .cpa-btn:hover { background: var(--color-coral); color: #fff; }
+
+  .cpa-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid transparent; }
+  /* 사용가능: 옐로우 계열로 눈에 띄게, 사용완료: 브라운 저채도로 확실히 죽은 느낌, 기간만료: 코랄로 구분 */
+  .cpa-badge-unused  { background: rgba(253, 204, 97, 0.45); border-color: rgba(253, 204, 97, 0.9); color: var(--color-brown); }
+  .cpa-badge-used    { background: rgba(74, 50, 38, 0.07); border-color: rgba(74, 50, 38, 0.2); color: rgba(74, 50, 38, 0.55); font-weight: 600; }
+  .cpa-badge-expired { background: rgba(253, 165, 143, 0.4); border-color: rgba(253, 165, 143, 0.9); color: var(--color-brown); }
+
+  #fPNoField { position: relative; }
+  .cpa-search-results {
+    position: absolute; top: 62px; left: 0; right: 0; z-index: 10;
+    background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 6px; max-height: 180px; overflow-y: auto;
+    box-shadow: 0 4px 10px rgba(74,50,38,0.12);
+  }
+  .cpa-search-item { padding: 8px 10px; font-size: 13px; cursor: pointer; text-align: left; color: var(--color-brown); }
+  .cpa-search-item:hover { background: var(--color-cream); }
+  .cpa-search-empty { padding: 8px 10px; font-size: 12px; color: var(--color-brown); opacity: 0.6; text-align: left; }
+  .cpa-search-selected { margin-top: 4px; font-size: 12px; color: var(--color-brown); font-weight: 700; }
+
+  /* 회원아이디 클릭 -> 그 회원 쿠폰만 보는 모달 */
+  .cpa-mid-link { color: var(--color-brown); cursor: pointer; text-decoration: underline; font-weight: 700; }
+  .cpa-mid-link:hover { color: var(--color-coral); }
+
+  .cpa-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+  }
+  .cpa-modal-overlay.show { display: flex; }
+  .cpa-modal {
+    width: 560px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
+    background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 10px; padding: 26px; position: relative;
+  }
+  .cpa-modal h3 { margin: 0 0 18px; font-size: 16px; color: var(--color-brown); }
+  .cpa-modal-close {
+    position: absolute; top: 14px; right: 16px; border: none; background: none;
+    font-size: 22px; cursor: pointer; color: var(--color-brown); opacity: 0.6; line-height: 1;
+  }
+  .cpa-modal-close:hover { opacity: 1; color: var(--color-coral); }
+  .cpa-modal-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .cpa-modal-table th, .cpa-modal-table td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--color-cream); color: var(--color-brown); }
+  .cpa-modal-table thead th { background: var(--color-cream); font-weight: 700; }
+  .cpa-modal-empty { padding: 40px 0; text-align: center; color: var(--color-brown); opacity: 0.6; font-size: 13px; }
+
+  /* ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) ===== */
+  .ax-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+  }
+  .ax-modal-overlay.show { display: flex; }
+  .ax-modal {
+    width: 380px; max-width: 88vw;
+    background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 12px;
+    padding: 26px 22px 20px; text-align: center;
+  }
+  .ax-modal-message {
+    font-size: 14px; color: var(--color-brown); line-height: 1.5; margin-bottom: 20px;
+    white-space: pre-line;
+  }
+  .ax-modal-actions { display: flex; gap: 8px; justify-content: center; }
+  .ax-btn {
+    padding: 9px 20px; border-radius: 6px; font-size: 13px; font-weight: 700;
+    cursor: pointer; border: 1px solid var(--color-pink); background: var(--color-white); color: var(--color-brown);
+    min-width: 88px;
+  }
+  .ax-btn:hover { background: var(--color-cream); }
+  .ax-btn-primary { background: var(--color-yellow); border-color: var(--color-yellow); color: var(--color-brown); }
+  .ax-btn-primary:hover { background: var(--color-coral); color: #fff; }
+  .ax-btn-danger { background: var(--color-white); border-color: var(--color-coral); color: var(--color-coral); }
+  .ax-btn-danger:hover { background: var(--color-coral); color: #fff; }

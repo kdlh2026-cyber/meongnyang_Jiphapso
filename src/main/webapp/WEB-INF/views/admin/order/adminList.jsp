@@ -8,9 +8,11 @@
 <head>
     <meta charset="UTF-8">
     <title>관리자 - 주문관리</title>
+    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
     <link rel="stylesheet" href="/css/order/adminList.css">
 </head>
 <body>
+<div class="ord-page">
 <h3>주문관리</h3>
 
 <c:set var="statusCodes" value="${fn:split('PAYMENT_PENDING,PAID,PREPARING,SHIPPING,DELIVERED,CONFIRMED,CANCELED', ',')}" />
@@ -66,7 +68,60 @@
     </tbody>
 </table>
 
+<!-- 커스텀 알림 모달 (기본 alert 대체) -->
+<div class="ax-modal-overlay" id="axAlertOverlay">
+    <div class="ax-modal">
+        <div class="ax-modal-message" id="axAlertMessage"></div>
+        <div class="ax-modal-actions">
+            <button type="button" class="ax-btn ax-btn-primary" id="axAlertOkBtn">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- 커스텀 확인 모달 (기본 confirm 대체) -->
+<div class="ax-modal-overlay" id="axConfirmOverlay">
+    <div class="ax-modal">
+        <div class="ax-modal-message" id="axConfirmMessage"></div>
+        <div class="ax-modal-actions">
+            <button type="button" class="ax-btn" id="axConfirmCancelBtn">취소</button>
+            <button type="button" class="ax-btn ax-btn-primary" id="axConfirmOkBtn">확인</button>
+        </div>
+    </div>
+</div>
+</div><!-- /.ord-page -->
+
 <script>
+    // ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) =====
+    function showAlert(message, callback) {
+        var overlay = document.getElementById('axAlertOverlay');
+        document.getElementById('axAlertMessage').textContent = message;
+        document.getElementById('axAlertOkBtn').onclick = function () {
+            overlay.classList.remove('show');
+            if (typeof callback === 'function') callback();
+        };
+        overlay.classList.add('show');
+    }
+
+    function showConfirm(message, onConfirm, options) {
+        options = options || {};
+        var overlay = document.getElementById('axConfirmOverlay');
+        document.getElementById('axConfirmMessage').textContent = message;
+
+        var okBtn = document.getElementById('axConfirmOkBtn');
+        okBtn.textContent = options.okText || '확인';
+        okBtn.className = 'ax-btn ' + (options.danger ? 'ax-btn-danger' : 'ax-btn-primary');
+        okBtn.onclick = function () {
+            overlay.classList.remove('show');
+            if (typeof onConfirm === 'function') onConfirm();
+        };
+
+        document.getElementById('axConfirmCancelBtn').onclick = function () {
+            overlay.classList.remove('show');
+        };
+
+        overlay.classList.add('show');
+    }
+
     // 상태 탭 클릭 시 클라이언트에서 행 필터링 (서버 재조회 없음)
     function filterByStatus(status, btnEl) {
         var tabs = document.querySelectorAll('#ordTabs .ord-tab');
@@ -90,19 +145,20 @@
 
     // 주문 삭제 - DELETE /admin/order/{orNo}
     function deleteOrder(orNo) {
-        if (!confirm('해당 주문을 삭제할까요?')) return;
-
-        fetch('/admin/order/' + orNo, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(result => {
-            if (result.success) {
-                document.getElementById('row-' + orNo).remove();
-            } else {
-                alert(result.message || '삭제에 실패했어요.');
-            }
-        })
-        .catch(() => alert('처리 중 오류가 발생했어요.'));
+        showConfirm('해당 주문을 삭제할까요?', function () {
+            fetch('/admin/order/' + orNo, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    document.getElementById('row-' + orNo).remove();
+                } else {
+                    showAlert(result.message || '삭제에 실패했어요.');
+                }
+            })
+            .catch(() => showAlert('처리 중 오류가 발생했어요.'));
+        }, { danger: true, okText: '삭제' });
     }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

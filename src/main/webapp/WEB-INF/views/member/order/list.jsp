@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <title>주문내역</title>
     <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-    <link rel="stylesheet" href="/css/order/list.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/order/list.css">
 </head>
 <body>
 
@@ -86,15 +86,13 @@
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 <script>
-//document 전체에 이벤트를 걸어 동적으로 생성되거나 로드된 요소도 완벽하게 잡아냅니다.
 document.addEventListener('click', function(event) {
-    // 클릭된 요소가 'btn-review-toggle' 클래스를 가지고 있는지 확인 (버튼 안의 span 등을 눌렀을 수도 있으므로 .closest 사용)
     const reviewBtn = event.target.closest('.btn-review-toggle');
-    
+
     if (reviewBtn) {
         const orNo = reviewBtn.getAttribute('data-orno');
         const reviewBox = document.getElementById('review-box-' + orNo);
-        
+
         if (reviewBox) {
             if (reviewBox.style.display === 'none' || reviewBox.style.display === '') {
                 reviewBox.style.display = 'block';

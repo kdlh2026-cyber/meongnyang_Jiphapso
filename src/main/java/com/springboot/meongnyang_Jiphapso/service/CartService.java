@@ -1,5 +1,6 @@
 package com.springboot.meongnyang_Jiphapso.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,10 @@ public class CartService {
     @Transactional
     public CartDTO addCart(Long mNo, String guestToken, Long pNo, Long oNo, int quantity) {
 
+        if (quantity < 1) {
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
+        }
+
         if (oNo == null) {
             oNo = cartDAO.selectDefaultOptionNo(pNo);
             if (oNo == null) {
@@ -50,15 +55,25 @@ public class CartService {
                 .orElse(null);
 
         if (existing != null) {
-            // 이미 담긴 상품 - 수량만 합산
+            // 이미 담긴 상품 - 수량만 합산 (재고 초과 검증 - existing에 조인된 oQuantity 그대로 사용)
+            int newQuantity = existing.getCaQuantity() + quantity;
+            if (existing.getOQuantity() != null && newQuantity > existing.getOQuantity()) {
+                throw new IllegalStateException("재고가 부족합니다 (최대 " + existing.getOQuantity() + "개)");
+            }
+
             CartDTO updateDto = new CartDTO();
             updateDto.setCaNo(existing.getCaNo());
-            updateDto.setCaQuantity(existing.getCaQuantity() + quantity);
+            updateDto.setCaQuantity(newQuantity);
             cartDAO.updateCartQuantity(updateDto);
             return cartDAO.selectCartOne(existing.getCaNo());
         }
 
-        // 신규 담기
+        // 신규 담기 - 옵션 재고 검증 (selectOptionListByProduct 로 대상 옵션의 재고 조회)
+        Integer stock = findOptionStock(pNo, finalONo);
+        if (stock != null && quantity > stock) {
+            throw new IllegalStateException("재고가 부족합니다 (최대 " + stock + "개)");
+        }
+
         CartDTO dto = new CartDTO();
         dto.setMNo(mNo);
         dto.setCaToken(mNo == null ? guestToken : null);
@@ -71,11 +86,33 @@ public class CartService {
         return cartDAO.selectCartOne(dto.getCaNo());
     }
 
-    /** 수량 변경 - 소유자 검증 후 */
+    /** 상품(pNo)의 옵션 목록에서 특정 옵션(oNo)의 재고(oQuantity) 조회 */
+    private Integer findOptionStock(Long pNo, Long oNo) {
+        List<Map<String, Object>> options = cartDAO.selectOptionListByProduct(pNo);
+        for (Map<String, Object> option : options) {
+            Object no = option.get("oNo");
+            if (no != null && oNo.equals(((Number) no).longValue())) {
+                Object qty = option.get("oQuantity");
+                return qty != null ? ((Number) qty).intValue() : null;
+            }
+        }
+        return null;
+    }
+
+    /** 수량 변경 - 소유자 검증 + 최소수량/재고 검증 후 */
     @Transactional
     public void updateQuantity(Long caNo, int quantity, Long mNo, String guestToken) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
+        }
+
         CartDTO cart = cartDAO.selectCartOne(caNo);
         checkOwner(cart, mNo, guestToken);
+
+        // cart.getOQuantity() - selectCartOne 조인 시 dc_product_option.o_quantity 그대로 들어있음
+        if (cart.getOQuantity() != null && quantity > cart.getOQuantity()) {
+            throw new IllegalStateException("재고가 부족합니다 (최대 " + cart.getOQuantity() + "개)");
+        }
 
         CartDTO dto = new CartDTO();
         dto.setCaNo(caNo);
@@ -106,6 +143,14 @@ public class CartService {
     public CartDTO changeOption(Long caNo, Long oNo, int quantity, Long mNo, String guestToken) {
         CartDTO cart = cartDAO.selectCartOne(caNo);
         checkOwner(cart, mNo, guestToken);
+
+        if (quantity < 1) {
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
+        }
+        Integer stock = findOptionStock(cart.getPNo(), oNo);
+        if (stock != null && quantity > stock) {
+            throw new IllegalStateException("재고가 부족합니다 (최대 " + stock + "개)");
+        }
 
         cartDAO.updateCartOption(caNo, oNo, quantity);
         return cartDAO.selectCartOne(caNo);

@@ -5,63 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>[관리자] 포인트 관리</title>
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: #f7f7f8; color: #222; }
-
-  .pta-wrap { max-width: 1200px; margin: 40px auto; padding: 0 20px 60px; }
-  .pta-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; }
-
-  .pta-adjust-box {
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 18px;
-    display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
-  }
-  .pta-adjust-box input {
-    padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px;
-    box-sizing: border-box;
-  }
-  .pta-adjust-box input[name="mId"] { width: 140px; flex-shrink: 0; }
-  .pta-adjust-box input[name="amount"] { width: 150px; flex-shrink: 0; }
-  .pta-adjust-box input[name="reason"] { flex: 1 1 200px; min-width: 160px; }
-
-  .pta-adjust-box input[type="number"]::-webkit-outer-spin-button,
-  .pta-adjust-box input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none; margin: 0;
-  }
-  .pta-adjust-box input[type="number"] { -moz-appearance: textfield; }
-
-  .pta-btn-adjust {
-    padding: 8px 16px; border: none; border-radius: 6px; background: #222; color: #fff;
-    font-size: 13px; cursor: pointer; flex-shrink: 0;
-  }
-  .pta-hint { font-size: 12px; color: #888; width: 100%; margin-top: 4px; }
-
-  .pta-empty {
-    padding: 80px 0; text-align: center; color: #888; font-size: 15px;
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
-  }
-
-  .pta-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; font-size: 13px; }
-  .pta-table th, .pta-table td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #eee; }
-  .pta-table thead th { background: #fafafa; color: #555; font-weight: 600; }
-  .pta-table tbody tr:last-child td { border-bottom: none; }
-
-  .pta-amount-plus  { color: #1a56db; font-weight: 700; }
-  .pta-amount-minus { color: #c0392b; font-weight: 700; }
-
-  .pta-btn-delete {
-    padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;
-    border: 1px solid #c0392b; color: #c0392b; background: #fff;
-  }
-  .pta-btn-delete:hover { background: #c0392b; color: #fff; }
-
-
-  .pta-section { margin-bottom: 32px; }
-  .pta-section-title {
-    font-size: 16px; font-weight: 700; margin: 0 0 12px;
-    padding-bottom: 8px; border-bottom: 2px solid #222;
-  }
-</style>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<link rel="stylesheet" href="/css/point/adminList.css">
 </head>
 <body>
 
@@ -123,10 +68,32 @@
   </div>
 </div>
 
+<!-- 회원(mId) 클릭 시 -> 그 회원의 포인트 적립/사용/취소 내역만 모아서 보여주는 모달 -->
+<div class="pta-modal-overlay" id="ptaMemberModalOverlay">
+  <div class="pta-modal">
+    <button type="button" class="pta-modal-close" onclick="closeMemberPointModal()">&times;</button>
+    <h3 id="ptaMemberModalTitle">회원 포인트 내역</h3>
+    <table class="pta-modal-table">
+      <thead>
+        <tr>
+          <th>이력번호</th>
+          <th>구분</th>
+          <th>포인트</th>
+          <th>잔액</th>
+          <th>사유</th>
+          <th>발생일시</th>
+        </tr>
+      </thead>
+      <tbody id="ptaMemberModalTbody"></tbody>
+    </table>
+    <div id="ptaMemberModalEmpty" class="pta-modal-empty" style="display:none;">포인트 내역이 없습니다.</div>
+  </div>
+</div>
+
 <script>
   var contextPath = "${pageContext.request.contextPath}";
   var TYPE_LABEL = { EARN: "적립", USE: "사용", EXPIRE: "소멸", RESTORE: "복원" };
-  var fullPointList = []; // 사유 검색 필터링용 원본 목록 캐시
+  var fullPointList = []; // 사유 검색 필터링 + 회원별 모달 필터링용 원본 목록 캐시
 
   document.addEventListener("DOMContentLoaded", function () {
     loadAdminPointList();
@@ -205,16 +172,17 @@
       var amountText = (isPlus ? "+" : "") + formatNumber(item.poAmount);
 
       var mIdValue = item.mid;
+      var mIdSafe = escapeHtml(mIdValue).replace(/'/g, "&#39;");
 
       var isAlreadyCancelled = !!cancelledOriginalNos[item.poNo];
       var cancelBtn = isAlreadyCancelled
-        ? "<span style=\"color:#aaa; font-size:12px;\">취소됨</span>"
+        ? "<span style=\"color: rgba(74,50,38,0.45); font-size:12px;\">취소됨</span>"
         : "<button type=\"button\" class=\"pta-btn-delete\" onclick=\"reverseItem(" + item.poNo + ")\">취소(사유입력)</button>";
 
       var tr = document.createElement("tr");
       tr.innerHTML =
         "<td>" + item.poNo + "</td>" +
-        "<td>" + escapeHtml(mIdValue) + "</td>" +
+        "<td><span class=\"pta-mid-link\" onclick=\"showMemberPointModal('" + mIdSafe + "')\">" + escapeHtml(mIdValue) + "</span></td>" +
         "<td>" + typeLabel + "</td>" +
         "<td class=\"" + amountCls + "\">" + amountText + "P</td>" +
         "<td>" + formatNumber(item.poAfter) + "P</td>" +
@@ -222,7 +190,7 @@
         "<td>" + formatDate(item.poAt) + "</td>" +
         "<td>" + (item.poEx ? formatDate(item.poEx) : "-") + "</td>" +
         "<td>" +
-          "<button type=\"button\" class=\"pta-btn-delete\" style=\"border-color:#1a56db; color:#1a56db;\" onclick=\"quickFillMId('" + escapeHtml(mIdValue).replace(/'/g, "&#39;") + "')\">이 회원에게 지급</button>" +
+          "<button type=\"button\" class=\"pta-btn-delete\" style=\"border-color: var(--color-brown); color: var(--color-brown);\" onclick=\"quickFillMId('" + mIdSafe + "')\">이 회원에게 지급</button>" +
           cancelBtn +
         "</td>";
       tbody.appendChild(tr);
@@ -260,6 +228,47 @@
         "<td>" + formatDate(item.poAt) + "</td>";
       tbody.appendChild(tr);
     });
+  }
+
+  // 회원(mId) 클릭 -> fullPointList 전체(지급/차감 + 취소 이력 모두)에서 그 회원 것만 걸러서
+  // 최신순으로 정렬해 모달에 보여줌
+  function showMemberPointModal(mId) {
+    var list = fullPointList.filter(function (item) { return item.mid === mId; });
+    list.sort(function (a, b) { return new Date(b.poAt) - new Date(a.poAt); });
+
+    document.getElementById("ptaMemberModalTitle").textContent = mId + " 님의 포인트 내역";
+
+    var tbody = document.getElementById("ptaMemberModalTbody");
+    var empty = document.getElementById("ptaMemberModalEmpty");
+    tbody.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      empty.style.display = "block";
+    } else {
+      empty.style.display = "none";
+      list.forEach(function (item) {
+        var typeLabel = TYPE_LABEL[item.poType] || item.poType;
+        var isPlus = item.poAmount >= 0;
+        var amountCls = isPlus ? "pta-amount-plus" : "pta-amount-minus";
+        var amountText = (isPlus ? "+" : "") + formatNumber(item.poAmount);
+
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td>" + item.poNo + "</td>" +
+          "<td>" + typeLabel + "</td>" +
+          "<td class=\"" + amountCls + "\">" + amountText + "P</td>" +
+          "<td>" + formatNumber(item.poAfter) + "P</td>" +
+          "<td>" + escapeHtml(item.poReason) + "</td>" +
+          "<td>" + formatDate(item.poAt) + "</td>";
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("ptaMemberModalOverlay").classList.add("show");
+  }
+
+  function closeMemberPointModal() {
+    document.getElementById("ptaMemberModalOverlay").classList.remove("show");
   }
 
   // 관리자 수동 지급/차감 (PointController#adjustPoint) - 입력한 부호 그대로 전송, 회원은 아이디로 식별
@@ -345,5 +354,6 @@
       .replace(/>/g, "&gt;");
   }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

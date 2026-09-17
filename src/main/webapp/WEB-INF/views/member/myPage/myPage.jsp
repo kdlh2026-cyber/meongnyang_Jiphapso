@@ -46,7 +46,6 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-
 <div class="mp-wrap">
   <nav class="mp-tabs">
     <button class="mp-tab active" data-url="/member/myPage/myProfile?m_id=${myId.m_id}" onclick="loadMpTab(this)">프로필</button>
@@ -99,7 +98,17 @@ function loadMpContent(url) {
         return response.text();
     })
     .then(html => {
-        document.getElementById('mp-content-area').innerHTML = html;
+        const area = document.getElementById('mp-content-area');
+        area.innerHTML = html;
+        area.querySelectorAll('script').forEach(function (oldScript) {
+            var newScript = document.createElement('script');
+            if (oldScript.src) {
+                newScript.src = oldScript.src;
+            } else {
+                newScript.textContent = oldScript.textContent;
+            }
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
     })
     .catch(err => {
         console.error('Error loading tab:', err);
@@ -122,7 +131,7 @@ document.getElementById('mp-content-area')
         // 카테고리 본문만 다시 불러오기
         loadMpContent(url);
     });
-    
+
 	window.addEventListener('DOMContentLoaded', function () {
 	    const profileUrl = document.querySelector('.mp-tab.active').dataset.url;
 	    loadMpContent(profileUrl);

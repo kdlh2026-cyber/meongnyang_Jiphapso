@@ -1,323 +1,89 @@
 @charset "UTF-8";
+.oc-wrap, .oc-wrap *,
+.oc-modal-overlay, .oc-modal-overlay *,
+.oc-toast-wrap, .oc-toast-wrap * { box-sizing: border-box; }
 
-/* ===============================
-   취소 · 반품 내역 CSS
-   주문내역(list.css) 스타일 통일
-================================ */
+.oc-wrap { max-width: 720px; margin: 32px auto; padding: 0 20px 60px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; color: #4A3226; }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+.oc-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; color: #4A3226; }
+
+/* 상태 필터 탭 - order_list.css와 동일 */
+.status-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.status-tabs a {
+    display: inline-block; padding: 8px 16px; border: 1px solid #FFC9CE; border-radius: 20px;
+    font-size: 13px; color: #4A3226; text-decoration: none; background: #FFFBF5;
+}
+.status-tabs a:hover { border-color: #FDA58F; color: #FDA58F; }
+.status-tabs a.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; }
+
+.oc-empty {
+    padding: 80px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 15px;
+    background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
 }
 
-body{
-    font-family:'Noto Sans KR', sans-serif;
-    background:#faf9f8;
-    color:#333;
+/* 취소/반품 내역 테이블 */
+.oc-table { width: 100%; border-collapse: collapse; font-size: 13px; background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 10px; overflow: hidden; }
+.oc-table th {
+    padding: 12px 8px; border-bottom: 2px solid #4A3226; background: #FFF3D8; color: #4A3226;
+    font-weight: 700; text-align: center; white-space: nowrap;
+}
+.oc-table td { padding: 12px 8px; border-bottom: 1px solid #FFF3D8; text-align: center; color: #4A3226; white-space: nowrap; }
+.oc-table tbody tr:last-child td { border-bottom: none; }
+.oc-table tbody tr:hover td { background: #FFF3D8; }
+
+/* 처리상태 배지 - order_detail.css의 oc-status-* 매핑과 톤을 맞춤 */
+.oc-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; background: #FFF3D8; color: #4A3226;
+}
+.oc-badge-requested { background: #FFF3D8; color: #4A3226; }                          /* 신청됨 */
+.oc-badge-approved  { background: #FDCC61; color: #4A3226; }                          /* 승인됨 */
+.oc-badge-refunded  { background: #FFFBF5; color: #4A3226; border: 1px solid #4A3226; } /* 환불완료 */
+.oc-badge-rejected  { background: #FFFBF5; color: #FDA58F; border: 1px solid #FDA58F; } /* 거절됨 */
+
+.oc-btn-detail {
+    display: inline-block; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
+    border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; white-space: nowrap;
+}
+.oc-btn-detail:hover { border-color: #FDA58F; color: #FDA58F; background: #FFF3D8; }
+
+/* 상세보기 모달 */
+.oc-modal-overlay {
+    position: fixed; inset: 0; z-index: 3000; background: rgba(74, 50, 38, 0.4);
+    align-items: center; justify-content: center;
+}
+.oc-modal {
+    position: relative; width: 380px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
+    background: #FFFBF5; border-radius: 12px; padding: 28px 24px 24px;
+    box-shadow: 0 8px 24px rgba(74, 50, 38, 0.22);
+}
+.oc-modal h3 { margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #4A3226; }
+.oc-modal-close {
+    position: absolute; top: 14px; right: 14px; border: none; background: none;
+    font-size: 20px; line-height: 1; color: rgba(74, 50, 38, 0.5); cursor: pointer; padding: 0;
+}
+.oc-modal-close:hover { color: #FDA58F; }
+
+.oc-dl { display: grid; grid-template-columns: 96px 1fr; row-gap: 10px; column-gap: 10px; font-size: 13px; }
+.oc-dl dt { color: rgba(74, 50, 38, 0.55); font-weight: 700; margin: 0; }
+.oc-dl dd { margin: 0; color: #4A3226; word-break: break-word; }
+
+@media (max-width: 480px) {
+    .oc-table { display: block; overflow-x: auto; white-space: nowrap; }
 }
 
-/* ===============================
-   전체 영역
-================================ */
-
-.oc-wrap{
-    max-width:720px;
-    margin:35px auto 80px;
-    padding:0 20px;
+/* 네이티브 alert() 대체용 토스트 */
+.oc-toast-wrap {
+    position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 3500; display: flex; flex-direction: column; gap: 8px; align-items: center;
+    pointer-events: none;
 }
-
-/* 제목 */
-
-.oc-title{
-    font-size:22px;
-    font-weight:700;
-    color:#222;
-    margin-bottom:16px;
+.oc-toast {
+    min-width: 220px; max-width: 90vw; padding: 12px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; text-align: center; color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(74, 50, 38, 0.18);
+    opacity: 0; transform: translateY(-8px); transition: opacity 0.2s ease, transform 0.2s ease;
 }
-
-/* ===============================
-   상태 탭 (주문내역과 동일)
-================================ */
-
-.status-tabs{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-bottom:18px;
-}
-
-.status-tabs a{
-    display:inline-block;
-    padding:8px 16px;
-    border:1px solid #dddddd;
-    border-radius:20px;
-    background:#fff;
-    color:#666;
-    font-size:12px;
-    text-decoration:none;
-    transition:all .2s ease;
-}
-
-.status-tabs a:hover{
-    border-color:#c17a52;
-    color:#c17a52;
-}
-
-.status-tabs a.active{
-    background:#222;
-    border-color:#222;
-    color:#fff;
-    font-weight:600;
-}
-
-/* ===============================
-   빈 목록 카드
-================================ */
-
-.oc-empty{
-    width:100%;
-    min-height:175px;
-    background:#fff;
-    border:1px solid #e5e5e5;
-    border-radius:8px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    color:#888;
-    font-size:15px;
-    text-align:center;
-    line-height:1.7;
-}
-
-.oc-empty::before{
-    content:"✖";
-    color:#b97b55;
-    font-size:14px;
-    margin-right:6px;
-    font-weight:bold;
-}
-
-/* ===============================
-   테이블
-================================ */
-
-.oc-table{
-    width:100%;
-    border-collapse:collapse;
-    background:#fff;
-    border:1px solid #e5e5e5;
-    border-radius:8px;
-    overflow:hidden;
-}
-
-.oc-table thead{
-    background:#faf7f5;
-}
-
-.oc-table th{
-    padding:14px 10px;
-    border-bottom:1px solid #ececec;
-    color:#666;
-    font-size:13px;
-    font-weight:700;
-    text-align:center;
-}
-
-.oc-table td{
-    padding:16px 10px;
-    border-bottom:1px solid #f2f2f2;
-    color:#444;
-    font-size:13px;
-    text-align:center;
-}
-
-.oc-table tbody tr:last-child td{
-    border-bottom:none;
-}
-
-.oc-table tbody tr:hover{
-    background:#fcfcfc;
-}
-
-/* ===============================
-   상태 배지
-================================ */
-
-.oc-badge{
-    display:inline-block;
-    padding:5px 12px;
-    border-radius:999px;
-    font-size:12px;
-    font-weight:700;
-}
-
-.oc-badge-requested{
-    background:#fff3d8;
-    color:#a97716;
-}
-
-.oc-badge-approved{
-    background:#e8f7ec;
-    color:#14804d;
-}
-
-.oc-badge-refunded{
-    background:#e6f0ff;
-    color:#2d63d6;
-}
-
-.oc-badge-rejected{
-    background:#fdeaea;
-    color:#c53b30;
-}
-
-/* ===============================
-   상세보기 버튼
-================================ */
-
-.oc-btn-detail{
-    padding:7px 14px;
-    border:1px solid #e2b89f;
-    background:#fff7f2;
-    color:#c17a52;
-    border-radius:6px;
-    font-size:12px;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.oc-btn-detail:hover{
-    background:#c17a52;
-    color:#fff;
-}
-
-/* ===============================
-   상세보기 모달
-================================ */
-
-.oc-modal-overlay{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.45);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
-}
-
-.oc-modal{
-    width:92%;
-    max-width:560px;
-    background:#fff;
-    border-radius:14px;
-    padding:26px;
-    position:relative;
-    animation:modalFade .2s ease;
-}
-
-.oc-modal h3{
-    font-size:20px;
-    margin-bottom:20px;
-    color:#222;
-}
-
-.oc-modal-close{
-    position:absolute;
-    top:15px;
-    right:18px;
-    background:none;
-    border:none;
-    font-size:28px;
-    color:#777;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.oc-modal-close:hover{
-    color:#000;
-}
-
-/* 상세 내용 */
-
-.oc-dl{
-    display:grid;
-    grid-template-columns:120px 1fr;
-    column-gap:12px;
-    row-gap:14px;
-}
-
-.oc-dl dt{
-    font-weight:700;
-    color:#666;
-}
-
-.oc-dl dd{
-    margin:0;
-    color:#333;
-    word-break:break-word;
-}
-
-/* ===============================
-   모바일
-================================ */
-
-@media (max-width:768px){
-
-    .oc-wrap{
-        padding:0 15px;
-        margin:30px auto 60px;
-    }
-
-    .oc-title{
-        font-size:20px;
-    }
-
-    .status-tabs{
-        gap:6px;
-    }
-
-    .status-tabs a{
-        padding:7px 12px;
-        font-size:12px;
-    }
-
-    .oc-table{
-        display:block;
-        overflow-x:auto;
-        white-space:nowrap;
-    }
-
-    .oc-empty{
-        min-height:150px;
-        font-size:14px;
-    }
-
-    .oc-modal{
-        padding:20px;
-    }
-
-    .oc-dl{
-        grid-template-columns:90px 1fr;
-    }
-}
-
-/* ===============================
-   모달 애니메이션
-================================ */
-
-@keyframes modalFade{
-    from{
-        opacity:0;
-        transform:translateY(15px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
+.oc-toast.show { opacity: 1; transform: translateY(0); }
+.oc-toast-success { background: #FDCC61; color: #4A3226; }
+.oc-toast-error { background: #FDA58F; color: #FFFFFF; }

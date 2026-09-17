@@ -1,0 +1,116 @@
+@charset "UTF-8";
+@charset "UTF-8";
+/* /css/favorite/list.css */
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   기존 범용 빨강/주황(#e74c3c, #f4a261 등) 하트 아이콘 색상을 전부 브랜드 팔레트로 정리함. */
+.wish-wrap { padding: 24px 20px; max-width: 960px; margin: 0 auto; }
+.wish-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: #4A3226; }
+.wish-title .count {
+    display: inline-block; margin-left: 6px; padding: 2px 8px;
+    background: #FDA58F; color: #FFFFFF; border-radius: 999px; font-size: 12px;
+}
+.wish-toolbar {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 16px; font-size: 13px; color: rgba(74, 50, 38, 0.65);
+}
+.wish-toolbar label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.wish-toolbar-btn {
+    border: none; background: none; color: rgba(74, 50, 38, 0.65); font-size: 13px;
+    cursor: pointer; text-decoration: none; padding: 0;
+}
+.wish-toolbar-btn:hover { color: #FDA58F; }
+.wish-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+}
+.wish-card { position: relative; }
+.wish-select {
+    position: absolute; top: 8px; left: 8px; z-index: 2;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.wish-select input { display: none; }
+.wish-select-heart { width: 16px; height: 16px; color: rgba(74, 50, 38, 0.35); }
+.wish-select input:checked ~ .wish-select-heart {
+    color: #FDA58F; fill: #FDA58F;
+}
+.wish-thumb {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #FFF3D8;
+    cursor: pointer;
+}
+.wish-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.wish-name {
+    margin-top: 10px; font-size: 14px; color: #4A3226; cursor: pointer;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.wish-price-row { margin-top: 4px; display: flex; align-items: baseline; gap: 6px; }
+.wish-discount { color: #FDA58F; font-weight: 700; font-size: 14px; }
+.wish-price { font-weight: 700; font-size: 15px; color: #4A3226; }
+.wish-origin-price { color: rgba(74, 50, 38, 0.4); font-size: 12px; text-decoration: line-through; }
+.wish-badges { margin-top: 6px; display: flex; gap: 4px; }
+.wish-badge {
+    font-size: 11px; font-weight: 700; color: #FFFFFF;
+    padding: 2px 6px; border-radius: 3px; background: #FDA58F;
+}
+.wish-heart-count {
+    margin-top: 8px;
+    display: flex; align-items: center; gap: 4px;
+    color: rgba(74, 50, 38, 0.6); font-size: 13px;
+}
+.wish-heart-count svg { width: 16px; height: 16px; }
+.wish-checkall input { display: none; }
+.wish-checkall-heart { width: 14px; height: 14px; color: rgba(74, 50, 38, 0.35); }
+.wish-checkall input:checked ~ .wish-checkall-heart {
+    color: #FDA58F; fill: #FDA58F;
+}
+.empty-msg { text-align: center; color: rgba(74, 50, 38, 0.5); padding: 60px 0; }
+
+/* 커스텀 알림/확인 모달 (브라우저 기본 alert/confirm 대체) */
+.wish-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(74, 50, 38, 0.32);
+    align-items: center; justify-content: center;
+}
+.wish-modal-overlay.show { display: flex; }
+.wish-modal {
+    width: 280px; max-width: 86%;
+    background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 16px;
+    padding: 28px 22px 18px;
+    text-align: center;
+    box-shadow: 0 12px 32px rgba(74, 50, 38, 0.2);
+    animation: wishModalPop .15s ease-out;
+}
+@keyframes wishModalPop {
+    from { opacity: 0; transform: scale(.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.wish-modal-icon {
+    width: 40px; height: 40px; margin: 0 auto 12px;
+    color: #FDA58F;
+}
+.wish-modal-msg {
+    margin: 0 0 20px; font-size: 14px; line-height: 1.5;
+    color: #4A3226; white-space: pre-line;
+}
+.wish-modal-actions { display: flex; gap: 8px; }
+.wish-modal-btn {
+    flex: 1; border: none; border-radius: 8px;
+    padding: 11px 0; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: background .15s, filter .15s;
+}
+.wish-modal-btn.cancel { background: #FFF3D8; color: #4A3226; }
+.wish-modal-btn.cancel:hover { filter: brightness(0.96); }
+.wish-modal-btn.confirm { background: #FDA58F; color: #FFFFFF; }
+.wish-modal-btn.confirm:hover { background: #4A3226; }
+.wish-modal-overlay.alert-mode .wish-modal-btn.cancel { display: none; }
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .wish-wrap { padding: 20px 14px; }
+    .wish-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+}
