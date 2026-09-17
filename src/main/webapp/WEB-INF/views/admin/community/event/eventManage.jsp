@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="/css/event/eventManage.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 
     <!-- 전체를 감싸는 메인 컨테이너 -->
     <div class="event-manage-container">

@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="/css/hospital/hpform.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 	<div class="hp-form-wrap">
 	<h2>동물병원 정보 수정</h2>
 	<form name="hospitalUpdateForm" method="post" action="/hp_update">

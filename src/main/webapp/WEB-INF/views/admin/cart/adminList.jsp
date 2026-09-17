@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>장바구니 관리</title>
-    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+    <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
     <link rel="stylesheet" href="/css/cart/adminList.css">
 </head>
 <body>

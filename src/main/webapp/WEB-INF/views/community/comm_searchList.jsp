@@ -14,7 +14,7 @@
 </head>
 
 <body>
-<%@ include file="../hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 
     <!-- 전체를 감싸는 메인 와이드 컨테이너 -->
     <div class="community_wrap">

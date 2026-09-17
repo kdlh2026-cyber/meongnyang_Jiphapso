@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="/css/community/commView.css">
 </head>
 <body>
-<%@ include file="../hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 
 	<!-- 전체 화면을 감싸는 메인 컨테이너 -->
 	<div class="main_container">
