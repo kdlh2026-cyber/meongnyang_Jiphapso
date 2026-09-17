@@ -81,6 +81,15 @@ function loadMpTab(btn) {
         return;
     }
 
+    // 탭 active 클래스 갱신 (선택사항이지만 있으면 좋음)
+    document.querySelectorAll('.mp-tab').forEach(function (t) {
+        t.classList.remove('active');
+    });
+    btn.classList.add('active');
+
+    // ↓ 이 한 줄이 원본에 없었음
+    loadMpContent(url);
+}
 
 // 마이페이지 본문만 불러오는 함수
 function loadMpContent(url) {
