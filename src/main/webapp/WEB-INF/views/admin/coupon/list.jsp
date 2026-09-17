@@ -63,9 +63,9 @@
       <input type="number" id="fCoDays" min="1" placeholder="비우면 정책 자동적용">
     </div>
     <div class="cpa-field">
-      <label>다운로드 시작일</label>
-      <input type="date" id="fCoStart" required>
-    </div>
+	  <label>다운로드 시작일</label>
+	  <input type="date" id="fCoStart" required>
+	</div>
     <div class="cpa-field">
       <label>다운로드 종료일</label>
       <input type="date" id="fCoEnd" required>
@@ -211,15 +211,20 @@
   });
 
   function togglePNo(scope) {
-    document.getElementById("fPNoField").style.display = (scope === "PRODUCT") ? "flex" : "none";
-    if (scope !== "PRODUCT") {
-      document.getElementById("fPNo").value = "";
-      document.getElementById("fPNoSearch").value = "";
-      document.getElementById("fPNoSelected").style.display = "none";
-      document.getElementById("fPNoResults").style.display = "none";
-      document.getElementById("fPNoResults").innerHTML = "";
-    }
-  }
+	  document.getElementById("fPNoField").style.display = (scope === "PRODUCT") ? "flex" : "none";
+	  if (scope !== "PRODUCT") {
+	    document.getElementById("fPNo").value = "";
+	    document.getElementById("fPNoSearch").value = "";
+	    document.getElementById("fPNoSelected").style.display = "none";
+	    document.getElementById("fPNoResults").style.display = "none";
+	    document.getElementById("fPNoResults").innerHTML = "";
+	  }
+	}
+
+	// 시작일을 고르면 종료일 달력에서 그보다 빠른 날짜는 아예 선택 못 하게 min을 걸어줌
+	function updateEndMin(startDate) {
+	  document.getElementById("fCoEnd").min = startDate;
+	}
 
   // ================= 대상 상품 검색 (쿠폰 등록폼) =================
 
@@ -344,52 +349,59 @@
 
   // 쿠폰 등록 (CouponController#adminInsertCoupon)
   function submitCoupon(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (document.getElementById("fCoScope").value === "PRODUCT" && !document.getElementById("fPNo").value) {
-      showAlert("대상 상품을 검색해서 선택해주세요.");
-      return false;
-    }
-
-    var params = new URLSearchParams();
-    params.append("coName", document.getElementById("fCoName").value);
-    params.append("coType", "PERCENT");
-    params.append("coVal", document.getElementById("fCoVal").value);
-    params.append("coScope", document.getElementById("fCoScope").value);
-    params.append("coMinAmt", document.getElementById("fCoMinAmt").value || "0");
-    if (document.getElementById("fCoMaxAmt").value) params.append("coMaxAmt", document.getElementById("fCoMaxAmt").value);
-    if (document.getElementById("fCoScope").value === "PRODUCT" && document.getElementById("fPNo").value) {
-      params.append("pNo", document.getElementById("fPNo").value);
-    }
-    params.append("coReason", document.getElementById("fCoReason").value);
-    if (document.getElementById("fCoDays").value) params.append("coDays", document.getElementById("fCoDays").value);
-    params.append("coStart", document.getElementById("fCoStart").value);
-    params.append("coEnd", document.getElementById("fCoEnd").value);
-
-    fetch(contextPath + "/admin/coupon/insert", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString()
-    })
-      .then(function (res) {
-        if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
-        return res.json();
-      })
-      .then(function (result) {
-        showAlert(result.message, function () {
-          if (result.success) {
-            document.getElementById("cpaForm").reset();
-            togglePNo("ALL");
-            loadCouponList();
-          }
-        });
-      })
-      .catch(function (err) {
-        console.error("쿠폰 등록 실패", err);
-        showAlert("쿠폰 등록 중 오류가 발생했습니다.\n" + err.message);
-      });
+  var startVal = document.getElementById("fCoStart").value;
+  var endVal = document.getElementById("fCoEnd").value;
+  if (startVal && endVal && endVal < startVal) {
+    showAlert("다운로드 종료일은 시작일보다 빠를 수 없습니다.");
     return false;
   }
+
+  if (document.getElementById("fCoScope").value === "PRODUCT" && !document.getElementById("fPNo").value) {
+    showAlert("대상 상품을 검색해서 선택해주세요.");
+    return false;
+  }
+
+  var params = new URLSearchParams();
+  params.append("coName", document.getElementById("fCoName").value);
+  params.append("coType", "PERCENT");
+  params.append("coVal", document.getElementById("fCoVal").value);
+  params.append("coScope", document.getElementById("fCoScope").value);
+  params.append("coMinAmt", document.getElementById("fCoMinAmt").value || "0");
+  if (document.getElementById("fCoMaxAmt").value) params.append("coMaxAmt", document.getElementById("fCoMaxAmt").value);
+  if (document.getElementById("fCoScope").value === "PRODUCT" && document.getElementById("fPNo").value) {
+    params.append("pNo", document.getElementById("fPNo").value);
+  }
+  params.append("coReason", document.getElementById("fCoReason").value);
+  if (document.getElementById("fCoDays").value) params.append("coDays", document.getElementById("fCoDays").value);
+  params.append("coStart", document.getElementById("fCoStart").value);
+  params.append("coEnd", document.getElementById("fCoEnd").value);
+
+  fetch(contextPath + "/admin/coupon/insert", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+  })
+    .then(function (res) {
+      if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+      return res.json();
+    })
+    .then(function (result) {
+      showAlert(result.message, function () {
+        if (result.success) {
+          document.getElementById("cpaForm").reset();
+          togglePNo("ALL");
+          loadCouponList();
+        }
+      });
+    })
+    .catch(function (err) {
+      console.error("쿠폰 등록 실패", err);
+      showAlert("쿠폰 등록 중 오류가 발생했습니다.\n" + err.message);
+    });
+  return false;
+}
 
   // 쿠폰 삭제 (CouponController#adminDeleteCoupon)
   function deleteCoupon(coNo) {

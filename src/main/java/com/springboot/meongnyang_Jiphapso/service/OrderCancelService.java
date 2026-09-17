@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springboot.meongnyang_Jiphapso.dao.IOrderCancelDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IOrderDetailDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IPaymentDAO;
+import com.springboot.meongnyang_Jiphapso.dao.IProductDao;
 import com.springboot.meongnyang_Jiphapso.dto.OrderCancelDTO;
 import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
 import com.springboot.meongnyang_Jiphapso.dto.PaymentDTO;
@@ -28,6 +29,9 @@ public class OrderCancelService {
 
 	@Autowired
 	private IPaymentDAO paymentDAO; // 주문 전체 결제내역(포인트/쿠폰 사용액) 조회용 - 몰수액 계산에 사용
+
+	@Autowired
+	private IProductDao productDao; // 취소 승인 시 옵션 재고 복구용
 
 	// 취소/반품/교환 신청 등록
 	@Transactional
@@ -60,11 +64,23 @@ public class OrderCancelService {
 	@Transactional
 	public int updateOrderCancelStatus(Long ocOutNo, String ocStatus, Date ocPr) {
 
+		// 재고 복구 여부 판단을 위해 상태 변경 "전" 상태를 먼저 조회해둠
+		OrderCancelDTO before = orderCancelDAO.selectOrderCancelOne(ocOutNo);
+
 		if ("APPROVED".equals(ocStatus) || "REFUNDED".equals(ocStatus)) {
-			OrderCancelDTO target = orderCancelDAO.selectOrderCancelOne(ocOutNo);
-			if (target != null) {
-				calculateForfeitedPointAndCoupon(target);
+			if (before != null) {
+				calculateForfeitedPointAndCoupon(before);
 			}
+		}
+
+		// 재고 복구: REQUESTED -> APPROVED 로 "처음" 승인되는 순간에만 1회 실행
+		// (이미 APPROVED/REFUNDED 상태인 건에 대해 상태변경 API가 다시 호출돼도
+		//  재고가 중복으로 늘어나지 않도록, 이전 상태가 REQUESTED일 때만 복구한다)
+		boolean alreadyProcessed = before != null
+				&& ("APPROVED".equals(before.getOcStatus()) || "REFUNDED".equals(before.getOcStatus()));
+
+		if (!alreadyProcessed && "APPROVED".equals(ocStatus) && before != null) {
+			restoreStockForCancel(before);
 		}
 
 		int result = orderCancelDAO.updateOrderCancelStatus(ocOutNo, ocStatus, ocPr);
@@ -78,6 +94,17 @@ public class OrderCancelService {
 		}
 
 		return result;
+	}
+
+	// 취소 승인된 라인아이템의 옵션(o_no) 재고를 취소수량(oc_quantity)만큼 되돌림
+	private void restoreStockForCancel(OrderCancelDTO cancel) {
+
+		OrderDetailDTO detail = orderDetailDAO.selectOrderDetailOne(cancel.getOdDetailNo());
+		if (detail == null || detail.getONo() == null || cancel.getOcQuantity() == null) {
+			return;
+		}
+
+		productDao.increaseOptionStock(detail.getONo(), cancel.getOcQuantity().intValue());
 	}
 
 	private void calculateForfeitedPointAndCoupon(OrderCancelDTO cancel) {
