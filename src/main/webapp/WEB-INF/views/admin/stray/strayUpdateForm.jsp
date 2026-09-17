@@ -17,7 +17,7 @@
 		
 		<div>
 			<label>유기동물 카테고리 :</label>
-			<input type="text" name="stray_category" value="${StrayUpdate.stray_category}" required>
+			<input type="text" name="stray_category" value="${StrayUpdate.stray_category}" readonly>
 		</div>
 		<div>
 			<label>유기동물 품종 :</label>

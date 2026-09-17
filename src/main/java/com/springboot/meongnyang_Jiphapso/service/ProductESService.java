@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -60,9 +62,15 @@ public class ProductESService {
 		SearchSourceBuilder builder=new SearchSourceBuilder();
 		
 		// 키워드를 p_title 필드에서 검색
-		builder.query(QueryBuilders.multiMatchQuery(keyword, "p_title"));
-		request.source(builder);
+		//builder.query(QueryBuilders.multiMatchQuery(keyword, "p_title","p_category"));
+		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+		        .should(QueryBuilders.matchQuery("p_title", keyword))
+		        .should(QueryBuilders.matchQuery("p_category", keyword));
+
+		builder.query(boolQuery);
 		
+		builder.size(20);
+		request.source(builder);
 		// 엘라스틱 서치에서 검색한 결과를 받아옴
 		SearchResponse response=client.search(request, RequestOptions.DEFAULT);
 		
@@ -76,9 +84,21 @@ public class ProductESService {
 	    if (pnoList.isEmpty()) {
 	        return new ArrayList<>();
 	    }
-	    
+	    // DB에서 가져온 목록
+	    List<ShoppingListDto> dbList = p_dao.productSearchList(pnoList);
+
+	    // pnoList의 인덱스 순서대로 재정렬
+	    Map<Integer, ShoppingListDto> map = dbList.stream()
+	            .collect(Collectors.toMap(ShoppingListDto::getPno, dto -> dto, (a, b) -> a));
+
+	    List<ShoppingListDto> sortedList = new ArrayList<>();
+	    for (Integer id : pnoList) {
+	        if (map.containsKey(id)) {
+	            sortedList.add(map.get(id));
+	        }
+	    }
 	    // DB에 pno 리스트를 던져서 상품의 모든 상세 정보를 가져옴
-	    return p_dao.productSearchList(pnoList);
+	    return sortedList;
 	}
 
 	//자동완성 + 화면 하이라이트 기능
@@ -87,7 +107,7 @@ public class ProductESService {
 		
 		// 엘라스틱 서치에서 검색 요청의 본문을 만드는 객체 생성(SQL의 select문)
 		SearchSourceBuilder source=new SearchSourceBuilder();
-		source.size(15);
+		source.size(10);
 		
 		// prefix(접두어) 검색(스 -> 스프 -> 스프링)
 		source.query(QueryBuilders.matchPhrasePrefixQuery("p_title",keyword));
@@ -104,7 +124,7 @@ public class ProductESService {
 		
 		// 엘라스틱 서치에서 검색한 결과를 받아오기
 		SearchResponse response=client.search(request, RequestOptions.DEFAULT);
-				
+			
 		List<Map<String,String>> result=new ArrayList<>();
 				
 		for(SearchHit hit:response.getHits().getHits()) {

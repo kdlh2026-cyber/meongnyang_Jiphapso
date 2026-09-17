@@ -47,8 +47,15 @@ public class ProductController {
 	        @RequestParam("p_title") String p_title, 
 	        @RequestParam(value="o_origin_price", required = false) Integer o_origin_price
 	) throws Exception {
+		
+		MultipartFile valid_o_img = (o_img != null && !o_img.isEmpty()) ? o_img : null;
 
-	    p_service.productWrite(p_dto, o_dto, o_img, img_urls, o_quantity, o_price, o_default, p_title, o_origin_price);
+	    List<MultipartFile> valid_img_urls = null;
+	    if (img_urls != null && !img_urls.isEmpty() && !img_urls.get(0).isEmpty()) {
+	        valid_img_urls = img_urls;
+	    }
+	    
+	    p_service.productWrite(p_dto, o_dto, valid_o_img, valid_img_urls, o_quantity, o_price, o_default, p_title, o_origin_price);
 	    
 	    return "redirect:/ProductListA";
 	}
@@ -82,20 +89,28 @@ public class ProductController {
 	
 	@RequestMapping("/ProductListA")
 	public String ProductListA(
-			Model model,
 			@RequestParam(value = "p_type", defaultValue = "강아지") String p_type,
-			@RequestParam(value = "mode", required = false) String p_category) {
+			@RequestParam(value = "mode", required = false) String p_category,
+			@RequestParam(value = "keyword", required = false) String keyword,
+			Model model) throws Exception{
 		
-		if (!"고양이".equals(p_type)) {
-			p_type = "강아지";
-		}
+		List<ShoppingListDto> p_list;
 		
-		ShoppingListDto paramDto = new ShoppingListDto();
-		paramDto.setPtype(p_type);
-		paramDto.setPcategory(p_category);
+		if (keyword != null && !keyword.trim().isEmpty()) {
+			p_list = p_service.p_search(keyword);
+		} else {
+			if (!"고양이".equals(p_type)) {
+				p_type = "강아지";
+			}
+			
+			ShoppingListDto paramDto = new ShoppingListDto();
+			paramDto.setPtype(p_type);
+			paramDto.setPcategory(p_category);
 
-		List<ShoppingListDto> allList = p_dao.ShoppingList(paramDto);
-		model.addAttribute("ShoppingList", allList);
+			p_list = p_dao.ShoppingList(paramDto);
+		}
+
+		model.addAttribute("ShoppingList", p_list);
 		
 		return "admin/product/ProductListA";
 	}
