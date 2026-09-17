@@ -36,5 +36,3 @@ out/
 ### VS Code ###
 .vscode/
 
-### API Key Properties ###
-/src/main/resources/application-local.properties
