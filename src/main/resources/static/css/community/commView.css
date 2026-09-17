@@ -1,8 +1,5 @@
 @charset "UTF-8";
 
-/* ==========================================
-   1. 기본 레이아웃 및 파스텔 배경톤 설정
-   ================================---------- */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
     line-height: 1.5;
@@ -12,34 +9,55 @@ body {
     color: #333333;
 }
 
-.content_layout_wrapper {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    max-width: 1050px;
+/* 전체 페이지 중앙 정렬 컨테이너 (너비 1060px 고정) */
+.main_container {
+    max-width: 1060px;
     margin: 40px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 25px; /* 상단 영역과 하단 댓글 영역 사이 간격 */
+    box-sizing: border-box;
+    padding: 0 20px;
+}
+
+/* [상단 영역] 본문(705px)과 사이드바(320px)를 나란히 배치 */
+.upper_section_wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 25px;
+    width: 100%;
     box-sizing: border-box;
 }
 
+/* 왼쪽 본문 영역 폭 고정 */
 .left_content_area {
     width: 705px;
-    flex-shrink: 0;
+    max-width: 705px;
+    flex: 0 0 705px;
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    box-sizing: border-box;
 }
 
+/* 오른쪽 사이드바 영역 폭 고정 */
 .right_sidebar_area {
     width: 320px;
-    flex-shrink: 0;
+    max-width: 320px;
+    flex: 0 0 320px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    box-sizing: border-box;
 }
 
-/* ==========================================
-   2. 사이드바 위젯 (목록과 동일한 구름 카드 톤)
-   ================================---------- */
+/* [하단 영역] 댓글 영역 (1060px 전체 너비) */
+.lower_comment_area {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 사이드바 위젯 스타일 */
 .sidebar_widget {
     background-color: #ffffff;
     border: none;
@@ -164,9 +182,7 @@ body {
     color: #8c857b;
 }
 
-/* ==========================================
-   3. 게시글 본문 카드 박스 (테두리 제거, 구름 느낌 적용)
-   ================================---------- */
+/* 게시글 본문 카드 박스 */
 .comm_view_card {
     background-color: #ffffff;
     border: none;
@@ -186,7 +202,6 @@ body {
     margin-bottom: 14px;
 }
 
-/* ⭐️ 공통 뱃지 디자인 (목록 카드와 동일한 파스텔 웜 베이지 톤) */
 .view_badges .badge {
     display: inline-block;
     padding: 4px 10px;
@@ -197,7 +212,6 @@ body {
     color: #615a52;
 }
 
-/* ⭐️ 첫 번째 주요 뱃지 코랄 포인트 컬러 */
 .view_badges .badge.highlight {
     background-color: #fff3f0;
     color: #ff6f61;
@@ -247,7 +261,6 @@ body {
     margin-top: 2px;
 }
 
-/* 북마크 버튼 영역 */
 .bookmark_area {
     margin: 15px 0;
 }
@@ -283,6 +296,7 @@ body {
     line-height: 1.7;
     min-height: 120px;
     word-break: break-all;
+    overflow-wrap: break-word; 
 }
 
 .view_media_area {
@@ -292,13 +306,22 @@ body {
     gap: 15px;
 }
 
-.video-container video, 
-.view_media_area img {
-    max-width: 100%;
-    height: auto;
+.view_content_body img,
+.view_media_area img,
+.img_box img,
+.video-container video {
+    max-width: 100% !important;   
+    height: auto !important;      
+    box-sizing: border-box;
     display: block;
     margin: 0 auto;
-    border-radius: 12px;
+    border-radius: 8px;
+}
+
+.img_box {
+    max-width: 100%;
+    overflow: hidden;
+    margin: 15px 0;
 }
 
 .view_tag_area {
@@ -315,9 +338,7 @@ body {
     display: inline-block;
 }
 
-/* ==========================================
-   4. 추천/비추천 및 하단 액션 바
-   ================================---------- */
+/* 하단 액션 바 */
 .post-bottom-action-bar {
     display: flex;
     justify-content: space-between;
@@ -352,7 +373,6 @@ body {
     color: #ff6f61;
 }
 
-/* 수정하기 / 삭제하기 버튼 스타일 */
 .comm-btn {
     padding: 8px 16px;
     font-size: 13px;
@@ -384,9 +404,7 @@ body {
     color: #e05b4c;
 }
 
-/* ==========================================
-   5. 댓글 영역 (구름 카드 톤 통일)
-   ================================---------- */
+/* 댓글 영역 */
 .comment_section {
     background-color: #ffffff;
     border: none;

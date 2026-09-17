@@ -7,194 +7,222 @@
 <head>
 <meta charset="UTF-8">
 <title>이벤트 관리(등록 및 신청 조회)</title>
-<style>
-.admin-filter-bar {
-    margin: 20px 0;
-    padding: 15px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #eee;
-}
-.admin-filter-bar a {
-    margin-right: 10px;
-    padding: 6px 12px;
-    text-decoration: none;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    color: #333;
-    font-size: 13px;
-}
-.admin-filter-bar a.active {
-    background: #222;
-    color: #fff;
-    border-color: #222;
-}
-
-/* 좌우 배치를 위한 스타일 */
-.event-tables-container {
-    display: flex;
-    gap: 20px; /* 좌우 테이블 사이 간격 */
-    align-items: flex-start;
-}
-.event-section {
-    flex: 1; /* 양쪽 영역이 화면을 균등하게 나눠 가짐 */
-    min-width: 0; /* 테이블 밀림 현상 방지 */
-}
-</style>
+<link rel="stylesheet" href="/css/event/eventManage.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 
-	<!-- 1. 행사 제보 신청 내역 영역 -->
-	<div>
-		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-	        <h3 style="margin: 0;">이벤트 신청 내역 (유저 제보)</h3>
-	        <button type="button" onclick="location.href='/admin/eventWriteForm'" style="background-color: #222; color: #fff; padding: 8px 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
-	            이벤트 등록하기
-	        </button>
-	    </div>
-		<table border="1" style="width: 100%; border-collapse: collapse; text-align: center;">
-			<tr style="background: #f2f2f2;">
-				<td>신청 일자</td>
-				<td>행사 링크</td>
-				<td>행사 설명</td>
-				<td>신청자</td>
-			</tr>
-			<c:forEach var="r" items="${report}">
-                <tr>
-                    <td>
-                        <fmt:formatDate value="${r.report_date}" pattern="yyyy-MM-dd HH:mm" />
-                    </td>
-                    <td style="text-align: left; padding-left: 10px;">
-                    	<a href="${r.report_link}" target="_blank">${r.report_link}</a>
-                    </td>
-                    <td>${r.report_content}</td>
-                    <td>${r.m_no}</td>
-                </tr>
-            </c:forEach>
-            <c:if test="${empty report}">
-                <tr>
-                    <td colspan="4" align="center" style="padding: 20px;">신청된 내역이 없습니다.</td>
-                </tr>
-            </c:if>
-		</table>
-	</div>
+    <!-- 전체를 감싸는 메인 컨테이너 -->
+    <div class="event-manage-container">
+    
+        <!-- 1. 행사 제보 신청 내역 영역 -->
+        <div class="event-report-section">
+            <div class="event-header-row">
+                <h3>이벤트 신청 내역</h3>
+                <button type="button" class="btn-event-write" onclick="location.href='/admin/eventWriteForm'">
+                    이벤트 등록하기
+                </button>
+            </div>
+            
+            <table class="event-table">
+                <thead>
+                    <tr>
+                        <th style="width: 13%;">신청 일자</th>
+                        <th style="width: 37%;">행사 링크</th>
+                        <th style="width: 30%;">행사 설명</th>
+                        <th style="width: 10%;">신청자</th>
+                        <th style="width: 10%;">관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="r" items="${report}">
+                        <tr>
+                            <td>
+                                <fmt:formatDate value="${r.report_date}" pattern="yyyy-MM-dd HH" />
+                            </td>
+                            <td class="text-left text-ellipsis">
+                                <a href="${r.report_link}" target="_blank" class="event-link">${r.report_link}</a>
+                            </td>
+                            <td class="text-ellipsis">${r.report_content}</td>
+                            <td>${r.m_id}</td>
+                            <td>
+                            	<button type="button" class="btn-sm btn-delete" onclick="deleteReport(${r.report_no})">삭제</button>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${empty report}">
+                        <tr>
+                            <td colspan="4" class="empty-msg">신청된 내역이 없습니다.</td>
+                        </tr>
+                    </c:if>
+                </tbody>
+            </table>
+        </div>
 
-    <hr style="margin: 40px 0; border: 0; border-top: 1px solid #ddd;">
+        <hr class="section-divider">
 
-    <!-- 관리자 필터 바 (반려동물 종류 필터만 남김) -->
-    <div class="admin-filter-bar">
-        <strong>[반려동물 필터]</strong> 
-        <a href="/admin/eventManage?event_pet_type=" class="${empty param.event_pet_type ? 'active' : ''}">전체</a>
-        <a href="/admin/eventManage?event_pet_type=강아지" class="${param.event_pet_type eq '강아지' ? 'active' : ''}">강아지</a>
-        <a href="/admin/eventManage?event_pet_type=고양이" class="${param.event_pet_type eq '고양이' ? 'active' : ''}">고양이</a>
+        <!-- 관리자 필터 바 -->
+        <div class="admin-filter-bar">
+            <a href="/admin/eventManage?event_pet_type=" class="${empty param.event_pet_type ? 'active' : ''}">전체</a>
+            <a href="/admin/eventManage?event_pet_type=강아지" class="${param.event_pet_type eq '강아지' ? 'active' : ''}">강아지</a>
+            <a href="/admin/eventManage?event_pet_type=고양이" class="${param.event_pet_type eq '고양이' ? 'active' : ''}">고양이</a>
+        </div>
+
+        <!-- 2 & 3. 온라인(좌) / 오프라인(우) 목록 좌우 배치 컨테이너 -->
+        <div class="event-tables-container">
+        
+            <!-- 온라인 영역 (왼쪽) -->
+            <section class="event-section">
+                <h3>[온라인] 이벤트 목록</h3>
+                <table class="event-table event-table-sm">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">이미지</th>
+                            <th style="width: 38%;">행사명</th>
+                            <th style="width: 25%;">행사일자</th>
+                            <th style="width: 10%;">대상</th>
+                            <th style="width: 15%;">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:set var="onlineCount" value="0" />
+                        <c:forEach var="event" items="${write}">
+                            <c:if test="${event.event_onoff eq '온라인'}">
+                                <c:set var="onlineCount" value="${onlineCount + 1}" />
+                                <tr>
+                                    <td>
+                                        <c:if test="${not empty event.event_thumb}">
+                                            <img src="${event.event_thumb}" alt="썸네일" class="event-thumb">
+                                        </c:if>
+                                        <c:if test="${empty event.event_thumb}">-</c:if>
+                                    </td>
+                                    <td class="text-left text-ellipsis">
+                                        <a href="/event/eventView?event_no=${event.event_no}">${event.event_title}</a>
+                                    </td>
+                                    <td class="nowrap">
+									    <c:choose>
+									        <%-- 상시진행 값이 'Y'인 경우 --%>
+									        <c:when test="${event.event_all eq 'Y'}">
+									            상시진행
+									        </c:when>
+									        <%-- 그 외 날짜가 있는 경우 --%>
+									        <c:otherwise>
+									            <fmt:formatDate value="${event.event_start}" pattern="yy-MM-dd" />~<fmt:formatDate value="${event.event_end}" pattern="yy-MM-dd" />
+									        </c:otherwise>
+									    </c:choose>
+									</td>
+                                    <td class="nowrap">${event.event_pet_type}</td>
+                                    <td class="nowrap">
+                                        <button type="button" class="btn-sm btn-edit" onclick="location.href='/admin/eventUpdateForm?event_no=${event.event_no}'">수정</button>
+                                        <button type="button" class="btn-sm btn-delete" onclick="deleteEvent(${event.event_no})">삭제</button>
+                                    </td>
+                                </tr>
+                            </c:if>
+                        </c:forEach>
+                        
+                        <c:if test="${onlineCount == 0}">
+                            <tr>
+                                <td colspan="5" class="empty-msg">등록된 온라인 이벤트가 없습니다.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </section>
+            
+            <!-- 오프라인 영역 (오른쪽) -->
+            <section class="event-section">
+                <h3>[오프라인] 이벤트 목록</h3>
+                <table class="event-table event-table-sm">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">이미지</th>
+                            <th style="width: 38%;">행사명</th>
+                            <th style="width: 25%;">행사일자</th>
+                            <th style="width: 10%;">지역</th>
+                            <th style="width: 15%;">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:set var="offlineCount" value="0" />
+                        <c:forEach var="event" items="${write}">
+                            <c:if test="${event.event_onoff eq '오프라인'}">
+                                <c:set var="offlineCount" value="${offlineCount + 1}" />
+                                <tr>
+                                    <td>
+                                        <c:if test="${not empty event.event_thumb}">
+                                            <img src="${event.event_thumb}" alt="썸네일" class="event-thumb">
+                                        </c:if>
+                                        <c:if test="${empty event.event_thumb}">-</c:if>
+                                    </td>
+                                    <td class="text-left text-ellipsis">
+                                        <a href="/event/eventView?event_no=${event.event_no}">${event.event_title}</a>
+                                    </td>
+                                    <td class="nowrap">
+									    <c:choose>
+									        <%-- 상시진행 값이 'Y'인 경우 --%>
+									        <c:when test="${event.event_all eq 'Y'}">
+									            상시진행
+									        </c:when>
+									        <%-- 그 외 날짜가 있는 경우 --%>
+									        <c:otherwise>
+									            <fmt:formatDate value="${event.event_start}" pattern="yy-MM-dd" />~<fmt:formatDate value="${event.event_end}" pattern="yy-MM-dd" />
+									        </c:otherwise>
+									    </c:choose>
+									</td>
+                                    <td class="nowrap">${empty event.event_loc ? '-' : event.event_loc}</td>
+                                    <td class="nowrap">
+                                        <button type="button" class="btn-sm btn-edit" onclick="location.href='/admin/eventUpdateForm?event_no=${event.event_no}'">수정</button>
+                                        <button type="button" class="btn-sm btn-delete" onclick="deleteEvent(${event.event_no})">삭제</button>
+                                    </td>
+                                </tr>
+                            </c:if>
+                        </c:forEach>
+                        
+                        <c:if test="${offlineCount == 0}">
+                            <tr>
+                                <td colspan="5" class="empty-msg">등록된 오프라인 이벤트가 없습니다.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </section>
+            
+        </div>
     </div>
-
-	<!-- 2 & 3. 온라인(좌) / 오프라인(우) 목록 좌우 배치 컨테이너 -->
-	<div class="event-tables-container">
-	
-		<!-- 온라인 영역 (왼쪽) -->
-		<section class="event-section">
-			<h3>등록한 이벤트 목록 - 온라인</h3>
-			<table border="1" style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px;">
-				<tr style="background: #f2f2f2;">
-					<td>이미지</td>
-					<td>행사명</td>
-					<td>행사일자</td>
-					<td>대상</td>
-					<td>관리</td>
-				</tr>
-				
-				<c:set var="onlineCount" value="0" />
-				<c:forEach var="event" items="${write}">
-					<c:if test="${event.event_onoff eq '온라인'}">
-						<c:set var="onlineCount" value="${onlineCount + 1}" />
-						<tr>
-							<td>
-								<c:if test="${not empty event.event_thumb}">
-									<img src="${event.event_thumb}" alt="썸네일" width="40" height="40" style="object-fit: cover;">
-								</c:if>
-								<c:if test="${empty event.event_thumb}">-</c:if>
-							</td>
-							<td style="text-align: left; padding-left: 5px;">
-								<a href="/event/eventView?event_no=${event.event_no}">${event.event_title}</a>
-			 		        </td>
-							<td>
-								<fmt:formatDate value="${event.event_start}" pattern="yy-MM-dd" />~<fmt:formatDate value="${event.event_end}" pattern="yy-MM-dd" />
-							</td>
-							<td>${event.event_pet_type}</td>
-							<td>
-							    <button type="button" onclick="location.href='/admin/eventUpdateForm?event_no=${event.event_no}'" style="padding: 2px 4px; font-size: 11px;">수정</button>
-							    <button type="button" onclick="deleteEvent(${event.event_no})" style="padding: 2px 4px; font-size: 11px; background-color: #ff4d4d; color: white; border: none;">삭제</button>
-							</td>
-						</tr>
-					</c:if>
-				</c:forEach>
-				
-				<c:if test="${onlineCount == 0}">
-					<tr>
-						<td colspan="5" align="center" style="padding: 20px;">등록된 온라인 이벤트가 없습니다.</td>
-					</tr>
-				</c:if>
-			</table>
-		</section>
-		
-		<!-- 오프라인 영역 (오른쪽) -->
-		<section class="event-section">
-			<h3>등록한 이벤트 목록 - 오프라인</h3>
-			<table border="1" style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px;">
-				<tr style="background: #f2f2f2;">
-					<td>이미지</td>
-					<td>행사명</td>
-					<td>행사일자</td>
-					<td>지역</td>
-					<td>관리</td>
-				</tr>
-				
-				<c:set var="offlineCount" value="0" />
-				<c:forEach var="event" items="${write}">
-					<c:if test="${event.event_onoff eq '오프라인'}">
-						<c:set var="offlineCount" value="${offlineCount + 1}" />
-						<tr>
-							<td>
-								<c:if test="${not empty event.event_thumb}">
-									<img src="${event.event_thumb}" alt="썸네일" width="40" height="40" style="object-fit: cover;">
-								</c:if>
-								<c:if test="${empty event.event_thumb}">-</c:if>
-							</td>
-							<td style="text-align: left; padding-left: 5px;">
-								<a href="/event/eventView?event_no=${event.event_no}">${event.event_title}</a>
-			 		        </td>
-							<td>
-								<fmt:formatDate value="${event.event_start}" pattern="yy-MM-dd" />~<fmt:formatDate value="${event.event_end}" pattern="yy-MM-dd" />
-							</td>
-							<td>${empty event.event_loc ? '-' : event.event_loc}</td>
-							<td>
-							    <button type="button" onclick="location.href='/admin/eventUpdateForm?event_no=${event.event_no}'" style="padding: 2px 4px; font-size: 11px;">수정</button>
-							    <button type="button" onclick="deleteEvent(${event.event_no})" style="padding: 2px 4px; font-size: 11px; background-color: #ff4d4d; color: white; border: none;">삭제</button>
-							</td>
-						</tr>
-					</c:if>
-				</c:forEach>
-				
-				<c:if test="${offlineCount == 0}">
-					<tr>
-						<td colspan="5" align="center" style="padding: 20px;">등록된 오프라인 이벤트가 없습니다.</td>
-					</tr>
-				</c:if>
-			</table>
-		</section>
-		
-	</div>
-
+<button id="scrollTopBtn" title="맨 위로 가기">⬆</button>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 <script>
+//⭐️ 제보 신청 내역 삭제 함수 추가
+function deleteReport(report_no) {
+    if (confirm("정말 이 제보 내역을 삭제하시겠습니까?")) {
+        location.href = "/admin/eventReportDelete?report_no=" + report_no;
+    }
+}
+
+//이벤트 삭제 함수
 function deleteEvent(event_no) {
     if (confirm("정말 이 이벤트를 삭제하시겠습니까?")) {
         location.href = "/admin/eventDelete?event_no=" + event_no;
     }
 }
+
+// 스크롤 위치에 따라 버튼 노출 여부 결정
+window.addEventListener('scroll', function() {
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    if (window.scrollY > 200) {
+        scrollTopBtn.style.display = 'block'; // 200px 이상 내려가면 보임
+    } else {
+        scrollTopBtn.style.display = 'none';  // 맨 위면 숨김
+    }
+});
+
+// 버튼 클릭 시 맨 위로 부드럽게 이동
+document.getElementById('scrollTopBtn').addEventListener('click', function() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
 </script>
 </html>

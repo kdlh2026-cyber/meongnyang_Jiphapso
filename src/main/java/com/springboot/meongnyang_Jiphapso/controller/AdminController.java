@@ -1,9 +1,9 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -179,24 +179,68 @@ public class AdminController {
 	
 	@PostMapping("/admin/breedInsert")
 	public String breedInsert(@RequestParam("pet_type") String pet_type,
-							  BreedDTO bdto,
-							  Model model) {
-		
-		b_dao.breedInsert(bdto);
-		model.addAttribute("dogbreed", b_dao.BreedList("강아지"));
-		model.addAttribute("catbreed", b_dao.BreedList("고양이"));
-		
-		return "admin/community/breedInfo";
+	                          BreedDTO bdto,
+	                          Model model) {
+	    
+	    try {
+	        MultipartFile uploadImage = bdto.getIcon_file();
+	        if (uploadImage != null && !uploadImage.isEmpty()) {
+	            String icon_url = uploadImage.getOriginalFilename();
+	            String uploadPath = "C:\\Users\\KH_BUSAN_B_15\\git\\meongnyang_Jiphapso\\src\\main\\resources\\static\\images\\breed\\";
+	            
+	            // 디렉토리가 없으면 생성하는 안전장치
+	            File folder = new File(uploadPath);
+	            if (!folder.exists()) {
+	                folder.mkdirs();
+	            }
+	            
+	            uploadImage.transferTo(new File(uploadPath + icon_url));
+	            bdto.setIcon_url(icon_url); // DTO에 파일명 세팅
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    b_dao.breedInsert(bdto);
+	    model.addAttribute("dogbreed", b_dao.BreedList("강아지"));
+	    model.addAttribute("catbreed", b_dao.BreedList("고양이"));
+	    
+	    return "admin/community/breedInfo";
 	}
 	
-	@RequestMapping("/admin/breedUpdate")
+	@PostMapping("/admin/breedUpdate")
 	public String breedUpdate(BreedDTO bdto,
-							  Model model) {
-		b_dao.breedUpdate(bdto);
-		model.addAttribute("dogbreed", b_dao.BreedList("강아지"));
-		model.addAttribute("catbreed", b_dao.BreedList("고양이"));
-		
-		return "admin/community/breedInfo";
+	                          Model model) {
+	    
+	    try {
+	        MultipartFile uploadImage = bdto.getIcon_file();
+	        if (uploadImage != null && !uploadImage.isEmpty()) {
+	            // 1. 새로운 이미지를 업로드한 경우
+	            String icon_url = uploadImage.getOriginalFilename();
+	            String uploadPath = "C:\\Users\\KH_BUSAN_B_15\\git\\meongnyang_Jiphapso\\src\\main\\resources\\static\\images\\breed\\";
+	            
+	            File folder = new File(uploadPath);
+	            if (!folder.exists()) {
+	                folder.mkdirs();
+	            }
+	            
+	            uploadImage.transferTo(new File(uploadPath + icon_url));
+	            bdto.setIcon_url(icon_url); // 새 이미지명 세팅
+	        } else {
+	            // 2. 새 이미지를 업로드하지 않은 경우 (기존 이미지 유지)
+	            // DB에서 해당 breed_id의 기존 icon_url을 조회해옵니다.
+	            String existingIcon = b_dao.getBreedIcon(bdto.getBreed_id()); 
+	            bdto.setIcon_url(existingIcon);
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    b_dao.breedUpdate(bdto);
+	    model.addAttribute("dogbreed", b_dao.BreedList("강아지"));
+	    model.addAttribute("catbreed", b_dao.BreedList("고양이"));
+	    
+	    return "admin/community/breedInfo";
 	}
 	
 	@RequestMapping("/admin/breedDelete")

@@ -19,8 +19,7 @@
         <!-- 행사 제보하기 배너 영역 -->
         <div class="event-banner-box">
             <div>
-                <div class="banner-title">행사를 준비 중이신가요?</div>
-                <div class="banner-desc">이벤트 안내 링크만 남겨주시면, 저희가 확인 후 무료로 등록해드려요.</div>
+                <img src="/images/community/eventpost.png" alt="행사 제보 배너 이미지" class="banner_logo_img">
             </div>
             <div>
                 <button type="button" class="banner-btn" id="openReportModal">행사 제보하기</button>
@@ -140,7 +139,7 @@
 	</div>
 
     </div><!-- .event_wrap 닫기 -->
-
+<button id="scrollTopBtn" title="맨 위로 가기">⬆</button>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 
 <c:if test="${not empty msg}">
@@ -199,6 +198,24 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         }
+    });
+});
+// 스크롤 위치에 따라 버튼 노출 여부 결정
+window.addEventListener('scroll', function() {
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    if (window.scrollY > 200) {
+        scrollTopBtn.style.display = 'block'; // 200px 이상 내려가면 보임
+    } else {
+        scrollTopBtn.style.display = 'none';  // 맨 위면 숨김
+    }
+});
+
+
+// 버튼 클릭 시 맨 위로 부드럽게 이동
+document.getElementById('scrollTopBtn').addEventListener('click', function() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
     });
 });
 </script>

@@ -15,8 +15,18 @@
 	
 	<!-- 이벤트 신청 조회 -->
 	<select id="eventReportList" resultType="com.springboot.meongnyang_Jiphapso.dto.EventReportDTO">
-		select * from dc_event_report
+		select e.*, m.m_id
+			from dc_event_report e
+			left join dc_member m
+			on e.m_no = m.m_no
+			order by e.report_date desc
 	</select>
+	
+	<!-- 이벤트 신청 삭제 -->
+	<delete id="eventReportDelete">
+		delete dc_event_report
+		 where report_no = #{report_no}
+	</delete>
 	
 	<!-- 이벤트 조회 (필터링 조건 및 정렬 추가) -->
 	<select id="eventList" parameterType="map" resultType="com.springboot.meongnyang_Jiphapso.dto.EventDTO">
