@@ -109,62 +109,29 @@ public class CommunityController {
 		return "redirect:/community/commList";
 	}
 
-	
-	// 크롤링한 데이터 업로드 용
-	@RequestMapping("/commWriteCrawling")
-	public String commWriteCrawling(CommunityDTO dto,
-									@RequestParam(value = "img_url", required = false) String comm_content_img) throws Exception {
-	    
-	    // 서비스 메서드 호출 (DTO만 전달)
-		com_service.writeCrawling(dto, comm_content_img);
-	    
-	    return "redirect:/community/commList";
-	}
-	
 	// 게시글 목록으로 이동
 	@RequestMapping("/community/commList") 
 	public String commList(@RequestParam(value = "comm_type", required = false) String comm_type,
-							@RequestParam(value = "comm_no", required = false) Integer comm_no,
-					       @RequestParam(value = "comm_pet_type", required = false) String comm_pet_type,
-					       @RequestParam(value = "comm_category", required = false) String comm_category,
-					       @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
-					       @RequestParam(value = "page", defaultValue = "1") int page,
-					       Model model) {
-		
-	    // 1. 한 페이지에 보여줄 게시글 개수 및 블록 크기
-	    int pageSize = 10; 
-	    int blockSize = 10; // ★ 10단위 블록 크기
+	                        @RequestParam(value = "comm_no", required = false) Integer comm_no,
+	                        @RequestParam(value = "comm_pet_type", required = false) String comm_pet_type,
+	                        @RequestParam(value = "comm_category", required = false) String comm_category,
+	                        @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
+	                        @RequestParam(value = "page", defaultValue = "1") int page,
+	                        Model model) {
 	    
-	    // 2. 페이징 계산을 위한 시작/끝 행 번호 구하기 (오라클 ROWNUM 기준 예시)
+	    int pageSize = 10; 
 	    int startRow = (page - 1) * pageSize + 1;
 	    int endRow = page * pageSize;
 
-	    // 3. 목록 조회 (파라미터에 페이징 정보 추가 전달)
+	    // 1. 기존에 쓰시던 selectList 그대로 호출 (DAO, XML 수정 불필요!)
 	    List<CommunityDTO> list = com_service.selectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
 	    
-	    // 4. 전체 게시글 개수 구하기 및 총 페이지 수 계산
-	    int totalCount = com_service.getTotalCount(comm_type, comm_pet_type, comm_category);
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-	    if (totalPages == 0) totalPages = 1; // 게시글이 0개일 때 1페이지로 설정
-
-	    // 5. ★ 10단위 블록 페이징 계산 로직 추가
-	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
-	    int endPage = startPage + blockSize - 1;
+	    // 2. 페이징 계산은 서비스에게 위임
+	    Map<String, Object> pagingMap = com_service.getPagingInfo(comm_type, comm_pet_type, comm_category, page);
 	    
-	    // 계산된 endPage가 실제 총 페이지 수보다 크면 보정
-	    if (endPage > totalPages) {
-	        endPage = totalPages;
-	    }
-	    
-	    // 6. 모델에 데이터 담기
+	    // 3. 모델에 담기
 	    model.addAttribute("list", list);
-	    model.addAttribute("pageNum", page);
-	    model.addAttribute("totalPages", totalPages);
-	    model.addAttribute("totalCount", totalCount);
-	    
-	    // ★ JSP에서 페이징 바를 그리기 위해 필수적인 속성 추가
-	    model.addAttribute("startPage", startPage);
-	    model.addAttribute("endPage", endPage);
+	    model.addAllAttributes(pagingMap);
 	    
 	    return "community/commList";
 	}
@@ -185,38 +152,14 @@ public class CommunityController {
 	                     @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
 	                     @RequestParam(value = "page", defaultValue = "1") int page,
 	                     Model model) throws Exception {
-	    
-	    // 1. 한 페이지에 보여줄 게시글 개수 및 블록 크기
-	    int pageSize = 10; 
-	    int blockSize = 10; 
-	    
-	    // 2. 페이징 계산을 위한 시작/끝 행 번호 구하기
-	    int startRow = (page - 1) * pageSize + 1;
-	    int endRow = page * pageSize;
 
-	    // 3. ★ 검색 목록 조회 (getSearchTotalCount가 아니라 목록을 가져오는 메서드여야 합니다!)
-	    List<CommunityDTO> list = com_service.selectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
+	    List<CommunityDTO> list = com_service.search(keyword);  
+	    Map<String, Object> pagingMap = com_service.getPagingInfo(comm_type, comm_pet_type, comm_category, page, keyword);
 	    
-	    // 4. 검색된 전체 게시글 개수 구하기 및 총 페이지 수 계산
-	    int totalCount = com_service.getSearchTotalCount(keyword, comm_type, comm_pet_type, comm_category);
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-	    if (totalPages == 0) totalPages = 1; 
-
-	    // 5. 10단위 블록 페이징 계산 로직
-	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
-	    int endPage = startPage + blockSize - 1;
-	    
-	    if (endPage > totalPages) {
-	        endPage = totalPages;
-	    }
-	    
-	    // 6. 모델에 데이터 담기 (JSP에서 사용하도록 전달)
 	    model.addAttribute("list", list);
+	    model.addAllAttributes(pagingMap);
 	    model.addAttribute("pageNum", page);
-	    model.addAttribute("totalPages", totalPages);
-	    model.addAttribute("totalCount", totalCount);
-	    model.addAttribute("startPage", startPage);
-	    model.addAttribute("endPage", endPage);
+	    model.addAttribute("keyword", keyword);
 	    
 	    return "community/comm_searchList";
 	}
@@ -232,16 +175,20 @@ public class CommunityController {
 	        @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
 	        @RequestParam(value = "page", defaultValue = "1") int page,
 	        Model model) throws Exception {
+	    		
+		int totalCount = 0; // 전체 개수를 담을 변수
+	    int size = 10;
 	    
 	    // 키워드가 존재할 때는 엘라스틱서치 검색 메서드 호출
 	    if (keyword != null && !keyword.trim().isEmpty()) {
 	        List<Map<String, Object>> searchList = com_service.adminSearchCommunity(searchType, keyword, sort, page, 10);
 	        model.addAttribute("list", searchList);
+	       
 	    } else {
 	    	// 수정 권장 (마지막 인자를 고정 크기 값인 10 등으로 변경)
-	    	int size = 10;
-	    	List<CommunityDTO> list = com_service.selectList(comm_type, comm_pet_type, comm_category, sort, page, size);
+	    	List<CommunityDTO> list = com_service.search(keyword);
 	        model.addAttribute("list", list);
+	        totalCount = com_service.getTotalCount(comm_type, comm_pet_type, comm_category);
 	    }
 	    
 	    // 검색 조건 및 파라미터 유지용 모델 담기
@@ -249,33 +196,61 @@ public class CommunityController {
 	    model.addAttribute("keyword", keyword);
 	    model.addAttribute("sort", sort);
 	    model.addAttribute("pageNum", page);
+	    model.addAttribute("totalCount", totalCount);
 	    
 	    return "admin/community/communityManage/communityUpdateSearch";
 	}
 	
 	// 게시글 내용 상세보기
 	@RequestMapping("/community/commView")
-	public String communityView(@RequestParam("comm_no") Integer comm_no,
+	public String communityView(@RequestParam(value = "keyword", required = false) String keyword,
+								@RequestParam(value = "comm_type", required = false) String comm_type,
+								@RequestParam(value = "comm_pet_type", required = false) String comm_pet_type,
+								@RequestParam(value = "comm_category", required = false) String comm_category,
+								@RequestParam(value = "sort", required = false, defaultValue = "latest") String sort,
+								@RequestParam(value = "page", defaultValue = "1") int page,
+								@RequestParam("comm_no") Integer comm_no,
 								Model model, HttpSession session) {
-
-	    comm_dao.CommunityHit(comm_no);
-	    CommunityDTO view = com_service.viewList(comm_no);
-	    model.addAttribute("view", view);
-
-	    model.addAttribute("cmt", cmt_service.cmtList(comm_no));
-	    model.addAttribute("reply_count", cmt_service.countComments(comm_no));
-
-	    Integer loginMno = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
-	    model.addAttribute("loginMno", loginMno);
-	    
+		
+		// 1. 로그인 회원 및 북마크 여부 확인
+		Integer loginMno = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
 	    if (loginMno != null) {
 	        boolean isBookmarked = bookmarkService.isBookmarked(comm_no, loginMno);
 	        model.addAttribute("isBookmarked", isBookmarked);
 	    }
 
+		// 2. 페이징 계산 (목록으로 돌아갈 때 대비)
+		int pageSize = 10; 
+	    int startRow = (page - 1) * pageSize + 1;
+	    int endRow = page * pageSize;
+		
+	    // 3. 조회수 증가 및 본문/댓글 데이터 조회
+	    comm_dao.CommunityHit(comm_no);
+	    CommunityDTO view = com_service.viewList(comm_no);
+
+	    // 4. 우측 사이드바 데이터 불러오기 (commList 구조 참고)
+	    // 인기글 목록 조회 (예: sort를 "popular" 고정하거나 기존 서비스 메서드 활용)
+	    List<CommunityDTO> popularList = com_service.selectList(comm_type, comm_pet_type, comm_category, "popular", 1, 5);
+	    
+	    // 좋은 정보 / 추천 콘텐츠 목록 조회 (필요한 서비스/메서드 호출)
+	    List<CommunityDTO> recommendList = com_service.getRecommendList();    
+
+	    // 5. 모델에 데이터 담기
+	    model.addAttribute("view", view);
+	    model.addAttribute("cmt", cmt_service.cmtList(comm_no));
+	    model.addAttribute("reply_count", cmt_service.countComments(comm_no));
+	    model.addAttribute("popularList", popularList);
+	    model.addAttribute("recommendList", recommendList);
+	    model.addAttribute("loginMno", loginMno);
+	    
+	    // 목록으로 돌아갈 때 필터/페이지 조건 유지를 위해 전달
+	    model.addAttribute("keyword", keyword);
+	    model.addAttribute("pageNum", page);
+	    model.addAttribute("sort", sort);
+	    
 	    return "community/commView";
-	}
-	
+		}
+
 	// 내 게시글 수정폼으로 이동
 	@RequestMapping("/community/updateForm")
 	public String communityUpdateForm(@RequestParam("comm_no") int comm_no,
@@ -337,6 +312,7 @@ public class CommunityController {
         return "redirect:/community/commView?comm_no=" + dto.getComm_no();
     }
 	
+	// 게시글 도움돼요.
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/community/recommend")
 	@ResponseBody
@@ -359,6 +335,30 @@ public class CommunityController {
 	    
 	    // 2. 중복 체크 + 이력 삽입 + 카운트 증가
 	    return com_service.processRecommend(comm_no, m_no, type);
+	}
+	
+	// 댓글 '도움돼요'
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/comment/recommend")
+	@ResponseBody
+	public String recommendComment(@RequestParam("cmt_no") int cmt_no,
+	                               Principal principal) {
+	    
+	    if (principal == null) {
+	        return "LOGIN_REQUIRED";
+	    }
+	    
+	    String username = principal.getName();
+	    
+	    // 회원 정보 조회 후 m_no 꺼내기
+	    MemberDTO member = m_dao.MemberFindId(username);
+	    if (member == null) {
+	        return "LOGIN_REQUIRED";
+	    }
+	    int m_no = member.getM_no();
+	    
+	    // 댓글 추천 중복 체크 및 처리 서비스 호출
+	    return cmt_service.processRecommend(cmt_no, m_no);
 	}
 	
 	

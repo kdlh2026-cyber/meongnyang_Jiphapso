@@ -9,122 +9,175 @@
 <head>
 <meta charset="UTF-8">
 <title>게시글 상세보기</title>
+<meta name="_csrf" content="${_csrf.token}"/>
+<meta name="_csrf_header" content="${_csrf.headerName}"/>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <link rel="stylesheet" href="/css/community/commView.css">
 </head>
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
 
-	<!-- 전체 컨텐츠를 감싸는 2단 레이아웃 컨테이너 -->
-	<div class="content_layout_wrapper">
-		
-		<!-- 왼쪽 영역: 게시글 상세 + 댓글 영역 -->
-		<div class="left_content_area">
-		
-			<!-- 1. 게시글 본문 카드 박스 -->
-			<div class="comm_view_card">
-				
-				<!-- 상단 헤더 영역 -->
-				<div class="view_header_area">
-					<!-- 뱃지 조합 -->
-					<div class="view_badges">
-						<c:choose>
-							<c:when test="${view.comm_type == '콘텐츠'}">
-								<span class="badge highlight">${view.comm_detail}</span>
-							</c:when>
-							<c:otherwise>
-								<c:if test="${not empty view.comm_pet_type}">
-									<span class="badge highlight">${view.comm_pet_type}</span>
-								</c:if>
-								<span class="badge">${view.comm_type == 'QNA' ? 'Q&amp;A' : view.comm_type}</span>
-								<c:if test="${not empty view.comm_breed}">
-									<span class="badge">${view.comm_breed}</span>
-								</c:if>
-							</c:otherwise>
-						</c:choose>
-					</div>
+	<!-- 전체 화면을 감싸는 메인 컨테이너 -->
+	<div class="main_container">
+	
+		<!-- ==========================================
+		   1. [상단 영역] 좌측: 본문 / 우측: 사이드바 (인기글, 추천글)
+		   ================================---------- -->
+		<div class="upper_section_wrapper">
+			
+			<!-- 왼쪽 영역: 게시글 상세 본문 -->
+			<div class="left_content_area">
+				<div class="comm_view_card">
+					
+					<!-- 상단 헤더 영역 -->
+					<div class="view_header_area">
+						<!-- 뱃지 조합 -->
+						<div class="view_badges">
+							<c:choose>
+								<c:when test="${view.comm_type == '콘텐츠'}">
+									<span class="badge highlight">${view.comm_detail}</span>
+								</c:when>
+								<c:otherwise>
+									<c:if test="${not empty view.comm_pet_type}">
+										<span class="badge highlight">${view.comm_pet_type}</span>
+									</c:if>
+									<span class="badge">${view.comm_type == 'QNA' ? 'Q&amp;A' : view.comm_type}</span>
+									<c:if test="${not empty view.comm_breed}">
+										<span class="badge">${view.comm_breed}</span>
+									</c:if>
+								</c:otherwise>
+							</c:choose>
+						</div>
 
-					<!-- 게시글 제목 -->
-					<h2 class="view_title">${view.comm_title}</h2>
+						<!-- 게시글 제목 -->
+						<h2 class="view_title">${view.comm_title}</h2>
 
-					<!-- 작성자 프로필 및 메타 정보 -->
-					<div class="view_writer_row">
-						<div class="writer_profile_img">🐾</div>
-						<div class="writer_info_box">
-							<span class="writer_name">${view.comm_writer}</span>
-							<span class="writer_sub_info">
-								<fmt:formatDate value="${view.comm_date}" pattern="yyyy.MM.dd" /> · 조회 ${view.comm_view}
-							</span>
+						<!-- 작성자 프로필 및 메타 정보 -->
+						<div class="view_writer_row">
+							<div class="writer_profile_img">🐾</div>
+							<div class="writer_info_box">
+								<span class="writer_name">${view.comm_writer}</span>
+								<span class="writer_sub_info">
+									<fmt:formatDate value="${view.comm_date}" pattern="yyyy.MM.dd" /> · 조회 ${view.comm_view}
+								</span>
+							</div>
 						</div>
 					</div>
-				</div>
 
-				<!-- 콘텐츠일 경우 북마크 버튼 영역 -->
-				<c:if test="${view.comm_type eq '콘텐츠'}">
-					<div class="bookmark_area">
-						<button type="button" id="bookmark-btn" class="bookmark_action_btn ${isBookmarked ? 'active' : ''}" onclick="fnBookmark()">
-				            <span id="bookmark-text">${isBookmarked ? '⭐ 북마크 취소' : '⭐ 북마크'}</span>
-				        </button>
-					</div>
-				</c:if>
-				
-				<hr class="view_divider">
-				
-				<!-- 본문 내용 영역 -->
-				<div class="view_content_body">
-					${view.comm_content}
-				</div>
-				
-				<!-- 미디어 및 이미지 영역 -->
-				<div class="view_media_area">
-					<!-- 비디오 파일명이 존재할 때만 비디오 영역 출력 -->
-					<c:if test="${not empty view.comm_video}">
-						<div class="video-container">
-							<video controls>
-								<source src="/images/community/${view.comm_video}" type="video/mp4">
-							</video>
+					<!-- 콘텐츠일 경우 북마크 버튼 영역 -->
+					<c:if test="${view.comm_type eq '콘텐츠'}">
+						<div class="bookmark_area">
+							<button type="button" id="bookmark-btn" class="bookmark_action_btn ${isBookmarked ? 'active' : ''}" onclick="fnBookmark()">
+					            <span id="bookmark-text">${isBookmarked ? '⭐ 북마크 취소' : '⭐ 북마크'}</span>
+					        </button>
 						</div>
 					</c:if>
-			
-					<!-- 다수의 이미지를 순서대로 출력 -->
-					<c:forEach var="imgUrl" items="${view.img_url_list}">
-						<div class="img_box">
-							<img src="${imgUrl}" alt="상세 이미지">
-						</div>
-					</c:forEach>
-				</div>
-				
-				<!-- 태그 영역 -->
-				<c:if test="${not empty view.comm_tag}">
-					<div class="view_tag_area">
-						<span class="tag_item">${view.comm_tag}</span>
-					</div>
-				</c:if>
-				
-				<hr class="view_divider">
-
-				<!-- 하단 액션 바 (추천 및 수정/삭제 버튼) -->
-				<div class="post-bottom-action-bar">
-					<!-- 왼쪽: 도움돼요 / 글쎄요 -->
-					<div class="recommend-box">
-						<div class="recommend_btn_group">
-							<button type="button" class="recommend-btn" onclick="fnRecommend('GOOD')">👍 도움돼요 <span id="count-good">${view.comm_good}</span></button>
-							<button type="button" class="recommend-btn" onclick="fnRecommend('WELL')">👎 글쎄요 <span id="count-well">${view.comm_well}</span></button>
-						</div>
+					
+					<hr class="view_divider">
+					
+					<!-- 본문 내용 영역 -->
+					<div class="view_content_body">
+						${view.comm_content}
 					</div>
 					
-					<!-- 오른쪽: 수정하기 / 삭제하기 (작성자 본인일 때만 출력) -->
-					<div class="author-actions">
-						<c:if test="${not empty loginMno and loginMno eq view.m_no}">
-							<button type="button" class="comm-btn btn-update" onclick="location.href='/community/updateForm?comm_no=${view.comm_no}'">수정하기</button>
-							<button type="button" class="comm-btn btn-delete" onclick="fnDeletePost('${view.comm_no}')">삭제하기</button>
+					<!-- 미디어 및 이미지 영역 -->
+					<div class="view_media_area">
+						<!-- 비디오 파일명이 존재할 때만 비디오 영역 출력 -->
+						<c:if test="${not empty view.comm_video}">
+							<div class="video-container">
+								<video controls>
+									<source src="/images/community/${view.comm_video}" type="video/mp4">
+								</video>
+							</div>
 						</c:if>
+				
+						<!-- 다수의 이미지를 순서대로 출력 -->
+						<c:forEach var="imgUrl" items="${view.img_url_list}">
+							<div class="img_box">
+								<img src="${imgUrl}" alt="상세 이미지">
+							</div>
+						</c:forEach>
 					</div>
-				</div>
+					
+					<!-- 태그 영역 -->
+					<c:if test="${not empty view.comm_tag}">
+						<div class="view_tag_area">
+							<span class="tag_item">${view.comm_tag}</span>
+						</div>
+					</c:if>
+					
+					<hr class="view_divider">
 
+					<!-- 하단 액션 바 (추천 및 수정/삭제 버튼) -->
+					<div class="post-bottom-action-bar">
+						<!-- 왼쪽: 도움돼요 / 글쎄요 -->
+						<div class="recommend-box">
+							<div class="recommend_btn_group">
+								<button type="button" class="recommend-btn" onclick="fnRecommend('GOOD')">👍 도움돼요 <span id="count-good">${view.comm_good}</span></button>
+								<button type="button" class="recommend-btn" onclick="fnRecommend('WELL')">👎 글쎄요 <span id="count-well">${view.comm_well}</span></button>
+							</div>
+						</div>
+						
+						<!-- 오른쪽: 수정하기 / 삭제하기 (작성자 본인일 때만 출력) -->
+						<div class="author-actions">
+							<c:if test="${not empty loginMno and loginMno eq view.m_no}">
+								<button type="button" class="comm-btn btn-update" onclick="location.href='/community/updateForm?comm_no=${view.comm_no}'">수정하기</button>
+								<button type="button" class="comm-btn btn-delete" onclick="fnDeletePost('${view.comm_no}')">삭제하기</button>
+							</c:if>
+						</div>
+					</div>
+
+				</div>
 			</div>
 
-			<!-- 댓글 영역 -->
+			<!-- 오른쪽 영역: 커뮤니티 인기글 + 비마이펫 추천 콘텐츠 위젯 -->
+			<div class="right_sidebar_area">
+			    <!-- 1. 커뮤니티 인기글 위젯 (상위 3개 출력) -->
+			    <div class="sidebar_widget">
+			        <h3>🔥 커뮤니티 인기글</h3>
+			        <ul class="popular_list">
+			            <c:forEach var="pop" items="${popularList}" begin="0" end="2" varStatus="status">
+			                <li>
+			                    <span class="rank">${status.count}</span>
+			                    <a href="/community/commView?comm_no=${pop.comm_no}" class="pop_title" style="text-decoration: none; color: inherit;">
+			                        ${pop.comm_title}
+			                    </a>
+			                    <span class="pop_cmt_cnt">댓글 ${not empty pop.reply_count ? pop.reply_count : 0}</span>
+			                </li>
+			            </c:forEach>
+			        </ul>
+			        <div class="widget_more_btn_box">
+			            <button type="button" onclick="location.href='/community/commList'">인기글 더보기</button>
+			        </div>
+			    </div>
+			
+			    <!-- 2. 비마이펫 추천 콘텐츠 위젯 (상위 3개 출력) -->
+			    <div class="sidebar_widget">
+			        <h3>🐾 비마이펫 추천 콘텐츠</h3>
+			        <div class="recommend_content_list">
+			            <c:forEach var="rec" items="${recommendList}" begin="0" end="2">
+			                <div class="rec_item" onclick="location.href='/community/commView?comm_no=${rec.comm_no}'" style="cursor: pointer;">
+			                    <div class="rec_thumb">
+			                        <c:if test="${not empty rec.comm_img}">
+			                            <img src="${rec.comm_img}" alt="콘텐츠 썸네일" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+			                        </c:if>
+			                    </div>
+			                    <div class="rec_info">
+			                        <p class="rec_title">${rec.comm_title}</p>
+			                        <span class="rec_author">${rec.comm_writer}</span>
+			                    </div>
+			                </div>
+			            </c:forEach>
+			        </div>
+			    </div>
+			</div>
+			
+		</div> <!-- upper_section_wrapper 끝 -->
+
+		<!-- ==========================================
+		   2. [하단 영역] 댓글 영역 (전체 너비 통으로 사용)
+		   ================================---------- -->
+		<div class="lower_comment_area">
 			<div class="comment_section">
 				<!-- 상단 타이틀 및 정렬 -->
 				<div class="comment_header_row">
@@ -217,21 +270,26 @@
 								        </c:if>
 								    </c:forEach>
 								
+								    <!-- 비로그인 사용자 -->
 								    <sec:authorize access="isAnonymous()">
-								        <button type="button" class="action_btn" onclick="location.href='/community/comment/reply-auth?comm_no=${view.comm_no}&cmt_no=${comment.cmt_no}'">
-								            👍 도움돼요
+								        <button type="button" class="action_btn" onclick="alert('로그인 후 이용 가능합니다.'); location.href='/loginForm';">
+								            👍 도움돼요 <span id="cmt-count-good-${comment.cmt_no}">${not empty comment.cmt_good ? comment.cmt_good : 0}</span>
 								        </button>
 								        <button type="button" class="action_btn" onclick="location.href='/community/comment/reply-auth?comm_no=${view.comm_no}&cmt_no=${comment.cmt_no}'">
 								            💬 답글 ${replyCount}
 								        </button>
 								    </sec:authorize>
 								
+								    <!-- 로그인 사용자 -->
 								    <sec:authorize access="isAuthenticated()">
-								        <button type="button" class="action_btn">👍 도움돼요</button>
-								        <button type="button" class="action_btn" onclick="showReplyForm(this, '${comment.cmt_no}')">💬 답글 ${replyCount}</button>
+								        <button type="button" class="action_btn" onclick="fnCommentRecommend('${comment.cmt_no}')">
+								            👍 도움돼요 <span id="cmt-count-good-${comment.cmt_no}">${not empty comment.cmt_good ? comment.cmt_good : 0}</span>
+								        </button>
+								        <button type="button" class="action_btn" onclick="showReplyForm(this, '${comment.cmt_no}')">
+								            💬 답글 ${replyCount}
+								        </button>
 								    </sec:authorize>
 								</div>
-							</div>
 
 							<!-- 답글 리스트 구조 -->
 							<c:set var="hasReply" value="false" />
@@ -279,63 +337,8 @@
 			</div>
 		</div>
 
-		<!-- 오른쪽 영역: 커뮤니티 인기글 + 비마이펫 추천 콘텐츠 위젯 -->
-		<div class="right_sidebar_area">
-			
-			<!-- 1. 커뮤니티 인기글 위젯 -->
-			<div class="sidebar_widget">
-				<h3>🔥 커뮤니티 인기글</h3>
-				<ul class="popular_list">
-					<li>
-						<span class="rank">1</span>
-						<span class="pop_title">인기글 제목 예시입니다. 첫 번째 글입니다.</span>
-						<span class="pop_cmt_cnt">댓글 0</span>
-					</li>
-					<li>
-						<span class="rank">2</span>
-						<span class="pop_title">인기글 제목 예시입니다. 두 번째 글입니다.</span>
-						<span class="pop_cmt_cnt">댓글 1</span>
-					</li>
-					<li>
-						<span class="rank">3</span>
-						<span class="pop_title">인기글 제목 예시입니다. 세 번째 글입니다.</span>
-						<span class="pop_cmt_cnt">댓글 3</span>
-					</li>
-				</ul>
-				<div class="widget_more_btn_box">
-					<button type="button" onclick="location.href='/community/popularList'">인기글 더보기</button>
-				</div>
-			</div>
+	</div> <!-- main_container 끝 -->
 
-			<!-- 2. 비마이펫 추천 콘텐츠 위젯 -->
-			<div class="sidebar_widget">
-				<h3>🐾 비마이펫 추천 콘텐츠</h3>
-				<div class="recommend_content_list">
-					<div class="rec_item">
-						<div class="rec_thumb"></div>
-						<div class="rec_info">
-							<p class="rec_title">추천 콘텐츠 제목이 들어갈 자리입니다 두 줄까지 표시됩니다.</p>
-							<span class="rec_author">작성자명</span>
-						</div>
-					</div>
-					<div class="rec_item">
-						<div class="rec_thumb"></div>
-						<div class="rec_info">
-							<p class="rec_title">추천 콘텐츠 제목이 들어갈 자리입니다 두 줄까지 표시됩니다.</p>
-							<span class="rec_author">작성자명</span>
-						</div>
-					</div>
-					<div class="rec_item">
-						<div class="rec_thumb"></div>
-						<div class="rec_info">
-							<p class="rec_title">추천 콘텐츠 제목이 들어갈 자리입니다 두 줄까지 표시됩니다.</p>
-							<span class="rec_author">작성자명</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 <%@ include file="../footer.jsp" %>
 </body>
 <script>
@@ -400,8 +403,8 @@ function cancelEdit(cmt_no) {
 
 function fnRecommend(type) {
     let commNo = "${view.comm_no}";
-    var csrfToken = "${_csrf != null ? _csrf.token : ''}";
-    var csrfHeader = "${_csrf != null && not empty _csrf.headerName ? _csrf.headerName : 'X-CSRF-TOKEN'}";
+    var csrfToken = $("meta[name='_csrf']").attr("content");
+    var csrfHeader = $("meta[name='_csrf_header']").attr("content");
     
     let ajaxConfig = {
         url: "/community/recommend",
@@ -425,6 +428,45 @@ function fnRecommend(type) {
             }
         },
         error: function(xhr, status, error) { 
+            console.error("AJAX Error: ", error); 
+            alert("오류가 발생했습니다. (상태 코드: " + xhr.status + ")"); 
+        }
+    };
+    
+    if (csrfHeader && csrfToken) { 
+        ajaxConfig.beforeSend = function(xhr) { 
+            xhr.setRequestHeader(csrfHeader, csrfToken); 
+        }; 
+    }
+    $.ajax(ajaxConfig);
+}
+
+function fnCommentRecommend(cmt_no) {
+    var csrfToken = "${_csrf != null ? _csrf.token : ''}";
+    var csrfHeader = "${_csrf != null && not empty _csrf.headerName ? _csrf.headerName : 'X-CSRF-TOKEN'}";
+    
+    let ajaxConfig = {
+        url: "/comment/recommend",
+        type: "POST",
+        data: { cmt_no: cmt_no },
+        success: function(response) {
+            if (response === "LOGIN_REQUIRED") { 
+                alert("로그인 후 이용 가능합니다."); 
+                location.href = "/loginForm"; 
+                return; 
+            }
+            let $countSpan = $("#cmt-count-good-" + cmt_no);
+            let currentCount = parseInt($countSpan.text()) || 0;
+            
+            if (response === "SUCCESS") { 
+                $countSpan.text(currentCount + 1); 
+            } else if (response === "CANCELED") { 
+                $countSpan.text(Math.max(0, currentCount - 1)); 
+            } else if (response === "ALREADY_VOTED") {
+                alert("이미 도움돼요를 누른 댓글입니다.");
+            }
+        },
+        error: function(xhr, status, error) { 
             console.error(error); 
             alert("오류가 발생했습니다."); 
         }
@@ -444,14 +486,16 @@ function fnDeletePost(comm_no) {
 
 function fnBookmark() {
     let commNo = "${view.comm_no}";
-    var csrfToken = "${_csrf != null ? _csrf.token : ''}";
-    var csrfHeader = "${_csrf != null && not empty _csrf.headerName ? _csrf.headerName : 'X-CSRF-TOKEN'}";
-    let ajaxConfig = {
+    $.ajax({
         url: "/community/bookmark",
         type: "POST",
         data: { comm_no: commNo },
         success: function(response) {
-            if (response === "LOGIN_REQUIRED") { alert("로그인 후 이용 가능합니다."); location.href = "/loginForm"; return; }
+            if (response === "LOGIN_REQUIRED") { 
+                alert("로그인 후 이용 가능합니다."); 
+                location.href = "/loginForm"; 
+                return; 
+            }
             let $btn = $("#bookmark-btn");
             let $text = $("#bookmark-text");
             if (response === "ADDED") { 
@@ -464,10 +508,11 @@ function fnBookmark() {
                 $text.text("⭐ 북마크"); 
             }
         },
-        error: function(xhr, status, error) { console.error(error); alert("오류가 발생했습니다."); }
-    };
-    if (csrfHeader && csrfToken) { ajaxConfig.beforeSend = function(xhr) { xhr.setRequestHeader(csrfHeader, csrfToken); }; }
-    $.ajax(ajaxConfig);
+        error: function(xhr, status, error) { 
+            console.error("AJAX Error: " + error); 
+            alert("오류가 발생했습니다. (상태 코드: " + xhr.status + ")"); 
+        }
+    });
 }
 </script>
 </html>

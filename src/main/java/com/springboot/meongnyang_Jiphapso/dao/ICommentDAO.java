@@ -65,4 +65,20 @@ public interface ICommentDAO {
     
     // 상품에 해당하는 리뷰 조회
     public List<CommentDTO> selectReviewListByProductNo(int p_no);
+    
+    // 1. 유저가 해당 댓글에 추천을 눌렀는지 조회
+    public String getRecommendType(@Param("cmt_no") int cmt_no, @Param("m_no") int m_no);
+
+    // 2. 추천 이력 추가
+    public int insertRecommend(@Param("cmt_no") int cmt_no, @Param("m_no") int m_no);
+
+    // 3. 추천 이력 삭제
+    public int deleteRecommend(@Param("cmt_no") int cmt_no, @Param("m_no") int m_no);
+
+    // 4. 댓글 공감수 증가
+    public int increaseCmtGood(@Param("cmt_no") int cmt_no);
+
+    // 5. 댓글 공감수 감소
+    public int decreaseCmtGood(@Param("cmt_no") int cmt_no);
+    
 }

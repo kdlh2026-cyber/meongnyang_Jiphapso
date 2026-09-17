@@ -1,5 +1,12 @@
 @charset "UTF-8";
 
+@font-face {
+    font-family: 'OneStoreMobilePop';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
+
 /* ==========================================================
    1. 폰트 및 전체 메인 컨테이너 설정
    ========================================================== */
@@ -37,10 +44,18 @@ body {
 }
 
 .write_main_title {
+    font-family: 'OneStoreMobilePop', sans-serif;
     margin: 0;
-    font-size: 26px;
-    font-weight: bold;
-    color: #2c2c2c;
+    font-size: 40px;
+    color: #FDCC61;
+    text-shadow: -2px -2px 0 #4A3226, 
+                  2px -2px 0 #4A3226, 
+                 -2px  2px 0 #4A3226, 
+                  2px  2px 0 #4A3226,
+                  0   -2px 0 #4A3226, 
+                  0    2px 0 #4A3226, 
+                 -2px  0   0 #4A3226, 
+                  2px  0   0 #4A3226;
 }
 
 .write_sub_desc {

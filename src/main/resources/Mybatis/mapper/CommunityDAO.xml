@@ -12,6 +12,14 @@
 	    WHERE ROWNUM &lt;= 8
 	</select>
 	
+	<select id="recommendContentTen" resultMap="CommunityMap">
+	    SELECT * FROM (
+	        SELECT * FROM dc_community 
+	        ORDER BY NVL(comm_good, 0) DESC, comm_no DESC
+	    )
+	    WHERE ROWNUM &lt;= 8
+	</select>
+	
 	<select id="CommunityAllList" resultMap="CommunityMap">
 		select * from dc_community order by comm_no desc
 	</select>

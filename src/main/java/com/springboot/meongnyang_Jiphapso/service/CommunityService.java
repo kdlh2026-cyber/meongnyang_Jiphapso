@@ -35,7 +35,6 @@ public class CommunityService {
 	private PointService pointService;
 	
 	public void write(CommunityDTO dto, MultipartFile[] uploadImages, MultipartFile[] uploadVideo) throws Exception {
-	    
 	    String uploadPath = "C:\\Users\\KH_BUSAN_B_15\\git\\meongnyang_Jiphapso\\src\\main\\resources\\static\\images\\community"; 
 	    
 	    // 폴더가 없으면 생성
@@ -68,8 +67,7 @@ public class CommunityService {
 	        }
 	    }
 	    
-	    // 2. 동영상 파일 처리, comm_video는 dc_community 컬럼
-	 // 2. 동영상 파일 처리 부분
+	    // 2. 동영상 파일 처리 부분
 	    if (uploadVideo != null && uploadVideo.length > 0) {
 	        MultipartFile videoFile = uploadVideo[0];
 	        if (!videoFile.isEmpty()) {
@@ -128,29 +126,6 @@ public class CommunityService {
 	    esService.save(dto);
 	}
 	
-		
-	// 크롤링 데이터 업로드 용
-	public void writeCrawling(CommunityDTO dto, String contentImg) throws Exception {
-		
-		dao.CommunityWrite(dto);
-		
-		Integer commNo = dto.getComm_no();
-		
-		
-		if(contentImg != null && !contentImg.isEmpty()) {
-			String[] imgUrls = contentImg.split(",");
-			for(int i = 0; i < imgUrls.length; i++) {
-				CommImageDTO imgDto = new CommImageDTO();
-				imgDto.setComm_no(commNo);
-				imgDto.setImg_url(imgUrls[i].trim());
-				imgDto.setImg_order(i+1);
-				
-				dao.CommunityImageWrite(imgDto);
-			}
-		}
-		esService.save(dto);
-	}
-	
 	public List<CommunityDTO> list(){
 		return dao.CommunityAllList();
 	}
@@ -161,7 +136,62 @@ public class CommunityService {
     }
 	
 	public List<CommunityDTO> selectList(String comm_type, String comm_pet_type, String comm_category, String sort, int startRow, int endRow){
-		return dao.CommunitySelectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
+        return dao.CommunitySelectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
+    }
+
+	public Map<String, Object> getPagingInfo(String comm_type, String comm_pet_type, String comm_category, int page) {
+	    return getPagingInfo(comm_type, comm_pet_type, comm_category, page, null);
+	}
+	
+	public Map<String, Object> getPagingInfo(String comm_type, 
+											 String comm_pet_type,
+											 String comm_category,
+											 int page,
+											 String keyword) {
+	    int pageSize = 10; 
+	    int blockSize = 10; 
+	    int totalCount = 0;
+	    
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        try {
+	            // 기존 esService의 검색 결과 크기를 활용하거나 검색 개수 메서드 호출
+	            List<CommunityDTO> searchList = esService.search(keyword);
+	            totalCount = searchList.size(); 
+	        } catch (Exception e) {
+	            totalCount = 0;
+	        }
+	    } else {
+	        totalCount = dao.getTotalCount(comm_type, comm_pet_type, comm_category);
+	    }
+	    
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    if (totalPages == 0) totalPages = 1; 
+
+	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
+	    int endPage = startPage + blockSize - 1;
+	    
+	    if (endPage > totalPages) {
+	        endPage = totalPages;
+	    }
+	    
+	    // 💡 1. DAO의 selectPopular 메서드가 Map을 받으므로 파라미터를 Map에 담아줍니다.
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("comm_type", comm_type);
+	    paramMap.put("comm_pet_type", comm_pet_type);
+	    
+	    List<CommunityDTO> popularList = dao.selectPopular(paramMap); 
+	    List<CommunityDTO> recommendList = dao.recommendContentTen();
+	    
+	    // 💡 2. 뷰로 전달할 페이징 정보 및 인기글 목록 구성
+	    Map<String, Object> pagingMap = new HashMap<>();
+	    pagingMap.put("pageNum", page);
+	    pagingMap.put("totalPages", totalPages);
+	    pagingMap.put("totalCount", totalCount);
+	    pagingMap.put("startPage", startPage);
+	    pagingMap.put("endPage", endPage);
+	    pagingMap.put("popularList", popularList); // 인기글 목록 담기
+	    pagingMap.put("recommendList", recommendList); // 추천
+	    return pagingMap;
 	}
 	
 	// 전체 게시글 개수 조회 (페이징 바 계산용)

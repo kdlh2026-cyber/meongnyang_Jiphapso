@@ -17,6 +17,9 @@ public interface ICommunityDAO {
 
 	// 메인 추천 게시글 상위 8개 조회
     public List<CommunityDTO> recommendContentList();
+    
+	// 게시글 도움돼요 상위 10개 조회
+    public List<CommunityDTO> recommendContentTen();
 	
 	// 목록에서 게시글 필터(카테고리와 펫 타입)하여 조회(select)
 	public List<CommunityDTO> CommunitySelectList(@Param("comm_type") String comm_type,

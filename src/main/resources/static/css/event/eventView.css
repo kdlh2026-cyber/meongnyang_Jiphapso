@@ -214,3 +214,132 @@ body {
     color: #555;
     border: 1px solid #EAEAEA !important;
 }
+
+/* ==========================================================
+   이벤트 댓글 영역 디자인 시스템 (커뮤니티 톤앤매너 통일)
+   ========================================================== */
+
+/* 전체 댓글 카드 박스 */
+.comment_section {
+    width: 100%;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    padding: 26px 28px;
+    box-sizing: border-box;
+    box-shadow: 0 10px 25px rgba(235, 225, 215, 0.4), 0 4px 10px rgba(0, 0, 0, 0.02);
+    margin-top: 30px;
+}
+
+/* 댓글 개수 타이틀 영역 */
+.comment_count_area {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c2c2c;
+    border-bottom: 1px solid #f0ece6;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+}
+
+/* 텍스트 영역 (textarea 박스) */
+.comment_box textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e8e2dc;
+    border-radius: 12px;
+    background-color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    color: #333333;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.comment_box textarea:focus {
+    border-color: #ff6f61;
+}
+
+/* 등록 버튼 영역 */
+.comment_submit_area {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.comment_submit_area input[type="submit"] {
+    padding: 8px 22px;
+    background: #ff6f61;
+    border: none;
+    border-radius: 20px;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 111, 97, 0.3);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.comment_submit_area input[type="submit"]:hover {
+    background: #e55a4c;
+    transform: translateY(-1px);
+}
+
+/* 비로그인 시 안내 박스 */
+.comment_login_guide {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9fafb;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.comment_login_guide a {
+    color: #ff6f61;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ff6f61;
+    padding: 6px 14px;
+    border-radius: 8px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.comment_login_guide a:hover {
+    background-color: #ff6f61;
+    color: #fff;
+}
+
+/* 댓글 목록 영역 */
+.comment_list {
+    margin-top: 25px;
+}
+
+.comment_body {
+    padding: 16px 0;
+    border-bottom: 1px dashed #f0ece6;
+}
+
+.comment_body:last-child {
+    border-bottom: none;
+}
+
+/* 작성자 및 날짜 정보 */
+.comment_title {
+    font-size: 12.5px;
+    color: #99948e;
+    margin-bottom: 6px;
+}
+
+/* 댓글 본문 내용 */
+.comment_content {
+    font-size: 14px;
+    color: #333333;
+    line-height: 1.5;
+    word-break: break-all;
+}

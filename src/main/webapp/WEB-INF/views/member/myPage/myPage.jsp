@@ -82,16 +82,6 @@ function loadMpTab(btn) {
         return;
     }
 
-    document.querySelectorAll('.mp-tab')
-        .forEach(el => el.classList.remove('active'));
-
-    btn.classList.add('active');
-
-    sessionStorage.setItem('lastMpTab', url);
-
-    loadMpContent(url);
-}
-
 
 // 마이페이지 본문만 불러오는 함수
 function loadMpContent(url) {
