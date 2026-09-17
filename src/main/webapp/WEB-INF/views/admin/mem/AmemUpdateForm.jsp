@@ -19,7 +19,14 @@
         <table class="admin-form-table">
             <tr>
                 <td colspan="2" class="img-cell">
+                <c:choose>
+                <c:when test="${not empty AmemUpdate.m_img}">
                     <img src="/images/myProfile/${AmemUpdate.m_img}" alt="${AmemUpdate.m_img}" class="member-profile-img">
+                </c:when>
+                <c:otherwise>
+                	<img src="/images/main/user_profile.png" alt="기본 프로필" class="member-profile-img">
+                </c:otherwise>
+                </c:choose>
                 </td>
             </tr>
             <tr><td class="label">아이디</td><td>${AmemUpdate.m_id}</td></tr>

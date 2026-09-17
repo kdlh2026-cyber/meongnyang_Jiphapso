@@ -1,8 +1,17 @@
 package com.springboot.meongnyang_Jiphapso.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,5 +68,63 @@ public class HospitalService {
 
 	public int getTotalCount(String keyword) {
 		return hp_dao.HospitalTotalCount(keyword);
+	}
+
+	private static final Pattern GU_PATTERN = Pattern.compile("(\\S+?구)\\s");
+	private static final Pattern DONG_PATTERN = Pattern.compile("구\\s+(\\S+?동)\\s");
+
+	private String extractGu(String addr) {
+		if (addr == null) return "기타";
+		Matcher m = GU_PATTERN.matcher(addr + " ");
+		return m.find() ? m.group(1) : "기타";
+	}
+
+	private String extractDong(String addr) {
+		if (addr == null) return "기타";
+		Matcher m = DONG_PATTERN.matcher(addr + " ");
+		return m.find() ? m.group(1) : "기타";
+	}
+
+	// 구 -> 동 -> 병원리스트
+	public Map<String, Map<String, List<HospitalDTO>>> groupByRegion() {
+		List<HospitalDTO> all = list();
+		Map<String, Map<String, List<HospitalDTO>>> grouped = new TreeMap<>();
+
+		for (HospitalDTO hp : all) {
+			String gu = extractGu(hp.getHp_addr());
+			String dong = extractDong(hp.getHp_addr());
+
+			grouped.computeIfAbsent(gu, k -> new TreeMap<>())
+				   .computeIfAbsent(dong, k -> new ArrayList<>())
+				   .add(hp);
+		}
+		return grouped;
+	}
+
+	// 구별 병원 수 랭킹 (내림차순)
+	public List<Entry<String, Integer>> guRanking() {
+		Map<String, Map<String, List<HospitalDTO>>> grouped = groupByRegion();
+		Map<String, Integer> guCounts = new LinkedHashMap<>();
+
+		grouped.forEach((gu, dongMap) -> {
+			int cnt = dongMap.values().stream().mapToInt(List::size).sum();
+			guCounts.put(gu, cnt);
+		});
+
+		return guCounts.entrySet().stream()
+			.sorted((a, b) -> b.getValue() - a.getValue())
+			.collect(Collectors.toList());
+	}
+	
+	public Map<String, Integer> guTotalCount() {
+		Map<String, Map<String, List<HospitalDTO>>> grouped = groupByRegion();
+		Map<String, Integer> result = new LinkedHashMap<>();
+
+		grouped.forEach((gu, dongMap) -> {
+			int cnt = dongMap.values().stream().mapToInt(List::size).sum();
+			result.put(gu, cnt);
+		});
+
+		return result;
 	}
 }

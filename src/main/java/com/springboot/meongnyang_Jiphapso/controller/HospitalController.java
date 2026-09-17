@@ -1,6 +1,8 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,12 +53,6 @@ public class HospitalController {
 
 	    return "guest/hospital/hospitalList";
 	}
-
-	@RequestMapping("/admin/hospital/hospitalList")
-	public String hp_Alist( Model model) {
-		model.addAttribute("hospitalList", hp_serv.list());
-		return "admin/hospital/hospitalList";
-	}
 	
 	@RequestMapping("/guest/hospital/hospitalView")
 	public String hp_view(@RequestParam("hp_no") int hp_no, Model model) {
@@ -93,5 +89,21 @@ public class HospitalController {
 	public String hp_search(@RequestParam("keyword") String keyword, Model model) throws Exception {
 		model.addAttribute("hospitalList", hp_serv.search(keyword));
 		return "guest/hospital/hospitalList";
+	}
+	
+	// Controller
+	@RequestMapping("/admin/hospital/hospitalList")
+	public String hp_Alist(Model model) throws Exception {
+		Map<String, Map<String, List<HospitalDTO>>> grouped = hp_serv.groupByRegion();
+		List<Entry<String, Integer>> guRanking = hp_serv.guRanking();
+		Map<String, Integer> guTotalCount = hp_serv.guTotalCount();
+		int totalCount = hp_serv.list().size();
+
+		model.addAttribute("grouped", grouped);
+		model.addAttribute("guRanking", guRanking);
+		model.addAttribute("guTotalCount", guTotalCount);
+		model.addAttribute("totalCount", totalCount);
+
+		return "admin/hospital/hospitalList";
 	}
 }
