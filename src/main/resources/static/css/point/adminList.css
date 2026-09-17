@@ -1,0 +1,89 @@
+@charset "UTF-8";
+  :root {
+    --color-yellow: #FDCC61; /* 메인 옐로우 */
+    --color-coral:  #FDA58F; /* 코랄 핑크 */
+    --color-brown:  #4A3226; /* 딥 브라운 */
+    --color-cream:  #FFF3D8; /* 웜 크림 */
+    --color-pink:   #FFC9CE; /* 소프트 핑크 */
+    --color-white:  #FFFBF5; /* 웜 화이트 */
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: var(--color-white); color: var(--color-brown); }
+
+  .pta-wrap { max-width: 1200px; margin: 40px auto; padding: 0 20px 60px; }
+  .pta-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; color: var(--color-brown); }
+
+  .pta-adjust-box {
+    background: var(--color-cream); border: 1px solid var(--color-pink); border-radius: 8px; padding: 18px;
+    display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .pta-adjust-box input {
+    padding: 8px 10px; border: 1px solid var(--color-pink); border-radius: 6px; font-size: 13px;
+    box-sizing: border-box; background: var(--color-white); color: var(--color-brown);
+  }
+  .pta-adjust-box input[name="mId"] { width: 140px; flex-shrink: 0; }
+  .pta-adjust-box input[name="amount"] { width: 150px; flex-shrink: 0; }
+  .pta-adjust-box input[name="reason"] { flex: 1 1 200px; min-width: 160px; }
+
+  .pta-adjust-box input[type="number"]::-webkit-outer-spin-button,
+  .pta-adjust-box input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; margin: 0;
+  }
+  .pta-adjust-box input[type="number"] { -moz-appearance: textfield; }
+
+  .pta-btn-adjust {
+    padding: 8px 16px; border: none; border-radius: 6px; background: var(--color-yellow); color: var(--color-brown);
+    font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+  }
+  .pta-btn-adjust:hover { background: var(--color-coral); color: #fff; }
+  .pta-hint { font-size: 12px; color: var(--color-brown); opacity: 0.6; width: 100%; margin-top: 4px; }
+
+  .pta-empty {
+    padding: 80px 0; text-align: center; color: var(--color-brown); opacity: 0.6; font-size: 15px;
+    background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 8px;
+  }
+
+  .pta-table { width: 100%; border-collapse: collapse; background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 8px; overflow: hidden; font-size: 13px; }
+  .pta-table th, .pta-table td { padding: 12px 8px; text-align: center; border-bottom: 1px solid var(--color-cream); color: var(--color-brown); }
+  .pta-table thead th { background: var(--color-cream); font-weight: 700; }
+  .pta-table tbody tr:last-child td { border-bottom: none; }
+
+  .pta-amount-plus  { color: var(--color-brown); font-weight: 700; }
+  .pta-amount-minus { color: var(--color-coral); font-weight: 700; }
+
+  .pta-btn-delete {
+    padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    border: 1px solid var(--color-coral); color: var(--color-coral); background: var(--color-white); font-weight: 600;
+  }
+  .pta-btn-delete:hover { background: var(--color-coral); color: #fff; }
+
+
+  .pta-section { margin-bottom: 32px; }
+  .pta-section-title {
+    font-size: 16px; font-weight: 700; margin: 0 0 12px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--color-brown); color: var(--color-brown);
+  }
+
+  /* 회원(mId) 클릭 -> 그 회원 포인트 내역만 보는 모달 */
+  .pta-mid-link { color: var(--color-brown); cursor: pointer; text-decoration: underline; font-weight: 700; }
+  .pta-mid-link:hover { color: var(--color-coral); }
+
+  .pta-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+  }
+  .pta-modal-overlay.show { display: flex; }
+  .pta-modal {
+    width: 620px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
+    background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 10px; padding: 26px; position: relative;
+  }
+  .pta-modal h3 { margin: 0 0 18px; font-size: 16px; color: var(--color-brown); }
+  .pta-modal-close {
+    position: absolute; top: 14px; right: 16px; border: none; background: none;
+    font-size: 22px; cursor: pointer; color: var(--color-brown); opacity: 0.6; line-height: 1;
+  }
+  .pta-modal-close:hover { opacity: 1; color: var(--color-coral); }
+  .pta-modal-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .pta-modal-table th, .pta-modal-table td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--color-cream); color: var(--color-brown); }
+  .pta-modal-table thead th { background: var(--color-cream); font-weight: 700; }
+  .pta-modal-empty { padding: 40px 0; text-align: center; color: var(--color-brown); opacity: 0.6; font-size: 13px; }

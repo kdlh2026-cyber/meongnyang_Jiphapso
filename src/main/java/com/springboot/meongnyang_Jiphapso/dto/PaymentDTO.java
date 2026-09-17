@@ -27,6 +27,8 @@ public class PaymentDTO {
     private String channelKey;       // 포트원 V2 채널키 (JS 결제창 호출용, DB 저장 안함)
     private String orderName;        // 결제창에 표시할 주문명
     private String mId;              // 결제한 회원 아이디 
+    private Long mcNo;               // 결제 시 사용한 보유쿠폰 번호 (검증용 - DB payment 테이블엔 저장 안 함,
+                                      // 실제 쿠폰 사용처리는 PaymentController#requestPayment 이후 별도 /coupon/use 호출로 mcNo 상태를 UNUSED->USED 로 갱신함)
 
     public PaymentDTO() {}
 
@@ -83,6 +85,9 @@ public class PaymentDTO {
 
     public String getMId() { return mId; }
     public void setMId(String mId) { this.mId = mId; }
+
+    public Long getMcNo() { return mcNo; }
+    public void setMcNo(Long mcNo) { this.mcNo = mcNo; }
 
     @Override
     public String toString() {

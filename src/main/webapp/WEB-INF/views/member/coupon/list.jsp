@@ -6,69 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>내 쿠폰함</title>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: #f7f7f8; color: #222; }
-
-  .cp-wrap { max-width: 1100px; margin: 40px auto; padding: 0 20px 60px; }
-  .cp-title { font-size: 22px; font-weight: 700; margin: 0 0 8px; }
-  .cp-section-title { font-size: 17px; font-weight: 700; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 2px solid #222; }
-
-  .cp-empty {
-    padding: 60px 0; text-align: center; color: #888; font-size: 14px;
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
-  }
-
-  .cp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-
-  .cp-card { position: relative; border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-  .cp-card img { width: 100%; display: block; }
-  .cp-card.cp-inactive img { filter: grayscale(1); opacity: 0.55; }
-
-  .cp-meta { padding: 12px 14px 14px; }
-  .cp-meta-name { font-size: 14px; font-weight: 700; margin: 0 0 6px; }
-  .cp-meta-sub { font-size: 12px; color: #777; margin: 2px 0; }
-
-  .cp-status { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #fff; }
-  .cp-status-unused  { background: #12805c; }
-  .cp-status-used    { background: #999; }
-  .cp-status-expired { background: #c0392b; }
-
-  .cp-download-btn {
-    display: block; width: calc(100% - 28px); margin: 0 14px 14px; padding: 10px 0;
-    background: #222; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;
-  }
-  .cp-download-btn:hover { background: #444; }
-  .cp-download-btn:disabled { background: #ccc; cursor: default; }
-
-  .cp-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-  .cp-tab {
-    padding: 8px 16px; border: 1px solid #ddd; background: #fff; border-radius: 20px;
-    font-size: 13px; cursor: pointer; color: #555;
-  }
-  .cp-tab.active { background: #222; color: #fff; border-color: #222; }
-
-    /* ================= 안내메세지 토스트 (alert 대체) ================= */
-  .cp-toast-wrap {
-    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-    z-index: 9999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center;
-    pointer-events: none; width: auto;
-  }
-  .cp-toast {
-    display: inline-flex; align-items: center; justify-content: center;
-    max-width: 320px; width: max-content;
-    padding: 12px 22px; border-radius: 999px;
-    background: #333; color: #fff; font-size: 13px; font-weight: 600; text-align: center;
-    line-height: 1.4; white-space: normal; word-break: keep-all;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-    opacity: 0; transform: translateY(14px) scale(0.98);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    pointer-events: auto;
-  }
-  .cp-toast.cp-toast-show { opacity: 1; transform: translateY(0) scale(1); }
-  .cp-toast-success { background: #f5c518; color: #222; }
-  .cp-toast-error   { background: #f5c518; color: #a34e1c; }
-</style>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/coupon/list.css">
 </head>
 <body>
 
@@ -137,8 +75,11 @@
       .then(function (res) { return res.json(); })
       .then(function (result) {
         if (!result.success) {
-          alert(result.message || "로그인이 필요합니다.");
-          location.href = contextPath + "/member/login";
+          // 기본 alert() 대신 토스트로 안내하고, 읽을 시간을 준 뒤 로그인 페이지로 이동
+          showToast(result.message || "로그인이 필요합니다.", "error");
+          setTimeout(function () {
+            location.href = contextPath + "/member/login";
+          }, 900);
           return;
         }
         renderDownloadable(result.data || []);

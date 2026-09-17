@@ -7,12 +7,25 @@
 <head>
     <meta charset="UTF-8">
     <title>주문상세</title>
-    <link rel="stylesheet" href="/css/order/detail.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/order/detail.css">
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
 
 <c:set var="editable" value="${order.orStatus == 'PAYMENT_PENDING'}" />
+
+<%-- 네이티브 alert()/confirm() 대체용 토스트 + 확인모달 (다른 페이지와 동일한 패턴) --%>
+<div class="od-toast-wrap" id="odToastWrap"></div>
+
+<div class="od-confirm-overlay" id="odConfirmOverlay">
+    <div class="od-confirm-box">
+        <div class="od-confirm-msg" id="odConfirmMsg"></div>
+        <div class="od-confirm-actions">
+            <button type="button" class="od-confirm-cancel" id="odConfirmCancelBtn">취소</button>
+            <button type="button" class="od-confirm-ok" id="odConfirmOkBtn">확인</button>
+        </div>
+    </div>
+</div>
 
 <div class="od-wrap">
 
@@ -103,12 +116,12 @@
                 <tbody>
                     <c:forEach var="detail" items="${order.orderDetailList}">
                         <tr>
-                            <td class="od-pname">${detail.odProductName}</td>                            
+                            <td class="od-pname">${detail.odProductName}</td>
                             <td>${empty detail.odOptionName ? '-' : detail.odOptionName}</td>
                             <td><fmt:formatNumber value="${detail.odPrice}" pattern="#,##0" />원</td>
                             <td>${detail.odQuantity}개</td>
                             <td class="od-amount"><fmt:formatNumber value="${detail.odAmount}" pattern="#,##0" />원</td>
-                            <td>   
+                            <td>
                                 <c:choose>
                                     <c:when test="${not empty detail.ocStatus && detail.ocStatus != 'REJECTED'}">
                                         <span class="oc-status-badge oc-status-<c:choose><c:when test="${detail.ocStatus == 'REQUESTED'}">requested</c:when><c:when test="${detail.ocStatus == 'APPROVED'}">approved</c:when><c:when test="${detail.ocStatus == 'REFUNDED'}">refunded</c:when><c:otherwise>etc</c:otherwise></c:choose>">
@@ -132,7 +145,7 @@
                                         </c:if>
                                     </c:otherwise>
                                 </c:choose>
-                                
+
                                  <!-- 리뷰 대상 상품 찾기: orderWithReview 목록에서 같은 odDetailNo를 가진 항목 매칭 -->
 					            <c:set var="reviewDetail" value="${null}" />
 					            <c:forEach var="rd" items="${orderWithReview.orderDetailList}">
@@ -140,7 +153,7 @@
 					                    <c:set var="reviewDetail" value="${rd}" />
 					                </c:if>
 					            </c:forEach>
-                                
+
                                 <!-- 배송 완료된 상품만 리뷰가능 -->
 					            <c:if test="${order.orStatus == 'DELIVERED'}">
 					                <button type="button" class="od-btn <c:choose><c:when test="${not empty reviewDetail.review}">od-btn-review-done</c:when><c:otherwise>od-btn-review btn-review-toggle</c:otherwise></c:choose> btn-review-toggle" data-detailno="${detail.odDetailNo}">
@@ -152,7 +165,7 @@
 					            </c:if>
 					        </td>
 					    </tr>
-					
+
 					    <!-- [추가] 상품별 리뷰 작성 토글 박스 -->
 					    <c:if test="${order.orStatus == 'DELIVERED'}">
 					        <tr id="review-row-${detail.odDetailNo}" class="review-row-box" style="display: none;">
@@ -161,8 +174,8 @@
 					                    <%-- 이미 리뷰가 작성되어 있는 경우: 작성된 내용 출력 --%>
 					                    <c:when test="${not empty reviewDetail.review}">
 					                        <div id="review-view-box-${reviewDetail.odDetailNo}" class="review-view-container">
-										        <div class="review-view-header" style="font-weight: 700; margin-bottom: 8px; color: #333;">	
-										        	<span style="color: #f59e0b; font-size: 15px; letter-spacing: 2px; margin-right: 8px;">
+										        <div class="review-view-header">
+										        	<span class="review-star-display">
 												        <c:choose>
 												            <c:when test="${reviewDetail.review.cmt_score == 5}">★★★★★</c:when>
 												            <c:when test="${reviewDetail.review.cmt_score == 4}">★★★★☆</c:when>
@@ -170,12 +183,12 @@
 												            <c:when test="${reviewDetail.review.cmt_score == 2}">★★☆☆☆</c:when>
 												            <c:otherwise>★☆☆☆☆</c:otherwise>
 												        </c:choose>
-												    </span>				                            
-										            <span style="font-weight: normal; font-size: 11px; color: #888; margin-left: 8px;">
+												    </span>
+										            <span class="review-date-display">
 										                <fmt:formatDate value="${reviewDetail.review.cmt_date}" pattern="yyyy.MM.dd HH:mm" />
 										            </span>
 										        </div>
-										        <div class="review-view-content" style="background: #fff; padding: 12px; border: 1px solid #eee; border-radius: 6px; color: #444; font-size: 13px; line-height: 1.5;">
+										        <div class="review-view-content">
 										            ${reviewDetail.review.cmt_content}
 										        </div>
 										        <div class="review-detail-link-wrap">
@@ -184,28 +197,28 @@
 												        <span class="arrow">›</span>
 												    </a>
 												</div>
-										        <div class="review-actions" style="margin-top: 8px; text-align: right;">
+										        <div class="review-actions">
 										            <!-- 수정 모드로 전환하는 버튼 -->
 										            <button type="button" class="od-btn" onclick="toggleEditMode(${reviewDetail.odDetailNo}, true)">수정</button>
-										            
+
 										            <!-- 삭제 버튼 (자바스크립트 함수 이용) -->
 										            <button type="button" class="od-btn" onclick="deleteReview(${reviewDetail.review.cmt_no}, ${order.orNo})">삭제</button>
 										        </div>
 										    </div>
-					                        
+
 					                        <!-- 2. '수정' 버튼을 누르면 나타나는 리뷰 수정 폼 영역 (기본은 숨김) -->
 											<div id="review-edit-box-${reviewDetail.odDetailNo}" class="review-edit-container" style="display: none;">
 											    <form action="/review/update" method="post" class="review-form-container">
 											        <!-- 시큐리티 CSRF 토큰 -->
 											        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-											        
+
 											        <input type="hidden" name="cmt_no" value="${reviewDetail.review.cmt_no}">
 											        <input type="hidden" name="orNo" value="${order.orNo}">
-											
+
 											        <div class="review-input-area">
 											            <!-- ★ [수정 폼] 별점 선택 라디오 UI -->
-											            <div class="review-rating-wrap" style="margin-bottom: 8px; display: flex; align-items: center;">
-											                <label style="font-size: 13px; font-weight: bold; color: #333; margin-right: 8px;">평점 :</label>
+											            <div class="review-rating-wrap">
+											                <label class="rating-label">평점 :</label>
 											                <div class="star-rating">
 											                    <input type="radio" id="star5-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="5" ${empty reviewDetail.review.cmt_score or reviewDetail.review.cmt_score eq 5 ? 'checked' : ''}><label for="star5-edit-${reviewDetail.odDetailNo}" title="5점">★</label>
 											                    <input type="radio" id="star4-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="4" ${reviewDetail.review.cmt_score eq 4 ? 'checked' : ''}><label for="star4-edit-${reviewDetail.odDetailNo}" title="4점">★</label>
@@ -214,11 +227,11 @@
 											                    <input type="radio" id="star1-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="1" ${reviewDetail.review.cmt_score eq 1 ? 'checked' : ''}><label for="star1-edit-${reviewDetail.odDetailNo}" title="1점">★</label>
 											                </div>
 											            </div>
-											
+
 											            <!-- 기존 작성했던 내용이 기본으로 들어가 있게 설정 -->
 											            <textarea name="cmt_content" class="review-textarea" rows="4" required>${reviewDetail.review.cmt_content}</textarea>
-											
-											            <div class="review-form-actions" style="margin-top: 8px; text-align: right;">
+
+											            <div class="review-form-actions">
 											                <button type="submit" class="od-btn od-btn-primary">수정 완료</button>
 											                <button type="button" class="od-btn" onclick="toggleEditMode(${reviewDetail.odDetailNo}, false)">취소</button>
 											            </div>
@@ -226,21 +239,21 @@
 											    </form>
 											</div>
 											</c:when>
-					
+
 					                    <%-- 리뷰가 아직 없는 경우: 작성 폼 출력 --%>
 										<c:otherwise>
 										    <form action="/review/register" method="post" class="review-form-container">
 										        <!-- 시큐리티 CSRF 토큰 (등록 폼에도 필요시 추가) -->
 										        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-										        
+
 										        <input type="hidden" name="orNo" value="${order.orNo}">
 										        <input type="hidden" name="odDetailNo" value="${detail.odDetailNo}">
 										        <input type="hidden" name="p_no" value="${detail.PNo}">
-										
+
 										        <div class="review-input-area">
 										            <!-- ★ [등록 폼] 별점 선택 라디오 UI -->
-										            <div class="review-rating-wrap" style="margin-bottom: 8px; display: flex; align-items: center;">
-										                <label style="font-size: 13px; font-weight: bold; color: #333; margin-right: 8px;">평점 :</label>
+										            <div class="review-rating-wrap">
+										                <label class="rating-label">평점 :</label>
 										                <div class="star-rating">
 										                    <input type="radio" id="star5-reg-${detail.odDetailNo}" name="cmt_score" value="5" checked><label for="star5-reg-${detail.odDetailNo}" title="5점">★</label>
 										                    <input type="radio" id="star4-reg-${detail.odDetailNo}" name="cmt_score" value="4"><label for="star4-reg-${detail.odDetailNo}" title="4점">★</label>
@@ -249,9 +262,9 @@
 										                    <input type="radio" id="star1-reg-${detail.odDetailNo}" name="cmt_score" value="1"><label for="star1-reg-${detail.odDetailNo}" title="1점">★</label>
 										                </div>
 										            </div>
-										
+
 										            <textarea name="cmt_content" class="review-textarea" placeholder="소중한 리뷰를 남겨주세요." rows="4" required></textarea>
-										
+
 										            <div class="review-form-actions">
 										                <button type="submit" class="od-btn od-btn-primary">리뷰 등록</button>
 										            </div>
@@ -284,6 +297,42 @@
         </c:forEach>
     ];
 
+    // 네이티브 alert() 대체 토스트
+    function showToast(msg, type) {
+        var wrap = document.getElementById('odToastWrap');
+        var toast = document.createElement('div');
+        toast.className = 'od-toast od-toast-' + (type || 'success');
+        toast.textContent = msg;
+        wrap.appendChild(toast);
+        requestAnimationFrame(function () { toast.classList.add('show'); });
+        setTimeout(function () {
+            toast.classList.remove('show');
+            setTimeout(function () { toast.remove(); }, 200);
+        }, 1800);
+    }
+
+    // 네이티브 confirm() 대체 확인모달
+    function showConfirm(msg, onOk) {
+        var overlay = document.getElementById('odConfirmOverlay');
+        var msgEl = document.getElementById('odConfirmMsg');
+        var okBtn = document.getElementById('odConfirmOkBtn');
+        var cancelBtn = document.getElementById('odConfirmCancelBtn');
+
+        msgEl.textContent = msg;
+        overlay.classList.add('show');
+
+        function cleanup() {
+            overlay.classList.remove('show');
+            okBtn.removeEventListener('click', okHandler);
+            cancelBtn.removeEventListener('click', cancelHandler);
+        }
+        function okHandler() { cleanup(); onOk(); }
+        function cancelHandler() { cleanup(); }
+
+        okBtn.addEventListener('click', okHandler);
+        cancelBtn.addEventListener('click', cancelHandler);
+    }
+
     function searchAddress() {
         new daum.Postcode({
             oncomplete: function (data) {
@@ -311,27 +360,27 @@
         .then(res => res.json())
         .then(result => {
             if (result.success) {
-                alert('배송지 정보가 수정되었어요.');
-                location.reload();
+                showToast('배송지 정보가 수정되었어요.', 'success');
+                setTimeout(() => location.reload(), 900);
             } else {
-                alert(result.message || '수정에 실패했어요.');
+                showToast(result.message || '수정에 실패했어요.', 'error');
             }
         })
-        .catch(() => alert('처리 중 오류가 발생했어요.'));
+        .catch(() => showToast('처리 중 오류가 발생했어요.', 'error'));
     }
 
 
     function refreshOrderDetail() {
         location.href = location.pathname;
     }
-    
+
     document.addEventListener('click', function(event) {
         const reviewBtn = event.target.closest('.btn-review-toggle');
-        
+
         if (reviewBtn) {
             const detailNo = reviewBtn.getAttribute('data-detailno');
             const reviewRow = document.getElementById('review-row-' + detailNo);
-            
+
             if (reviewRow) {
                 if (reviewRow.style.display === 'none' || reviewRow.style.display === '') {
                     reviewRow.style.display = 'table-row'; // 테이블 내부 행이므로 table-row 사용
@@ -341,18 +390,18 @@
             }
         }
     });
-    
+
     function deleteReview(cmtNo, orNo) {
-        if (confirm('정말 리뷰를 삭제하시겠습니까?')) {
+        showConfirm('정말 리뷰를 삭제하시겠습니까?', function () {
             // GET 방식으로 파라미터를 전달하여 컨트롤러 호출
             location.href = '/review/delete?cmt_no=' + cmtNo + '&orNo=' + orNo;
-        }
+        });
     }
-    
+
     function toggleEditMode(detailNo, isEdit) {
         const viewBox = document.getElementById('review-view-box-' + detailNo);
         const editBox = document.getElementById('review-edit-box-' + detailNo);
-        
+
         if (isEdit) {
             viewBox.style.display = 'none';
             editBox.style.display = 'block';

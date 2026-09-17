@@ -45,10 +45,9 @@
 		where co_no = #{coNo}
 	</update>
 
-	<!-- 관리자 - 쿠폰 삭제 -->
-	<delete id="deleteCoupon" parameterType="java.lang.Long">
-		delete from dc_coupon where co_no = #{coNo}
-	</delete>
+	<update id="deleteCoupon" parameterType="java.lang.Long">
+		update dc_coupon set co_deleted = 'Y' where co_no = #{coNo}
+	</update>
 
 	<!-- 쿠폰 단건 조회 (대상상품명 조인) -->
 	<select id="selectCouponOne" parameterType="java.lang.Long" resultMap="couponResultMap">
@@ -59,26 +58,23 @@
 		where c.co_no = #{coNo}
 	</select>
 
-	<!-- 관리자 - 전체 쿠폰 목록 (최신 등록순) -->
+	<!-- 관리자 - 전체 쿠폰 목록 (최신 등록순) - 삭제(소프트) 처리된 쿠폰은 목록에서 제외 -->
 	<select id="selectCouponListAll" resultMap="couponResultMap">
 		select c.co_no, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope,
 			   c.co_reason, c.co_days, c.co_start, c.co_end, c.co_at, c.p_no, p.p_title
 		from dc_coupon c
 		left join dc_product p on c.p_no = p.p_no
+		where nvl(c.co_deleted, 'N') = 'N'
 		order by c.co_no desc
 	</select>
 
-	<!--
-		회원 - 현재 다운로드 가능한 쿠폰 목록
-		조건 1) 오늘이 다운로드 기간(coStart ~ coEnd) 안에 있을 것
-		조건 2) 이 회원이 아직 다운로드하지 않은 쿠폰일 것 (dc_member_coupon 에 없어야 함)
-	-->
 	<select id="selectDownloadableCouponList" parameterType="java.lang.Long" resultMap="couponResultMap">
 		select c.co_no, c.co_name, c.co_type, c.co_val, c.co_max_amt, c.co_min_amt, c.co_scope,
 			   c.co_reason, c.co_days, c.co_start, c.co_end, c.co_at, c.p_no, p.p_title
 		from dc_coupon c
 		left join dc_product p on c.p_no = p.p_no
-		where sysdate between c.co_start and c.co_end
+		where nvl(c.co_deleted, 'N') = 'N'
+		  and sysdate between c.co_start and c.co_end
 		  and not exists (
 				select 1 from dc_member_coupon mc
 				where mc.co_no = c.co_no

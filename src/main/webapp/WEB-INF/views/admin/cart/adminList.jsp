@@ -6,47 +6,13 @@
 <head>
     <meta charset="UTF-8">
     <title>장바구니 관리</title>
-    <style>
-        body { font-family: sans-serif; max-width: 1100px; margin: 0 auto; padding: 20px; }
-        h2 { margin-bottom: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th, td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #fafafa; color: #555; font-weight: 600; }
-        td img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; vertical-align: middle; background: #f2f2f2; }
-        .btn-sm { padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; }
-        .btn-danger { color: #c0392b; border-color: #c0392b; }
-        .empty { text-align: center; color: #999; padding: 60px 0; }
-        .count { color: #777; font-size: 13px; margin-bottom: 16px; }
-
-        /* 상세보기 모달 */
-        .ca-modal-overlay {
-            display: none; position: fixed; inset: 0; z-index: 1000;
-            background: rgba(0,0,0,0.5); align-items: center; justify-content: center;
-        }
-        .ca-modal-overlay.show { display: flex; }
-        .ca-modal {
-            width: 860px; max-width: 92vw; max-height: 82vh; overflow-y: auto;
-            background: #fff; border-radius: 10px; padding: 24px; position: relative;
-        }
-        .ca-modal-close {
-            position: absolute; top: 14px; right: 16px; border: none; background: none;
-            font-size: 22px; cursor: pointer; color: #999; line-height: 1;
-        }
-        .ca-modal h4 { margin: 0 0 16px; font-size: 16px; }
-        .ca-modal-empty { text-align: center; color: #888; padding: 40px 0; font-size: 13px; }
-
-        /* 단가/합계 칸 줄바꿈 방지 */
-        #caModalTable th:nth-child(5),
-        #caModalTable td:nth-child(5),
-        #caModalTable th:nth-child(7),
-        #caModalTable td:nth-child(7) {
-            white-space: nowrap;
-            min-width: 82px;
-        }
-    </style>
+    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+    <link rel="stylesheet" href="/css/cart/adminList.css">
 </head>
 <body>
 
+<div class="ca-page">
+<div class="ca-inner">
 <h2>장바구니 관리</h2>
 
 <c:choose>
@@ -86,6 +52,7 @@
         </table>
     </c:otherwise>
 </c:choose>
+</div><!-- /.ca-inner -->
 
 <!-- 회원별 장바구니 상세보기 모달 -->
 <div class="ca-modal-overlay" id="caModalOverlay">
@@ -104,18 +71,75 @@
     </div>
 </div>
 
+<!-- 커스텀 알림 모달 (기본 alert 대체) -->
+<div class="ax-modal-overlay" id="axAlertOverlay">
+    <div class="ax-modal">
+        <div class="ax-modal-message" id="axAlertMessage"></div>
+        <div class="ax-modal-actions">
+            <button type="button" class="ax-btn ax-btn-primary" id="axAlertOkBtn">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- 커스텀 확인 모달 (기본 confirm 대체) -->
+<div class="ax-modal-overlay" id="axConfirmOverlay">
+    <div class="ax-modal">
+        <div class="ax-modal-message" id="axConfirmMessage"></div>
+        <div class="ax-modal-actions">
+            <button type="button" class="ax-btn" id="axConfirmCancelBtn">취소</button>
+            <button type="button" class="ax-btn ax-btn-primary" id="axConfirmOkBtn">확인</button>
+        </div>
+    </div>
+</div>
+</div><!-- /.ca-page -->
+
 <script>
+    // ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) =====
+    function showAlert(message, callback) {
+        var overlay = document.getElementById('axAlertOverlay');
+        document.getElementById('axAlertMessage').textContent = message;
+        document.getElementById('axAlertOkBtn').onclick = function () {
+            overlay.classList.remove('show');
+            if (typeof callback === 'function') callback();
+        };
+        overlay.classList.add('show');
+    }
+
+    function showConfirm(message, onConfirm, options) {
+        options = options || {};
+        var overlay = document.getElementById('axConfirmOverlay');
+        document.getElementById('axConfirmMessage').textContent = message;
+
+        var okBtn = document.getElementById('axConfirmOkBtn');
+        okBtn.textContent = options.okText || '확인';
+        okBtn.className = 'ax-btn ' + (options.danger ? 'ax-btn-danger' : 'ax-btn-primary');
+        okBtn.onclick = function () {
+            overlay.classList.remove('show');
+            if (typeof onConfirm === 'function') onConfirm();
+        };
+
+        document.getElementById('axConfirmCancelBtn').onclick = function () {
+            overlay.classList.remove('show');
+        };
+
+        overlay.classList.add('show');
+    }
+
     // 회원별 장바구니 상세보기 (CartController#adminCartListByMember)
     function openDetail(mNo, mId) {
         document.getElementById('caModalTitle').innerText = mId + ' 님의 장바구니';
         document.getElementById('caModalOverlay').classList.add('show');
 
         fetch('/admin/cart/byMember?mNo=' + mNo)
-            .then(res => res.json())
-            .then(result => {
-                renderDetail(result.data || []);
+            .then(function (res) {
+                if (!res.ok) throw new Error('서버 오류 (HTTP ' + res.status + ')');
+                return res.json();
             })
-            .catch(() => alert('목록 조회 중 오류가 발생했어요.'));
+            .then(function (result) { renderDetail(result.data || []); })
+            .catch(function (err) {
+                console.error('장바구니 상세 조회 실패', err);
+                showAlert('목록 조회 중 오류가 발생했어요.\n' + err.message);
+            });
     }
 
     function renderDetail(list) {
@@ -148,7 +172,17 @@
                 '<td>' + Number(amount).toLocaleString('ko-KR') + '원</td>' +
                 '<td>' + bagLabel + '</td>' +
                 '<td>' + formatDate(cart.caAt) + '</td>' +
-                '<td><button type="button" class="btn-sm btn-danger" onclick="deleteCart(' + cart.caNo + ')">삭제</button></td>';
+                '<td></td>';
+
+            // 삭제 버튼: onclick 문자열에 상품명을 직접 끼워넣으면 따옴표 이스케이프 문제가 생길 수 있어서
+            // 클로저로 caNo/상품명을 안전하게 넘김 (다른 페이지의 문자열 onclick 방식과 다른 이유)
+            var delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'btn-sm btn-danger';
+            delBtn.textContent = '삭제';
+            delBtn.onclick = function () { deleteCart(cart.caNo, cart.pname); };
+            tr.lastElementChild.appendChild(delBtn);
+
             tbody.appendChild(tr);
         });
     }
@@ -158,20 +192,27 @@
     }
 
     // 장바구니 강제 삭제 - DELETE /admin/cart/{caNo}
-    function deleteCart(caNo) {
-        if (!confirm(caNo + '번 장바구니 항목을 삭제할까요?')) return;
-
-        fetch('/admin/cart/' + caNo, { method: 'DELETE' })
-            .then(res => res.json())
-            .then(result => {
-                if (result.success) {
-                    var row = document.getElementById('row-' + caNo);
-                    if (row) row.remove();
-                } else {
-                    alert(result.message || '삭제에 실패했어요.');
-                }
-            })
-            .catch(() => alert('처리 중 오류가 발생했어요.'));
+    function deleteCart(caNo, pname) {
+        var label = pname ? ('"' + pname + '"') : (caNo + '번 항목');
+        showConfirm(label + '을(를) 장바구니에서 삭제할까요?', function () {
+            fetch('/admin/cart/' + caNo, { method: 'DELETE' })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('서버 오류 (HTTP ' + res.status + ')');
+                    return res.json();
+                })
+                .then(function (result) {
+                    if (result.success) {
+                        var row = document.getElementById('row-' + caNo);
+                        if (row) row.remove();
+                    } else {
+                        showAlert(result.message || '삭제에 실패했어요.');
+                    }
+                })
+                .catch(function (err) {
+                    console.error('장바구니 삭제 실패', err);
+                    showAlert('처리 중 오류가 발생했어요.\n' + err.message);
+                });
+        }, { danger: true, okText: '삭제' });
     }
 
     function formatDate(v) {
@@ -186,6 +227,6 @@
         return yyyy + '.' + mm + '.' + dd + ' ' + hh + ':' + mi;
     }
 </script>
-
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

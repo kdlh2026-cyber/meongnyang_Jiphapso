@@ -8,10 +8,12 @@
 <head>
     <meta charset="UTF-8">
     <title>관리자 - 주문상세</title>
+    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
     <link rel="stylesheet" href="/css/order/adminDetail.css">
 </head>
 <body>
 
+<div class="od-page">
 <div class="od-wrap">
 
     <div class="od-header">
@@ -45,8 +47,8 @@
                         </c:if>
                     </select>
                     <c:if test="${order.orStatus != 'CANCELED'}">
-                        <p style="margin:6px 0 0; font-size:12px; color:#888;">
-                            주문 취소는 <a href="/orderCancel/admin/list">취소/반품 관리</a>에서 처리해주세요.
+                        <p style="margin:6px 0 0; font-size:12px; color: rgba(74,50,38,0.6);">
+                            주문 취소는 <a href="/orderCancel/admin/list" class="od-link">취소/반품 관리</a>에서 처리해주세요.
                         </p>
                     </c:if>
                 </td>
@@ -97,15 +99,68 @@
 
 </div>
 
+<!-- 커스텀 알림 모달 (기본 alert 대체) -->
+<div class="ax-modal-overlay" id="axAlertOverlay">
+    <div class="ax-modal">
+        <div class="ax-modal-message" id="axAlertMessage"></div>
+        <div class="ax-modal-actions">
+            <button type="button" class="ax-btn ax-btn-primary" id="axAlertOkBtn">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- 커스텀 확인 모달 (기본 confirm 대체) -->
+<div class="ax-modal-overlay" id="axConfirmOverlay">
+    <div class="ax-modal">
+        <div class="ax-modal-message" id="axConfirmMessage"></div>
+        <div class="ax-modal-actions">
+            <button type="button" class="ax-btn" id="axConfirmCancelBtn">취소</button>
+            <button type="button" class="ax-btn ax-btn-primary" id="axConfirmOkBtn">확인</button>
+        </div>
+    </div>
+</div>
+</div><!-- /.od-page -->
+
 <script>
     const orNo = ${order.orNo};
+
+    // ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) =====
+    function showAlert(message, callback) {
+        var overlay = document.getElementById('axAlertOverlay');
+        document.getElementById('axAlertMessage').textContent = message;
+        document.getElementById('axAlertOkBtn').onclick = function () {
+            overlay.classList.remove('show');
+            if (typeof callback === 'function') callback();
+        };
+        overlay.classList.add('show');
+    }
+
+    function showConfirm(message, onConfirm, options) {
+        options = options || {};
+        var overlay = document.getElementById('axConfirmOverlay');
+        document.getElementById('axConfirmMessage').textContent = message;
+
+        var okBtn = document.getElementById('axConfirmOkBtn');
+        okBtn.textContent = options.okText || '확인';
+        okBtn.className = 'ax-btn ' + (options.danger ? 'ax-btn-danger' : 'ax-btn-primary');
+        okBtn.onclick = function () {
+            overlay.classList.remove('show');
+            if (typeof onConfirm === 'function') onConfirm();
+        };
+
+        document.getElementById('axConfirmCancelBtn').onclick = function () {
+            overlay.classList.remove('show');
+        };
+
+        overlay.classList.add('show');
+    }
 
     function changeStatus() {
         const orStatus = document.getElementById('orStatus').value;
 
         // CANCELED는 이제 이 드롭다운에 없지만, 혹시 모를 우회 호출까지 클라이언트단에서도 한 번 더 막아둠
         if (orStatus === 'CANCELED') {
-            alert('주문 취소는 [취소/반품 관리] 메뉴에서 처리해주세요.');
+            showAlert('주문 취소는 [취소/반품 관리] 메뉴에서 처리해주세요.');
             return;
         }
 
@@ -117,29 +172,31 @@
         .then(res => res.json())
         .then(result => {
             if (result.success) {
-                alert('주문 상태가 변경됐어요.');
+                showAlert('주문 상태가 변경됐어요.');
             } else {
-                alert(result.message || '상태 변경에 실패했어요.');
+                showAlert(result.message || '상태 변경에 실패했어요.');
             }
         })
-        .catch(() => alert('처리 중 오류가 발생했어요.'));
+        .catch(() => showAlert('처리 중 오류가 발생했어요.'));
     }
 
     function deleteOrder() {
-        if (!confirm('해당 주문을 삭제할까요?')) return;
-
-        fetch('/admin/order/' + orNo, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(result => {
-            if (result.success) {
-                alert('삭제됐어요.');
-                location.href = '/admin/order';
-            } else {
-                alert(result.message || '삭제에 실패했어요.');
-            }
-        })
-        .catch(() => alert('처리 중 오류가 발생했어요.'));
+        showConfirm('해당 주문을 삭제할까요?', function () {
+            fetch('/admin/order/' + orNo, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    showAlert('삭제됐어요.', function () {
+                        location.href = '/admin/order';
+                    });
+                } else {
+                    showAlert(result.message || '삭제에 실패했어요.');
+                }
+            })
+            .catch(() => showAlert('처리 중 오류가 발생했어요.'));
+        }, { danger: true, okText: '삭제' });
     }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

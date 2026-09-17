@@ -5,62 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>[관리자] 쿠폰 관리</title>
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: #f7f7f8; color: #222; }
-
-  .cpa-wrap { max-width: 1300px; margin: 40px auto; padding: 0 20px 60px; }
-  .cpa-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; }
-  .cpa-section-title { font-size: 16px; font-weight: 700; margin: 36px 0 14px; padding-bottom: 10px; border-bottom: 2px solid #222; }
-
-  .cpa-form {
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 20px;
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 16px;
-  }
-  .cpa-field { display: flex; flex-direction: column; gap: 6px; }
-  .cpa-field label { font-size: 12px; color: #666; font-weight: 600; }
-  .cpa-field input, .cpa-field select {
-    padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px;
-  }
-  .cpa-field.cpa-span2 { grid-column: span 2; }
-  .cpa-field.cpa-span4 { grid-column: span 4; }
-  .cpa-submit-row { grid-column: span 4; text-align: right; }
-  .cpa-btn-submit {
-    padding: 10px 24px; background: #222; color: #fff; border: none; border-radius: 6px;
-    font-size: 14px; font-weight: 600; cursor: pointer;
-  }
-  .cpa-btn-submit:hover { background: #444; }
-
-  .cpa-empty {
-    padding: 60px 0; text-align: center; color: #888; font-size: 14px;
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
-  }
-
-  .cpa-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; font-size: 13px; }
-  .cpa-table th, .cpa-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid #eee; }
-  .cpa-table thead th { background: #fafafa; color: #555; font-weight: 600; }
-  .cpa-table tbody tr:last-child td { border-bottom: none; }
-  .cpa-table img { width: 90px; border-radius: 4px; }
-
-  .cpa-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #c0392b; color: #c0392b; background: #fff; }
-  .cpa-btn:hover { background: #c0392b; color: #fff; }
-
-  .cpa-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-  .cpa-badge-unused  { background: #e6f7ec; color: #12805c; }
-  .cpa-badge-used    { background: #eee; color: #666; }
-  .cpa-badge-expired { background: #fdeaea; color: #c0392b; }
-
-  #fPNoField { position: relative; }
-  .cpa-search-results {
-    position: absolute; top: 62px; left: 0; right: 0; z-index: 10;
-    background: #fff; border: 1px solid #ccc; border-radius: 6px; max-height: 180px; overflow-y: auto;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  }
-  .cpa-search-item { padding: 8px 10px; font-size: 13px; cursor: pointer; text-align: left; }
-  .cpa-search-item:hover { background: #f5f5f5; }
-  .cpa-search-empty { padding: 8px 10px; font-size: 12px; color: #999; text-align: left; }
-  .cpa-search-selected { margin-top: 4px; font-size: 12px; color: #12805c; font-weight: 600; }
-</style>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<link rel="stylesheet" href="/css/coupon/adminList.css">
 </head>
 <body>
 
@@ -171,7 +117,81 @@
   </table>
 </div>
 
+<!-- 회원아이디 클릭 시 -> 그 회원이 받은 쿠폰만 모아서 보여주는 모달 -->
+<div class="cpa-modal-overlay" id="cpaMemberModalOverlay">
+  <div class="cpa-modal">
+    <button type="button" class="cpa-modal-close" onclick="closeMemberCouponModal()">&times;</button>
+    <h3 id="cpaMemberModalTitle">회원 쿠폰 발급 내역</h3>
+    <table class="cpa-modal-table">
+      <thead>
+        <tr>
+          <th>쿠폰명</th>
+          <th>할인율</th>
+          <th>상태</th>
+          <th>발급일</th>
+          <th>만료일</th>
+          <th>사용일</th>
+        </tr>
+      </thead>
+      <tbody id="cpaMemberModalTbody"></tbody>
+    </table>
+    <div id="cpaMemberModalEmpty" class="cpa-modal-empty" style="display:none;">발급받은 쿠폰이 없습니다.</div>
+  </div>
+</div>
+
+<!-- 커스텀 알림 모달 (기본 alert 대체) -->
+<div class="ax-modal-overlay" id="axAlertOverlay">
+  <div class="ax-modal">
+    <div class="ax-modal-message" id="axAlertMessage"></div>
+    <div class="ax-modal-actions">
+      <button type="button" class="ax-btn ax-btn-primary" id="axAlertOkBtn">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 커스텀 확인 모달 (기본 confirm 대체) -->
+<div class="ax-modal-overlay" id="axConfirmOverlay">
+  <div class="ax-modal">
+    <div class="ax-modal-message" id="axConfirmMessage"></div>
+    <div class="ax-modal-actions">
+      <button type="button" class="ax-btn" id="axConfirmCancelBtn">취소</button>
+      <button type="button" class="ax-btn ax-btn-primary" id="axConfirmOkBtn">확인</button>
+    </div>
+  </div>
+</div>
+
 <script>
+  // ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) =====
+  function showAlert(message, callback) {
+    var overlay = document.getElementById("axAlertOverlay");
+    document.getElementById("axAlertMessage").textContent = message;
+    document.getElementById("axAlertOkBtn").onclick = function () {
+      overlay.classList.remove("show");
+      if (typeof callback === "function") callback();
+    };
+    overlay.classList.add("show");
+  }
+
+  function showConfirm(message, onConfirm, options) {
+    options = options || {};
+    var overlay = document.getElementById("axConfirmOverlay");
+    document.getElementById("axConfirmMessage").textContent = message;
+
+    var okBtn = document.getElementById("axConfirmOkBtn");
+    okBtn.textContent = options.okText || "확인";
+    okBtn.className = "ax-btn " + (options.danger ? "ax-btn-danger" : "ax-btn-primary");
+    okBtn.onclick = function () {
+      overlay.classList.remove("show");
+      if (typeof onConfirm === "function") onConfirm();
+    };
+
+    document.getElementById("axConfirmCancelBtn").onclick = function () {
+      overlay.classList.remove("show");
+    };
+
+    overlay.classList.add("show");
+  }
+
   var contextPath = "${pageContext.request.contextPath}";
   var IMAGE_BASE = contextPath + "/images/coupon/";
 
@@ -180,6 +200,10 @@
     USED:    { label: "사용완료", cls: "cpa-badge-used" },
     EXPIRED: { label: "기간만료", cls: "cpa-badge-expired" }
   };
+
+  // /admin/coupon/member/list 로 한 번에 받아둔 전체 목록 캐시
+  // (회원아이디 클릭 시 별도 API 호출 없이 여기서 필터링해서 모달에 보여줌)
+  var memberCouponFullList = [];
 
   document.addEventListener("DOMContentLoaded", function () {
     loadCouponList();
@@ -263,11 +287,25 @@
   // ================= 쿠폰 템플릿 =================
 
   // 전체 쿠폰 목록 (CouponController#adminCouponListData)
+  // 주의: res.ok 체크가 없으면 서버 500(SQL 에러 등)이 나도 json 파싱만 실패하고
+  //       console.error만 찍힌 채 화면엔 아무 표시도 없이 "먹통"처럼 보임 -> 반드시 체크.
   function loadCouponList() {
     fetch(contextPath + "/admin/coupon/list/data")
-      .then(function (res) { return res.json(); })
-      .then(function (result) { renderCouponList(result.data || []); })
-      .catch(function (err) { console.error("쿠폰 목록 조회 실패", err); });
+      .then(function (res) {
+        if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+        return res.json();
+      })
+      .then(function (result) {
+        if (!result.success) {
+          showAlert(result.message || "쿠폰 목록을 불러오지 못했습니다.");
+          return;
+        }
+        renderCouponList(result.data || []);
+      })
+      .catch(function (err) {
+        console.error("쿠폰 목록 조회 실패", err);
+        showAlert("쿠폰 목록 조회 중 오류가 발생했습니다.\n" + err.message);
+      });
   }
 
   function renderCouponList(list) {
@@ -309,7 +347,7 @@
     e.preventDefault();
 
     if (document.getElementById("fCoScope").value === "PRODUCT" && !document.getElementById("fPNo").value) {
-      alert("대상 상품을 검색해서 선택해주세요.");
+      showAlert("대상 상품을 검색해서 선택해주세요.");
       return false;
     }
 
@@ -333,37 +371,46 @@
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: params.toString()
     })
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+        return res.json();
+      })
       .then(function (result) {
-        alert(result.message);
-        if (result.success) {
-          document.getElementById("cpaForm").reset();
-          togglePNo("ALL");
-          loadCouponList();
-        }
+        showAlert(result.message, function () {
+          if (result.success) {
+            document.getElementById("cpaForm").reset();
+            togglePNo("ALL");
+            loadCouponList();
+          }
+        });
       })
       .catch(function (err) {
         console.error("쿠폰 등록 실패", err);
-        alert("쿠폰 등록 중 오류가 발생했습니다.");
+        showAlert("쿠폰 등록 중 오류가 발생했습니다.\n" + err.message);
       });
     return false;
   }
 
   // 쿠폰 삭제 (CouponController#adminDeleteCoupon)
   function deleteCoupon(coNo) {
-    if (!confirm("해당 쿠폰을 삭제하시겠습니까? (이미 발급된 회원쿠폰에는 영향을 주지 않습니다)")) {
-      return;
-    }
-    fetch(contextPath + "/admin/coupon/" + coNo, { method: "DELETE" })
-      .then(function (res) { return res.json(); })
-      .then(function (result) {
-        if (result.success) {
-          loadCouponList();
-        } else {
-          alert(result.message || "삭제에 실패했습니다.");
-        }
-      })
-      .catch(function (err) { console.error("쿠폰 삭제 실패", err); });
+    showConfirm("해당 쿠폰을 삭제하시겠습니까?\n(이미 발급된 회원쿠폰에는 영향을 주지 않습니다)", function () {
+      fetch(contextPath + "/admin/coupon/" + coNo, { method: "DELETE" })
+        .then(function (res) {
+          if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+          return res.json();
+        })
+        .then(function (result) {
+          if (result.success) {
+            loadCouponList();
+          } else {
+            showAlert(result.message || "삭제에 실패했습니다.");
+          }
+        })
+        .catch(function (err) {
+          console.error("쿠폰 삭제 실패", err);
+          showAlert("삭제 중 오류가 발생했습니다.\n" + err.message);
+        });
+    }, { danger: true, okText: "삭제" });
   }
 
   // ================= 회원 쿠폰 발급현황 =================
@@ -371,9 +418,22 @@
   // 회원 발급 쿠폰 전체 목록 (CouponController#adminMemberCouponList)
   function loadMemberCouponList() {
     fetch(contextPath + "/admin/coupon/member/list")
-      .then(function (res) { return res.json(); })
-      .then(function (result) { renderMemberCouponList(result.data || []); })
-      .catch(function (err) { console.error("회원 쿠폰 발급현황 조회 실패", err); });
+      .then(function (res) {
+        if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+        return res.json();
+      })
+      .then(function (result) {
+        if (!result.success) {
+          showAlert(result.message || "회원 쿠폰 발급현황을 불러오지 못했습니다.");
+          return;
+        }
+        memberCouponFullList = result.data || []; // 회원아이디 클릭 시 필터링할 원본 캐시
+        renderMemberCouponList(memberCouponFullList);
+      })
+      .catch(function (err) {
+        console.error("회원 쿠폰 발급현황 조회 실패", err);
+        showAlert("회원 쿠폰 발급현황 조회 중 오류가 발생했습니다.\n" + err.message);
+      });
   }
 
   function renderMemberCouponList(list) {
@@ -395,7 +455,7 @@
 
       var tr = document.createElement("tr");
       tr.innerHTML =
-        "<td>" + escapeHtml(item.mId) + "</td>" +
+        "<td><span class=\"cpa-mid-link\" onclick=\"showMemberCouponModal('" + escapeHtml(item.mId) + "')\">" + escapeHtml(item.mId) + "</span></td>" +
         "<td>" + escapeHtml(item.coName) + "</td>" +
         "<td>" + item.coVal + "%</td>" +
         "<td><span class=\"cpa-badge " + statusInfo.cls + "\">" + statusInfo.label + "</span></td>" +
@@ -407,21 +467,61 @@
     });
   }
 
+  // 회원아이디 클릭 -> memberCouponFullList 에서 그 회원 것만 걸러서 모달에 표시
+  function showMemberCouponModal(mId) {
+    var list = memberCouponFullList.filter(function (item) { return item.mId === mId; });
+
+    document.getElementById("cpaMemberModalTitle").textContent = mId + " 님의 쿠폰 발급 내역";
+
+    var tbody = document.getElementById("cpaMemberModalTbody");
+    var empty = document.getElementById("cpaMemberModalEmpty");
+    tbody.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      empty.style.display = "block";
+    } else {
+      empty.style.display = "none";
+      list.forEach(function (item) {
+        var statusInfo = MEMBER_STATUS_INFO[item.mcStatus] || { label: item.mcStatus, cls: "" };
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td>" + escapeHtml(item.coName) + "</td>" +
+          "<td>" + item.coVal + "%</td>" +
+          "<td><span class=\"cpa-badge " + statusInfo.cls + "\">" + statusInfo.label + "</span></td>" +
+          "<td>" + formatDate(item.mcIssued) + "</td>" +
+          "<td>" + (item.mcExpired ? formatDate(item.mcExpired) : "무제한") + "</td>" +
+          "<td>" + (item.mcUsed ? formatDate(item.mcUsed) : "-") + "</td>";
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("cpaMemberModalOverlay").classList.add("show");
+  }
+
+  function closeMemberCouponModal() {
+    document.getElementById("cpaMemberModalOverlay").classList.remove("show");
+  }
+
   // 발급된 회원쿠폰 강제 삭제 (CouponController#adminDeleteMemberCoupon)
   function deleteMemberCoupon(mcNo) {
-    if (!confirm("해당 회원의 보유쿠폰을 삭제하시겠습니까?")) {
-      return;
-    }
-    fetch(contextPath + "/admin/coupon/member/" + mcNo, { method: "DELETE" })
-      .then(function (res) { return res.json(); })
-      .then(function (result) {
-        if (result.success) {
-          loadMemberCouponList();
-        } else {
-          alert(result.message || "삭제에 실패했습니다.");
-        }
-      })
-      .catch(function (err) { console.error("회원쿠폰 삭제 실패", err); });
+    showConfirm("해당 회원의 보유쿠폰을 삭제하시겠습니까?", function () {
+      fetch(contextPath + "/admin/coupon/member/" + mcNo, { method: "DELETE" })
+        .then(function (res) {
+          if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+          return res.json();
+        })
+        .then(function (result) {
+          if (result.success) {
+            loadMemberCouponList();
+          } else {
+            showAlert(result.message || "삭제에 실패했습니다.");
+          }
+        })
+        .catch(function (err) {
+          console.error("회원쿠폰 삭제 실패", err);
+          showAlert("삭제 중 오류가 발생했습니다.\n" + err.message);
+        });
+    }, { danger: true, okText: "삭제" });
   }
 
   function formatPrice(v) {
@@ -444,5 +544,6 @@
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

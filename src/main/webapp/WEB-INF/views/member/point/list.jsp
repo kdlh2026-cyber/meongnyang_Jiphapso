@@ -9,9 +9,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>포인트 조회</title>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-<link rel="stylesheet" href="/css/point/point_list.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/point/point_list.css">
 </head>
 <body>
+
+<!-- 토스트 안내메세지가 붙는 자리 (alert() 대신 사용) -->
+<div id="ptToastWrap" class="pt-toast-wrap"></div>
 
 <div class="pt-wrap">
   <h2 class="pt-title">포인트 조회</h2>
@@ -62,13 +65,36 @@
     loadPointData();
   });
 
+  // ================= 안내메세지 토스트 (alert() 대체) =================
+  function showToast(message, type) {
+    var wrap = document.getElementById("ptToastWrap");
+    if (!wrap || !message) return;
+
+    var toast = document.createElement("div");
+    toast.className = "pt-toast" + (type === "error" ? " pt-toast-error" : "");
+    toast.textContent = message;
+    wrap.appendChild(toast);
+
+    requestAnimationFrame(function () {
+      toast.classList.add("pt-toast-show");
+    });
+
+    setTimeout(function () {
+      toast.classList.remove("pt-toast-show");
+      setTimeout(function () { toast.remove(); }, 250);
+    }, 2200);
+  }
+
   function loadPointData() {
     fetch(contextPath + "/point/list/data")
       .then(function (res) { return res.json(); })
       .then(function (result) {
         if (!result.success) {
-          alert(result.message || "로그인이 필요합니다.");
-          location.href = contextPath + "/member/login";
+          // 기본 alert() 대신 토스트로 안내하고, 읽을 시간을 준 뒤 로그인 페이지로 이동
+          showToast(result.message || "로그인이 필요합니다.", "error");
+          setTimeout(function () {
+            location.href = contextPath + "/member/login";
+          }, 900);
           return;
         }
         var data = result.data;
@@ -165,7 +191,7 @@
     log.innerHTML = "";
 
     if (cancelItems.length === 0) {
-      log.innerHTML = "<div class=\"pt-cancel-row\" style=\"text-align:center; color:#999;\">취소된 내역이 없습니다.</div>";
+      log.innerHTML = "<div class=\"pt-cancel-row pt-cancel-empty\">취소된 내역이 없습니다.</div>";
       return;
     }
 

@@ -5,45 +5,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>[관리자] 취소 ◦ 반품 관리</title>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<link rel="stylesheet" href="/css/orderCancel/adminList.css">
 <style>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: #f7f7f8; color: #222; }
-
-  .oca-wrap { max-width: 1300px; margin: 40px auto; padding: 0 20px 60px; }
-  .oca-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; }
-
-  .oca-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
-  .oca-tab {
-    padding: 8px 16px; border: 1px solid #ddd; background: #fff; border-radius: 20px;
-    font-size: 13px; cursor: pointer; color: #555;
+  /* 모바일 반응형 - 이 페이지에서만 쓰는 거라 별도 파일로 안 빼고 여기 인라인으로 둠 */
+  @media (max-width: 768px) {
+    .oca-page { padding: 56px 12px 40px; }
+    .oca-title { font-size: 18px; }
+    .oca-tabs { gap: 6px; }
+    .oca-tab { padding: 7px 12px; font-size: 12px; }
+    .oca-table { display: block; overflow-x: auto; white-space: nowrap; }
+    .ax-modal { padding: 20px 16px 16px; }
   }
-  .oca-tab.active { background: #222; color: #fff; border-color: #222; }
-
-  .oca-empty {
-    padding: 80px 0; text-align: center; color: #888; font-size: 15px;
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
-  }
-
-  .oca-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; font-size: 13px; }
-  .oca-table th, .oca-table td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #eee; }
-  .oca-table thead th { background: #fafafa; color: #555; font-weight: 600; }
-  .oca-table tbody tr:last-child td { border-bottom: none; }
-  .oca-table .oca-reason { max-width: 160px; text-align: left; white-space: normal; word-break: break-all; color: #555; }
-  .oca-table .oca-product { max-width: 180px; text-align: left; white-space: normal; word-break: break-all; }
-
-  .oca-status-select { padding: 5px 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; }
-
-  .oca-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; margin: 0 2px; }
-  .oca-btn-save { border-color: #1a56db; color: #1a56db; }
-  .oca-btn-save:hover { background: #1a56db; color: #fff; }
-  .oca-btn-delete { border-color: #c0392b; color: #c0392b; }
-  .oca-btn-delete:hover { background: #c0392b; color: #fff; }
 </style>
 </head>
 <body>
 
-<div class="oca-wrap">
-  <h2 class="oca-title">취소 ◦ 반품 ◦ 교환 관리</h2>
+<div class="oca-page">
+<div class="oca-inner">
+  <h2 class="oca-title">취소 · 반품 · 교환 관리</h2>
 
   <div class="oca-tabs" id="ocaTabs">
     <button type="button" class="oca-tab active" data-status="ALL" onclick="filterByStatus('ALL', this)">전체</button>
@@ -74,9 +54,62 @@
     </thead>
     <tbody id="ocaTbody"></tbody>
   </table>
+</div><!-- /.oca-inner -->
+
+<!-- 커스텀 알림 모달 (기본 alert 대체) -->
+<div class="ax-modal-overlay" id="axAlertOverlay">
+  <div class="ax-modal">
+    <div class="ax-modal-message" id="axAlertMessage"></div>
+    <div class="ax-modal-actions">
+      <button type="button" class="ax-btn ax-btn-primary" id="axAlertOkBtn">확인</button>
+    </div>
+  </div>
 </div>
 
+<!-- 커스텀 확인 모달 (기본 confirm 대체) -->
+<div class="ax-modal-overlay" id="axConfirmOverlay">
+  <div class="ax-modal">
+    <div class="ax-modal-message" id="axConfirmMessage"></div>
+    <div class="ax-modal-actions">
+      <button type="button" class="ax-btn" id="axConfirmCancelBtn">취소</button>
+      <button type="button" class="ax-btn ax-btn-primary" id="axConfirmOkBtn">확인</button>
+    </div>
+  </div>
+</div>
+</div><!-- /.oca-page -->
+
 <script>
+  // ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) =====
+  function showAlert(message, callback) {
+    var overlay = document.getElementById("axAlertOverlay");
+    document.getElementById("axAlertMessage").textContent = message;
+    document.getElementById("axAlertOkBtn").onclick = function () {
+      overlay.classList.remove("show");
+      if (typeof callback === "function") callback();
+    };
+    overlay.classList.add("show");
+  }
+
+  function showConfirm(message, onConfirm, options) {
+    options = options || {};
+    var overlay = document.getElementById("axConfirmOverlay");
+    document.getElementById("axConfirmMessage").textContent = message;
+
+    var okBtn = document.getElementById("axConfirmOkBtn");
+    okBtn.textContent = options.okText || "확인";
+    okBtn.className = "ax-btn " + (options.danger ? "ax-btn-danger" : "ax-btn-primary");
+    okBtn.onclick = function () {
+      overlay.classList.remove("show");
+      if (typeof onConfirm === "function") onConfirm();
+    };
+
+    document.getElementById("axConfirmCancelBtn").onclick = function () {
+      overlay.classList.remove("show");
+    };
+
+    overlay.classList.add("show");
+  }
+
   var contextPath = "${pageContext.request.contextPath}";
   var fullList = [];        // 서버에서 받아온 전체 목록 캐시
   var currentFilter = "ALL"; // 현재 선택된 상태 탭
@@ -89,16 +122,20 @@
     loadAdminList();
   });
 
-  // 전체 취소/반품 목록 조회
+  // 전체 취소/반품 목록 조회 (OrderCancelController#selectOrderCancelListAll)
   function loadAdminList() {
     fetch(contextPath + "/orderCancel/admin/list/data")
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+        return res.json();
+      })
       .then(function (result) {
         fullList = result.data || [];
         renderList();
       })
       .catch(function (err) {
         console.error("취소/반품 전체 목록 조회 실패", err);
+        showAlert("목록 조회 중 오류가 발생했습니다.\n" + err.message);
       });
   }
 
@@ -149,10 +186,26 @@
         "<td>" + formatDate(item.ocRe) + "</td>" +
         "<td>" + (item.ocPr ? formatDate(item.ocPr) : "-") + "</td>" +
         "<td>" + buildStatusSelect(item.ocOutNo, item.ocStatus) + "</td>" +
-        "<td>" +
-          "<button type=\"button\" class=\"oca-btn oca-btn-save\" onclick=\"saveStatus(" + item.ocOutNo + ")\">저장</button>" +
-          "<button type=\"button\" class=\"oca-btn oca-btn-delete\" onclick=\"removeItem(" + item.ocOutNo + ")\">삭제</button>" +
-        "</td>";
+        "<td></td>";
+
+      // 저장/삭제 버튼은 클로저로 안전하게 연결 (문자열 onclick의 따옴표 이스케이프 문제 방지)
+      var manageTd = tr.lastElementChild;
+
+      var saveBtn = document.createElement("button");
+      saveBtn.type = "button";
+      saveBtn.className = "oca-btn oca-btn-save";
+      saveBtn.textContent = "저장";
+      saveBtn.onclick = function () { saveStatus(item.ocOutNo); };
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "oca-btn oca-btn-delete";
+      delBtn.textContent = "삭제";
+      delBtn.onclick = function () { removeItem(item.ocOutNo, item.odProductTitle); };
+
+      manageTd.appendChild(saveBtn);
+      manageTd.appendChild(delBtn);
+
       tbody.appendChild(tr);
     });
   }
@@ -181,44 +234,51 @@
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: params.toString()
     })
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+        return res.json();
+      })
       .then(function (result) {
-        alert(result.message);
-        if (result.success) {
-          loadAdminList(); // 목록 다시 조회해서 화면 갱신
-        }
+        showAlert(result.message, function () {
+          if (result.success) {
+            loadAdminList(); // 목록 다시 조회해서 화면 갱신
+          }
+        });
       })
       .catch(function (err) {
         console.error("처리상태 변경 실패", err);
-        alert("처리상태 변경 중 오류가 발생했습니다.");
+        showAlert("처리상태 변경 중 오류가 발생했습니다.\n" + err.message);
       });
   }
 
   // 삭제 (OrderCancelController#deleteOrderCancel)
-  function removeItem(ocOutNo) {
-    if (!confirm("해당 취소/반품 신청 내역을 삭제하시겠습니까?")) {
-      return;
-    }
+  function removeItem(ocOutNo, pname) {
+    var label = pname ? ('"' + pname + '"') : (ocOutNo + "번");
+    showConfirm(label + " 취소/반품 신청 내역을 삭제하시겠습니까?", function () {
+      var params = new URLSearchParams();
+      params.append("ocOutNo", ocOutNo);
 
-    var params = new URLSearchParams();
-    params.append("ocOutNo", ocOutNo);
-
-    fetch(contextPath + "/orderCancel/admin/delete", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString()
-    })
-      .then(function (res) { return res.json(); })
-      .then(function (result) {
-        alert(result.message);
-        if (result.success) {
-          loadAdminList();
-        }
+      fetch(contextPath + "/orderCancel/admin/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
       })
-      .catch(function (err) {
-        console.error("삭제 실패", err);
-        alert("삭제 중 오류가 발생했습니다.");
-      });
+        .then(function (res) {
+          if (!res.ok) throw new Error("서버 오류 (HTTP " + res.status + ")");
+          return res.json();
+        })
+        .then(function (result) {
+          showAlert(result.message, function () {
+            if (result.success) {
+              loadAdminList();
+            }
+          });
+        })
+        .catch(function (err) {
+          console.error("삭제 실패", err);
+          showAlert("삭제 중 오류가 발생했습니다.\n" + err.message);
+        });
+    }, { danger: true, okText: "삭제" });
   }
 
   function formatPrice(v) {
@@ -244,5 +304,6 @@
       .replace(/>/g, "&gt;");
   }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

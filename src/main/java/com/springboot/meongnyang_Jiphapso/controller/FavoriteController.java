@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.springboot.meongnyang_Jiphapso.common.ApiResponse;
@@ -28,13 +28,13 @@ public class FavoriteController {
         this.favoriteService = favoriteService;
     }
     private Long loginMemberNo(HttpSession session) {
+        // 세션엔 MemberDTO.m_no 타입 그대로(Integer) 들어있어서 Integer로 꺼낸 다음 Long으로 변환
         Integer mNo = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
         return (mNo != null) ? mNo.longValue() : null;
     }
     // ------------------------------------------------------------
     // 사용자 화면
     // ------------------------------------------------------------
-    /** 관심상품 목록 페이지 */
     @RequestMapping(value = "/favorite/list", method = RequestMethod.GET)
     public String favoriteList(HttpSession session, HttpServletRequest request, HttpServletResponse response, Model model) {
         Long mNo = loginMemberNo(session);
@@ -42,7 +42,9 @@ public class FavoriteController {
                 ? favoriteService.getFavoriteListByMember(mNo)
                 : favoriteService.getFavoriteListByToken(GuestTokenUtil.resolveGuestToken(request, response));
         model.addAttribute("favoriteList", list);
-        return "favorite/list";
+
+        boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+        return isAjax ? "favorite/listContent" : "favorite/list";
     }
     /** 관심상품 상세 페이지 */
     @RequestMapping(value = "/favorite/{faNo}", method = RequestMethod.GET)
@@ -101,13 +103,13 @@ public class FavoriteController {
     // ------------------------------------------------------------
     // 관리자 화면
     // ------------------------------------------------------------
-    /** 관리자 - 회원별 관심상품 요약 목록 페이지 (회원아이디 + 개수, 상세보기로 드릴다운) */
     @RequestMapping(value = "/admin/favorite", method = RequestMethod.GET)
     public String adminFavoriteList(Model model) {
+
         model.addAttribute("favoriteSummaryList", favoriteService.getFavoriteMemberSummaryAll());
         return "admin/favorite/adminList";
     }
-    /** 관리자 - 특정 회원이 찜한 상품 목록 (상세보기 모달용 ajax) */
+    /** 관리자 - 특정 회원이 찜한 상품 상세 목록 (adminList.jsp 상세보기 모달에서 호출, 소유자 검증 없이 조회) */
     @RequestMapping(value = "/admin/favorite/byMember", method = RequestMethod.GET)
     @ResponseBody
     public ApiResponse<List<FavoriteDTO>> adminFavoriteListByMember(@RequestParam("mNo") Long mNo) {

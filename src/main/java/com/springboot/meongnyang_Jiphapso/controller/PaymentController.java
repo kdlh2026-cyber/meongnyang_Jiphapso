@@ -104,8 +104,6 @@ public class PaymentController {
     // =====================================================
     // AJAX(JSON)
     // =====================================================
-
-    // 결제요청 등록
     @ResponseBody
     @RequestMapping(value = "/request", method = RequestMethod.POST)
     public Map<String, Object> requestPayment(PaymentDTO dto,
@@ -125,15 +123,6 @@ public class PaymentController {
 
             dto.setMNo(mNo);
 
-            if (dto.getPayUsed() != null && dto.getPayUsed() > 0) {
-                Long balance = pointService.getCurrentBalance(mNo);
-                if (balance == null || dto.getPayUsed() > balance) {
-                    map.put("success", false);
-                    map.put("message", "보유 포인트가 부족합니다.");
-                    return map;
-                }
-            }
-
             paymentService.bindChannelKey(dto);
 
             PaymentDTO result = paymentService.requestPayment(dto);
@@ -144,8 +133,8 @@ public class PaymentController {
             map.put("orderName", result.getOrderName());
             map.put("payRealAmt", result.getPayRealAmt());
 
-        } catch (IllegalArgumentException e) {
-
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // 주문 소유자 불일치, 이미 처리된 주문, 쿠폰 검증 실패, 포인트 부족 등을 전부 여기서 잡음
             map.put("success", false);
             map.put("message", e.getMessage());
         }

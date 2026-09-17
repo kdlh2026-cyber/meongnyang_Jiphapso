@@ -6,9 +6,12 @@
 <meta charset="UTF-8">
 <title>취소 ◦ 반품 내역</title>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-<link rel="stylesheet" href="/css/orderCancel/list.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/orderCancel/list.css">
 </head>
 <body>
+
+<div class="oc-toast-wrap" id="ocToastWrap"></div>
+
 <div class="oc-wrap">
   <h2 class="oc-title">취소 ◦ 반품 내역</h2>
 
@@ -65,14 +68,31 @@
     loadOrderCancelList();
   });
 
-  // 회원 본인 취소/반품 목록 조회 
+  // 네이티브 alert() 대체 토스트
+  function showToast(message, type) {
+    var wrap = document.getElementById("ocToastWrap");
+    if (!wrap || !message) return;
+
+    var toast = document.createElement("div");
+    toast.className = "oc-toast " + (type === "error" ? "oc-toast-error" : "oc-toast-success");
+    toast.textContent = message;
+    wrap.appendChild(toast);
+
+    requestAnimationFrame(function () { toast.classList.add("show"); });
+    setTimeout(function () {
+      toast.classList.remove("show");
+      setTimeout(function () { toast.remove(); }, 200);
+    }, 1800);
+  }
+
+  // 회원 본인 취소/반품 목록 조회
   function loadOrderCancelList() {
     fetch(contextPath + "/orderCancel/list/data")
       .then(function (res) { return res.json(); })
       .then(function (result) {
         if (!result.success) {
-          alert(result.message || "로그인이 필요합니다.");
-          location.href = contextPath + "/member/login";
+          showToast(result.message || "로그인이 필요합니다.", "error");
+          setTimeout(function () { location.href = contextPath + "/member/login"; }, 900);
           return;
         }
         renderList(result.data);
@@ -116,13 +136,13 @@
     });
   }
 
-  // 상세보기 모달 오픈 
+  // 상세보기 모달 오픈
   function openDetailModal(ocOutNo) {
     fetch(contextPath + "/orderCancel/detail?ocOutNo=" + ocOutNo)
       .then(function (res) { return res.json(); })
       .then(function (result) {
         if (!result.success) {
-          alert(result.message || "취소 내역을 찾을 수 없습니다.");
+          showToast(result.message || "취소 내역을 찾을 수 없습니다.", "error");
           return;
         }
         renderDetail(result.data);
@@ -163,7 +183,7 @@
   function formatDate(v) {
     if (!v) return "-";
     var d = new Date(v);
-    if (isNaN(d.getTime())) return v; 
+    if (isNaN(d.getTime())) return v;
     var yyyy = d.getFullYear();
     var mm = String(d.getMonth() + 1).padStart(2, "0");
     var dd = String(d.getDate()).padStart(2, "0");

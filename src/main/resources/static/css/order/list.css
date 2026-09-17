@@ -1,75 +1,80 @@
-* { box-sizing: border-box; }
+@charset "UTF-8";
+/* /css/order/list.css */
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   -> 이 페이지도 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)에
+      직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 .ol-wrap 스코프로만 한정함. */
+.ol-wrap, .ol-wrap * { box-sizing: border-box; }
 
-.ol-wrap { max-width: 720px; margin: 32px auto; padding: 0 20px 60px; }
+.ol-wrap { max-width: 720px; margin: 32px auto; padding: 0 20px 60px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; color: #4A3226; }
 
-.ol-title { font-size: 22px; font-weight: 700; margin: 0; }
+.ol-title { font-size: 22px; font-weight: 700; margin: 0; color: #4A3226; }
 
 .ol-title-row {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 20px; flex-wrap: wrap; gap: 8px;
 }
 .ol-cancel-history-link {
-    font-size: 13px; color: #c17a52; text-decoration: none; border: 1px solid #e3b79a;
-    background: #fdf3ee; padding: 7px 14px; border-radius: 6px; white-space: nowrap;
+    font-size: 13px; color: #FDA58F; text-decoration: none; border: 1px solid #FFC9CE;
+    background: #FFF3D8; padding: 7px 14px; border-radius: 6px; white-space: nowrap;
 }
-.ol-cancel-history-link:hover { background: #c17a52; color: #fff; }
+.ol-cancel-history-link:hover { background: #FDA58F; color: #FFFFFF; }
 
 /* 상태 필터 탭 */
 .status-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
 .status-tabs a {
-    display: inline-block; padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px;
-    font-size: 13px; color: #555; text-decoration: none; background: #fff;
+    display: inline-block; padding: 8px 16px; border: 1px solid #FFC9CE; border-radius: 20px;
+    font-size: 13px; color: #4A3226; text-decoration: none; background: #FFFBF5;
 }
-.status-tabs a:hover { border-color: #c17a52; color: #c17a52; }
-.status-tabs a.active { background: #222; color: #fff; border-color: #222; }
+.status-tabs a:hover { border-color: #FDA58F; color: #FDA58F; }
+.status-tabs a.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; }
 
 .empty {
-    padding: 80px 0; text-align: center; color: #888; font-size: 15px;
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
+    padding: 80px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 15px;
+    background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
 }
 
 /* 주문 카드 */
 .order-card {
-    border: 1px solid #eee; border-radius: 10px; padding: 18px 20px; background: #fff;
+    border: 1px solid #FFC9CE; border-radius: 10px; padding: 18px 20px; background: #FFFBF5;
     margin-bottom: 14px;
 }
 
 .order-top {
     display: flex; justify-content: space-between; align-items: center;
-    font-size: 13px; color: #888; margin-bottom: 12px;
+    font-size: 13px; color: rgba(74, 50, 38, 0.55); margin-bottom: 12px;
 }
-.order-top .order-no { font-weight: 700; color: #333; }
+.order-top .order-no { font-weight: 700; color: #4A3226; }
 
 .order-mid {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 14px;
 }
 .order-mid-left { display: flex; align-items: center; gap: 10px; }
-.order-mid .qty { font-size: 13px; color: #666; }
-.order-mid .qty-bag { color: #999; margin-left: 4px; }
-.order-method { font-size: 13px; color: #666; }
+.order-mid .qty { font-size: 13px; color: rgba(74, 50, 38, 0.6); }
+.order-mid .qty-bag { color: rgba(74, 50, 38, 0.45); margin-left: 4px; }
+.order-method { font-size: 13px; color: rgba(74, 50, 38, 0.6); }
 
-/* 상태 배지 - detail.css와 동일한 색상 매핑 */
+/* 상태 배지 - detail.css와 동일한 색상 매핑(5가지 상태가 서로 뚜렷이 구분되도록) */
 .status-badge {
     display: inline-block; padding: 3px 10px; border-radius: 999px;
-    font-size: 12px; font-weight: 700; background: #f2f2f2; color: #666;
+    font-size: 12px; font-weight: 700; background: #FFF3D8; color: #4A3226;
 }
-.status-PAYMENT_PENDING { background: #fdf3d7; color: #a9791f; }
-.status-PAID { background: #e7f6ec; color: #12805c; }
-.status-SHIPPING { background: #e6f0ff; color: #2a5fd0; }
-.status-DELIVERED { background: #eef1f4; color: #444; }
-.status-CANCELED { background: #fdeaea; color: #c0392b; }
+.status-PAYMENT_PENDING { background: #FFF3D8; color: #4A3226; }
+.status-PAID            { background: #FDA58F; color: #FFFFFF; }
+.status-SHIPPING        { background: #FDCC61; color: #4A3226; }
+.status-DELIVERED       { background: #FFFBF5; color: #4A3226; border: 1px solid #4A3226; }
+.status-CANCELED        { background: #FFFBF5; color: #FDA58F; border: 1px solid #FDA58F; }
 
-.order-actions { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #f0f0f0; padding-top: 14px; }
+.order-actions { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #FFF3D8; padding-top: 14px; }
 
 .btn-sm {
-    display: inline-block; border: 1px solid #ccc; background: #fff; color: #444;
+    display: inline-block; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
     border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer;
     text-decoration: none; white-space: nowrap;
 }
-.btn-sm:hover { border-color: #c17a52; color: #c17a52; }
-.btn-sm-outline { border-color: #e3b79a; color: #c17a52; background: #fdf3ee; }
-.btn-sm-outline:hover { background: #c17a52; color: #fff; }
+.btn-sm:hover { border-color: #FDA58F; color: #FDA58F; background: #FFF3D8; }
+.btn-sm-outline { border-color: #FDA58F; color: #FDA58F; background: #FFFBF5; }
+.btn-sm-outline:hover { background: #FDA58F; color: #FFFFFF; }
 
 @media (max-width: 480px) {
     .order-top { flex-direction: column; align-items: flex-start; gap: 4px; }

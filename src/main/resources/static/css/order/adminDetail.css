@@ -1,27 +1,32 @@
 @charset "UTF-8";
 /* /css/order/adminDetail.css */
-* { box-sizing: border-box; }
-body {
-  margin: 0;
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   -> 이 페이지는 공통 헤더/드롭다운 메뉴가 있는 레이아웃과 같은 body를 공유해서,
+      body/* 에 전역 스타일을 걸면 헤더 쪽 드롭다운 메뉴 레이아웃이 깨짐.
+      그래서 body/* 전역 리셋을 쓰지 않고 .od-page 안으로만 스타일을 한정함. */
+.od-page, .od-page * { box-sizing: border-box; }
+.od-page {
   font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
-  background: #f7f7f8;
-  color: #222;
-  padding: 40px 20px 60px;
+  background: #FFFBF5;
+  color: #4A3226;
+  padding: 20px 32px 60px;
 }
 
 .od-wrap {
   max-width: 720px;
-  margin: 0 auto;
+  margin: 56px auto 0; /* body padding-top이 안 먹는 레이아웃 대비, 여기서 직접 위쪽 간격 확보 */
 }
 
 .od-header {
-  margin-bottom: 20px;
+  margin-top: 0;
+  margin-bottom: 24px;
 }
 
 .od-title {
   margin: 0;
   font-size: 20px;
   font-weight: 700;
+  color: #4A3226;
 }
 
 .od-badge {
@@ -29,16 +34,16 @@ body {
   margin-left: 8px;
   padding: 3px 10px;
   border-radius: 20px;
-  background: #eee;
-  color: #666;
+  background: #FFF3D8;
+  color: #4A3226;
   font-size: 13px;
   font-weight: 600;
   vertical-align: middle;
 }
 
 .od-card {
-  background: #fff;
-  border: 1px solid #e5e5e5;
+  background: #FFFBF5;
+  border: 1px solid #FFC9CE;
   border-radius: 8px;
   margin-bottom: 16px;
   overflow: hidden;
@@ -46,11 +51,11 @@ body {
 
 .od-card-title {
   padding: 14px 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #FFF3D8;
   font-size: 14px;
   font-weight: 700;
-  color: #333;
-  background: #fafafa;
+  color: #4A3226;
+  background: #FFF3D8;
 }
 
 /* 주문 정보 테이블 */
@@ -61,7 +66,7 @@ body {
 }
 
 .info-table tr {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #FFF3D8;
 }
 .info-table tr:last-child { border-bottom: none; }
 
@@ -69,31 +74,41 @@ body {
   width: 120px;
   text-align: left;
   padding: 14px 16px;
-  background: #fcfcfc;
-  color: #666;
+  background: #FFF3D8;
+  color: #4A3226;
+  opacity: 0.85;
   font-weight: 600;
   vertical-align: top;
 }
 
 .info-table td {
   padding: 14px 16px;
-  color: #222;
+  color: #4A3226;
 }
 
 .info-table select#orStatus {
   padding: 6px 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #FFC9CE;
   border-radius: 6px;
   font-size: 13px;
-  background: #fff;
+  background: #FFFBF5;
+  color: #4A3226;
   cursor: pointer;
 }
 
 /* 주문 상품 목록 */
+.od-link {
+  color: #4A3226;
+  text-decoration: none;
+  font-weight: 700;
+}
+.od-link:hover { color: #FDA58F; }
+
 .od-empty {
   padding: 30px 16px;
   text-align: center;
-  color: #888;
+  color: #4A3226;
+  opacity: 0.6;
   font-size: 13px;
 }
 
@@ -102,7 +117,7 @@ body {
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid #FFF3D8;
 }
 .od-product-row:last-of-type { border-bottom: none; }
 
@@ -111,7 +126,7 @@ body {
   height: 56px;
   border-radius: 6px;
   object-fit: cover;
-  background: #f2f2f2;
+  background: #FFF3D8;
   flex: none;
 }
 
@@ -122,15 +137,16 @@ body {
 
 .od-product-name {
   font-size: 13px;
-  color: #222;
+  color: #4A3226;
   margin-bottom: 4px;
 }
 
 .od-product-opt {
   display: inline-block;
   font-size: 11px;
-  color: #999;
-  background: #f7f7f7;
+  color: #4A3226;
+  opacity: 0.7;
+  background: #FFF3D8;
   border-radius: 4px;
   padding: 1px 6px;
   margin-bottom: 4px;
@@ -138,7 +154,8 @@ body {
 
 .od-product-qty {
   font-size: 12px;
-  color: #888;
+  color: #4A3226;
+  opacity: 0.6;
 }
 
 .od-product-price {
@@ -149,7 +166,7 @@ body {
 .od-product-price .od-product-amt {
   font-size: 14px;
   font-weight: 700;
-  color: #222;
+  color: #4A3226;
 }
 
 .od-total-row {
@@ -157,15 +174,17 @@ body {
   justify-content: space-between;
   align-items: baseline;
   padding: 14px 16px;
-  border-top: 1px solid #eee;
-  background: #fafafa;
+  border-top: 1px solid #FFF3D8;
+  background: #FFF3D8;
   font-size: 13px;
-  color: #555;
+  color: #4A3226;
+  opacity: 0.85;
 }
 
 .od-total-row strong {
   font-size: 16px;
-  color: #222;
+  color: #4A3226;
+  opacity: 1;
 }
 
 .btn-group {
@@ -181,23 +200,52 @@ body {
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
-  border: 1px solid #ccc;
-  background: #fff;
-  color: #333;
+  border: 1px solid #FFC9CE;
+  background: #FFFBF5;
+  color: #4A3226;
   cursor: pointer;
 }
-.btn:hover { background: #f5f5f5; }
+.btn:hover { background: #FFF3D8; }
 
 .btn-primary {
-  border-color: #222;
-  background: #222;
-  color: #fff;
+  border-color: #FDCC61;
+  background: #FDCC61;
+  color: #4A3226;
 }
-.btn-primary:hover { background: #444; }
+.btn-primary:hover { background: #FDA58F; color: #fff; }
 
 .btn-danger {
-  border-color: #c0392b;
-  color: #c0392b;
-  background: #fff;
+  border-color: #FDA58F;
+  color: #FDA58F;
+  background: #FFFBF5;
 }
-.btn-danger:hover { background: #c0392b; color: #fff; }
+.btn-danger:hover { background: #FDA58F; color: #fff; }
+
+/* ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) ===== */
+.ax-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+}
+.ax-modal-overlay.show { display: flex; }
+.ax-modal {
+  width: 360px; max-width: 88vw;
+  background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 12px;
+  padding: 26px 22px 20px; text-align: center;
+}
+.ax-modal-message {
+  font-size: 14px; color: #4A3226; line-height: 1.5; margin-bottom: 20px;
+  white-space: pre-line;
+}
+.ax-modal-actions {
+  display: flex; gap: 8px; justify-content: center;
+}
+.ax-btn {
+  padding: 9px 20px; border-radius: 6px; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
+  min-width: 88px;
+}
+.ax-btn:hover { background: #FFF3D8; }
+.ax-btn-primary { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
+.ax-btn-primary:hover { background: #FDA58F; color: #fff; }
+.ax-btn-danger { background: #FFFBF5; border-color: #FDA58F; color: #FDA58F; }
+.ax-btn-danger:hover { background: #FDA58F; color: #fff; }
