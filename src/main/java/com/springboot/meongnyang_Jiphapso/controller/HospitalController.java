@@ -89,7 +89,7 @@ public class HospitalController {
 		return hp_serv.autocomplete(keyword);
 	}
 
-	@RequestMapping("/search")
+	@RequestMapping("/hospital_search")
 	public String hp_search(@RequestParam("keyword") String keyword, Model model) throws Exception {
 		model.addAttribute("hospitalList", hp_serv.search(keyword));
 		return "guest/hospital/hospitalList";

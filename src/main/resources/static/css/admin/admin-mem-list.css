@@ -1,0 +1,154 @@
+@charset "UTF-8";
+
+/* clone-ham-menu.css의 body 배경(peach)을 이 페이지에서만 흰색으로 덮어씀 */
+html body {
+    background: #fff;
+}
+
+/* 대시보드 페이지(.dashboard-wrap)와 동일한 컨테이너 규칙 */
+.admin-content-wrap {
+    max-width: 1100px;
+    margin: 30px auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+    padding: 0 16px;
+    box-sizing: border-box;
+}
+
+.admin-content-wrap h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #4A3226;
+    margin: 0 0 20px;
+}
+
+/* ---- 검색 폼 ---- */
+.member-search-form {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.member-search-form input[type="text"] {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1.5px solid #FADCCF;
+    border-radius: 20px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.member-search-form input[type="text"]:focus {
+    border-color: #FDA58F;
+}
+
+.member-search-form input[type="submit"] {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 20px;
+    background: #FDA58F;
+    color: #4A3226;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.member-search-form input[type="submit"]:hover {
+    background: #FF8C7A;
+}
+
+#suggestions {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 220px;
+    background: #fff;
+    border: 1px solid #FADCCF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 10;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+#suggestions .item {
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#suggestions .item:hover {
+    background: #FFF6F2;
+}
+
+#suggestions em {
+    background: #ffe066;
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* ---- 회원 테이블 (대시보드 table 스타일 참고) ---- */
+.admin-content-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin-top: 10px;
+}
+
+.admin-content-wrap th {
+    text-align: left;
+    border-bottom: 2px solid #4A3226;
+    padding: 10px 8px;
+    color: #4A3226;
+    font-weight: 700;
+    background: #FFF6F2;
+}
+
+.admin-content-wrap td {
+    border-bottom: 1px solid #F5D9CB;
+    padding: 10px 8px;
+    color: #333;
+    vertical-align: middle;
+}
+
+.admin-content-wrap tbody tr:hover td {
+    background: #FFFBF8;
+}
+
+.admin-content-wrap td a {
+    color: #4A3226;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.admin-content-wrap td a:hover {
+    color: #FDA58F;
+}
+
+/* 삭제 링크만 경고색으로 구분 */
+.admin-content-wrap td a[href*="Delete"] {
+    color: #D9534F;
+}
+
+.admin-content-wrap td a[href*="Delete"]:hover {
+    color: #B23A36;
+}
+
+/* 목록으로 돌아가는 링크: 대시보드의 pill--admin과 동일한 톤 */
+.btn-list {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 10px 22px;
+    border-radius: 20px;
+    background: #4A3226;
+    color: #FFFBF5;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.btn-list:hover {
+    background: #5c4432;
+}

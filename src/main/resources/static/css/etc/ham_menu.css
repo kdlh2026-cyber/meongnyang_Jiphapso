@@ -20,9 +20,11 @@
 	    justify-content:space-between;
 	    z-index: 1000;
 	    position:sticky; top:0;
-   		padding:14px 16px;
-    	background:#fff;
-    	border-bottom:1px solid #eee;
+	    height: 64px;              /* 높이 고정 */
+	    padding:0 16px;
+	    box-sizing: border-box;
+	    background:#fff;
+	    border-bottom:1px solid #eee;
 	}
 	
 	.topbar-right {
@@ -49,34 +51,37 @@
   /* ---- 토글 (JS 없음) ---- */
   #menuToggle{ display:none; }
 
-  .overlay{
-    position:fixed; inset:0;
-    background:rgba(20,18,10,.35);
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .3s ease;
-    z-index:900;
-  }
+	.overlay{
+	    position:fixed;
+	    top: 64px;                 /* inset:0 대신 top만 상단바 높이만큼 */
+	    left:0; right:0; bottom:0;
+	    background:rgba(20,18,10,.35);
+	    opacity:0;
+	    pointer-events:none;
+	    transition:opacity .3s ease;
+	    z-index:900;
+	}
   #menuToggle:checked ~ .overlay{
     opacity:1;
     pointer-events:auto;
   }
 
   /* ---- 드로어 ---- */
-  .drawer{
-    position:fixed;
-    top:0; right:0;
-    width:min(92vw, 400px);
-    height:100%;
-    background:#fff;
-    border-radius:22px 0 0 0;
-    transform:translateX(100%);
-    transition:transform .35s cubic-bezier(.32,.72,0,1);
-    z-index:950;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
+	.drawer{
+	    position:fixed;
+	    top: 64px;                 /* 0 → 64px */
+	    right:0;
+	    width:min(92vw, 400px);
+	    height: calc(100% - 64px); /* 100% → 상단바 높이만큼 빼기 */
+	    background:#fff;
+	    border-radius:22px 0 0 0;
+	    transform:translateX(100%);
+	    transition:transform .35s cubic-bezier(.32,.72,0,1);
+	    z-index:950;
+	    display:flex;
+	    flex-direction:column;
+	    overflow:hidden;
+	}
   #menuToggle:checked ~ .drawer{
     transform:translateX(0);
   }

@@ -8,85 +8,95 @@
 <meta charset="UTF-8">
 <title>게시글 목록</title>
 <link rel="stylesheet" href="/css/community/commList.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Square+Round:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
 <%@ include file="../hamburger_menu.jsp" %>
 
-    <!-- 전체를 감싸는 메인 와이드 컨테이너 -->
-    <div class="community_wrap">
-
-        <!-- 1. 상단 2분할 영역 (커뮤니티 인기글 / 좋은 정보) -->
-        <div class="top_dual_section">
-            
-            <!-- 왼쪽 박스: 커뮤니티 인기글 -->
-            <div class="box_item">
-                <div class="widget_title">커뮤니티 인기글</div>
-                <ul class="top_popular_list">
-                    <li>
-                        <span class="rank_num">1</span>
-                        <a href="#" class="pop_link">[경기도 고양] 고양이 호흡좀 봐주세요ㅠ</a>
-                    </li>
-                    <li>
-                        <span class="rank_num">2</span>
-                        <a href="#" class="pop_link">답변 좀요ㅠㅠ (고양이 🐱 🐈 🐈‍⬛ 구조)</a>
-                    </li>
-                    <li>
-                        <span class="rank_num">3</span>
-                        <a href="#" class="pop_link">리리야 우리집에서 지내서 고마워!</a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- 오른쪽 박스: 좋은 정보 (포인트 안내 및 목록) -->
-            <div class="box_item info_box">
-                <div class="info_header">
-                    <div class="widget_title">좋은 정보 글·답변에는 포인트</div>
-                    <div class="info_desc">좋은 정보 혹은 답변을 남기면 커뮤니티 매니저가 선정해 포인트를 드려요.</div>
-                </div>
-                
-                <div class="good_info_list">
-                    <div class="good_info_item">
-                        <div class="item_top">
-                            <span class="badge_tip">답변</span>
-                            <a href="#" class="info_title">답변 좀요ㅠㅠ (고양이 🐱 🐈 🐈‍⬛ 구조)</a>
-                        </div>
-                        <div class="item_sub">
-                            <span class="writer">주주테리어</span> <span class="point">+1,000P</span>
-                        </div>
-                    </div>
-                    
-                    <div class="good_info_item">
-                        <div class="item_top">
-                            <a href="#" class="info_title">새로운 녀석</a>
-                        </div>
-                        <div class="item_sub">
-                            <span class="writer">메밀,보리집사</span> <span class="point">+500P</span>
-                        </div>
-                    </div>
-
-                    <div class="good_info_item">
-                        <div class="item_top">
-                            <span class="badge_tip">답변</span>
-                            <a href="#" class="info_title">고양이 합사</a>
-                        </div>
-                        <div class="item_sub">
-                            <span class="writer">까만고양이</span> <span class="point">+500P</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-		<!-- 안내 문구와 글쓰기 버튼이 나란히 들어가는 가로 배너 박스 -->
-        <div class="write_banner_box">
-            <div class="banner_text_area">
-                <div class="banner_title">궁금한 게 있나요?</div>
-                <div class="banner_desc">Q&amp;A로 물어보면 평균 24시간 이내에 답변이 달려요.</div>
-            </div>
-            <a href="/commWriteForm" class="btn_write_box">글쓰기</a>
-        </div>
+   <!-- 전체를 감싸는 메인 와이드 컨테이너 -->
+	<div class="community_wrap">
+		<!-- 상단 타이틀 및 캐릭터 영역 (좌우 2분할) -->
+		<div class="community_topimage">
+		    <!-- 왼쪽: 타이틀 및 설명 영역 -->
+		    <div class="image_text_area">
+		        <span class="image_category_sub">커뮤니티</span>
+		        <div class="image_title">궁금한 거 뭐든 물어봐</div>
+		        <div class="image_desc">반려동물과 관련된 모든 궁금증을 자유롭게 나누어보세요!</div>
+		    </div>
+		
+		    <!-- 오른쪽: 말풍선 버튼 + 고양이 이미지 묶음 (나란히 배치) -->
+		    <div class="top_right_area">
+		        <div class="speech_bubble_wrapper">
+		            <a href="/commWriteForm" class="speech_bubble_btn">
+		                <span class="bubble_txt_main">글쓰기</span>
+		                <span class="bubble_txt_sub">여기를 눌러 질문하기!</span>
+		            </a>
+		        </div>
+		        <div class="image_box">
+		            <img src="/images/community/event_on.png" alt="커뮤니티 대표 이미지">
+		        </div>
+		    </div>
+		</div>
+			
+		<!-- 1. 상단 2분할 영역 (커뮤니티 인기글 / 좋은 정보) -->
+		<div class="top_dual_section">
+		    
+		    <!-- 왼쪽 박스: 커뮤니티 인기글 -->
+		    <div class="box_item">
+		        <div class="box_header">
+		            <div class="widget_title">커뮤니티 인기글</div>
+		            <div class="info_desc">좋은 글에 '도움돼요'를 꾸욱 눌러주세요</div>
+		        </div>
+		        
+		        <div class="good_info_list">
+		            <c:forEach var="pop" items="${popularList}" varStatus="status">
+		                <div class="good_info_item">
+		                    <div class="item_top popular_item_top">
+		                        <div class="popular_title_area">
+		                            <!-- 순위 번호 -->
+		                            <span class="rank_num popular_rank">${status.count}</span>
+		                            <!-- 게시글 제목 -->
+		                            <a href="/community/commView?comm_no=${pop.comm_no}" class="info_title popular_title">${pop.comm_title}</a>
+		                        </div>
+		                        <!-- 오른쪽 끝에 정렬될 comm_type -->
+		                        <span class="badge_tip right_badge popular_badge">${pop.comm_type}</span>
+		                    </div>
+		                    <div class="item_sub">
+		                        <span class="writer">${pop.comm_writer}</span>
+		                    </div>
+		                </div>
+		            </c:forEach>
+		        </div>
+		    </div>
+		
+		    <!-- 오른쪽 박스: 좋은 정보 (포인트 안내 및 목록) -->
+		    <div class="box_item info_box">
+		        <div class="box_header info_header">
+		            <div class="widget_title">좋은 정보 글·답변에는 포인트</div>
+		            <div class="info_desc">좋은 정보 혹은 답변을 남기면 커뮤니티 매니저가 선정해 포인트를 드려요.</div>
+		        </div>
+		        
+		        <div class="good_info_list">
+		            <c:forEach var="rec" items="${recommendList}" begin="0" end="9">
+		                <div class="good_info_item">
+		                    <div class="item_top">
+		                        <c:if test="${rec.comm_type eq 'QNA'}">
+		                            <span class="badge_tip">답변</span>
+		                        </c:if>
+		                        <a href="/community/commView?comm_no=${rec.comm_no}" class="info_title">${rec.comm_title}</a>
+		                    </div>
+		                    <div class="item_sub">
+		                        <span class="writer">${rec.comm_writer}</span> 
+		                        <span class="point">👍 ${rec.comm_good}</span>
+		                    </div>
+		                </div>
+		            </c:forEach>
+		        </div>
+		    </div>
+		</div>
         
         <hr class="section_divider">
               
@@ -211,7 +221,7 @@
         </div>
 
     </div>
-
+<button id="scrollTopBtn" title="맨 위로 가기">⬆</button>
 <%@ include file="../footer.jsp" %>
 
 </body>
@@ -243,6 +253,51 @@
     $(document).on("click", ".item", function(){
         $("#keyword").val($(this).text());
         $("#suggestions").empty().hide();
+    });
+    
+ 	// 1. 사용자가 스크롤을 움직일 때마다 현재 스크롤 위치를 세션에 저장
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 0) {
+            sessionStorage.setItem('commScrollPos', window.scrollY);
+        }
+    });
+
+    // 2. 페이지가 다시 로드(렌더링)되었을 때 저장해 둔 스크롤 위치가 있다면 그곳으로 이동
+    window.addEventListener('load', function() {
+        const savedPos = sessionStorage.getItem('commScrollPos');
+        if (savedPos) {
+            window.scrollTo(0, parseInt(savedPos));
+            // 한 번 복원한 뒤에는 저장소 비우기 (필요에 따라 유지해도 무방)
+            sessionStorage.removeItem('commScrollPos');
+        }
+    });
+
+    // 기존 자동완성 관련 스크립트...
+    $("#keyword").on("keyup", function(){
+        // ... (생략)
+    });
+    
+    $(document).on("click", ".item", function(){
+        $("#keyword").val($(this).text());
+        $("#suggestions").empty().hide();
+    });
+    
+ 	// 스크롤 위치에 따라 버튼 노출 여부 결정
+    window.addEventListener('scroll', function() {
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        if (window.scrollY > 200) {
+            scrollTopBtn.style.display = 'block'; // 200px 이상 내려가면 보임
+        } else {
+            scrollTopBtn.style.display = 'none';  // 맨 위면 숨김
+        }
+    });
+
+    // 버튼 클릭 시 맨 위로 부드럽게 이동
+    document.getElementById('scrollTopBtn').addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     });
 </script>
 </html>

@@ -8,63 +8,17 @@
 <head>
 <meta charset="UTF-8">
 <title>관리자 게시글 서치 관리</title>
-<style>
-  /* 기본 스타일 */
-  body { margin: 0; font-family: "Noto Sans KR", sans-serif; background: #f9f9f9; color: #333; }
-  .admin-wrap { max-width: 1000px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-  h3 { font-size: 24px; margin-bottom: 20px; font-weight: bold; }
-  
-  /* 탭 스타일 */
-  .tab-group { display: flex; gap: 10px; margin-bottom: 20px; }
-  .tab-group .admin-tab { 
-      padding: 8px 16px; font-size: 14px; font-weight: bold; cursor: pointer; 
-      border: 1px solid #ddd; background: #fff; border-radius: 4px; text-decoration: none; color: #333; 
-  }
-  .tab-group .admin-tab.active { background: #333; color: #fff; border-color: #333; }
-
-  /* 서브 필터 및 검색 스타일 */
-  .filter-search-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-  .sub_filter { display: flex; gap: 8px; align-items: center; font-size: 13px; }
-  .sub_filter a { padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: #555; background: #fff; }
-  .sub_filter a.active { background: #555; color: #fff; border-color: #555; }
-  
-  .search-form { position: relative; display: flex; gap: 5px; }
-  .search-form input[type="text"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; width: 180px; font-size: 13px; }
-  .search-form input[type="submit"] { padding: 6px 12px; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
-  
-  /* 자동완성 드롭다운 스타일 */
-  #suggestions { border: 1px solid #cccccc; position: absolute; background: white; width: 180px; z-index: 10; top: 32px; left: 0; font-size: 13px; }
-  #suggestions .item { padding: 6px 10px; cursor: pointer; }
-  #suggestions .item:hover { background: #f1f1f1; }
-  #suggestions em { background: Tomato; color: Seashell; font-weight: bold; font-style: italic; }
-
-  /* 테이블 스타일 */
-  table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; }
-  th, td { padding: 12px; border-bottom: 1px solid #eee; }
-  th { background: #f4f4f4; font-weight: bold; }
-  td a { color: #007bff; text-decoration: none; }
-  td a:hover { text-decoration: underline; }
-
-  /* 버튼 스타일 */
-  .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
-  .btn-pick { background: #f5c518; color: #111; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-weight: bold; }
-  .btn-pick.active { background: #333; color: #fff; }
-  .btn-delete:hover { background: #c0392b; }
-  .btn-pick:hover { background: #e0b015; }
-
-  /* 페이징 스타일 */
-  .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 30px; }
-  .pagination a { padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; font-size: 13px; }
-  .pagination a.active { background: #333; color: #fff; border-color: #333; }
-  
-  .total-count { font-size: 13px; color: #666; margin-bottom: 10px; }
-</style>
+<link rel="stylesheet" href="/css/community/communityUpdate.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 
 <div class="admin-wrap">
-	<h3>게시글 관리</h3>
+    <!-- 상단 제목 및 바로가기 링크 영역 -->
+     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+         <h3 style="margin: 0; border-left: 4px solid #ff6f61; padding-left: 10px;">게시글 관리</h3>
+         <a href="/admin/communityManage" class="btn-manage-link">대시보드 / 현황 보기</a>
+     </div>
 
      <!-- 1. 메인 카테고리 탭 그룹 -->
      <div class="tab-group">
@@ -99,43 +53,43 @@
              </div>
          </c:if>
 
-         <!-- 검색 및 자동완성 폼 -->
-	     <form name="community_search" method="get" action="/admin/community/searchList" class="search-form" style="display: flex; gap: 5px; align-items: center;">
-	         <!-- 기존 필터 상태 유지용 숨은값 -->
-	         <input type="hidden" name="comm_type" value="${param.comm_type}">
-	         <input type="hidden" name="comm_pet_type" value="${param.comm_pet_type}">
-	         <input type="hidden" name="comm_category" value="${param.comm_category}">
-	         <input type="hidden" name="sort" value="${param.sort}">
-	         
-	         <!-- 검색 필터 (제목, 작성자, 카테고리, 통합) -->
-	         <select name="searchType" style="padding: 6px 8px; border-radius: 4px; border: 1px solid #ddd; font-size: 13px;">
-	             <option value="" ${empty param.searchType ? 'selected' : ''}>통합검색</option>
-	             <option value="title" ${param.searchType eq 'title' ? 'selected' : ''}>제목</option>
-	             <option value="writer" ${param.searchType eq 'writer' ? 'selected' : ''}>작성자</option>
-	             <option value="category" ${param.searchType eq 'category' ? 'selected' : ''}>카테고리</option>
-	         </select>
-	         
-	         <input type="text" name="keyword" id="keyword" value="${param.keyword}" placeholder="검색어 입력" autocomplete="off">
-	         <input type="submit" value="검색">
-	         <div id="suggestions"></div>
-	     </form>
+         <!-- 검색 및 자동완성 폼 (검색 결과 페이지이므로 action은 searchList 유지) -->
+         <form name="community_search" method="get" action="/admin/community/searchList" class="search-form" style="display: flex; gap: 5px; align-items: center;">
+             <!-- 기존 필터 상태 유지용 숨은값 -->
+             <input type="hidden" name="comm_type" value="${param.comm_type}">
+             <input type="hidden" name="comm_pet_type" value="${param.comm_pet_type}">
+             <input type="hidden" name="comm_category" value="${param.comm_category}">
+             <input type="hidden" name="sort" value="${param.sort}">
+             
+             <!-- 검색 필터 (제목, 작성자, 카테고리, 통합) -->
+             <select name="searchType" style="padding: 6px 8px; border-radius: 4px; border: 1px solid #ddd; font-size: 13px;">
+                 <option value="" ${empty param.searchType ? 'selected' : ''}>통합검색</option>
+                 <option value="title" ${param.searchType eq 'title' ? 'selected' : ''}>제목</option>
+                 <option value="writer" ${param.searchType eq 'writer' ? 'selected' : ''}>작성자</option>
+                 <option value="category" ${param.searchType eq 'category' ? 'selected' : ''}>카테고리</option>
+             </select>
+             
+             <input type="text" name="keyword" id="keyword" value="${param.keyword}" placeholder="검색어 입력" autocomplete="off">
+             <input type="submit" value="검색">
+             <div id="suggestions"></div>
+         </form>
      </div>
 
      <!-- 정렬 필터 및 전체 개수 영역 -->
-	<div class="filter_area" style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
-	    <div>전체 ${totalCount}개</div>
-	    
-	    <!-- 최신순 / 인기순 셀렉트박스 -->
-	    <div>
-	        <select name="sort" onchange="changeSort(this.value)" style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ddd;">
-	            <option value="latest" ${param.sort eq 'latest' or empty param.sort ? 'selected' : ''}>최신순</option>
-	            <option value="popular" ${param.sort eq 'popular' ? 'selected' : ''}>인기순</option>
-	        </select>
-	    </div>
-	</div>
-	
+    <div class="filter_area" style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+        <div>전체 ${totalCount}개</div>
+        
+        <!-- 최신순 / 인기순 셀렉트박스 -->
+        <div>
+            <select name="sort" onchange="changeSort(this.value)" style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ddd;">
+                <option value="latest" ${param.sort eq 'latest' or empty param.sort ? 'selected' : ''}>최신순</option>
+                <option value="popular" ${param.sort eq 'popular' ? 'selected' : ''}>인기순</option>
+            </select>
+        </div>
+    </div>
+    
      <div>
-     	 <table>
+          <table>
              <thead>
                  <tr>
                      <th style="width: 15%;">작성일</th>
@@ -149,7 +103,7 @@
                  <!-- 데이터가 없을 때 -->
                  <c:if test="${empty list}">
                      <tr>
-                         <td colspan="4" style="padding: 40px; color: #999;">등록된 게시글이 없습니다.</td>
+                         <td colspan="5" style="padding: 40px; color: #999;">검색된 게시글이 없습니다.</td>
                      </tr>
                  </c:if>
 
@@ -160,21 +114,21 @@
                              <fmt:formatDate value="${item.comm_date}" pattern="yyyy-MM-dd" />
                          </td>
                          <td>
-						    <c:choose>
-						        <%-- comm_type이 '콘텐츠'일 때는 comm_category 출력 --%>
-						        <c:when test="${item.comm_type eq '콘텐츠'}">
-						            ${item.comm_category}
-						        </c:when>
-						        <%-- 그 외(Q&A, 라운지 등)일 때는 comm_pet_type 출력 --%>
-						        <c:otherwise>
-						            ${item.comm_pet_type}
-						        </c:otherwise>
-						    </c:choose>
-						</td>
+                            <c:choose>
+                                <%-- comm_type이 '콘텐츠'일 때는 comm_category 출력 --%>
+                                <c:when test="${item.comm_type eq '콘텐츠'}">
+                                    ${item.comm_category}
+                                </c:when>
+                                <%-- 그 외(Q&A, 라운지 등)일 때는 comm_pet_type 출력 --%>
+                                <c:otherwise>
+                                    ${item.comm_pet_type}
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                          <td style="text-align: left; padding-left: 20px;">
-                         	<c:if test="${item.comm_adpick eq 'Y'}">
-						        <span style="background: #ff5a1f; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 5px;">PICK</span>
-						    </c:if>
+                            <c:if test="${item.comm_adpick eq 'Y'}">
+                                <span style="background: #ff5a1f; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 5px;">PICK</span>
+                            </c:if>
                              <a href="/community/commView?comm_no=${item.comm_no}" target="_blank">${item.comm_title}</a>
                          </td>
                          <td>${item.comm_writer}</td>
@@ -196,17 +150,24 @@
          </table>
      </div>
      
-     <!-- 3. 페이징 네비게이션 -->
+     <!-- 3. 페이징 네비게이션 (검색 유지 블록형 페이징 적용) -->
      <c:if test="${not empty totalPages and totalPages > 1}">
          <div class="pagination">
-             <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&page=${pageNum > 1 ? pageNum - 1 : 1}">PREV</a>
+             <%-- 이전 블록 이동 버튼 --%>
+             <c:if test="${prev}">
+                 <a href="/admin/community/searchList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${startPage - 1}">PREV</a>
+             </c:if>
              
-             <c:forEach var="i" begin="1" end="${totalPages}">
-                 <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&page=${i}" 
+             <%-- 10개 단위 번호 반복 출력 --%>
+             <c:forEach var="i" begin="${startPage}" end="${endPage}">
+                 <a href="/admin/community/searchList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${i}" 
                     class="${pageNum eq i ? 'active' : ''}">${i}</a>
              </c:forEach>
              
-             <a href="/admin/communityUpdate?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&keyword=${param.keyword}&page=${pageNum < totalPages ? pageNum + 1 : totalPages}">NEXT</a>
+             <%-- 다음 블록 이동 버튼 --%>
+             <c:if test="${next}">
+                 <a href="/admin/community/searchList?comm_type=${param.comm_type}&comm_pet_type=${param.comm_pet_type}&comm_category=${param.comm_category}&searchType=${param.searchType}&keyword=${param.keyword}&sort=${param.sort}&page=${endPage + 1}">NEXT</a>
+             </c:if>
          </div>
      </c:if>
 </div>
@@ -225,7 +186,7 @@
         }
     
         $.ajax({
-            url: "/community/autocomplete", // 필요시 관리자용 자동완성 경로로 수정 가능
+            url: "/community/autocomplete",
             data: { keyword: q },
             success: function(list){
                 let html = "";
@@ -253,11 +214,11 @@
         }
     });
     
- 	// 정렬 셀렉트박스 변경 시 현재 선택된 검색 조건(게시판 종류, 동물 종류 등)을 유지한 채 페이지 이동
+    // 정렬 셀렉트박스 변경 시 현재 검색어와 검색 조건들을 유지한 채 페이지 이동
     function changeSort(sortValue) {
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set('sort', sortValue);
-        urlParams.set('page', '1'); // 정렬을 바꿨을 때 1페이지로 초기화
+        urlParams.set('page', '1'); // 정렬 변경 시 1페이지로 초기화
         window.location.href = window.location.pathname + '?' + urlParams.toString();
     }
 </script>

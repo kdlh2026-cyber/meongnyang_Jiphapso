@@ -19,4 +19,7 @@ public interface IBreedDAO {
 	
 	// 견종 업데이트
 	public int breedUpdate(BreedDTO dto);
+
+	// 수정시 아이콘 변경안할 경우 원래 있던거 가져오기
+	public String getBreedIcon(int breed_id);
 }

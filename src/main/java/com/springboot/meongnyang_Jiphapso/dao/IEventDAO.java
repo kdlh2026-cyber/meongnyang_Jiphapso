@@ -22,6 +22,9 @@ public interface IEventDAO {
 	// 이벤트 신청 조회(관리자)
 	public List<EventReportDTO> eventReportList();
 	
+	// 이벤트 신청 삭제(관리자)
+	public int eventReportDelete(int m_no);
+	
 	// 이벤트 등록(관리자)
 	public int eventWrite(EventDTO e_dto);
 	

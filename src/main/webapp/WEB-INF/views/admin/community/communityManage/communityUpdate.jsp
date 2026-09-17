@@ -8,63 +8,17 @@
 <head>
 <meta charset="UTF-8">
 <title>관리자 게시글 관리</title>
-<style>
-  /* 기본 스타일 */
-  body { margin: 0; font-family: "Noto Sans KR", sans-serif; background: #f9f9f9; color: #333; }
-  .admin-wrap { max-width: 1000px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-  h3 { font-size: 24px; margin-bottom: 20px; font-weight: bold; }
-  
-  /* 탭 스타일 */
-  .tab-group { display: flex; gap: 10px; margin-bottom: 20px; }
-  .tab-group .admin-tab { 
-      padding: 8px 16px; font-size: 14px; font-weight: bold; cursor: pointer; 
-      border: 1px solid #ddd; background: #fff; border-radius: 4px; text-decoration: none; color: #333; 
-  }
-  .tab-group .admin-tab.active { background: #333; color: #fff; border-color: #333; }
-
-  /* 서브 필터 및 검색 스타일 */
-  .filter-search-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-  .sub_filter { display: flex; gap: 8px; align-items: center; font-size: 13px; }
-  .sub_filter a { padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: #555; background: #fff; }
-  .sub_filter a.active { background: #555; color: #fff; border-color: #555; }
-  
-  .search-form { position: relative; display: flex; gap: 5px; }
-  .search-form input[type="text"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; width: 180px; font-size: 13px; }
-  .search-form input[type="submit"] { padding: 6px 12px; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
-  
-  /* 자동완성 드롭다운 스타일 */
-  #suggestions { border: 1px solid #cccccc; position: absolute; background: white; width: 180px; z-index: 10; top: 32px; left: 0; font-size: 13px; }
-  #suggestions .item { padding: 6px 10px; cursor: pointer; }
-  #suggestions .item:hover { background: #f1f1f1; }
-  #suggestions em { background: Tomato; color: Seashell; font-weight: bold; font-style: italic; }
-
-  /* 테이블 스타일 */
-  table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; }
-  th, td { padding: 12px; border-bottom: 1px solid #eee; }
-  th { background: #f4f4f4; font-weight: bold; }
-  td a { color: #007bff; text-decoration: none; }
-  td a:hover { text-decoration: underline; }
-
-  /* 버튼 스타일 */
-  .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
-  .btn-pick { background: #f5c518; color: #111; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-weight: bold; }
-  .btn-pick.active { background: #333; color: #fff; }
-  .btn-delete:hover { background: #c0392b; }
-  .btn-pick:hover { background: #e0b015; }
-
-  /* 페이징 스타일 */
-  .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 30px; }
-  .pagination a { padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; font-size: 13px; }
-  .pagination a.active { background: #333; color: #fff; border-color: #333; }
-  
-  .total-count { font-size: 13px; color: #666; margin-bottom: 10px; }
-</style>
+<link rel="stylesheet" href="/css/community/communityUpdate.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 
 <div class="admin-wrap">
-	<h3>게시글 관리</h3>
+	<!-- 상단 제목 및 바로가기 링크 영역 -->
+     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+         <h3 style="margin: 0; border-left: 4px solid #ff6f61; padding-left: 10px;">게시글 관리</h3>
+         <a href="/admin/communityManage" class="btn-manage-link">대시보드 / 현황 보기</a>
+     </div>
 
      <!-- 1. 메인 카테고리 탭 그룹 -->
      <div class="tab-group">
@@ -91,9 +45,9 @@
          <c:if test="${param.comm_type eq '콘텐츠'}">
              <div class="sub_filter">
                  <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=" class="${empty param.comm_category ? 'active' : ''}">전체</a>
-                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=강아지연구소" class="${param.comm_category eq '강아지연구소' ? 'active' : ''}">강아지연구소</a>
-                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=고양이연구소" class="${param.comm_category eq '고양이연구소' ? 'active' : ''}">고양이연구소</a>
-                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=제품연구소" class="${param.comm_category eq '제품연구소' ? 'active' : ''}">제품연구소</a>
+                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=강아지 연구소" class="${param.comm_category eq '강아지연구소' ? 'active' : ''}">강아지연구소</a>
+                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=고양이 연구소" class="${param.comm_category eq '고양이연구소' ? 'active' : ''}">고양이연구소</a>
+                 <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=제품 연구소" class="${param.comm_category eq '제품연구소' ? 'active' : ''}">제품연구소</a>
                  <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=제보" class="${param.comm_category eq '제보' ? 'active' : ''}">제보</a>
                  <a href="/admin/communityUpdate?comm_type=콘텐츠&amp;comm_category=뉴스/브랜드" class="${param.comm_category eq '뉴스/브랜드' ? 'active' : ''}">뉴스/브랜드</a>
              </div>

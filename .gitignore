@@ -33,9 +33,9 @@ out/
 /nbdist/
 /.nb-gradle/
 
+application-local.properties
+**/application-local.properties
+
 ### VS Code ###
 .vscode/
-
-### API Key Properties ###
-/src/main/resources/application-local.properties
 

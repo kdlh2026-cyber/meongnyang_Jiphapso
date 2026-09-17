@@ -46,4 +46,5 @@ public class StrayESService {
 		System.out.println("dc_stray_animal INDEX 완료: "+stray_dto.getStray_name());
 	}
 	
+	
 }
