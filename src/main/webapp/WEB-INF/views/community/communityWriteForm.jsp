@@ -15,7 +15,7 @@
 		<!-- 최상단 타이틀 영역 -->
 		<div class="write_top_header">
 			<div class="write_title_area">
-				<h1 class="write_main_title">Q&amp;A 질문 작성</h1>
+				<h1 class="write_main_title">게시글 작성</h1>
 				<span class="write_sub_desc">반려동물에 대한 궁금증을 가장 빠르게 답변 받아보세요!</span>
 			</div>
 			<!-- 우측 끝 뒤로가기 링크 및 아이콘 -->

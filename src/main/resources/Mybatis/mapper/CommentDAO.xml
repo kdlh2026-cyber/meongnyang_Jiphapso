@@ -177,4 +177,36 @@
 	      AND cmt_deleted = 'N'
 	    ORDER BY cmt_date DESC
 	</select>
+	
+	<!-- 1. 유저가 해당 댓글에 추천을 눌렀는지 조회 (이력 확인용) -->
+    <select id="getRecommendType" resultType="string">
+        SELECT 'EXIST' FROM dc_comment_recommend 
+        WHERE cmt_no = #{cmt_no} AND m_no = #{m_no}
+    </select>
+
+    <!-- 2. 추천 이력 추가 (최초 추천 시) -->
+    <insert id="insertRecommend">
+        INSERT INTO dc_comment_recommend (cmt_no, m_no) 
+        VALUES (#{cmt_no}, #{m_no})
+    </insert>
+
+    <!-- 3. 추천 이력 삭제 (토글 취소 시) -->
+    <delete id="deleteRecommend">
+        DELETE FROM dc_comment_recommend 
+        WHERE cmt_no = #{cmt_no} AND m_no = #{m_no}
+    </delete>
+
+    <!-- 4. 댓글 테이블(dc_comment)의 공감수(cmt_good) 증가 -->
+    <update id="increaseCmtGood">
+        UPDATE dc_comment 
+        SET cmt_good = cmt_good + 1 
+        WHERE cmt_no = #{cmt_no}
+    </update>
+
+    <!-- 5. 댓글 테이블(dc_comment)의 공감수(cmt_good) 감소 -->
+    <update id="decreaseCmtGood">
+        UPDATE dc_comment 
+        SET cmt_good = cmt_good - 1 
+        WHERE cmt_no = #{cmt_no}
+    </update>
 </mapper>

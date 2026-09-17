@@ -6,48 +6,49 @@
 <head>
 <meta charset="UTF-8">
 <title>품종관리</title>
+<link rel="stylesheet" href="/css/breedInfo/breedInfo.css">
 </head>
-<style>
-/* 평소에는 화면에서 숨김 처리 */
-.modal-overlay {
-    display: none; 
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-</style>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-	<h3>DOG 견종 관리</h3>
-	<div class="dogInfo_section">
-		<div class="breed_container">
-			<c:forEach var="breed" items="${dogbreed}">
-				<button type="button" class="breed-item-btn" onclick="handleBreedClick('${breed.breed_id}', '${breed.breed_name}', '${breed.icon_url}', '${breed.pet_type}')">
-	                ${breed.icon_url} ${breed.breed_name}
-	            </button>
-			</c:forEach>
-
-			<button type="button" class="breed-add-btn" onclick="openAddBreedForm('강아지')">
-			    + 견종 추가
-			</button>
+	<div class="breed_wrap">
+		<h3>DOG 견종 관리</h3>
+		<div class="dogInfo_section">
+			<div class="breed_container">
+				<c:forEach var="breed" items="${dogbreed}">
+					<!-- ⭐ data-* 속성으로 안전하게 값 전달 -->
+					<button type="button" class="breed-item-btn" 
+					        data-id="${breed.breed_id}" 
+					        data-name="${breed.breed_name}" 
+					        data-icon="${breed.icon_url}" 
+					        data-type="${breed.pet_type}">
+		                <img src="/images/breed/${breed.icon_url}" alt="강아지 이미지" width="30"> ${breed.breed_name}
+		            </button>
+				</c:forEach>
+	
+				<button type="button" class="breed-add-btn" onclick="openAddBreedForm('강아지')">
+				    + 견종 추가
+				</button>
+			</div>
 		</div>
-	</div>
-		
-	<h3>CAT 품종 관리</h3>
-	<div class="catInfo_section">
-		<div class="breed_container">
-			<c:forEach var="breed" items="${catbreed}">
-				<button type="button" class="breed-item-btn" onclick="handleBreedClick('${breed.breed_id}', '${breed.breed_name}', '${breed.icon_url}', '${breed.pet_type}')">
-	                ${breed.icon_url} ${breed.breed_name}
-	            </button>
-			</c:forEach>
-
-			<button type="button" class="breed-add-btn" onclick="openAddBreedForm('고양이')">
-			    + 품종 추가
-			</button>
+			
+		<h3>CAT 품종 관리</h3>
+		<div class="catInfo_section">
+			<div class="breed_container">
+				<c:forEach var="breed" items="${catbreed}">
+					<!-- ⭐ data-* 속성으로 안전하게 값 전달 -->
+					<button type="button" class="breed-item-btn" 
+					        data-id="${breed.breed_id}" 
+					        data-name="${breed.breed_name}" 
+					        data-icon="${breed.icon_url}" 
+					        data-type="${breed.pet_type}">
+		                <img src="/images/breed/${breed.icon_url}" alt="고양이 이미지" width="30"> ${breed.breed_name}
+		            </button>
+				</c:forEach>
+	
+				<button type="button" class="breed-add-btn" onclick="openAddBreedForm('고양이')">
+				    + 품종 추가
+				</button>
+			</div>
 		</div>
 	</div>
 		
@@ -57,26 +58,28 @@
 	        <h3 id="modalTitle">품종 관리</h3>
 	        <p id="modalDesc">어떤 친구를 입력하시겠어요?</p>
 	        
-	        <!-- form의 action은 자바스크립트로 동적으로 바꿔줍니다 -->
-	        <form id="breedForm" action="/admin/breedInsert" method="post">
-	            <!-- 수정/삭제 시 필요한 breed_id (추가할 때는 빈 값) -->
+	        <form id="breedForm" action="/admin/breedInsert" method="post" enctype="multipart/form-data">
 	            <input type="hidden" id="breedIdInput" name="breed_id" value="">
-	            <!-- 강아지/고양이 구분 값 -->
 	            <input type="hidden" id="petTypeInput" name="pet_type" value="">
 	            
+	            <!-- ⭐ 빠져있던 품종 이름 입력창 추가 -->
 	            <div class="modal-input-group">
 	                <input type="text" id="breedNameInput" name="breed_name" placeholder="품종 이름을 입력하세요" required>
 	            </div>
 	            
 	            <div class="modal-input-group">
-	                <input type="text" id="iconUrlInput" name="icon_url" placeholder="아이콘 URL (선택사항)">
+	                <div class="file-upload-wrapper">
+	                    <label for="iconUrlInput" class="file-upload-label">
+	                        <span class="file-upload-btn">아이콘 선택</span>
+	                        <span id="fileNameDisplay" class="file-name">선택된 파일 없음</span>
+	                    </label>
+	                    <input type="file" id="iconUrlInput" name="icon_file" onchange="updateFileName(this)">
+	                </div>
 	            </div>
 	            
 	            <div class="modal-btn-group">
-	                <!-- 등록/수정 버튼 (기본은 등록용) -->
 	                <button type="submit" id="submitBtn" class="btn-submit">전송</button>
-	                <!-- 삭제 버튼 (평소엔 숨겨두었다가, 기존 품종을 눌러서 들어왔을 때만 보이게 처리 가능) -->
-	                <button type="submit" id="deleteBtn" class="btn-delete" style="display: none; background: #dc3545; color: #fff;" onclick="setFormAction('/admin/breedDelete')">삭제</button>              
+	                <button type="submit" id="deleteBtn" class="btn-delete" onclick="setFormAction('/admin/breedDelete')">삭제</button>              
 	                <button type="button" class="btn-close" onclick="closeModal()">닫기</button>
 	            </div>
 	        </form>
@@ -86,15 +89,30 @@
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 <script>
-//1. [+ 견종/품종 추가] 버튼을 눌렀을 때 (등록 모드)
+// 문서가 로드된 후 모든 품종 버튼에 클릭 이벤트 일괄 등록
+document.addEventListener("DOMContentLoaded", function() {
+    const breedButtons = document.querySelectorAll(".breed-item-btn");
+    
+    breedButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            const breedId = this.getAttribute("data-id");
+            const breedName = this.getAttribute("data-name");
+            const iconUrl = this.getAttribute("data-icon");
+            const petType = this.getAttribute("data-type");
+            
+            handleBreedClick(breedId, breedName, iconUrl, petType);
+        });
+    });
+});
+
+// 1. [+ 견종/품종 추가] 버튼을 눌렀을 때 (등록 모드)
 function openAddBreedForm(petType) {
     document.getElementById("modalTitle").innerText = petType + " 품종 추가";
     document.getElementById("modalDesc").innerText = "새로운 품종을 입력해주세요.";
     
-    // 등록 시에는 breed_id를 보내면 안 되므로 name 속성을 제거하여 파싱 에러 방지
     let breedIdInput = document.getElementById("breedIdInput");
     breedIdInput.value = "";
-    breedIdInput.removeAttribute("name"); // ⭐ 핵심: name을 지워서 서버로 아예 안 넘어가게 함
+    breedIdInput.removeAttribute("name"); 
     
     document.getElementById("breedNameInput").value = "";
     document.getElementById("iconUrlInput").value = "";
@@ -112,13 +130,11 @@ function handleBreedClick(breedId, breedName, iconUrl, petType) {
     document.getElementById("modalTitle").innerText = petType + " 품종 수정 / 삭제";
     document.getElementById("modalDesc").innerText = "정보를 수정하거나 삭제할 수 있습니다.";
     
-    // 수정 시에는 breed_id가 반드시 필요하므로 name 속성을 다시 복구해줌
     let breedIdInput = document.getElementById("breedIdInput");
-    breedIdInput.name = "breed_id"; // ⭐ 핵심: name 복구
+    breedIdInput.name = "breed_id"; 
     breedIdInput.value = breedId;
     
     document.getElementById("breedNameInput").value = breedName;
-    document.getElementById("iconUrlInput").value = (iconUrl === 'null' || iconUrl === 'undefined') ? '' : iconUrl;
     document.getElementById("petTypeInput").value = petType;
     
     document.getElementById("submitBtn").innerText = "수정";
@@ -136,6 +152,17 @@ function closeModal() {
 // 4. 전송 버튼 종류에 따라 form action 주소 변경 (수정 vs 삭제)
 function setFormAction(actionUrl) {
     document.getElementById("breedForm").action = actionUrl;
+}
+
+function updateFileName(input) {
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+    if (input.files && input.files[0]) {
+        fileNameDisplay.innerText = input.files[0].name;
+        fileNameDisplay.style.color = "#333333"; // 파일 선택 시 진한 글씨로 변경
+    } else {
+        fileNameDisplay.innerText = "선택된 파일 없음";
+        fileNameDisplay.style.color = "#888888";
+    }
 }
 </script>
 </html>

@@ -24,4 +24,8 @@
 			set breed_name = #{breed_name}, icon_url = #{icon_url, jdbcType=VARCHAR}
 			where breed_id = #{breed_id, jdbcType=INTEGER}
 	</update>
+	
+	<select id="getBreedIcon" parameterType="int" resultType="string">
+	    select icon_url FROM dc_breed where breed_id = #{breed_id}
+	</select>
 </mapper>

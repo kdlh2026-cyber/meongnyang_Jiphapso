@@ -105,6 +105,26 @@ public class CommentService {
         return dao.selectReviewListByProductNo(p_no);
     }
     
+    @Transactional
+    public String processRecommend(int cmt_no, int m_no) {
+        // 1. 해당 유저가 이 댓글에 이미 도움돼요를 눌렀는지 이력 조회
+        // (댓글 추천 이력을 관리하는 DAO 메서드가 필요합니다)
+        String votedType = dao.getRecommendType(cmt_no, m_no);
+        
+        if (votedType != null) {
+            // [토글] 이미 눌렀던 상태에서 다시 누름 -> 추천 취소 처리
+        	dao.deleteRecommend(cmt_no, m_no);
+        	dao.decreaseCmtGood(cmt_no); // 댓글 추천수 감소
+            return "CANCELED";
+        }
+
+        // 2. 투표 이력이 없는 경우 -> 신규 등록
+        dao.insertRecommend(cmt_no, m_no);
+        dao.increaseCmtGood(cmt_no); // 댓글 추천수 증가
+
+        return "SUCCESS";
+    }
+    
 	// ① 이 회원의 첫 리뷰면 1000P (이미 지급됐으면 내부에서 자동으로 무시됨)
 	// pointService.earnFirstReviewBonus(mNo);
 	

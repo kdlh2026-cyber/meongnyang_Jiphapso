@@ -99,6 +99,13 @@ public class EventController {
 	    return "admin/community/event/eventManage";
 	}
 	
+	// 이벤트 신청 내역 삭제
+	@RequestMapping("/admin/eventReportDelete")
+	public String eventReportDelete(@RequestParam("report_no") int report_no) {
+	    dao.eventReportDelete(report_no);
+	    return "redirect:/admin/eventManage";
+	}
+	
 	@RequestMapping("/admin/eventWriteForm")
 	public String eventWriteForm() {
 		return "admin/community/event/eventWriteForm";

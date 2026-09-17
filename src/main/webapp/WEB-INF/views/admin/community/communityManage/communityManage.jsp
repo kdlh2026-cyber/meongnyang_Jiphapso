@@ -7,53 +7,7 @@
 <head>
 <meta charset="UTF-8">
 <title>관리자 게시글 관리 및 현황 파악</title>
-<style>
-    .dashboard-wrap { max-width: 1100px; margin: 30px auto; font-family: sans-serif; }
-
-    .status-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .status-header h3 { margin: 0; }
-    .status-header a { margin-left: 10px; font-size: 13px; color: #888; }
-    .total-count { font-weight: bold; font-size: 16px; }
-
-    .status-box {
-        border: 1px solid #333; border-radius: 4px;
-        display: flex; justify-content: space-around;
-        padding: 30px 0; margin-bottom: 30px;
-    }
-    .status-item { text-align: center; }
-    .status-item .label { margin-bottom: 10px; font-weight: bold; }
-    .status-item .count { font-size: 40px; font-weight: bold; }
-
-    .panel-row { display: flex; gap: 20px; }
-    .panel { flex: 1; border: 1px solid #ccc; border-radius: 6px; padding: 15px; }
-    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .panel-header h4 { margin: 0; }
-    .panel-header a { font-size: 13px; color: #888; }
-
-    .tab-group { display: flex; gap: 8px; margin-bottom: 12px; }
-    .tab-btn {
-        position: relative;
-        padding: 6px 16px; border-radius: 20px; border: 1px solid #ccc;
-        background: white; cursor: pointer; font-size: 14px;
-    }
-    .tab-btn.active { background: #ff7a00; color: white; border-color: #ff7a00; }
-
-    .badge {
-        position: absolute; top: -8px; right: -8px;
-        background: #6a1bd1; color: white; border-radius: 50%;
-        font-size: 11px; width: 18px; height: 18px;
-        display: flex; align-items: center; justify-content: center;
-    }
-
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { text-align: left; border-bottom: 2px solid #333; padding: 6px 4px; }
-    td { border-bottom: 1px solid #eee; padding: 8px 4px; }
-
-    .today-date { color: #ff5a1f; font-weight: bold; }
-
-    .post-list { display: none; }
-    .post-list.active { display: block; }
-</style>
+<link rel="stylesheet" href="/css/community/communityManage.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
@@ -82,7 +36,7 @@
 	        </div>
 	    </div>
 
-	 <a href="/admin/communityUpdate">게시글 관리</a>	      		
+	 <a href="/admin/communityUpdate">게시글 관리로 이동</a>	      		
 	 <div class="panel-row">
 
 	     <!-- 게시글 관리 -->

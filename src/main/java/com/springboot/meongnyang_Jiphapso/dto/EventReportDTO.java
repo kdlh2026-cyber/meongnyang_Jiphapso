@@ -11,4 +11,6 @@ public class EventReportDTO {
 	private String report_content;
 	private int m_no;
 	private Date report_date;
+	
+	private String m_id;
 }
