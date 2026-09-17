@@ -14,10 +14,52 @@
 		#{stray_shelter_tel},#{stray_shelter_addr},#{stray_img})
 	</insert>
 	
-	<select id="StrayAnimalPageList" resultMap="dc_stray_animalMap">
-	    SELECT * FROM dc_stray_animal
-	    where stray_category = #{stray_category}
-	    ORDER BY stray_no DESC
+	<select id="StrayAnimalPageList" parameterType="com.springboot.meongnyang_Jiphapso.dto.StraySearchDto" resultMap="dc_stray_animalMap">
+	    select * from dc_stray_animal
+	    <where>
+	        <if test="stray_category != null and stray_category != ''">
+	            and stray_category = #{stray_category}
+	        </if>
+	        <if test="stray_name != null and stray_name != ''">
+	            and stray_name = #{stray_name}
+	        </if>
+	        <if test="sido != null and sido != ''">
+	            and stray_shelter_addr LIKE '%' || #{sido} || '%'
+	        </if>
+	        <if test="gungu != null and gungu != ''">
+	            and stray_shelter_addr LIKE '%' || #{gungu} || '%'
+	        </if>
+	        <if test="stray_status != null and stray_status != ''">
+	            AND stray_status = #{stray_status}
+	        </if>  
+			<if test="age_range != null and age_range != ''">
+			    <choose>
+			        <!-- 1살 미만 -->
+			        <when test='age_range == "0"'>
+			            and (EXTRACT(YEAR FROM SYSDATE) - stray_age) &lt;= 0
+			        </when>
+			        <!-- 1살 ~ 3살 -->
+			        <when test='age_range == "young"'>
+			            and (EXTRACT(YEAR FROM SYSDATE) - stray_age) BETWEEN 1 AND 3
+			        </when>
+			        <!-- 4살 ~ 7살 -->
+			        <when test='age_range == "adult"'>
+			            and (EXTRACT(YEAR FROM SYSDATE) - stray_age) BETWEEN 4 AND 7
+			        </when>
+			        <!-- 8살 이상 -->
+			        <when test='age_range == "senior"'>
+			            and (EXTRACT(YEAR FROM SYSDATE) - stray_age) &gt;= 8
+			        </when>
+			    </choose>
+			</if>
+	        <if test="stray_gender != null and stray_gender != ''">
+	            and stray_gender = #{stray_gender}
+	        </if>
+	        <if test="stray_neuter != null and stray_neuter != ''">
+	            and stray_neuter = #{stray_neuter}
+	        </if>       
+	    </where>
+	    order by stray_no desc
 	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
@@ -26,20 +68,93 @@
 		where stray_no = #{stray_no}
 	</select>
 	
+	<select id="StrayRandomView" resultMap="dc_stray_animalMap">
+		select * from dc_stray_animal
+		where stray_category = #{stray_category}
+		order by DBMS_RANDOM.VALUE
+	    FETCH FIRST 5 ROWS ONLY
+	</select>
+	
 	<delete id="StrayAnimalDelete">
 		delete from dc_stray_animal where stray_no = #{stray_no}
 	</delete>
 	
-	<select id="StrayAnimalCount" parameterType="String" resultType="int">
+	<select id="StrayAnimalCount" parameterType="com.springboot.meongnyang_Jiphapso.dto.StraySearchDto" resultType="int">
     select count(*) 
     from dc_stray_animal
     <where>
         <if test="stray_category != null and stray_category != ''">
             and stray_category = #{stray_category}
         </if>
+        <if test="stray_name != null and stray_name != ''">
+            and stray_name = #{stray_name}
+        </if>
+        <if test="sido != null and sido != ''">
+            and stray_shelter_addr LIKE '%' || #{sido} || '%'
+        </if>
+        <if test="gungu != null and gungu != ''">
+            and stray_shelter_addr LIKE '%' || #{gungu} || '%'
+        </if>
+        <if test="stray_status != null and stray_status != ''">
+	        and stray_status = #{stray_status}
+	    </if>
+		<if test="age_range != null and age_range != ''">
+		    <choose>
+		        <!-- 1살 미만 -->
+		        <when test='age_range == "0"'>
+		            and (EXTRACT(YEAR FROM SYSDATE) - stray_age) &lt;= 0
+		        </when>
+		        <!-- 1살 ~ 3살 -->
+		        <when test='age_range == "young"'>
+		            and (EXTRACT(YEAR FROM SYSDATE) - stray_age) BETWEEN 1 AND 3
+		        </when>
+		        <!-- 4살 ~ 7살 -->
+		        <when test='age_range == "adult"'>
+		            and (EXTRACT(YEAR FROM SYSDATE) - stray_age) BETWEEN 4 AND 7
+		        </when>
+		        <!-- 8살 이상 -->
+		        <when test='age_range == "senior"'>
+		            and (EXTRACT(YEAR FROM SYSDATE) - stray_age) &gt;= 8
+		        </when>
+		    </choose>
+		</if>
+		<if test="stray_gender != null and stray_gender != ''">
+			and stray_gender = #{stray_gender}
+		</if>
+		<if test="stray_neuter != null and stray_neuter != ''">
+			and stray_neuter = #{stray_neuter}
+		</if>
     </where>
 	</select>
 	
+	<update id="StrayAnimalUpdate">
+	    update dc_stray_animal
+	    set stray_category = #{stray_category},
+	    	stray_name = #{stray_name},
+	    	stray_gender = #{stray_gender},
+	    	stray_neuter = #{stray_neuter},
+	    	stray_weight = #{stray_weight},
+	    	stray_character = #{stray_character},
+	    	stray_memo = #{stray_memo},
+	    	stray_status = #{stray_status},
+	    	stray_shelter_name = #{stray_shelter_name},
+	    	stray_shelter_tel = #{stray_shelter_tel},
+	    	stray_shelter_addr = #{stray_shelter_addr},
+	    	stray_img = #{stray_img}
+	    where stray_no = #{stray_no}
+	</update>
+
+	<select id="getListCategory" resultType="string" parameterType="string">
+	    select DISTINCT stray_name 
+	    from dc_stray_animal
+	    <where>
+	        <if test="stray_category != null and stray_category != ''">
+	            stray_category = #{stray_category}
+	        </if>
+	    </where>
+	    order by stray_name asc
+	</select>
+
 	<resultMap id="dc_stray_animalMap" type="com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto">
 		<id property="stray_no" column="stray_no" />
 		<result property="stray_category" column="stray_category" />

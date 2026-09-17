@@ -22,13 +22,15 @@
 		<selectKey keyProperty="ch_no" resultType="integer" order="BEFORE">
 			select dc_dailycheck_seq.NEXTVAL from dual
 		</selectKey>
-		insert into dc_dailycheck(ch_no,ch_count,ch_year_month,ch_start_date,ch_end_date,ch_point_quantity,m_no,po_no)
-		values(#{ch_no},#{ch_count},#{ch_year_month,jdbcType=DATE},#{ch_start_date,jdbcType=DATE},#{ch_end_date,jdbcType=DATE},#{ch_point_quantity},#{m_no},#{po_no,jdbcType=NUMERIC})
+		insert into dc_dailycheck(ch_no,ch_count,ch_year_month,ch_start_date,ch_end_date,ch_checked_days,ch_point_quantity,m_no,po_no)
+		values(#{ch_no},#{ch_count},#{ch_year_month,jdbcType=DATE},#{ch_start_date,jdbcType=DATE},#{ch_end_date,jdbcType=DATE},#{ch_checked_days,jdbcType=VARCHAR},#{ch_point_quantity},#{m_no},#{po_no,jdbcType=NUMERIC})
 	</insert>
 	<update id="CheckUpdate">
-		update dc_dailycheck
-		set ch_count=#{ch_count}, ch_end_date=#{ch_end_date,jdbcType=DATE}, ch_point_quantity=#{ch_point_quantity}, po_no=#{po_no,jdbcType=NUMERIC}
-		where ch_no=#{ch_no}
+	    update dc_dailycheck
+	    set ch_count=#{ch_count}, ch_end_date=#{ch_end_date,jdbcType=DATE},
+	        ch_checked_days=#{ch_checked_days,jdbcType=VARCHAR},
+	        ch_point_quantity=#{ch_point_quantity}, po_no=#{po_no,jdbcType=NUMERIC}
+	    where ch_no=#{ch_no}
 	</update>
 	<delete id="CheckDelete">
 		delete from dc_dailycheck
@@ -40,6 +42,7 @@
 		<result property="ch_year_month" column="ch_year_month" />
 		<result property="ch_start_date" column="ch_start_date" />
 		<result property="ch_end_date" column="ch_end_date" />
+		<result property="ch_checked_days" column="ch_checked_days" />
 		<result property="ch_point_quantity" column="ch_point_quantity" />
 		<result property="m_no" column="m_no" />
 		<result property="po_no" column="po_no" />

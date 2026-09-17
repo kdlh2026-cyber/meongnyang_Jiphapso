@@ -27,7 +27,7 @@ public class HospitalService {
 		return hp_dao.HospitalList();
 	}
 	
-	public HospitalDTO view(int hp_no) {
+	public HospitalDTO view(Integer hp_no) {
 		return hp_dao.HospitalView(hp_no);
 	}
 	
@@ -36,7 +36,7 @@ public class HospitalService {
 		hp_service.save(hp_dto);        // 엘라스틱서치 재색인(같은 id면 덮어씀)
 	}
 	
-	public void delete(int hp_no) {
+	public void delete(Integer hp_no) {
 		hp_dao.HospitalDelete(hp_no);
 	}
 	

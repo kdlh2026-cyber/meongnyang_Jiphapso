@@ -15,7 +15,7 @@
 <footer>
 <hr>
 	<div class="footer-links">
-        <a href="#">고객센터</a> <!-- 챗봇 API -->
+        <a href="/guest/etc/chatBot">고객센터</a>
         <a href="/guest/etc/companyIntroduce">회사소개</a>
         <a href="/guest/etc/ToS">이용약관</a>
         <a href="/guest/etc/privacyPolicy">개인정보처리방침</a>

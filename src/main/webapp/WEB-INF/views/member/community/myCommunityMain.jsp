@@ -11,7 +11,6 @@
 <link rel="stylesheet" href="/css/community/myCommunity.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 <!-- 1. 최상단 타이틀 영역 (고정 틀) -->
 <div class="my-page-top-container">
     <div class="page-top-header">
@@ -26,12 +25,12 @@
     <!-- 왼쪽 사이드바 (고정 틀) -->
     <div class="sidebar-area">
         <div class="side-menu">
-            <a href="/community/myCommunity" class="${empty param.comm_type ? 'active' : ''}">전체</a>
-            <a href="/community/myCommunity?comm_type=Q%26A" class="${param.comm_type eq 'Q&A' ? 'active' : ''}">Q&A</a>
-            <a href="/community/myCommunity?comm_type=라운지" class="${param.comm_type eq '라운지' ? 'active' : ''}">라운지</a>
-            <a href="/community/myCommunity?comm_type=콘텐츠" class="${param.comm_type eq '콘텐츠' ? 'active' : ''}">콘텐츠</a>
-            <a href="/community/myCommunity?comm_type=댓글" class="${param.comm_type eq '댓글' ? 'active' : ''}">댓글</a>
-            <a href="/community/myCommunity?comm_type=리뷰" class="${param.comm_type eq 'REVIEW' ? 'active' : ''}">리뷰</a>
+            <a href="/community/myCommunity" data-mp-category="true" class="${empty param.comm_type ? 'active' : ''}">전체</a>
+            <a href="/community/myCommunity?comm_type=QNA" data-mp-category="true" class="${param.comm_type eq 'QNA' ? 'active' : ''}">Q&A</a>
+            <a href="/community/myCommunity?comm_type=라운지" data-mp-category="true" class="${param.comm_type eq '라운지' ? 'active' : ''}">라운지</a>
+            <a href="/community/myCommunity?comm_type=콘텐츠" data-mp-category="true" class="${param.comm_type eq '콘텐츠' ? 'active' : ''}">콘텐츠</a>
+            <a href="/community/myCommunity?comm_type=댓글" data-mp-category="true" class="${param.comm_type eq '댓글' ? 'active' : ''}">댓글</a>
+            <a href="/community/myCommunity?comm_type=리뷰" data-mp-category="true" class="${param.comm_type eq 'REVIEW' ? 'active' : ''}">리뷰</a>
         </div>
     </div>
 
@@ -46,7 +45,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>Q&amp;A <span>${qnaCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=Q%26A" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=QNA" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestQna}">
@@ -72,7 +71,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>라운지 <span>${loungeCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=라운지" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=라운지" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestLounge}">
@@ -98,7 +97,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>콘텐츠 <span>${contentCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=콘텐츠" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=콘텐츠" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestContent}">
@@ -123,7 +122,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>댓글 <span>${commentCount}</span></h3>
-                        <a href="/community/myCommunity?comm_type=댓글" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=댓글" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestComment}">
@@ -160,7 +159,7 @@
                 <div class="section-block" style="margin-bottom: 40px;">
                     <div class="section-header">
                         <h3>리뷰 <span>${reviewAll}</span></h3>
-                        <a href="/community/myCommunity?comm_type=리뷰" class="more-link">전체보기 &gt;</a>
+                        <a href="/community/myCommunity?comm_type=리뷰" data-mp-category="true" class="more-link">전체보기 &gt;</a>
                     </div>
                 
                     <c:if test="${not empty latestReview}">
@@ -285,6 +284,5 @@
     </div>
 
 </div>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

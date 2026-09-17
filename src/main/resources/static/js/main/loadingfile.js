@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = e.target;
     if (!form.matches('form[data-loading]')) return;
     if (form.dataset.loadingDone) return; // 이미 지연을 거쳐 실제 제출하는 경우는 그냥 통과
+	if (e.defaultPrevented) return;       // onsubmit 검증에서 이미 막혔다면 아무것도 하지 않고 종료
 
     e.preventDefault();
     overlay.style.display = 'flex';

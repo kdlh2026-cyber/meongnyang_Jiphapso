@@ -19,6 +19,8 @@ public interface IMemberDAO {
 	// 회원 탈퇴
 	public int MemberDelete(String m_id);
 	
+	public int MemberWithout(String m_id);
+	
 	public MemberDTO MemberFindId(String m_id);
 	// 관리자용 멤버리스트 조회
 	public List<MemberDTO> MemberListView(String m_authority);

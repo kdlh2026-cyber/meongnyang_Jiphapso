@@ -8,6 +8,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/css/product/shoppinglist.css">
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const product_size = 10; // 스크롤 시 추가로 노출할 개수
+    const sentinel = document.getElementById("scrollSentinel");
+
+    function revealNextBatch() {
+        const hiddenCards = document.querySelectorAll(".product-card.is-hidden");
+        if (hiddenCards.length === 0) {
+            if (observer && sentinel) observer.unobserve(sentinel);
+            return;
+        }
+
+        // 최대 10개씩 숨김 해제
+        const limit = Math.min(product_size, hiddenCards.length);
+        for (let i = 0; i < limit; i++) {
+            hiddenCards[i].classList.remove("is-hidden");
+        }
+    }
+
+    // 바닥 감지 설정
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                revealNextBatch();
+            }
+        });
+    }, {
+        rootMargin: "200px" // 바닥에 닿기 200px 전에 미리 다음 10개를 불러와 부드럽게 연결
+    });
+
+    if (sentinel) {
+        observer.observe(sentinel);
+    }
+});
+</script>
 <c:set var="currentType" value="${empty param.p_type ? '강아지' : param.p_type}" />
 <title>${currentType} ${param.mode} 추천 | 쇼핑리스트</title>
 </head>
@@ -18,11 +53,11 @@
     <div class="type-btn-wrap">
         <div class="type-btn">
             <button type="button" class="${currentType eq '강아지' ? 'active' : ''}" onclick="location.href='?p_type=강아지'">
-                <img src="${pageContext.request.contextPath}/images/products/menu/riri-happy.png" alt="강아지">
+                <img src="${pageContext.request.contextPath}/images/products/menu/dog_head.png" alt="강아지">
                 <span>강아지</span>
             </button>
             <button type="button" class="${currentType eq '고양이' ? 'active' : ''}" onclick="location.href='?p_type=고양이'">
-                <img src="${pageContext.request.contextPath}/images/products/menu/samsek-smile.png" alt="고양이">
+                <img src="${pageContext.request.contextPath}/images/products/menu/cat_head.png" alt="고양이">
                 <span>고양이</span>
             </button>
         </div>
@@ -48,124 +83,124 @@
             <span class="category-name">전체</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=간식'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/61645b0724a2502278d4de906fd617d9.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-teats.png"></div>
             <span class="category-name">간식</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=매트'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/8c622bfe3a1931692537e4659e191c0b.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-mat.png"></div>
             <span class="category-name">매트</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=사료'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/b58ee794421ddad8d856fa0806fd251a.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-food.png"></div>
             <span class="category-name">사료</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=식기'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/892de792c6a81294f601874899fa0236.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-bowl.png"></div>
             <span class="category-name">식기</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=영양제'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/82e61db6782bef62dd6159c9142afa76.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-drug.png"></div>
             <span class="category-name">영양제</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=위생'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/fbc3aa2a2dc9c0ba4470d79bb85befbc.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/meun-dog-hy-products.png"></div>
             <span class="category-name">위생</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=이동장'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/b6a7bb22d7e1713e150c37e7ff3b4163.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-cage.png"></div>
             <span class="category-name">이동장</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=장난감'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/7ec22f0cbad74019862dfe5ea6b219cb.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-toy.png"></div>
             <span class="category-name">장난감</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=집/하우스'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/c8f04741cadf02119289a1e69b81c6ca.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-house.png"></div>
             <span class="category-name">집/하우스</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=패션'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/9507b81e0f44f948c15b4cbd2b5a7a3b.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-fashion.png"></div>
             <span class="category-name">패션</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=펫가전'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/414e138f4295162de90c455a40930790.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-robot.png"></div>
             <span class="category-name">펫가전</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=하네스/줄'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/f6b114fff6a770c9460992a6942d9ada.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-harness.png"></div>
             <span class="category-name">하네스/줄</span>
         </button>
         <button onclick="location.href='?p_type=강아지&mode=해충방지'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/a5e6d2f2121b1e402be8965e2ac00b34.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-bug.png"></div>
             <span class="category-name">해충방지</span>
         </button>
     </div>
     </c:if>
 
-    <c:if test="${currentType eq '고양이'}">
+   <c:if test="${currentType eq '고양이'}">
     <div class="category-btn">
         <button onclick="location.href='?p_type=고양이'">
             <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/toebeans-all.png"></div>
             <span class="category-name">전체</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=간식'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/8bf8e6984da30176a4584b3a7334908b.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-treat.png"></div>
             <span class="category-name">간식</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=모래'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/ccd3831314e190051266bceedd0eb52f.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-sand.jpg"></div>
             <span class="category-name">모래</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=사료'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/1b404894349986e6a7289a0f1eda7efd.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-food.png"></div>
             <span class="category-name">사료</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=스크래쳐'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/90d1e1890d7e8f75802ba1e117c1d7d7.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-scratch.png"></div>
             <span class="category-name">스크래쳐</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=식기'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/30b8f9b758a595c1f585894f450aed7f.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-bowl.png"></div>
             <span class="category-name">식기</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=영양제'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/82e61db6782bef62dd6159c9142afa76.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-drug.png"></div>
             <span class="category-name">영양제</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=위생'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/24b313a97a22687f5e4c6107aa85a603.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-hy-products.png"></div>
             <span class="category-name">위생</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=이동장'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/12b2dcb095b24975d79e25dc9551485a.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-cage.png"></div>
             <span class="category-name">이동장</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=장난감'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/13d45171ec58ad82b39b26d266326e90.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-toy.png"></div>
             <span class="category-name">장난감</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=집/하우스'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/071701334a45191e7a5c38c21b42a11d.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-house.png"></div>
             <span class="category-name">집/하우스</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=캣타워/캣폴'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/234f1ad05d9869d303eca055a669187d.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-tower.png"></div>
             <span class="category-name">캣타워/캣폴</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=캣휠'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/bb5c1787b43170da68657c9f2e14da5a.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-wheel.png"></div>
             <span class="category-name">캣휠</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=패션'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/2baf1523d50f7df35aa55a6a1caa20e2.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-fashion.png"></div>
             <span class="category-name">패션</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=펫가전'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/fb0f4a5176b5080f58d2bd816950d6b3.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-robot.png"></div>
             <span class="category-name">펫가전</span>
         </button>
         <button onclick="location.href='?p_type=고양이&mode=화장실'">
-            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/86707a6af731a282cff5d728079efbe3.png"></div>
+            <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-cat-toilet.png"></div>
             <span class="category-name">화장실</span>
         </button>
     </div>
@@ -176,10 +211,11 @@
         <span class="product-count">전체 ${fn:length(ShoppingList)}개</span>
     </div>
 
-    <!-- 상품 5열  -->
-    <div class="product-grid">
-        <c:forEach var="list" items="${ShoppingList}">
-            <div class="product-card">
+   <!-- 상품 5열 -->
+    <div class="product-grid" id="productGrid">
+        <c:forEach var="list" items="${ShoppingList}" varStatus="status">
+            <!-- 20개(index 0~19) 초과분은 초기 숨김 처리 -->
+            <div class="product-card ${status.index >= 20 ? 'is-hidden' : ''}">
                 <div class="product-thumb">
                     <a href="/products/ShoppingView?p_no=${list.pno}">
                         <img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(list.omainimg, '%', '%25')}" alt="${list.ptitle}">
@@ -199,6 +235,9 @@
             </div>
         </c:forEach>
     </div>
+    
+    <!-- 스크롤 감지용 센티넬 (바닥 감지 태그) -->
+    <div id="scrollSentinel" style="height: 20px;"></div>
 </div>
 
 <!-- 공용 토스트 안내창 -->
@@ -208,7 +247,7 @@
     <a href="${pageContext.request.contextPath}/cart/list" class="toast-link toast-link-cart">장바구니 보기</a>
     <a href="${pageContext.request.contextPath}/favorite/list" class="toast-link toast-link-fav">관심상품 보기</a>
 </div>
-
+<%@ include file="../footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // 카테고리 활성화 로직

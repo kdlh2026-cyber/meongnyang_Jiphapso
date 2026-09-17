@@ -1,0 +1,213 @@
+@charset "UTF-8";
+
+* { box-sizing: border-box; }
+
+body {
+    background: #FFFBF5;
+    color: #4A3226;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+}
+
+/* ---- 상단 히어로 (검색 영역) ---- */
+.hp-hero {
+    background: #FDCC61;
+    padding: 40px 16px 56px;
+    text-align: center;
+    position: relative;
+}
+
+.hp-hero-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #4A3226;
+    margin: 0 0 8px;
+}
+
+.hp-hero-desc {
+    font-size: 14px;
+    color: #6b4a34;
+    margin: 0 0 24px;
+}
+
+.hp-search-form {
+    max-width: 520px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.hp-search-box {
+    display: flex;
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(74,50,38,0.15);
+    padding: 6px 6px 6px 20px;
+    align-items: center;
+}
+
+.hp-search-box input[type="text"] {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14.5px;
+    color: #4A3226;
+    background: transparent;
+    padding: 10px 8px;
+}
+
+.hp-search-box input[type="text"]::placeholder {
+    color: #b5a89c;
+}
+
+.hp-search-btn {
+    border: none;
+    background: #FDA58F;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px 24px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.hp-search-btn:hover {
+    background: #FF8C7A;
+}
+
+.hp-suggestions {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 20px;
+    right: 20px;
+    background: #fff;
+    border: 1px solid #FFC9CE;
+    border-radius: 14px;
+    box-shadow: 0 6px 16px rgba(74,50,38,0.12);
+    z-index: 10;
+    overflow: hidden;
+}
+
+/* ---- 콘텐츠 영역 ---- */
+.hp-content-wrap {
+    max-width: 720px;
+    margin: -32px auto 60px;
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.hp-count {
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 20px;
+    font-size: 13.5px;
+    color: #8b7263;
+    box-shadow: 0 2px 8px rgba(74,50,38,0.08);
+    margin-bottom: 16px;
+}
+
+.hp-count strong {
+    color: #FF8C7A;
+    font-size: 15px;
+}
+
+.hp-empty {
+    text-align: center;
+    color: #8b7263;
+    font-size: 14px;
+    padding: 40px 0;
+}
+
+/* ---- 병원 리스트 (카드) ---- */
+.hp-list {
+    list-style: none;
+    margin: 0 0 32px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hp-item {
+    background: #fff;
+    border: 1.5px solid #FFC9CE;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(74,50,38,0.06);
+    transition: box-shadow .2s ease, border-color .2s ease, transform .15s ease;
+}
+
+.hp-item:hover {
+    border-color: #FDA58F;
+    box-shadow: 0 6px 16px rgba(253,165,143,0.25);
+    transform: translateY(-2px);
+}
+
+.hp-item-link {
+    display: block;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.hp-item-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #4A3226;
+    margin-bottom: 6px;
+}
+
+.hp-item-addr {
+    font-size: 13.5px;
+    color: #8b7263;
+    margin-bottom: 4px;
+}
+
+.hp-item-tel {
+    font-size: 13px;
+    color: #FF8C7A;
+    font-weight: 700;
+}
+
+/* ---- 페이지네이션 ---- */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.page-arrow,
+.page-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4A3226;
+    text-decoration: none;
+    background: #fff;
+    border: 1.5px solid #FFC9CE;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.page-arrow {
+    padding: 0 16px;
+    color: #8b7263;
+}
+
+.page-num:hover,
+.page-arrow:hover {
+    border-color: #FDA58F;
+    color: #FF8C7A;
+}
+
+.page-num.active {
+    background: #FDA58F;
+    border-color: #FDA58F;
+    color: #fff;
+}

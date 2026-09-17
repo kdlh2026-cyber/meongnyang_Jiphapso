@@ -1,6 +1,7 @@
 package com.springboot.meongnyang_Jiphapso.service;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class CommunityService {
 	ICommentDAO cmt_dao;
 
 	@Autowired
-	private PointService pointService; 
+	private PointService pointService;
 	
 	public void write(CommunityDTO dto, MultipartFile[] uploadImages, MultipartFile[] uploadVideo) throws Exception {
 	    
@@ -123,6 +124,8 @@ public class CommunityService {
 	    	
 	    	dao.CommunityImageWrite(imgDto);
 	    }
+	    
+	    esService.save(dto);
 	}
 	
 		
@@ -152,6 +155,11 @@ public class CommunityService {
 		return dao.CommunityAllList();
 	}
 	
+	// 메인
+	public List<CommunityDTO> getRecommendList() {
+        return dao.recommendContentList();
+    }
+	
 	public List<CommunityDTO> selectList(String comm_type, String comm_pet_type, String comm_category, String sort, int startRow, int endRow){
 		return dao.CommunitySelectList(comm_type, comm_pet_type, comm_category, sort, startRow, endRow);
 	}
@@ -159,6 +167,11 @@ public class CommunityService {
 	// 전체 게시글 개수 조회 (페이징 바 계산용)
 	public int getTotalCount(String comm_type, String comm_pet_type, String comm_category) {
 		return dao.getTotalCount(comm_type, comm_pet_type, comm_category);
+	}
+	
+	
+	public int getSearchTotalCount(String keyword, String comm_type, String comm_pet_type, String comm_category) {
+	    return dao.getSearchTotalCount(keyword, comm_type, comm_pet_type, comm_category);
 	}
 	
 	public CommunityDTO viewList(int comm_no) {
@@ -182,6 +195,45 @@ public class CommunityService {
 	// 자동완성 + 하이라이트
 	public List<Map<String,String>> autocomplete(String keyword) throws Exception{
 		return esService.autocompleteHighlight(keyword);
+	}
+	
+	// 관리자 게시글 접속시 메소드
+	public List<Map<String, Object>> getAllCategoryStats() {
+        return dao.getAllCategoryStats();
+    }
+	
+	// 관리자용 게시글 검색 및 목록 조회 (필터, 정렬, 페이징 지원)
+	public List<Map<String, Object>> adminSearchCommunity(String searchType, String keyword, String sort, Integer page, Integer size) throws Exception {
+	    // 1. 페이징 및 정렬 기본값 방어 코드
+	    int pageNum = (page == null || page <= 0) ? 1 : page;
+	    int pageSize = (size == null || size <= 0) ? 10 : size;
+	    String sortOption = (sort == null || sort.trim().isEmpty()) ? "latest" : sort;
+	    
+	    // 2. 엘라스틱서치 서비스(esService) 호출
+	    List<Map<String, Object>> searchList = esService.adminSearchCommunity(searchType, keyword, sortOption, pageNum, pageSize);
+	    
+	    // 3. ⭐️ 엘라스틱서치에서 문자열로 넘어온 날짜(comm_date)를 java.util.Date 객체로 변환
+	    if (searchList != null && !searchList.isEmpty()) {
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // 날짜 포맷에 맞게 설정
+	        
+	        for (Map<String, Object> item : searchList) {
+	            Object dateObj = item.get("comm_date");
+	            if (dateObj instanceof String) {
+	                try {
+	                    String dateStr = (String) dateObj;
+	                    // "2026-08-12T15:00:00.000Z" 형태라면 앞 10자리(yyyy-MM-dd)만 끊어서 파싱
+	                    if (dateStr.length() >= 10) {
+	                        item.put("comm_date", sdf.parse(dateStr.substring(0, 10)));
+	                    }
+	                } catch (Exception e) {
+	                    // 파싱 실패 시 예외 처리 (로그 또는 무시)
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+	    }
+	    
+	    return searchList;
 	}
 	
 	// 목록 조회
@@ -356,6 +408,16 @@ public class CommunityService {
 	                                         
 	    return top10List;
 	}
+	
+	public int adminCommunityDelete(int comm_no) {
+        // 만약 게시글 삭제 시 연관된 이미지 파일이나 댓글 등을 같이 지워야 한다면 여기서 추가 로직 수행 가능
+        return dao.adminCommunityDelete(comm_no);
+    }
+	
+	public int updateAdPick(int comm_no) {
+        return dao.updateAdPick(comm_no);
+    }
+	
 	
 	// 커뮤니티 글(리뷰) insert 성공 직후, 대상 금액의 3% 적립
 	// pointService.earnCommunityBonus(mNo, baseAmount);

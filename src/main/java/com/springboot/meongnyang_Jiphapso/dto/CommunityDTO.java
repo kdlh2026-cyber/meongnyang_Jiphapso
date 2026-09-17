@@ -15,6 +15,7 @@ public class CommunityDTO {
 	private String comm_writer;
 	private String comm_content;
 	private String comm_category;
+	private String comm_detail;
 	private String comm_pet_type;
 	private Integer comm_score;
 	private String comm_breed;
@@ -29,6 +30,7 @@ public class CommunityDTO {
 	private Integer comm_good;
 	private Integer comm_well;
 	private String comm_tag;
+	private String comm_adpick;
 	private Integer m_no;
 	private Integer p_no;
 	private Integer pet_no;
@@ -42,4 +44,6 @@ public class CommunityDTO {
 	
 	private int rec_no;
 	private String rec_type;
+	private String admin_name;
+	private String m_authority;
 }

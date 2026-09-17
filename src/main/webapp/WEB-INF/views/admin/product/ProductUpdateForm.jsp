@@ -5,6 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>상품 수정</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/etc/admin_form.css">
 </head>
 <body>
 <div>
@@ -64,35 +65,38 @@
         </div>
 
         <div>
-            <label>상품 메인 이미지 :</label>
-            <input type="hidden" name="existing_o_img" value="${ProductUpdate.option[0].o_main_img}">
-            <input type="file" name="o_img">
-            
-            <c:if test="${not empty ProductUpdate.option[0].o_main_img}">
-                <p>현재 등록된 파일: <strong>${ProductUpdate.option[0].o_main_img}</strong></p>
-            </c:if>
-        </div>
+		    <label>상품 메인 이미지 :</label>
+		    <input type="hidden" name="existing_o_img" value="${ProductUpdate.option[0].o_main_img}">
+		    <input type="file" name="o_img">
+		    
+		    <c:if test="${not empty ProductUpdate.option[0].o_main_img}">
+		        <div class="current-main-img-wrap">
+		            <img src="${pageContext.request.contextPath}/images/products/main/${ProductUpdate.option[0].o_main_img}" 
+		                 alt="메인이미지" class="detail-img-thumb">
+		            <span class="detail-img-name">현재 파일: <strong>${ProductUpdate.option[0].o_main_img}</strong></span>
+		        </div>
+		    </c:if>
+		</div>
 
         <hr>
 
-		<div>
-		    <label>상품 상세 설명 :</label>
-		    <textarea rows="5" cols="80" name="p_content">${ProductUpdate.pcontent}</textarea>
-		</div>
+        <div>
+            <label>상품 상세 설명 :</label>
+            <textarea rows="5" cols="80" name="p_content">${ProductUpdate.pcontent}</textarea>
+        </div>
+
         <!-- 상세 이미지 관리 영역 -->
         <div>
             <label>등록된 상세 이미지 관리 :</label>
             <c:if test="${not empty ProductUpdate.detailImages}">
-                <p style="color: #666; font-size: 13px;">※ 삭제할 이미지를 체크한 후 [상품수정]을 누르면 삭제됩니다.</p>
-                <ul style="list-style: none; padding-left: 0;">
+                <p class="detail-img-notice">※ 삭제할 이미지를 체크한 후 [상품수정]을 누르면 삭제됩니다.</p>
+                <ul class="detail-img-list">
                     <c:forEach var="detailImg" items="${ProductUpdate.detailImages}">
-                        <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <li class="detail-img-item">
                             <img src="${pageContext.request.contextPath}/images/products/info/${detailImg.img_url}" 
-                                 alt="상세이미지" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ddd; border-radius: 4px;">
-                            
-                            <span>${detailImg.img_url}</span>
-
-                            <label style="color: #e0402e; font-weight: bold; cursor: pointer; margin-left: 10px;">
+                                 alt="상세이미지" class="detail-img-thumb">
+                            <span class="detail-img-name">${detailImg.img_url}</span>
+                            <label class="btn-delete-check">
                                 <input type="checkbox" name="delete_img_nos" value="${detailImg.img_no}"> 삭제
                             </label>
                         </li>
@@ -106,7 +110,7 @@
             <input type="file" name="img_urls" multiple>
         </div>
 
-        <div style="margin-top: 20px;">
+        <div class="form-btn-group">
             <input type="submit" value="상품수정">
             <input type="button" value="취소" onclick="history.back()"> 
         </div>

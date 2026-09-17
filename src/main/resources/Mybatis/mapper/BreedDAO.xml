@@ -22,6 +22,6 @@
 	<update id="breedUpdate">
 		update dc_breed
 			set breed_name = #{breed_name}, icon_url = #{icon_url, jdbcType=VARCHAR}
-			where breed_id = #{breed_id}
+			where breed_id = #{breed_id, jdbcType=INTEGER}
 	</update>
 </mapper>

@@ -52,44 +52,14 @@
     <button class="mp-tab active" data-url="/member/myPage/myProfile?m_id=${myId.m_id}" onclick="loadMpTab(this)">프로필</button>
     <button class="mp-tab" data-url="/member/myPage/myPetList?m_no=${myId.m_no}" onclick="loadMpTab(this)">반려동물 프로필</button>
     <button class="mp-tab" data-url="/community/myCommunity?m_no=${myId.m_no}" onclick="loadMpTab(this)">내가 작성한 글</button>
-    <button class="mp-tab" data-url="#" onclick="loadMpTab(this)">북마크 글</button>
+    <button class="mp-tab" data-url="/member/myBookmarks" onclick="loadMpTab(this)">북마크 글</button>
     <button class="mp-tab" data-url="/member/order/list?m_no=${myId.m_no}" onclick="loadMpTab(this)">주문 내역</button>
     <button class="mp-tab" data-url="/favorite/list" onclick="loadMpTab(this)">관심 상품</button>
     <button class="mp-tab" data-url="${pageContext.request.contextPath}/point/list" onclick="loadMpTab(this)">포인트</button>
     <button class="mp-tab" data-url="${pageContext.request.contextPath}/coupon/list" onclick="loadMpTab(this)">쿠폰</button>
   </nav>
 
-  <div id="mp-content-area">
-   <table>
-      <tr>
-         <td><img src="/images/myProfile/${myId.m_img}" alt="${myId.m_img}"></td>
-      </tr>
-      <tr>
-         <td>${myId.m_id}</td>
-      </tr>
-      <tr>
-         <td>${myId.m_name}</td>
-      </tr>
-      <tr>
-         <td>${myId.m_email}</td>
-      </tr>
-      <tr>
-         <td>${myId.m_introduce}</td>
-      </tr>
-      <tr>
-         <td><fmt:formatDate value="${myId.m_birth}" pattern="yyyy-MM-dd" /></td>
-      </tr>
-      <tr>
-         <td>SNS 수신 동의 여부: ${myId.m_sns}</td>
-      </tr>
-   </table>
-   <a href="/member/myPage/myProfileUpdateForm">회원 정보 수정</a><br>
-	<a href="/dailycheck">출석체크 페이지</a>
-   <!-- 크리에이터 신청 버튼 자리 --><br>
-	<c:if test="${myId.m_cre_sub == 'F'}">
-		<a href="/creatorSubmit">크리에이터 신청</a>
-	</c:if>
-  </div>
+  <div id="mp-content-area"></div>
 
   <div class="mp-delete-row">
     <a class="mp-delete-link" href="/memberDelete?m_id=${myId.m_id}" onclick="return confirm('정말로 탈퇴하시겠습니까?');">계정 탈퇴</a>
@@ -99,28 +69,64 @@
 <script>
 function loadMpTab(btn) {
     const url = btn.dataset.url;
+
     if (url === '#') return;
 
-    // 포인트/쿠폰/주문내역
-    if (url.indexOf('/point/list') !== -1
-        || url.indexOf('/coupon/list') !== -1
-        || url.indexOf('/member/order/list') !== -1) {
+    // 포인트 / 쿠폰 / 주문 내역은 페이지 이동
+    if (
+        url.indexOf('/point/list') !== -1 ||
+        url.indexOf('/coupon/list') !== -1 ||
+        url.indexOf('/member/order/list') !== -1
+    ) {
         location.href = url;
         return;
     }
 
-    document.querySelectorAll('.mp-tab').forEach(el => el.classList.remove('active'));
-    btn.classList.add('active');
 
-    sessionStorage.setItem('lastMpTab', url);
+// 마이페이지 본문만 불러오는 함수
+function loadMpContent(url) {
 
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('mp-content-area').innerHTML = html;
-        })
-        .catch(err => console.error('Error loading tab:', err));
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('페이지를 불러오지 못했습니다.');
+        }
+
+        return response.text();
+    })
+    .then(html => {
+        document.getElementById('mp-content-area').innerHTML = html;
+    })
+    .catch(err => {
+        console.error('Error loading tab:', err);
+    });
 }
+
+//내가 작성한 글 내부의 카테고리 링크 클릭 처리
+document.getElementById('mp-content-area')
+    .addEventListener('click', function(e) {
+
+        const link = e.target.closest('a[data-mp-category]');
+
+        if (!link) return;
+
+        // 실제 페이지 이동 막기
+        e.preventDefault();
+
+        const url = link.getAttribute('href');
+
+        // 카테고리 본문만 다시 불러오기
+        loadMpContent(url);
+    });
+    
+	window.addEventListener('DOMContentLoaded', function () {
+	    const profileUrl = document.querySelector('.mp-tab.active').dataset.url;
+	    loadMpContent(profileUrl);
+	});
 </script>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>

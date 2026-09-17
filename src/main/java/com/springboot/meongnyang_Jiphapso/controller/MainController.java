@@ -1,12 +1,12 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,14 +41,7 @@ public class MainController {
     @RequestMapping("/main")
     public String main(Model model) {
     	// 추천 콘텐츠: 최신 커뮤니티 게시글 조회 후 인기순 정렬
-        List<CommunityDTO> recommendContentList = comm_serv.list();
-        recommendContentList.sort(
-        	    Comparator.<CommunityDTO, Integer>comparing(
-        	            cm -> cm.getComm_good() != null ? cm.getComm_good() : 0)
-        	        .thenComparing(
-        	            cm -> cm.getComm_view() != null ? cm.getComm_view() : 0)
-        	        .reversed()
-        	);
+        List<CommunityDTO> recommendContentList = comm_serv.getRecommendList();
         model.addAttribute("recommendContentList", recommendContentList);
 
         // 추천 상품: 전체 상품 중 몇 개만 (ptype 조건 없이 전체 조회)
@@ -126,9 +119,9 @@ public class MainController {
 		return "loading_animal";
 	}
 	
-	@RequestMapping("/guest/creatorHire")
+	@RequestMapping("/guest/etc/creatorHire")
 	public String crehire() {
-		return  "guest/creatorHire";
+		return  "guest/etc/creatorHire";
 	}
 	
 	@RequestMapping("/guest/etc/advertisementLink")
@@ -136,4 +129,8 @@ public class MainController {
 		return "guest/etc/advertisementLink";
 	}
 	
+	@RequestMapping("/guest/etc/chatBot")
+	public String chatbot() {
+		return "guest/etc/chatBot";
+	}
 }

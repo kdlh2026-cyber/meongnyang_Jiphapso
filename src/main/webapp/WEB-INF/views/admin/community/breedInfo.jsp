@@ -42,7 +42,6 @@
 			<c:forEach var="breed" items="${catbreed}">
 				<button type="button" class="breed-item-btn" onclick="handleBreedClick('${breed.breed_id}', '${breed.breed_name}', '${breed.icon_url}', '${breed.pet_type}')">
 	                ${breed.icon_url} ${breed.breed_name}
-	                ${breed.icon_url} ${breed.breed_name}
 	            </button>
 			</c:forEach>
 
@@ -75,9 +74,9 @@
 	            
 	            <div class="modal-btn-group">
 	                <!-- 등록/수정 버튼 (기본은 등록용) -->
-	                <button type="submit" id="submitBtn" class="btn-submit" onclick="setFormAction('/admin/breedUpdate')">전송</button>
+	                <button type="submit" id="submitBtn" class="btn-submit">전송</button>
 	                <!-- 삭제 버튼 (평소엔 숨겨두었다가, 기존 품종을 눌러서 들어왔을 때만 보이게 처리 가능) -->
-	                <button type="submit" id="deleteBtn" class="btn-delete" style="display: none; background: #dc3545; color: #fff;" onclick="setFormAction('/admin/breedDelete')">삭제</button>	                
+	                <button type="submit" id="deleteBtn" class="btn-delete" style="display: none; background: #dc3545; color: #fff;" onclick="setFormAction('/admin/breedDelete')">삭제</button>              
 	                <button type="button" class="btn-close" onclick="closeModal()">닫기</button>
 	            </div>
 	        </form>
@@ -92,18 +91,19 @@ function openAddBreedForm(petType) {
     document.getElementById("modalTitle").innerText = petType + " 품종 추가";
     document.getElementById("modalDesc").innerText = "새로운 품종을 입력해주세요.";
     
-    // 입력값 초기화
-    document.getElementById("breedIdInput").value = "";
+    // 등록 시에는 breed_id를 보내면 안 되므로 name 속성을 제거하여 파싱 에러 방지
+    let breedIdInput = document.getElementById("breedIdInput");
+    breedIdInput.value = "";
+    breedIdInput.removeAttribute("name"); // ⭐ 핵심: name을 지워서 서버로 아예 안 넘어가게 함
+    
     document.getElementById("breedNameInput").value = "";
     document.getElementById("iconUrlInput").value = "";
     document.getElementById("petTypeInput").value = petType;
     
-    // 버튼 상태 설정 (등록 버튼 보이기, 삭제 버튼 숨기기, 액션 지정)
     document.getElementById("submitBtn").innerText = "전송";
     document.getElementById("deleteBtn").style.display = "none";
     document.getElementById("breedForm").action = "/admin/breedInsert";
     
-    // 모달 띄우기
     document.getElementById("breedModal").style.display = "flex";
 }
 
@@ -112,18 +112,19 @@ function handleBreedClick(breedId, breedName, iconUrl, petType) {
     document.getElementById("modalTitle").innerText = petType + " 품종 수정 / 삭제";
     document.getElementById("modalDesc").innerText = "정보를 수정하거나 삭제할 수 있습니다.";
     
-    // 기존 품종 데이터 세팅
-    document.getElementById("breedIdInput").value = breedId;
+    // 수정 시에는 breed_id가 반드시 필요하므로 name 속성을 다시 복구해줌
+    let breedIdInput = document.getElementById("breedIdInput");
+    breedIdInput.name = "breed_id"; // ⭐ 핵심: name 복구
+    breedIdInput.value = breedId;
+    
     document.getElementById("breedNameInput").value = breedName;
     document.getElementById("iconUrlInput").value = (iconUrl === 'null' || iconUrl === 'undefined') ? '' : iconUrl;
     document.getElementById("petTypeInput").value = petType;
     
-    // 버튼 상태 설정 (수정 버튼, 삭제 버튼 모두 보이기, 기본 액션은 수정으로)
     document.getElementById("submitBtn").innerText = "수정";
     document.getElementById("deleteBtn").style.display = "inline-block";
     document.getElementById("breedForm").action = "/admin/breedUpdate";
     
-    // 모달 띄우기
     document.getElementById("breedModal").style.display = "flex";
 }
 

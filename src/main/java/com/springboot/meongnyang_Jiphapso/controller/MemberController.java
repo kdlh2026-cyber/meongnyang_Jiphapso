@@ -219,6 +219,7 @@ public class MemberController {
 		}
 		
 		m_dto.setM_authority("USER");
+		m_dto.setM_cre_sub("F");
 		
 		if(!m_upload.isEmpty()) {
 			String originalName=m_upload.getOriginalFilename();
@@ -291,10 +292,10 @@ public class MemberController {
 
 	    return "redirect:main";
 	}
-	
+	// 탈퇴가 아닌 비활성화 처리
 	@RequestMapping("/memberDelete")
 	public String memDelete(@RequestParam("m_id") String m_id) {
-		m_dao.MemberDelete(m_id);
+		m_dao.MemberWithout(m_id);
 		
 		return "redirect:logout";
 		

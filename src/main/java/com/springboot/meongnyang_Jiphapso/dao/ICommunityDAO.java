@@ -8,12 +8,15 @@ import org.apache.ibatis.annotations.Param;
 
 import com.springboot.meongnyang_Jiphapso.dto.CommImageDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
+import com.springboot.meongnyang_Jiphapso.dto.CommunityRecommendDTO;
 
 @Mapper
 public interface ICommunityDAO {
 	// 게시글 전체 조회(select)
 	public List<CommunityDTO> CommunityAllList();
 
+	// 메인 추천 게시글 상위 8개 조회
+    public List<CommunityDTO> recommendContentList();
 	
 	// 목록에서 게시글 필터(카테고리와 펫 타입)하여 조회(select)
 	public List<CommunityDTO> CommunitySelectList(@Param("comm_type") String comm_type,
@@ -31,6 +34,12 @@ public interface ICommunityDAO {
 							 @Param("comm_pet_type") String comm_pet_type,
 							 @Param("comm_category") String comm_category);
 	
+	
+	// 검색 및 필터링된 조건에 맞는 전체 게시글 개수 조회
+    public int getSearchTotalCount(@Param("keyword") String keyword,
+		                            @Param("comm_type") String comm_type,
+		                            @Param("comm_pet_type") String comm_pet_type,
+		                            @Param("comm_category") String comm_category);
 	
 	// 게시글 상세보기 조회(select)
 	public CommunityDTO CommunityView(int comm_no);
@@ -87,6 +96,19 @@ public interface ICommunityDAO {
     // 관리자용
     public int getTodayCountByType(@Param("comm_type") String comm_type);
     
+    // 관리자용 지우기
+    public int adminCommunityDelete(int comm_no);
+    
+    // 관리자 픽
+    public int updateAdPick(int comm_no);
+    
+    // 관리자 게시글 관리 접속시(최적화)
+    public List<Map<String, Object>> getAllCategoryStats();
+    
     // 통계용
     List<CommunityDTO> getCommunityListForStats(@Param("comm_type") String comm_type);
+    
+    // 입양동물 출력
+    List<CommunityDTO> strayContentView(@Param("comm") CommunityDTO comm_dto,
+    		@Param("pet_type") String pet_type);
 }

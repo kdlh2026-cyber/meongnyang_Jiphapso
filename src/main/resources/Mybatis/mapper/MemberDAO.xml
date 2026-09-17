@@ -44,7 +44,7 @@
 	
 	<update id="AMemUpdate">
 	    update dc_member
-	    set m_name=#{m_name}, m_introduce=#{m_introduce}, m_authority=#{m_authority}, m_img=#{m_img,jdbcType=VARCHAR}, m_cre_sub=#{m_cre_sub,jdbcType=VARCHAR}
+	    set m_name=#{m_name,jdbcType=VARCHAR}, m_introduce=#{m_introduce}, m_authority=#{m_authority}, m_img=#{m_img,jdbcType=VARCHAR}, m_cre_sub=#{m_cre_sub,jdbcType=VARCHAR}
 	    where m_id=#{m_id}
 	</update>
 	<!-- 크리에이터 신청 매퍼 -->
@@ -63,6 +63,13 @@
 	<update id="MemberCreatorRefuse">
 	    update dc_member
 	    set m_cre_sub = 'F'
+	    where m_id = #{m_id}
+	</update>
+	<!-- 회원 탈퇴(자식키 때문에 delete 불가능) -->
+	<update id="MemberWithout">
+	    update dc_member
+	    set m_passwd = 'WITHOUT', m_name = 'WITHOUT', m_email = null, m_tel = 'WITHOUT', m_addr = 'WITHOUT', m_addr_detail = 'WITHOUT', m_zipno=-0, m_introduce=null,m_birth=null,m_date=null,m_age_upper=null,m_sns=null,m_img=null, m_cre_sub=null,
+	        m_authority = 'WITHOUT'
 	    where m_id = #{m_id}
 	</update>
 	

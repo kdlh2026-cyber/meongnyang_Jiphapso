@@ -1,61 +1,409 @@
-    /* 입력창이 있는 박스 스타일 */
-    .tag_box {
-        border: 1px solid #ccc;
-        padding: 8px;
-        border-radius: 4px;
-        display: inline-flex; /* 너비가 콘텐츠에 맞게 조절되도록 수정 */
-        align-items: center;
-        background: #fff;
-        max-width: 550px;
-        margin-bottom: 5px;
-    }
-    .tag_box input {
-        border: none;
-        outline: none;
-        padding: 5px;
-        font-size: 14px;
-    }
-    /* 태그 추가 버튼 스타일 */
-    .tag-add-btn {
-        background-color: #333;
-        color: #fff;
-        border: none;
-        padding: 5px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 12px;
-        margin-left: 5px;
-        display: none;
-    }
-    .tag-add-btn:hover {
-        background-color: #555;
-    }
-    
-    /* [핵심 수정] 노란색 태그 뱃지들이 아래에 가로로 나란히 배치되도록 설정 */
-    .tag_list_area {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px; /* 뱃지들 사이의 간격 */
-        max-width: 550px;
-        margin-bottom: 10px;
-    }
-    
-    .tag-item {
-        background-color: #ffcc00;
-        color: #000;
-        padding: 5px 12px;
-        border-radius: 15px;
-        font-size: 13px;
-        display: inline-flex; /* 세로로 길어지지 않고 텍스트 크기만큼만 차지하게 함 */
-        align-items: center;
-        gap: 5px;
-        font-weight: bold;
-    }
-    .tag-close {
-        cursor: pointer;
-        font-weight: bold;
-        color: #333;
-    }
-    .tag-close:hover {
-        color: red;
-    }
+@charset "UTF-8";
+
+/* ==========================================================
+   1. 폰트 및 전체 메인 컨테이너 설정
+   ========================================================== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fcfbfa; /* 전체 배경을 아늑한 아이보리 톤으로 설정 */
+    color: #333333;
+}
+
+.write_main_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+/* ==========================================================
+   2. 최상단 헤더 및 뒤로가기 버튼 / 구분선 스타일
+   ========================================================== */
+.write_top_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    margin-bottom: 15px; /* 구분선과의 간격 */
+    box-sizing: border-box;
+}
+
+.write_title_area {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.write_main_title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: bold;
+    color: #2c2c2c;
+}
+
+.write_sub_desc {
+    color: #777675;
+    font-size: 14px;
+}
+
+/* 뒤로가기 버튼 스타일 (아이콘 포함) */
+.back_link_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px; /* 화살표와 텍스트 사이 간격 */
+    background-color: transparent !important;
+    border: none !important;
+    color: #4a453f;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.back_link_btn:hover {
+    color: #ff6f61; /* 마우스 올릴 때 포인트 코랄 컬러로 변경 */
+}
+
+.back_icon {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+/* 타이틀 영역 아래 연한 구분선 스타일 */
+.write_header_divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #eee8e2; /* 전체 톤에 맞는 연한 베이지빛 구분선 */
+    margin: 0 0 25px 0;
+}
+
+
+/* ==========================================================
+   3. 전체 폼 레이아웃 (2단 구조)
+   ========================================================== */
+.community_write_form_layout {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+/* 왼쪽 영역 */
+.form-column-left {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 오른쪽 영역 */
+.form-column-right {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 각 박스 공통 디자인 (구름 입체감 적용) */
+.catgogry_box, .pet_choice_box, .step3_box_container {
+    padding: 24px;
+    border-radius: 16px;
+    border: none;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(235, 225, 215, 0.4), 0 4px 10px rgba(0, 0, 0, 0.02);
+}
+
+/* 단계별 공통 제목 */
+.step_title {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #ff6f61;
+    font-size: 15px;
+}
+
+.creator_notice {
+    font-size: 11px;
+    color: #888;
+    display: block;
+    margin-top: 5px;
+}
+
+
+/* ==========================================================
+   4. 직사각형 카드형 라디오 버튼 스타일 시스템
+   ========================================================== */
+.card-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card-radio-item {
+    position: relative;
+    display: block;
+    cursor: pointer;
+}
+
+/* 실제 라디오 input 숨기기 */
+.card-radio-item input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 직사각형 박스 디자인 */
+.card-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: #ffffff;
+    border: 1px solid #e8e2dc;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a4a4a;
+    transition: all 0.2s ease-in-out;
+}
+
+.card-label:hover {
+    border-color: #ff6f61;
+    background-color: #fff9f8;
+}
+
+/* 라디오가 체크되었을 때 스타일 (코랄/살구빛 포인트) */
+.card-radio-item input[type="radio"]:checked + .card-label {
+    background-color: #fff3f0; 
+    border-color: #ff6f61;     
+    font-weight: bold;
+    color: #ff6f61;
+    box-shadow: 0 4px 12px rgba(255, 111, 97, 0.15);
+}
+
+/* 2열 배치 */
+.card-radio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+/* 품종 선택 영역 */
+.breed_wrapper {
+    display: none;
+    margin-top: 12px;
+}
+.breed_select {
+    width: 100%;
+    padding: 10px 14px;
+    display: none;
+    border: 1px solid #e8e2dc;
+    border-radius: 10px;
+    font-size: 13.5px;
+    outline: none;
+    background-color: #fff;
+    color: #333;
+}
+.breed_select:focus {
+    border-color: #ff6f61;
+}
+
+/* 콘텐츠 하위 카테고리 박스 */
+.sub_category_box {
+    margin-top: 15px;
+    display: none;
+    padding: 14px;
+    background-color: #fcfbfa;
+    border-radius: 10px;
+    border: 1px solid #e8e2dc;
+}
+.sub_category_label {
+    font-size: 13px;
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #444;
+}
+
+
+/* ==========================================================
+   5. 단계별 상태별 스타일 (Locked / Active / Completed)
+   ========================================================== */
+.step-locked {
+    background: #f4f0ec !important;
+    opacity: 0.4;
+    pointer-events: none;
+    box-shadow: none !important;
+}
+.step-active {
+    background: #fffdfc !important;
+    opacity: 1;
+    pointer-events: auto;
+    border: 2px solid #ff6f61 !important;
+    box-shadow: 0 10px 25px rgba(255, 111, 97, 0.12);
+}
+.step-completed {
+    background: #ffffff !important;
+    opacity: 1;
+    pointer-events: auto;
+    border: 1px solid #e8e2dc !important;
+    box-shadow: 0 10px 25px rgba(235, 225, 215, 0.4) !important;
+}
+
+
+/* ==========================================================
+   6. 제목 및 내용 입력 영역
+   ========================================================== */
+.title input, .body_content textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    font-size: 14px;
+    border: 1px solid #e8e2dc;
+    border-radius: 10px;
+    outline: none;
+    background-color: #ffffff;
+    color: #333333;
+}
+.title input:focus, .body_content textarea:focus {
+    border-color: #ff6f61;
+}
+.body_content textarea {
+    resize: vertical;
+}
+.title {
+    margin-bottom: 10px;
+}
+.explain {
+    font-size: 12px;
+    color: #777675;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+.body_content {
+    margin-bottom: 20px;
+}
+
+
+/* ==========================================================
+   7. 하단 태그 및 첨부파일 영역 (3분할)
+   ========================================================== */
+.form-row-bottom {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.form-row-bottom > div {
+    flex: 1;
+    background: #fcfbfa;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e8e2dc;
+}
+
+/* 태그 입력 박스 */
+.tag_box {
+    border: 1px solid #e8e2dc;
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    margin-bottom: 8px;
+}
+.tag_box input {
+    border: none;
+    outline: none;
+    padding: 4px;
+    font-size: 13px;
+    width: 100%;
+}
+.tag-add-btn {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    flex-shrink: 0;
+    display: none;
+}
+.tag-list_area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.tag-item {
+    background-color: #fff3f0;
+    color: #ff6f61;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+}
+.tag-close {
+    cursor: pointer;
+    font-weight: bold;
+    color: #ff6f61;
+}
+
+/* 파일 첨부 스타일 */
+.tag_section_title, .file_section_title {
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: #2c2c2c;
+}
+.file_custom_btn {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #f4f0ec;
+    border: 1px solid #e8e2dc;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #55524e;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+.file_custom_btn:hover {
+    background: #eae3dc;
+}
+.file_input_hidden {
+    display: none;
+}
+.file_guide {
+    font-size: 11px;
+    color: #8c857b;
+}
+
+
+/* ==========================================================
+   8. 등록 버튼
+   ========================================================== */
+.submit-btn-area {
+    text-align: right;
+}
+.submit-btn-area input[type="submit"] {
+    width: 200px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 111, 97, 0.3);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.submit-btn-area input[type="submit"]:hover {
+    background-color: #e55a4c;
+    transform: translateY(-2px);
+}
