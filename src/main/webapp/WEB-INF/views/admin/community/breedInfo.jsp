@@ -42,7 +42,6 @@
 			<c:forEach var="breed" items="${catbreed}">
 				<button type="button" class="breed-item-btn" onclick="handleBreedClick('${breed.breed_id}', '${breed.breed_name}', '${breed.icon_url}', '${breed.pet_type}')">
 	                ${breed.icon_url} ${breed.breed_name}
-	                ${breed.icon_url} ${breed.breed_name}
 	            </button>
 			</c:forEach>
 
