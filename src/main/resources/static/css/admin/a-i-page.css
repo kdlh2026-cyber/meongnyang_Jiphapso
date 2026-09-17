@@ -1,0 +1,252 @@
+@charset "UTF-8";
+
+/* clone-ham-menu.css의 body 배경(peach)을 이 페이지에서만 흰색으로 덮어씀 */
+html body {
+    background: #fff;
+}
+
+/* ---- 관리자 정보 카드 ---- */
+
+/* ---- 프로필 + 퀵메뉴 2단 레이아웃 ---- */
+.admin-profile-wrap {
+    position: relative;
+    z-index: 1;
+    min-height: calc(100vh - 64px);
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 40px 16px;
+}
+.pv-card {
+    max-width: 420px;
+    margin: 40px auto;
+    padding: 32px 24px;
+    background: #fff;
+    border: 2px solid #FDA58F;
+    border-radius: 20px;
+    box-shadow: 0 4px 14px rgba(253,165,143,0.15);
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+    margin: 0;
+}
+
+.pv-avatar-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.pv-avatar {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #FADCCF;
+}
+
+.pv-name {
+    font-size: 19px;
+    font-weight: 800;
+    color: #4A3226;
+    margin: 0 0 4px;
+}
+
+.pv-id {
+    font-size: 13.5px;
+    color: #999;
+    margin: 0 0 20px;
+}
+
+/* ---- 정보 리스트 (라벨 + 값) ---- */
+.pv-info-list {
+    text-align: left;
+    border-top: 1px solid #F5D9CB;
+    border-bottom: 1px solid #F5D9CB;
+    padding: 4px 0;
+    margin-bottom: 20px;
+}
+
+.pv-info-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 4px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #F9E8DE;
+}
+
+.pv-info-row:last-child {
+    border-bottom: none;
+}
+
+.pv-info-label {
+    width: 90px;
+    flex-shrink: 0;
+    font-weight: 700;
+    color: #4A3226;
+}
+
+.pv-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #FDA58F;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 700;
+    border-radius: 12px;
+}
+
+.pv-intro {
+    font-size: 13.5px;
+    color: #555;
+    line-height: 1.6;
+    text-align: left;
+    background: #FFFBF5;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 0 0 8px;
+}
+
+/* ---- 관리자 권한/책임 목록 ---- */
+.pv-admin-scope {
+    width: 100%;
+    margin-top: 12px;
+    text-align: left;
+}
+
+.pv-admin-scope h4 {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #4A3226;
+    margin: 16px 0 8px;
+}
+
+.pv-admin-scope ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.pv-admin-scope li {
+    font-size: 13.5px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 4px;
+}
+
+/* ---- 버튼 ---- */
+.pv-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.pv-btn {
+    display: block;
+    padding: 11px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    box-sizing: border-box;
+    transition: background .2s ease, color .2s ease;
+}
+
+.pv-btn--solid {
+    background: #FDA58F;
+    color: #fff;
+}
+
+.pv-btn--solid:hover {
+    background: #FF8C7A;
+}
+
+.pv-btn--outline {
+    background: #fff;
+    border: 1.5px solid #FDA58F;
+    color: #4A3226;
+}
+
+.pv-btn--outline:hover {
+    background: #FADCCF;
+}
+
+/* ---- 우측 퀵메뉴 패널 ---- */
+.pv-quickmenu {
+    width: 260px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 2px solid #FDA58F;
+    border-radius: 20px;
+    padding: 22px 20px;
+    box-shadow: 0 4px 14px rgba(253,165,143,0.15);
+    box-sizing: border-box;
+}
+
+.pv-quickmenu-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #4A3226;
+    margin: 0 0 16px;
+}
+
+.qm-group {
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #F5D9CB;
+}
+
+.qm-group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.qm-group h4 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #4A3226;
+    margin: 0 0 8px;
+}
+
+.qm-group h4 img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.qm-group a {
+    display: block;
+    font-size: 13px;
+    color: #6b6b6b;
+    text-decoration: none;
+    padding: 5px 0 5px 28px;
+}
+
+.qm-group a:hover {
+    color: #FF8C7A;
+}
+
+/* 화면이 좁으면 카드 아래로 쌓임 */
+@media (max-width: 760px) {
+    .admin-profile-wrap {
+        flex-direction: column;
+        align-items: center;
+    }
+    .pv-quickmenu {
+        width: 100%;
+        max-width: 420px;
+    }
+}

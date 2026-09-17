@@ -12,6 +12,8 @@ public class HospitalDTO {
 	private String hp_hour;
 	private String hp_sp_clinic;
 	private String hp_keyword;
+	private double hp_lat;
+	private double hp_lng;
 	
 	public Integer getHp_no() {
 		return hp_no;

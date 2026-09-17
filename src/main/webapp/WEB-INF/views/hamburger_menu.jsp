@@ -58,7 +58,7 @@
        </sec:authorize>
        <sec:authorize access="hasRole('ADMIN')">
        		<a href="/logout" class="logout">로그아웃</a>
-       		<a href="/admin/adminPage" class="profile-img-link">
+       		<a href="/admin/clone/main" class="profile-img-link">
        			<img src="/images/main/admin_profile.png" alt="관리자 프로필" class="profile-img">
        		</a>
        </sec:authorize>
@@ -83,7 +83,7 @@
 <!-- 관리자 페이지 버튼만 표시 -->
 	  <sec:authorize access="hasRole('ADMIN')">
       	<div class="pill-row">
-	      	<a href="/admin/adminPage" class="pill pill--admin">관리자 페이지</a>
+	      	<a href="/admin/clone/main" class="pill pill--admin">관리자 페이지</a>
 	  	</div>
 	  </sec:authorize>
 <!-- 일반 회원 버튼 표시 -->
