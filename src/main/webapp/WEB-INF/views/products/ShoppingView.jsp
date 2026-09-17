@@ -55,9 +55,11 @@ function selectOption(type, value) {
 
         const salePriceSpan = document.getElementById('salePriceDisplay');
         const originPriceSpan = document.getElementById('originPriceDisplay');
+        const qtyInput = document.getElementById('qtyInput');
         
         if (salePriceSpan) salePriceSpan.innerText = matchedOption.price.toLocaleString() + "원";
         if (originPriceSpan && matchedOption.originPrice) originPriceSpan.innerText = matchedOption.originPrice.toLocaleString() + "원";
+        if (qtyInput) qtyInput.value = 1;
 
         const mainImageEl = document.getElementById('mainProductImage');
         if (mainImageEl && matchedOption.mainImg) {
@@ -109,7 +111,16 @@ function changeQty(diff) {
     const input = document.getElementById('qtyInput');
     const current = parseInt(input.value, 10) || 1;
     const next = current + diff;
+
     if (next < 1) return;
+
+    const maxQty = currentOption ? currentOption.quantity : 1;
+
+    if (diff > 0 && next > maxQty) {
+        alert("최대 구매 가능한 수량은 " + maxQty + "개입니다.");
+        return;
+    }
+
     input.value = next;
 }
 
@@ -292,8 +303,9 @@ function showActionBanner(icon, message, action) {
                 <button type="button" id="cartBtn" class="btn-cart-outline" onclick="addToCart()" style="display: ${isSoldOut ? 'none' : 'inline-flex'};">🛒 장바구니</button>
                 <button type="button" id="buyNowBtn" class="btn-buy-now" onclick="buyNow()" style="display: ${isSoldOut ? 'none' : 'inline-flex'};">바로 구매하기</button>
             </div>
-
-            <a href="javascript:history.back();" class="btn-secondary-link">뒤로가기</a>
+            <div class="admin-action-row">
+                <button type="button" class="btn-back" onclick="history.back()">목록으로 돌아가기</button>
+            </div>
         </div>
     </div>
 

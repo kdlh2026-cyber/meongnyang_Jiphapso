@@ -15,7 +15,7 @@
 			select dc_product_option_seq.NEXTVAL from dual
 		</selectKey>
 		insert into dc_product_option(o_no,o_price,o_origin_price,o_main_img,o_quantity,o_type_size,o_color,o_default,p_no)
-		values(#{o_no},#{o_price},#{o_origin_price},#{o_main_img},#{o_quantity},#{o_type_size},#{o_color},#{o_default},#{p_no})
+		values(#{o_no},#{o_price},#{o_origin_price},#{o_main_img, jdbcType=VARCHAR},#{o_quantity},#{o_type_size},#{o_color},#{o_default},#{p_no})
 	</insert>
 	
 	<insert id="ProductDetailImageWrite">
@@ -23,7 +23,7 @@
 			select dc_product_detail_image_seq.NEXTVAL from dual
 		</selectKey>
 		insert into dc_product_detail_image(img_no,img_url,img_sort,p_no)
-		values(#{img_no},#{img_url},#{img_sort},#{p_no})
+		values(#{img_no},#{img_url, jdbcType=VARCHAR},#{img_sort},#{p_no})
 	</insert>
 	
 	<!-- 상세 이미지 최대 img_sort 조회 (없으면 0 반환) -->
