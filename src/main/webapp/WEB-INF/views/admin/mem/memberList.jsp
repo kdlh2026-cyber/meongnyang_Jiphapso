@@ -9,12 +9,30 @@
 <meta charset="UTF-8">
 <title>관리자 페이지</title>
 <link rel="stylesheet" href="/css/admin/admin-mem-list.css">
+<link rel="stylesheet" href="/css/hospital/hpalist.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 <div class="admin-content-wrap">
     <h2>회원 리스트</h2>
-
+	<div class="hpa-stat-card">
+	    <div class="hpa-stat-total">
+	        <span class="hpa-stat-num">${totalCount}</span>
+	        <span class="hpa-stat-label">전체 회원</span>
+	    </div>
+	    <div class="hpa-stat-ranking">
+	        <span class="hpa-stat-ranking-title">회원 유형별 현황</span>
+	        <c:forEach var="entry" items="${authorityCount}">
+	            <div class="hpa-bar-row">
+	                <span class="hpa-bar-label">${entry.key}</span>
+	                <div class="hpa-bar-track">
+	                    <div class="hpa-bar-fill" style="width:${entry.value * 100 / totalCount}%;"></div>
+	                </div>
+	                <span class="hpa-bar-count">${entry.value}</span>
+	            </div>
+	        </c:forEach>
+	    </div>
+	</div>
     <form name="memberSearch" id="memberSearchForm" method="get" action="/memSearchAjax" class="member-search-form">
         <input type="text" name="keyword" id="keyword" autocomplete="on">
         <input type="submit" value="검색">
@@ -49,8 +67,8 @@
 				${fn:substring(list.m_email, 0, 3)}****${fn:substring(list.m_email, atIdx, -1)}
 			</td>
 			<td><fmt:formatDate value="${list.m_date}" pattern="yyyy년 MM월 dd일" /></td>
-			<td>${list.m_age_upper}</td>
-			<td>${list.m_sns}</td>
+			<td>${list.m_age_upper == 'T' ? '○' : '✕'}</td>
+			<td>${list.m_sns == 'T' ? '○' : '✕'}</td>
 			<c:if test="${list.m_cre_sub == 'F' or list.m_cre_sub == 'T'}">
 			    <td>${list.m_authority}</td>
 			</c:if>
@@ -103,36 +121,6 @@
 		    $("#suggestions").empty();
 		});
 
-		// 검색 폼: 페이지 이동 없이 AJAX로 처리
-		$("#memberSearchForm").on("submit", function(e){
-		    e.preventDefault();   // 기본 제출(페이지 이동) 막기
-
-		    let keyword = $("#keyword").val();
-		    $("#suggestions").empty();
-
-		    $.ajax({
-		        url: "/memSearchAjax",
-		        data: { keyword: keyword },
-		        success: function(list){
-		            let rows = "";
-		            list.forEach(function(m){
-		                rows += "<tr>";
-		                rows += "<td>" + m.m_id + "</td>";
-		                rows += "<td>" + m.m_name + "</td>";
-		                rows += "<td>" + m.m_email + "</td>";
-		                rows += "<td>" + (m.m_date || "") + "</td>";
-		                rows += "<td>" + m.m_age_upper + "</td>";
-		                rows += "<td>" + m.m_sns + "</td>";
-		                rows += "<td><button type='button' onclick='#'>삭제</button></td>";
-		                rows += "</tr>";
-		            });
-		            $("#memberTableBody").html(rows);
-		        },
-		        error: function(){
-		            console.log("search error");
-		        }
-		    });
-		});
 		function maskName(name) {
 		    if (!name || name.length < 2) return name;
 		    return name.charAt(0) + "*" + name.substring(2);
@@ -142,6 +130,10 @@
 		    if (!email || email.indexOf("@") === -1) return email;
 		    let atIdx = email.indexOf("@");
 		    return email.substring(0, 3) + "****" + email.substring(atIdx);
+		}
+		
+		function tfToMark(val) {
+		    return val === 'T' ? '○' : '✕';
 		}
 
 		$("#memberSearchForm").on("submit", function(e){
@@ -167,11 +159,13 @@
 		                rows += "<td>" + maskName(m.m_name) + "</td>";
 		                rows += "<td>" + maskEmail(m.m_email) + "</td>";
 		                rows += "<td>" + (m.m_date || "") + "</td>";
-		                rows += "<td>" + m.m_age_upper + "</td>";
-		                rows += "<td>" + m.m_sns + "</td>";
+		                rows += "<td>" + tfToMark(m.m_age_upper) + "</td>";
+		                rows += "<td>" + tfToMark(m.m_sns) + "</td>";
 		                rows += "<td>" + m.m_authority + "</td>";
-		                rows += "<td><a href='/AmemUpdateForm?m_id=" + m.m_id + "'>수정</a></td>";
-		                rows += "<td><a href='/AmemberDelete?m_id=" + m.m_id + "' onclick=\"return confirm('정말로 삭제하시겠습니까?\\n삭제한 이후엔 회원 정보를 복구할 수 없습니다.');\">삭제</a></td>";
+		                rows += "<td colspan='2'>";
+		                rows += "<a href='/AmemUpdateForm?m_id=" + m.m_id + "'>수정</a> ";
+		                rows += "<a href='/AmemberDelete?m_id=" + m.m_id + "' onclick=\"return confirm('정말로 삭제하시겠습니까?\\n삭제한 이후엔 회원 정보를 복구할 수 없습니다.');\">삭제</a>";
+		                rows += "</td>";
 		                rows += "</tr>";
 		            });
 		            $("#memberTableBody").html(rows);

@@ -1,0 +1,80 @@
+@charset "UTF-8";
+
+.popup-wrap {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    z-index: 999;
+    max-width: 96vw;
+    pointer-events: none; /* 배경 클릭은 막지 않음 */
+}
+
+.popup-item {
+    position: relative;
+    width: 260px;
+    max-width: 30vw;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(74, 50, 38, 0.18);
+    pointer-events: auto; /* 팝업 자체는 클릭 가능 */
+    animation: popupIn 0.25s ease;
+}
+
+@keyframes popupIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.popup-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.popup-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.popup-close:hover {
+    background: rgba(0,0,0,0.65);
+}
+
+.popup-hide-today {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+    padding: 10px 8px;
+    font-size: 12.5px;
+    color: #4A3226;
+    background: #FFF3D8;
+    cursor: pointer;
+}
+
+.popup-hide-today input {
+    cursor: pointer;
+}
+
+/* 화면이 좁을 때는 세로로 쌓이도록 */
+@media (max-width: 900px) {
+    .popup-item {
+        max-width: 80vw;
+    }
+}
