@@ -1,0 +1,18 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>궁금해서 만들어보는거</title>
+</head>
+<body>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
+<iframe src="http://192.168.10.107:5601/app/visualize#/edit/903c8da0-b327-11f1-b97f-73e15fe45a55?embed=true&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'%EC%83%81%ED%92%88%20%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC%20%EC%88%98'),schema:metric,type:count),(enabled:!t,id:'2',params:(customLabel:%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC,field:p_category.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:10),schema:group,type:terms)),params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:200),position:left,scale:(type:linear),show:!t,style:(),title:(),type:category)),grid:(categoryLines:!f),labels:(show:!t),legendPosition:right,seriesParams:!((data:(id:'1',label:'%EC%83%81%ED%92%88%20%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC%20%EC%88%98'),drawLinesBetweenPoints:!t,lineWidth:2,mode:stacked,show:!t,showCircles:!t,type:histogram,valueAxis:ValueAxis-1)),thresholdLine:(color:%23E7664C,show:!f,style:full,value:10,width:1),times:!(),type:histogram,valueAxes:!((id:ValueAxis-1,labels:(filter:!t,rotate:75,show:!t,truncate:100),name:LeftAxis-1,position:bottom,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'%EC%83%81%ED%92%88%20%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC%20%EC%88%98'),type:value))),title:%EB%AA%85%EB%83%A5%EC%A7%91%ED%95%A9%EC%86%8C_%EC%83%81%ED%92%88,type:horizontal_bar))" height="200" width="1200"></iframe>
+<div>
+	<iframe src="http://192.168.10.107:5601/app/visualize#/edit/4e5c7730-b334-11f1-b97f-73e15fe45a55?embed=true" height="600" width="600"></iframe>
+	<iframe src="http://192.168.10.107:5601/app/visualize#/edit/a30d4a90-b332-11f1-b97f-73e15fe45a55?embed=true&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(vis:(colors:())),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'%EC%83%81%ED%92%88%20%EC%88%98'),schema:metric,type:count),(enabled:!t,id:'2',params:(customLabel:%EB%B8%8C%EB%9E%9C%EB%93%9C,exclude:%EA%B8%B0%ED%83%80,field:p_brand.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:5),schema:group,type:terms)),params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:200),position:left,scale:(type:linear),show:!t,style:(),title:(),type:category)),grid:(categoryLines:!f,valueAxis:''),labels:(show:!t),legendPosition:right,seriesParams:!((data:(id:'1',label:'%EC%83%81%ED%92%88%20%EC%88%98'),drawLinesBetweenPoints:!t,lineWidth:2,mode:normal,show:!t,showCircles:!t,type:histogram,valueAxis:ValueAxis-1)),thresholdLine:(color:%23E7664C,show:!f,style:full,value:10,width:1),times:!(),type:histogram,valueAxes:!((id:ValueAxis-1,labels:(filter:!t,rotate:75,show:!t,truncate:100),name:LeftAxis-1,position:bottom,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'%EC%83%81%ED%92%88%20%EC%88%98'),type:value))),title:'%EC%83%81%ED%92%88%20%EB%B8%8C%EB%9E%9C%EB%93%9C%20%EC%9D%B8%EA%B8%B0%20TOP5',type:horizontal_bar))" height="600" width="800"></iframe>
+</div>
+<%@ include file="../../footer.jsp" %>
+</body>
+</html>

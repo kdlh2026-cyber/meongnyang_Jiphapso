@@ -164,4 +164,10 @@ public class ProductController {
 
 	    return "redirect:/ProductListA";
 	}
+	
+	@RequestMapping("/product/ProductManagement")
+	public String ProductManagement() {
+		
+		return "admin/product/ProductManagement";
+	}
 }

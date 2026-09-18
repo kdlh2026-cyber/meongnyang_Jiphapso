@@ -29,7 +29,27 @@ let currentOption = options.length > 0 ? options[0] : null;
 let selectedSize = null;
 let selectedColor = null;
 
-function selectOption(type, value) {
+document.addEventListener("DOMContentLoaded", function() {
+    // 각 옵션 그룹의 첫 번째 버튼에 selected 부여
+    document.querySelectorAll('.option-group').forEach(group => {
+        const firstBtn = group.querySelector('.btn-opt');
+        if (firstBtn) firstBtn.classList.add('selected');
+    });
+});
+
+function selectOption(type, value, btnEl) {
+    // 클릭된 버튼 활성화 스타일 처리
+    if (btnEl) {
+        const parentGroup = btnEl.closest('.option-group');
+        if (parentGroup) {
+            parentGroup.querySelectorAll('.btn-opt').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+        }
+        btnEl.classList.add('selected');
+    }
+
+    // 기존 옵션 선택 로직 진행
     if (type === 'size') {
         selectedSize = value;
     } else if (type === 'color') {
@@ -55,10 +75,28 @@ function selectOption(type, value) {
 
         const salePriceSpan = document.getElementById('salePriceDisplay');
         const originPriceSpan = document.getElementById('originPriceDisplay');
+        const discountRateSpan = document.getElementById('discountRateDisplay');
         const qtyInput = document.getElementById('qtyInput');
         
+        // 판매가 갱신
         if (salePriceSpan) salePriceSpan.innerText = matchedOption.price.toLocaleString() + "원";
-        if (originPriceSpan && matchedOption.originPrice) originPriceSpan.innerText = matchedOption.originPrice.toLocaleString() + "원";
+
+        // 할인율 및 정가 갱신
+        if (matchedOption.originPrice && matchedOption.originPrice > matchedOption.price) {
+            const discountRate = Math.round(((matchedOption.originPrice - matchedOption.price) / matchedOption.originPrice) * 100);
+            if (discountRateSpan) {
+                discountRateSpan.innerText = discountRate + "%";
+                discountRateSpan.style.display = 'inline';
+            }
+            if (originPriceSpan) {
+                originPriceSpan.innerText = matchedOption.originPrice.toLocaleString() + "원";
+                originPriceSpan.style.display = 'inline';
+            }
+        } else {
+            if (discountRateSpan) discountRateSpan.style.display = 'none';
+            if (originPriceSpan) originPriceSpan.style.display = 'none';
+        }
+
         if (qtyInput) qtyInput.value = 1;
 
         const mainImageEl = document.getElementById('mainProductImage');
@@ -237,7 +275,7 @@ function showActionBanner(icon, message, action) {
 
 <div class="detail-container">
     <div class="product-top-section">
-        <!-- 1) 좌측: 대표 이미지 -->
+        <!-- 좌측: 대표 이미지 -->
         <div class="image-col">
             <div class="image-wrap">
                 <img id="mainProductImage" alt="이미지" src="${pageContext.request.contextPath}/images/products/main/${fn:replace(ProductView.option[0].o_main_img, '%', '%25')}">
@@ -245,18 +283,27 @@ function showActionBanner(icon, message, action) {
             </div>
         </div>
 
-        <!-- 2) 우측: 정보 및 액션 버튼 -->
+        <!-- 우측: 정보 및 액션 버튼 -->
         <div class="info-col">
             <div class="product-category-tag">반려용품</div>
             <h1 class="product-title">${ProductView.ptitle}</h1>
             
             <div class="price-box">
-                <c:if test="${not empty ProductView.option[0].o_origin_price and ProductView.option[0].o_origin_price ne ProductView.option[0].o_price}">
-                    <span class="discount-rate"><fmt:formatNumber value="${((ProductView.option[0].o_origin_price - ProductView.option[0].o_price) / ProductView.option[0].o_origin_price) * 100}" pattern="0" />%</span>
-                    <span id="originPriceDisplay" class="origin-price"><fmt:formatNumber value="${ProductView.option[0].o_origin_price}" />원</span>
-                </c:if>
-                <span id="salePriceDisplay" class="sale-price"><fmt:formatNumber value="${ProductView.option[0].o_price}" />원</span>
-            </div>
+			    <c:set var="firstOpt" value="${ProductView.option[0]}" />
+			    <c:set var="hasDiscount" value="${not empty firstOpt.o_origin_price and firstOpt.o_origin_price > firstOpt.o_price}" />
+			    
+			    <span id="discountRateDisplay" class="discount-rate" style="display: ${hasDiscount ? 'inline' : 'none'};">
+			        <c:if test="${hasDiscount}">
+			            <fmt:formatNumber value="${((firstOpt.o_origin_price - firstOpt.o_price) / firstOpt.o_origin_price) * 100}" pattern="0" />%
+			        </c:if>
+			    </span>
+			    <span id="originPriceDisplay" class="origin-price" style="display: ${hasDiscount ? 'inline' : 'none'};">
+			        <c:if test="${not empty firstOpt.o_origin_price}">
+			            <fmt:formatNumber value="${firstOpt.o_origin_price}" />원
+			        </c:if>
+			    </span>
+			    <span id="salePriceDisplay" class="sale-price"><fmt:formatNumber value="${firstOpt.o_price}" />원</span>
+			</div>
             
             <div class="product-desc">${ProductView.pcontent}</div>
             
@@ -270,9 +317,9 @@ function showActionBanner(icon, message, action) {
                             <c:forEach var="opt" items="${ProductView.option}">
                                 <c:set var="checkSize" value="|${opt.o_type_size}|" />
                                 <c:if test="${not fn:contains(uniqueSizes, checkSize)}">
-                                    <button type="button" class="btn-opt" onclick="selectOption('size', '${opt.o_type_size}')">
-                                        ${opt.o_type_size}
-                                    </button>
+                                    <button type="button" class="btn-opt" onclick="selectOption('size', '${opt.o_type_size}', this)">
+									    ${opt.o_type_size}
+									</button>
                                     <c:set var="uniqueSizes" value="${uniqueSizes}${checkSize}" />
                                 </c:if>
                             </c:forEach>
@@ -288,9 +335,9 @@ function showActionBanner(icon, message, action) {
                             <c:forEach var="opt" items="${ProductView.option}">
                                 <c:set var="checkColor" value="|${opt.o_color}|" />
                                 <c:if test="${not fn:contains(uniqueColors, checkColor)}">
-                                    <button type="button" class="btn-opt" onclick="selectOption('color', '${opt.o_color}')">
-                                        ${opt.o_color}
-                                    </button>
+                                    <button type="button" class="btn-opt" onclick="selectOption('color', '${opt.o_color}', this)">
+									    ${opt.o_color}
+									</button>
                                     <c:set var="uniqueColors" value="${uniqueColors}${checkColor}" />
                                 </c:if>
                             </c:forEach>
@@ -339,7 +386,7 @@ function showActionBanner(icon, message, action) {
             <div class="image">
                 <c:if test="${not empty ProductView.detailImages}">
                     <c:forEach var="detail" items="${ProductView.detailImages}">
-                        <img src="${pageContext.request.contextPath}/images/products/info/${detail.img_url}" alt="상세이미지">
+                        <img src="${pageContext.request.contextPath}/images/products/info/${fn:replace(detail.img_url, '%', '%25')}" alt="상세이미지">
                     </c:forEach>
                 </c:if>
             </div>

@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-bowl.png"></div>
             <span class="category-name">식기</span>
         </button>
-        <button onclick="locataion.href='?p_type=강아지&mode=영양제'">
+        <button onclick="location.href='?p_type=강아지&mode=영양제'">
             <div class="category-icon-box"><img src="${pageContext.request.contextPath}/images/products/menu/menu-dog-drug.png"></div>
             <span class="category-name">영양제</span>
         </button>
