@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import com.springboot.meongnyang_Jiphapso.dto.PointDTO;
 
 @Service
 public class PointService {
+
+	private static final Logger log = LoggerFactory.getLogger(PointService.class);
 
 	@Autowired
 	private IPointDAO pointDAO;
@@ -52,13 +56,13 @@ public class PointService {
 	// 관리자 - 이력 삭제
 	@Transactional
 	public int deletePoint(Long poNo) {
-		return pointDAO.deletePoint(poNo);
+		int result = pointDAO.deletePoint(poNo);
+		log.info("관리자 - 포인트 이력 삭제 - poNo={}, result={}", poNo, result);
+		return result;
 	}
 
 	// ================= 내부 공통 처리 =================
-
 	// 포인트 적립 공통 처리 (신규 적립 lot 생성, 만료일 = 오늘 + 1년)
-	// 반환값: 방금 생성된 이력의 po_no (useGeneratedKeys로 insertPoint 실행 후 dto에 채번됨) - 출석체크처럼 po_no를 다른 테이블에 역참조해야 할 때 사용
 	private Long earn(Long mNo, long amount, String reason, Long orderNo, Long chNo) {
 		if (amount <= 0) {
 			return null; // 적립할 금액이 없으면 이력 남기지 않음
@@ -78,6 +82,9 @@ public class PointService {
 		dto.setChNo(chNo);
 
 		pointDAO.insertPoint(dto);
+
+		log.info("포인트 적립 - mNo={}, amount={}, reason={}, after={}", mNo, amount, reason, after);
+
 		return dto.getPoNo();
 	}
 
@@ -90,6 +97,7 @@ public class PointService {
 
 		long before = getCurrentBalance(mNo);
 		if (before < amount) {
+			log.warn("포인트 사용 실패(잔액부족) - mNo={}, 요청={}, 보유={}", mNo, amount, before);
 			throw new IllegalStateException("보유 포인트가 부족합니다.");
 		}
 		long after = before - amount;
@@ -104,6 +112,8 @@ public class PointService {
 		dto.setPoOrderNo(orderNo);
 
 		pointDAO.insertPoint(dto);
+
+		log.info("포인트 사용 - mNo={}, amount={}, orNo={}, after={}", mNo, amount, orderNo, after);
 	}
 
 	// 주문취소 시 사용했던 포인트 복원 (새 적립 lot으로 생성, 만료일 오늘+1년)
@@ -126,6 +136,8 @@ public class PointService {
 		dto.setPoOrderNo(orderNo);
 
 		pointDAO.insertPoint(dto);
+
+		log.info("포인트 복원 - mNo={}, amount={}, orNo={}, after={}", mNo, amount, orderNo, after);
 	}
 
 	// ================= 이벤트별 적립 트리거 (각 도메인 Service에서 호출) =================
@@ -149,7 +161,6 @@ public class PointService {
 	}
 
 	// 출석체크 적립 (DailyCheck Service에서 출석 처리 후 호출)
-	// 반환값: 생성된 point 이력의 po_no -> DailycheckService에서 dc_dailycheck.po_no 갱신할 때 사용
 	@Transactional
 	public Long earnDailyCheckBonus(Long mNo, Long chNo) {
 		return earn(mNo, PointPolicy.AMOUNT_DAILY_CHECK, PointPolicy.REASON_DAILY_CHECK, null, chNo);
@@ -182,6 +193,7 @@ public class PointService {
 		long before = getCurrentBalance(mNo);
 		long after = before + amount;
 		if (after < 0) {
+			log.warn("관리자 포인트 조정 실패(잔액 음수) - mNo={}, amount={}, before={}", mNo, amount, before);
 			throw new IllegalStateException("차감 후 포인트가 음수가 될 수 없습니다.");
 		}
 
@@ -194,6 +206,8 @@ public class PointService {
 		dto.setPoEx(amount > 0 ? addDays(new Date(), PointPolicy.VALID_DAYS) : null);
 
 		pointDAO.insertPoint(dto);
+
+		log.info("관리자 포인트 수동 조정 - mNo={}, amount={}, reason={}, after={}", mNo, amount, reason, after);
 	}
 
 	// 관리자 - 특정 이력을 "취소" 
@@ -208,6 +222,7 @@ public class PointService {
 			throw new IllegalArgumentException("존재하지 않는 포인트 이력입니다.");
 		}
 		if (original.getPoRelatedNo() != null) {
+			log.warn("포인트 이력 취소 실패(이미 취소된 이력) - poNo={}", poNo);
 			throw new IllegalStateException("이미 다른 이력을 취소한 이력은 다시 취소할 수 없습니다.");
 		}
 
@@ -221,6 +236,7 @@ public class PointService {
 		long before = getCurrentBalance(mNo);
 		long after = before + reverseAmount;
 		if (after < 0) {
+			log.warn("포인트 이력 취소 실패(잔액 음수) - poNo={}, mNo={}, reverseAmount={}, before={}", poNo, mNo, reverseAmount, before);
 			throw new IllegalStateException("취소하면 포인트가 음수가 되어 처리할 수 없습니다.");
 		}
 
@@ -234,6 +250,8 @@ public class PointService {
 		dto.setPoRelatedNo(original.getPoNo());
 
 		pointDAO.insertPoint(dto);
+
+		log.info("관리자 - 포인트 이력 취소 - poNo={}, mNo={}, reverseAmount={}, reason={}", poNo, mNo, reverseAmount, reason);
 	}
 
 	// ================= 만료 배치 =================
@@ -246,6 +264,9 @@ public class PointService {
 		if (targetMembers == null) {
 			return;
 		}
+
+		int processedCount = 0;
+		long totalExpired = 0;
 
 		for (Long mNo : targetMembers) {
 			Long expiredAmount = pointDAO.selectExpiredAmount(mNo);
@@ -265,7 +286,12 @@ public class PointService {
 			dto.setPoEx(null);
 
 			pointDAO.insertPoint(dto);
+
+			processedCount++;
+			totalExpired += expiredAmount;
 		}
+
+		log.info("포인트 일괄 소멸처리 완료 - 대상회원수={}, 처리건수={}, 총소멸포인트={}", targetMembers.size(), processedCount, totalExpired);
 	}
 
 	// ================= 유틸 =================

@@ -3,6 +3,8 @@ package com.springboot.meongnyang_Jiphapso.service;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,9 @@ import com.springboot.meongnyang_Jiphapso.dto.FavoriteDTO;
 
 @Service
 public class FavoriteService {
+
+	private static final Logger log = LoggerFactory.getLogger(FavoriteService.class);
+
 	private final IFavoriteDAO favoriteDAO;
 	
 	@Autowired
@@ -27,6 +32,7 @@ public class FavoriteService {
             .filter(f -> f.getPNo().equals(pNo))
             .findFirst()
             .ifPresent(f -> favoriteDAO.deleteFavorite(f.getFaNo()));
+    log.info("관심상품 해제 - mNo={}, pNo={}", mNo, pNo);
     return false;
 		}
 		FavoriteDTO dto = new FavoriteDTO();
@@ -34,6 +40,7 @@ public class FavoriteService {
         dto.setFaToken(mNo == null ? guestToken : null);
         dto.setPNo(pNo);
         favoriteDAO.insertFavorite(dto);
+        log.info("관심상품 등록 - mNo={}, pNo={}, guest={}", mNo, pNo, mNo == null);
         return true;
 	}
 	
@@ -67,6 +74,7 @@ public class FavoriteService {
 			checkOwner(favorite, mNo, guestToken);
 		}
 		favoriteDAO.deletrFavoriteList(faNoList);
+		log.info("관심상품 선택삭제 - mNo={}, 삭제건수={}", mNo, faNoList.size());
 	}
 	
 	/** 요청자가 이 관심상품의 소유자(회원 or 게스트 토큰)인지 검증 */
@@ -74,7 +82,8 @@ public class FavoriteService {
 		boolean isMemberOwner = (mNo != null && mNo.equals(favorite.getMNo()));
 		boolean isGuestOwner = (guestToken != null && guestToken.equals(favorite.getFaToken()));
 		if (!isMemberOwner && !isGuestOwner) {
-			throw new IllegalStateException("본인 관심상품만 접근할 수 있습니다"); // 프로젝트 공용 예외 있으면 그걸로 교체
+			log.warn("관심상품 접근 거부(소유자 불일치) - faNo={}, mNo={}", favorite.getFaNo(), mNo);
+			throw new IllegalStateException("본인 관심상품만 접근할 수 있습니다"); 
 		}
 	}
 	

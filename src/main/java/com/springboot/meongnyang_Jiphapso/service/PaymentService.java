@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -22,6 +24,8 @@ import com.springboot.meongnyang_Jiphapso.dto.PaymentDTO;
 @Service
 public class PaymentService {
 
+	private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
+
 	@Autowired
 	private IPaymentDAO paymentDAO;
 
@@ -32,16 +36,16 @@ public class PaymentService {
 	private CartService cartService;
 
 	@Autowired
-	private OrderDetailService orderDetailService; // 결제 승인 시 주문상세(옵션/수량) 조회용
+	private OrderDetailService orderDetailService; 
 
 	@Autowired
-	private IProductDao productDao; // 결제 승인 시 옵션 재고(o_quantity) 차감용
+	private IProductDao productDao; 
 
 	@Autowired
-	private PointService pointService; // 결제 승인 시 사용 포인트 실제 차감용
+	private PointService pointService; 
 
 	@Autowired
-	private MemberCouponService memberCouponService; // 결제요청 시 쿠폰 할인액 서버 재계산용
+	private MemberCouponService memberCouponService; 
 
 	// 포트원 V2 API 시크릿
 	@Value("${portone.api-secret}")
@@ -67,10 +71,9 @@ public class PaymentService {
 	@Value("${portone.channel-key.naverpay}")
 	private String channelKeyNaverPay;
 
-	// 배송비 정책 (checkout_coupon.jsp 프론트 계산식과 동일한 값 - 서버 재계산용)
 	private static final long FREE_SHIPPING_THRESHOLD = 30000L;
 	private static final long SHIPPING_FEE = 3000L;
-	private static final long BAG_PRICE = 500L; // 선물 쇼핑백 1개당 가격
+	private static final long BAG_PRICE = 500L; 
 
 	private static final String PORTONE_API_BASE = "https://api.portone.io";
 
@@ -78,10 +81,9 @@ public class PaymentService {
 
 	// ================= 결제창 사전 정보 세팅 =================
 
-	// 결제 페이지 진입 시 결제수단(easyPayProvider)에 맞는 채널키를 골라서 DTO에 채워줌 (JS 결제창 호출용)
 	public void bindChannelKey(PaymentDTO dto) {
 
-		String provider = dto.getEasyPayProvider(); // TOSSPAY / PAYCO / KAKAOPAY / SMILEPAY / NAVERPAY
+		String provider = dto.getEasyPayProvider(); 
 
 		if (provider == null) {
 			throw new IllegalArgumentException("결제수단을 선택해주세요.");
@@ -109,10 +111,6 @@ public class PaymentService {
 	}
 
 	// ================= 결제요청 등록 (PENDING) =================
-
-	// 주문/결제 페이지에서 결제하기 버튼 클릭 시 - DB에 PENDING 상태로 먼저 적재
-	// payAmount/payFee/payDiscount/payUsed/payRealAmt 는 클라이언트가 보낸 값을 절대 신뢰하지 않고
-	// 주문(dc_order_detail) 기준으로 서버에서 전부 다시 계산해서 덮어씀 - 결제금액 위변조 방지
 	public PaymentDTO requestPayment(PaymentDTO dto) {
 
 		Long orNo = dto.getOrNo();
@@ -135,11 +133,7 @@ public class PaymentService {
 		}
 
 		// 품절(재고 0) 또는 0원(= 품절 처리) 상품이 하나라도 섞여 있으면 결제 자체를 막음
-		// 주문은 생성 시점의 가격/옵션명을 스냅샷으로 들고 있어서, 그 사이 재고가 빠지거나
-		// 가격이 0원(품절 처리)으로 바뀌었을 수 있으므로 결제요청 시점에 "현재" 상태로 다시 검증한다.
 		validateNotSoldOut(order.getOrderDetailList());
-
-		// 상품금액 - dc_order_detail 의 od_amount(주문 시점 캡처된 단가*수량) 합계가 유일한 진실
 		long productAmount = order.getOrderDetailList().stream()
 				.mapToLong(OrderDetailDTO::getOdAmount)
 				.sum();
@@ -151,14 +145,10 @@ public class PaymentService {
 		long bagAmount = ("Y".equals(order.getOrYn()) && order.getOrQty() != null)
 				? order.getOrQty() * BAG_PRICE
 				: 0L;
-
-		// 쿠폰 할인액 - mcNo로 서버에서 재계산 (소유자/상태/만료/최소주문금액까지 검증)
 		long couponDiscount = 0L;
 		if (dto.getMcNo() != null) {
 			couponDiscount = memberCouponService.calcDiscountAmount(dto.getMcNo(), dto.getMNo(), productAmount);
 		}
-
-		// 포인트 사용액 - 보유잔액 초과 및 상품금액 초과 사용 방지
 		long usePoint = dto.getPayUsed() != null ? dto.getPayUsed() : 0L;
 		Long balance = pointService.getCurrentBalance(dto.getMNo());
 		if (usePoint > (balance == null ? 0L : balance)) {
@@ -170,11 +160,11 @@ public class PaymentService {
 
 		long payRealAmt = productAmount + shippingFee + bagAmount - couponDiscount - usePoint;
 		if (payRealAmt < 0) {
-			payRealAmt = 0L; // 이론상 나올 수 없지만 방어적으로 0원 하한 처리
+			payRealAmt = 0L; 
 		}
 
 		dto.setPayAmount(productAmount);
-		dto.setPayFee(shippingFee + bagAmount); // 배송비+쇼핑백을 payFee 한 컬럼에 합산 저장 (기존 컬럼 구조 유지)
+		dto.setPayFee(shippingFee + bagAmount); 
 		dto.setPayDiscount(couponDiscount);
 		dto.setPayUsed(usePoint);
 		dto.setPayDis(couponDiscount + usePoint);
@@ -183,12 +173,11 @@ public class PaymentService {
 		dto.setPayMethod(dto.getEasyPayProvider());
 		dto.setPayStatus("PENDING");
 		paymentDAO.insertPayment(dto);
-		return dto; // payNo + 서버가 재계산한 payRealAmt 등이 채워져서 리턴 (JS 결제창 호출 시 사용)
-	}
 
-	// 주문상세 목록에 담긴 상품들의 "현재" 옵션 상태(가격/재고)를 다시 조회해서
-	// 품절(재고 0) 이거나 0원(=품절 처리 컨벤션)인 상품이 있으면 결제를 막는다.
-	// CartService#getOptionListByProduct 를 재사용 - 상품(pNo) 기준으로 옵션 전체(oNo/oPrice/oQuantity)를 내려줌
+		log.info("결제요청 등록 - orNo={}, mNo={}, payRealAmt={}, method={}", orNo, dto.getMNo(), payRealAmt, dto.getPayMethod());
+
+		return dto; 
+	}
 	private void validateNotSoldOut(List<OrderDetailDTO> detailList) {
 
 		for (OrderDetailDTO detail : detailList) {
@@ -206,6 +195,7 @@ public class PaymentService {
 
 			// 옵션 자체가 삭제/단종된 경우도 결제 불가로 처리
 			if (option == null) {
+				log.warn("품절/단종 상품으로 결제 불가 - 상품={}", detail.getOdProductName());
 				throw new IllegalStateException("판매가 종료된 상품이 포함되어 있어 결제할 수 없습니다: " + detail.getOdProductName());
 			}
 
@@ -216,25 +206,23 @@ public class PaymentService {
 
 			// 0원 = 품절 컨벤션 + 재고 0 모두 품절로 취급
 			if (currentPrice <= 0 || currentStock <= 0) {
+				log.warn("품절 상품으로 결제 불가 - 상품={}, 재고={}, 가격={}", detail.getOdProductName(), currentStock, currentPrice);
 				throw new IllegalStateException("품절된 상품이 포함되어 있어 결제할 수 없습니다: " + detail.getOdProductName());
 			}
 		}
 	}
 
 	// ================= 결제 승인/검증 =================
-
-	// 프론트에서 결제창(SDK) 완료 콜백을 받은 뒤, 실제로 결제가 됐는지 포트원 서버에 재조회해서 금액 위변조를 검증함
 	public boolean confirmPayment(Long payNo, String portonePaymentId) {
 
 		PaymentDTO dto = paymentDAO.selectPaymentOne(payNo);
 		if (dto == null) {
 			throw new IllegalArgumentException("결제 정보를 찾을 수 없습니다.");
 		}
-
-		// 포트원 V2 결제건 단건조회 API 호출 (GET /payments/{paymentId})
 		Map<String, Object> portonePayment = fetchPortOnePayment(portonePaymentId);
 
 		if (portonePayment == null) {
+			log.warn("결제 승인 실패(포트원 조회 불가) - payNo={}, portonePaymentId={}", payNo, portonePaymentId);
 			paymentDAO.updatePaymentComplete(payNo, portonePaymentId, "FAILED");
 			return false;
 		}
@@ -242,14 +230,13 @@ public class PaymentService {
 		String status = String.valueOf(portonePayment.get("status")); // PAID / FAILED / CANCELLED 등
 		Map<String, Object> amountMap = (Map<String, Object>) portonePayment.get("amount");
 		Long paidAmount = amountMap != null ? Long.valueOf(String.valueOf(amountMap.get("total"))) : null;
-
-		// 금액 위변조 검증: 우리 쪽에서 결제요청 시 저장한(=서버가 계산한) 실결제금액과 포트원에서 실제 승인된 금액이 같아야 함
 		boolean amountMatches = paidAmount != null && paidAmount.equals(dto.getPayRealAmt());
 
 		if ("PAID".equals(status) && amountMatches) {
-			paymentDAO.updatePaymentComplete(payNo, portonePaymentId, "PAID");
 
-			// 재고 차감 + 포인트 사용은 주문이 아직 PAID가 아닐 때만 (웹훅/컨펌 이중 호출로 인한 중복처리 방지)
+			log.info("결제 승인 완료 - payNo={}, orNo={}, amount={}, method={}", payNo, dto.getOrNo(), dto.getPayRealAmt(), dto.getPayMethod());
+
+			paymentDAO.updatePaymentComplete(payNo, portonePaymentId, "PAID");
 			applyPaidSideEffectsIfFirstPaid(dto);
 
 			orderService.updateOrderStatus(dto.getOrNo(), "PAID");
@@ -257,6 +244,7 @@ public class PaymentService {
 
 			return true;
 		} else {
+			log.warn("결제 승인 실패 - payNo={}, portoneStatus={}, expectedAmount={}, paidAmount={}", payNo, status, dto.getPayRealAmt(), paidAmount);
 			paymentDAO.updatePaymentComplete(payNo, portonePaymentId, "FAILED");
 			return false;
 		}
@@ -278,7 +266,7 @@ public class PaymentService {
 			return response.getBody();
 
 		} catch (Exception e) {
-			// 네트워크 오류/404 등 - 호출부에서 FAILED 처리하도록 null 리턴
+			log.error("포트원 결제조회 API 호출 실패 - portonePaymentId={}", portonePaymentId, e);
 			return null;
 		}
 	}
@@ -307,7 +295,7 @@ public class PaymentService {
 		if ("PAID".equals(mappedStatus)) {
 			PaymentDTO dto = paymentDAO.selectPaymentOne(payNo);
 			if (dto != null) {
-				// 재고 차감 + 포인트 사용은 주문이 아직 PAID가 아닐 때만 (웹훅/컨펌 이중 호출로 인한 중복처리 방지)
+				log.info("웹훅으로 결제 승인 완료 - payNo={}, orNo={}", payNo, dto.getOrNo());
 				applyPaidSideEffectsIfFirstPaid(dto);
 
 				orderService.updateOrderStatus(dto.getOrNo(), "PAID");
@@ -342,8 +330,6 @@ public class PaymentService {
 	}
 
 	// ================= 결제 취소/환불 =================
-
-	// 주문취소 승인 시 OrderCancelService 에서 호출 (포트원 결제취소 API 호출 후 DB 상태 갱신)
 	public boolean cancelPayment(Long payNo, String reason) {
 
 		PaymentDTO dto = paymentDAO.selectPaymentOne(payNo);
@@ -366,9 +352,13 @@ public class PaymentService {
 			restTemplate.postForEntity(url, entity, Map.class);
 
 			paymentDAO.updatePaymentStatus(payNo, "REFUNDED");
+
+			log.info("결제 취소 완료 - payNo={}, reason={}", payNo, reason);
+
 			return true;
 
 		} catch (Exception e) {
+			log.error("결제 취소 실패 - payNo={}, reason={}", payNo, reason, e);
 			return false;
 		}
 	}

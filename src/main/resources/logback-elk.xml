@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 콘솔 로그는 기존 패턴 그대로 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative] [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ELK용 JSON 파일 로그 - 스프링부트 내장 구조화 로깅(StructuredLogEncoder) 사용, 별도 라이브러리 불필요 -->
+    <appender name="jsonFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/meongnyang-app.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/meongnyang-app.%d{yyyy-MM-dd}.json</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+            <format>ecs</format>
+        </encoder>
+    </appender>
+
+    <logger name="com.study.springboot" level="info"/>
+    <logger name="com.springboot.meongnyang_Jiphapso" level="info"/>
+
+    <!-- log4j2-jdbc4 -->
+    <logger name="jdbc" level="OFF" />
+    <logger name="jdbc.sqlonly" level="OFF" />
+
+    <!-- SQL 바인드 파라미터(비밀번호 해시, 전화번호 등 개인정보 포함)가 그대로 찍히므로 jsonFile(ES 연동용)로는 안 보내고 콘솔에만 남김 -->
+    <logger name="jdbc.sqltiming" level="DEBUG" additivity="false">
+        <appender-ref ref="console"/>
+    </logger>
+
+    <logger name="jdbc.resultset" level="OFF" />
+
+    <!-- 조회 결과 row 값(회원 테이블 등 개인정보 포함 가능)이 그대로 찍히므로 마찬가지로 콘솔에만 남김 -->
+    <logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
+        <appender-ref ref="console"/>
+    </logger>
+
+    <logger name="jdbc.connection" level="OFF" />
+    <!-- log4j2-jdbc4 -->
+
+    <root level="off">
+        <appender-ref ref="console"/>
+        <appender-ref ref="jsonFile"/>
+    </root>
+</configuration>
