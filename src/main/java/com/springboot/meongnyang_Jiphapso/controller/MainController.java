@@ -133,4 +133,14 @@ public class MainController {
 	public String chatbot() {
 		return "guest/etc/chatBot";
 	}
+	
+	@RequestMapping("/guest/etc/ToSPop")
+	public String ToSPop() {
+	    return "guest/etc/ToSPop";
+	}
+	
+	@RequestMapping("/guest/etc/PPPop")
+	public String PPPop() {
+	    return "guest/etc/PPPop";
+	}
 }

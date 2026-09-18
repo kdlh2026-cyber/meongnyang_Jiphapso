@@ -6,13 +6,14 @@
 <meta charset="UTF-8">
 <title>관리자 페이지</title>
 <link rel="stylesheet" href="/css/hospital/hpform.css">
+<script src="/js/hpcheck.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 
 <div class="hp-form-wrap">
 	<h2>동물병원 등록</h2>
-	<form name="hospitalInsertForm" method="post" action="/hp_insert">
+	<form name="hospitalForm" method="post" action="/hp_insert" onsubmit="return hpFormCheck();">
 		<table class="hp-form-table">
 			<tr>
 				<td class="label">병원 이름</td>
@@ -67,7 +68,50 @@
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 <script>
-/* 기존 initTagInput 스크립트 그대로 유지 */
+function initTagInput(boxId, inputId, hiddenId) {
+	const box = document.getElementById(boxId);
+	const input = document.getElementById(inputId);
+	const hidden = document.getElementById(hiddenId);
+
+	const tags = hidden.value ? hidden.value.split(',').filter(v => v.trim() !== '') : [];
+
+	function render() {
+		box.querySelectorAll('.tag').forEach(el => el.remove());
+		tags.forEach((tag, idx) => {
+			const span = document.createElement('span');
+			span.className = 'tag';
+			span.innerHTML = tag + ' <button type="button" data-idx="' + idx + '">x</button>';
+			box.insertBefore(span, input);
+		});
+		hidden.value = tags.join(',');
+	}
+
+	input.addEventListener('keydown', function(e) {
+		// 한글 등 조합 중(composing)인 경우는 Enter를 무시
+		if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
+			e.preventDefault();
+			const val = input.value.trim();
+			if (val && !tags.includes(val)) {
+				tags.push(val);
+				input.value = '';
+				render();
+			}
+		}
+	});
+
+	box.addEventListener('click', function(e) {
+		if (e.target.tagName === 'BUTTON') {
+			const idx = Number(e.target.dataset.idx);
+			tags.splice(idx, 1);
+			render();
+		}
+	});
+
+	render();
+}
+
+initTagInput('sp_clinic_box', 'sp_clinic_input', 'hp_sp_clinic');
+initTagInput('keyword_box', 'keyword_input', 'hp_keyword');
 </script>
 </body>
 </html>

@@ -36,7 +36,7 @@ public class WebSecurityConfig {
 				.loginPage("/loginForm")
 				.loginProcessingUrl("/j_spring_security_check")
 				.failureUrl("/loginError") //로그인 실패했을때 페이지
-				.defaultSuccessUrl("/main") //로그인햇을때
+				.defaultSuccessUrl("/main",true) //로그인햇을때 무조건 메인 페이지로 이동
 				.usernameParameter("m_id")
 				.passwordParameter("m_passwd")
 				.permitAll()

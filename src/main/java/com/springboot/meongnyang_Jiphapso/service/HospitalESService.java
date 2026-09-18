@@ -36,6 +36,8 @@ public class HospitalESService {
 		map.put("hp_addr",hp_dto.getHp_addr());
 		map.put("hp_sp_clinic",hp_dto.getHp_sp_clinic());
 		map.put("hp_keyword",hp_dto.getHp_keyword());
+		map.put("hp_lat", hp_dto.getHp_lat());
+		map.put("hp_lng", hp_dto.getHp_lng());
 		
 		// IndexRequest(인덱스 요청) 생성하여 저장
 		IndexRequest request=new IndexRequest("dc_hospital").id(String.valueOf(hp_dto.getHp_no())).source(map);

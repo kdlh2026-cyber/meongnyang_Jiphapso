@@ -2,6 +2,8 @@ package com.springboot.meongnyang_Jiphapso.controller;
 import java.io.File;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.meongnyang_Jiphapso.dao.IBreedDAO;
@@ -204,6 +207,15 @@ public class MemberController {
 		pet_dao.PetDelete(pet_no);
 		
 		return "redirect:main";
+	}
+	
+	@RequestMapping("/guest/memberIdCheck")
+	@ResponseBody
+	public Map<String, Boolean> memberIdCheck(@RequestParam("m_id") String m_id) throws Exception {
+	    boolean isDuplicate = mem_serv.isIdDuplicate(m_id);
+	    Map<String, Boolean> result = new HashMap<>();
+	    result.put("isDuplicate", isDuplicate);
+	    return result;
 	}
 	
 	@RequestMapping("/memberInsert")

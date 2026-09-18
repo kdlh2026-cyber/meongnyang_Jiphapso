@@ -59,7 +59,7 @@
        </sec:authorize>
        <sec:authorize access="hasRole('ADMIN')">
        		<a href="/logout" class="logout">로그아웃</a>
-       		<a href="/admin/clone/main" class="profile-img-link">
+       		<a href="/admin/clone/main" class="profile-img-link" data-loading>
        			<img src="/images/main/admin_profile.png" alt="관리자 프로필" class="profile-img">
        		</a>
        </sec:authorize>

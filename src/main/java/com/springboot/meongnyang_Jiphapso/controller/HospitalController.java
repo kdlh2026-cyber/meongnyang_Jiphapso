@@ -1,5 +1,6 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
+import java.beans.PropertyEditorSupport;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,6 +8,8 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -21,6 +24,20 @@ public class HospitalController {
 
 	@Autowired
 	HospitalService hp_serv;
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+	    binder.registerCustomEditor(Double.class, new PropertyEditorSupport() {
+	        @Override
+	        public void setAsText(String text) {
+	            if (text == null || text.trim().isEmpty()) {
+	                setValue(null);
+	            } else {
+	                setValue(Double.valueOf(text));
+	            }
+	        }
+	    });
+	}
 
 	@RequestMapping("/admin/hospital/hospitalInsertForm")
 	public String hp_insertForm() {

@@ -6,12 +6,13 @@
 <meta charset="UTF-8">
 <title>관리자 페이지</title>
 <link rel="stylesheet" href="/css/hospital/hpform.css">
+<script src="/js/hpcheck.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 	<div class="hp-form-wrap">
 	<h2>동물병원 정보 수정</h2>
-	<form name="hospitalUpdateForm" method="post" action="/hp_update">
+	<form name="hospitalForm" method="post" action="/hp_update" onsubmit="return hpFormCheck();">
 		<input type="hidden" name="hp_no" value="${hospitalUpdate.hp_no}">
 		<table class="hp-form-table">
 			<tr>
@@ -78,7 +79,8 @@ function initTagInput(boxId, inputId, hiddenId) {
 	}
 
 	input.addEventListener('keydown', function(e) {
-		if (e.key === 'Enter') {
+		// 한글 등 조합 중(composing)인 경우는 Enter를 무시
+		if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
 			e.preventDefault();
 			const val = input.value.trim();
 			if (val && !tags.includes(val)) {
