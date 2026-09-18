@@ -31,6 +31,17 @@ public class StrayAnimalController {
 	@Autowired
 	ICommunityDAO comm_dao;
 	
+
+	// @Autowired private StrayWishService wish_Service;
+	 
+	
+	/*
+	 * private Integer loginMemberNo(HttpSession session) { // 세션엔 MemberDTO.m_no 타입
+	 * 그대로(Integer) 들어있어서 Integer로 꺼낸 다음 Long으로 변환 Integer m_no = (Integer)
+	 * session.getAttribute(SessionConst.LOGIN_MEMBER_NO); return (m_no != null) ?
+	 * m_no.intValue() : null; }
+	 */
+	
 	@RequestMapping("/strayWriteForm")
 	public String strayWriteForm() {
 		return "admin/stray/strayWriteForm";
@@ -94,12 +105,12 @@ public class StrayAnimalController {
 	}
 	
 	@RequestMapping("/StrayAnimalDelete")
-	public String StrayAnimalDelete(@RequestParam("stray_no") Long stray_no) {
-		stray_dao.StrayAnimalDelete(stray_no);
+	public String StrayAnimalDelete(@RequestParam("stray_no") Long stray_no) throws Exception{
+		stray_service.stray_delete(stray_no);
 		return "redirect:/admin/stray/StrayListA";
 	}
 	
-	@RequestMapping("/guest/StrayList")
+	@RequestMapping("/stray/StrayList")
 	public String StrayList(@ModelAttribute("searchDto") StraySearchDto searchDto, Model model) {
 	    
 	    // 기본값 강아지 설정
@@ -126,10 +137,10 @@ public class StrayAnimalController {
 	    model.addAttribute("hasNext", endPage < totalPages);
 	    model.addAttribute("currentPage", searchDto.getPage());
 	    
-	    return "guest/StrayList";
+	    return "stray/StrayList";
 	}
 	
-	@RequestMapping("/guest/StrayView")
+	@RequestMapping("/stray/StrayView")
 	public String StrayView(@RequestParam("stray_no") Long stray_no,
 			CommunityDTO comm_dto,
 			Model model) {
@@ -148,7 +159,7 @@ public class StrayAnimalController {
 		model.addAttribute("ContentList", contentList);
 		model.addAttribute("StrayRandomView", randomList);
 		model.addAttribute("StrayView", strayView);
-		return "guest/StrayView";
+		return "stray/StrayView";
 	}
 	
 	@RequestMapping("/strayUpdateForm")
@@ -179,8 +190,22 @@ public class StrayAnimalController {
 	        stray_dto.setStray_img(existing_stray_img);
 	    }
 
-	    stray_dao.StrayAnimalUpdate(stray_dto);
+		stray_service.stray_update(stray_dto);
 		
 		return "redirect:/admin/stray/StrayListA";
 	}
+	
+	/*
+	 * @RequestMapping(value = "/wish/toggle", method = RequestMethod.POST)
+	 * 
+	 * @ResponseBody public ApiResponse<Boolean> toggleFavorite(@RequestBody
+	 * Map<String, Object> body, HttpSession session, HttpServletRequest request,
+	 * HttpServletResponse response) { try { Integer m_no = loginMemberNo(session);
+	 * Long stray_no = Long.valueOf(String.valueOf(body.get("stray_no"))); String
+	 * guestToken = (m_no == null) ? GuestTokenUtil.resolveGuestToken(request,
+	 * response) : null; boolean nowWish = wish_Service.toggleWish(m_no, guestToken,
+	 * stray_no); return ApiResponse.ok(nowWish ? "관심동물에 등록했어요" : "관심동물에서 삭제했어요",
+	 * nowWish); } catch (IllegalArgumentException | IllegalStateException e) {
+	 * return ApiResponse.fail(e.getMessage()); } }
+	 */
 }

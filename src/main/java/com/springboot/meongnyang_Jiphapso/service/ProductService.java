@@ -24,9 +24,17 @@ public class ProductService {
     @Autowired
     private ProductESService p_esservice;
     
-    public void p_write(ProductDto p_dto) throws Exception {
+    public void p_write(ProductDto p_dto, int o_quantity) throws Exception {
         p_dao.ProductWrite(p_dto); 
-        p_esservice.p_save(p_dto); // 엘라스틱서치에 색인(저장)
+        p_esservice.p_save(p_dto, o_quantity); // 엘라스틱서치에 색인(저장)
+    }
+    public void p_update(ProductDto p_dto, int o_quantity) throws Exception {
+    	p_dao.ProductUpdate(p_dto);
+    	p_esservice.p_update(p_dto, o_quantity);
+    }
+    public void p_delete(int p_no) throws Exception {
+    	p_dao.ProductDelete(p_no);
+    	p_esservice.p_delete(p_no);
     }
     
     public List<ProductDto> p_list() {
@@ -48,31 +56,28 @@ public class ProductService {
                              int o_quantity, int o_price, String o_default, 
                              String p_title, Integer o_origin_price) throws Exception {
         
+    	int actualQuantity = (o_price == 0) ? 0 : o_quantity;
+        
+        o_dto.setO_quantity(actualQuantity);
+        
+        if (o_origin_price == null) {
+            o_dto.setO_origin_price(o_price);
+        }
+        if (!"Y".equals(o_default)) {
+            o_dto.setO_default("N");
+        }
+    	
         ProductDto findtitle = p_dao.getProductByTitle(p_title);  
         int generatedPno;
         
         if (findtitle == null) {
-            p_write(p_dto);
+            p_write(p_dto, actualQuantity);
             generatedPno = p_dto.getP_no(); 
         } else {
             generatedPno = findtitle.getP_no(); 
         }
           
         o_dto.setP_no(generatedPno);
-        
-        if (o_price == 0) {
-            o_dto.setO_quantity(0);
-        } else {
-            o_dto.setO_quantity(o_quantity);
-        }
-        
-        if (o_origin_price == null) {
-            o_dto.setO_origin_price(o_price);
-        }
-        
-        if (!"Y".equals(o_default)) {
-            o_dto.setO_default("N");
-        }
         
         // 메인 이미지 파일 저장
         if (o_img != null && !o_img.isEmpty()) {
@@ -117,12 +122,13 @@ public class ProductService {
     public void productUpdate(ProductDto p_dto, ProductOptionDto o_dto,
                               MultipartFile o_img, List<MultipartFile> img_urls,
                               String existing_o_img, List<Integer> delete_img_nos) throws Exception {
-
-        p_dao.ProductUpdate(p_dto);
         
         int p_no = p_dto.getP_no();
         o_dto.setP_no(p_no);
-
+        int o_quantity = o_dto.getO_quantity();
+        
+        p_update(p_dto, o_quantity);
+        
         if (o_dto.getO_origin_price() == null || o_dto.getO_origin_price() == 0) {
             o_dto.setO_origin_price(o_dto.getO_price());
         }

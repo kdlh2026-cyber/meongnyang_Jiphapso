@@ -6,13 +6,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -30,7 +35,7 @@ public class ProductESService {
 	@Autowired
 	IProductDao p_dao;
 
-	public void p_save(ProductDto p_dto) throws Exception{
+	public void p_save(ProductDto p_dto, int o_quantity) throws Exception{
 		// 인덱스 no 검증(null값 체크)
 		if(p_dto.getP_no()==0) {
 			throw new IllegalStateException("dc_product 인덱스가 null입니다.");
@@ -41,7 +46,7 @@ public class ProductESService {
 		map.put("p_title",p_dto.getP_title());
 		map.put("p_brand",p_dto.getP_brand());
 		map.put("p_category",p_dto.getP_category());
-		
+		map.put("o_quantity", o_quantity);
 		// IndexRequest(인덱스 요청) 생성하여 저장
 		 IndexRequest request = new IndexRequest("dc_product")
 		            .id(String.valueOf(p_dto.getP_no()))
@@ -53,6 +58,55 @@ public class ProductESService {
 		// 로그 파일 출력
 		System.out.println("dc_product INDEX NO: "+p_dto.getP_no());
 		System.out.println("dc_product INDEX 완료: "+p_dto.getP_title());
+	}
+	
+	public void p_update(ProductDto p_dto, int o_quantity) throws Exception{
+		if (p_dto.getP_no() == 0) {
+	        throw new IllegalStateException("dc_product 인덱스가 null입니다.");
+	    }
+
+	    Map<String, Object> map = new HashMap<>();
+	    if (p_dto.getP_title() != null) map.put("p_title", p_dto.getP_title());
+	    if (p_dto.getP_brand() != null) map.put("p_brand", p_dto.getP_brand());
+	    if (p_dto.getP_category() != null) map.put("p_category", p_dto.getP_category());
+	    map.put("o_quantity", o_quantity);
+
+	    // UpdateRequest 생성
+	    UpdateRequest request = new UpdateRequest("dc_product", String.valueOf(p_dto.getP_no()))
+	            .doc(map)
+	            .docAsUpsert(true); // 만약 문서가 없으면 새로 insert
+
+	    // 업데이트 요청 실행
+	    client.update(request, RequestOptions.DEFAULT);
+
+	    System.out.println("dc_product UPDATE 완료 (p_no: " + p_dto.getP_no() + ")");
+	}
+	
+	public void p_delete(int p_no) throws Exception {
+	    if (p_no == 0) {
+	        throw new IllegalStateException("삭제할 dc_product 번호가 올바르지 않습니다.");
+	    }
+
+	    try {
+	        DeleteRequest request = new DeleteRequest("dc_product", String.valueOf(p_no));
+	        //  엘라스틱 서치 삭제 요청 실행
+	        DeleteResponse response = client.delete(request, RequestOptions.DEFAULT);
+
+	        // 결과 확인 및 로그 출력
+	        if (response.getResult() == org.elasticsearch.action.DocWriteResponse.Result.DELETED) {
+	            System.out.println("dc_product DELETE 완료 " + p_no);
+	        } else if (response.getResult() == org.elasticsearch.action.DocWriteResponse.Result.NOT_FOUND) {
+	            System.out.println("dc_product 해당 ID가 존재하지 않아 삭제되지 않았습니다 " + p_no);
+	        }
+
+	    } catch (ElasticsearchException e) {
+	        // 인덱스가 없거나 404 상태코드 등 에러 발생 시 처리
+	        if (e.status() == RestStatus.NOT_FOUND) {
+	            System.out.println("dc_product 문서가 존재하지 않습니다 " + p_no);
+	        } else {
+	            throw e;
+	        }
+	    }
 	}
 	
 	public List<ShoppingListDto> p_search(String keyword) throws Exception{

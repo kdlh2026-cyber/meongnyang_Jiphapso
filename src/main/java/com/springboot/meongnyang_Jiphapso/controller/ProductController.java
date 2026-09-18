@@ -1,12 +1,11 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
-import java.io.File;
+
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.meongnyang_Jiphapso.dao.IProductDao;
 import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
-import com.springboot.meongnyang_Jiphapso.dto.ProductDetailImageDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductDto;
 import com.springboot.meongnyang_Jiphapso.dto.ProductOptionDto;
 import com.springboot.meongnyang_Jiphapso.dto.ShoppingListDto;
@@ -126,8 +124,8 @@ public class ProductController {
 	}
 	
 	@RequestMapping("/productDelete")
-	public String ProductDelete(@RequestParam("p_no") int p_no) {
-		p_dao.ProductDelete(p_no);
+	public String ProductDelete(@RequestParam("p_no") int p_no) throws Exception {
+		p_service.p_delete(p_no);
 		return "redirect:/ProductListA";
 	}
 	

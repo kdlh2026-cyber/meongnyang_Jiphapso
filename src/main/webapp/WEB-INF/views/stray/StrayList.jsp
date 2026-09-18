@@ -45,13 +45,23 @@ const regionData = {
 			"진주시","창녕군","창원시","통영시","하동군","함안군","함양군","합천군"],
 	"제주": ["전체","서귀포시","제주시"]
 };
-
-// 숨김 폼 제출 공통 함수 (URL에 파라미터 노출 방지)
 function submitFilterForm(page) {
+    const form = document.getElementById('filterForm');
+    
     if (page) {
         document.getElementById('formPage').value = page;
     }
-    document.getElementById('filterForm').submit();
+
+    const inputs = form.querySelectorAll('input');
+    // 모든 필드 우선 재활성화 후 빈 값만 제외
+    inputs.forEach(input => {
+        input.disabled = false;
+        if (!input.value || input.value.trim() === '') {
+            input.disabled = true; // 비어 있는 파라미터는 URL에 안 붙음
+        }
+    });
+
+    form.submit();
 }
 
 // 강아지/고양이 탭 선택 (stray_category)
@@ -330,10 +340,82 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+/* function toggleWish(strayNo, btnEl) {
+    const contextPath = '${pageContext.request.contextPath}';
+    
+    // Spring Security CSRF 사용 중인 경우 대비
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+
+    const headers = { 
+        "Content-Type": "application/json" 
+    };
+    if (csrfHeader && csrfToken) {
+        headers[csrfHeader] = csrfToken;
+    }
+
+    fetch(contextPath + "/wish/toggle", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({ strayNo: strayNo })
+    })
+    .then(async function (res) {
+        // 비로그인 상태 (401, 403 Forbidden, 혹은 로그인 화면으로 튕긴 경우)
+        if (res.status === 401 || res.status === 403 || res.redirected) {
+            if (confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+                location.href = contextPath + "/login"; // 실제 로그인 URL에 맞게 수정
+            }
+            return null;
+        }
+
+        // 응답이 JSON인지 확인
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("비정상 응답 (로그인 세션 만료 등)");
+        }
+
+        return res.json();
+    })
+    .then(function (result) {
+        if (!result) return;
+
+        if (result.success) {
+            btnEl.classList.toggle("active", result.data === true);
+            if (result.data === true) {
+                showActionBanner("♥", result.message || "관심동물에 담았어요", "wish");
+            }
+        } else {
+            alert(result.message || "처리 중 오류가 발생했어요.");
+        }
+    })
+    .catch(function (err) {
+        console.error("찜 에러 상세:", err);
+        alert("관심동물 처리 중 오류가 발생했어요.");
+    });
+}
+
+function showActionBanner(icon, message, action) {
+    var toast = document.getElementById("globalToast");
+    if (!toast) return;
+
+    toast.querySelector(".toast-icon").innerText = icon;
+    toast.querySelector(".toast-msg").innerText = message;
+
+    var favLink = toast.querySelector(".toast-link-fav");
+    favLink.classList.toggle("show", action === "wish");
+
+    toast.style.display = "flex";
+
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+        toast.style.display = "none";
+    }, 3000);
+} */
 </script>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-<form id="filterForm" action="/guest/StrayList" method="post" style="display:none;">
+<form id="filterForm" action="/stray/StrayList" method="get" style="display:none;">
     <input type="hidden" name="page" id="formPage" value="${empty currentPage ? 1 : currentPage}">
     <input type="hidden" name="stray_category" id="formStrayCategory" value="${not empty stray_category ? stray_category : (empty param.stray_category ? 'DOG' : param.stray_category)}">
     <input type="hidden" name="stray_name" id="formBreed" value="${not empty stray_name ? stray_name : param.stray_name}">
@@ -535,7 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="badge-status">${list.stray_status}</span>
                     <!-- 품종 나이 -->
                     <div class="card-title">
-                        <a href="/guest/StrayView?stray_no=${list.stray_no}">
+                        <a href="/stray/StrayView?stray_no=${list.stray_no}">
                             <c:choose>
                                 <c:when test="${list.stray_category == 'DOG'}">[강아지] </c:when>
                                 <c:when test="${list.stray_category == 'CAT'}">[고양이] </c:when>
@@ -564,6 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <c:otherwise> · 중성화 미상</c:otherwise>
                         </c:choose>
                     </div>
+                    <%-- <button type="button" class="fav-heart-btn" onclick="toggleWish(${list.stray_no}, this)">♥</button> --%>
                 </div>
 
                 <!-- 하단 구분선 + 지역 정보 + 빼꼼 캐릭터 -->
@@ -608,6 +691,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="javascript:void(0);" onclick="goPage(${endPage + 1})" class="arrow">&gt;</a>
     </c:if>
 </div>
+
+<%-- <div id="globalToast">
+    <span class="toast-icon"></span>
+    <span class="toast-msg"></span>
+    <a href="${pageContext.request.contextPath}/stray/StrayWishList" class="toast-link toast-link-fav">관심동물 보기</a>
+</div> --%>
 <%@ include file="../footer.jsp" %>
 </body>
 </html>
