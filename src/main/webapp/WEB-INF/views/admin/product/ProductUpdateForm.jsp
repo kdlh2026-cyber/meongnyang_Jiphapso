@@ -9,7 +9,7 @@
 </head>
 <body>
 <div>
-    <%@ include file="../../hamburger_menu.jsp" %>
+    <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
     <h2>상품 수정</h2>
     <form action="ProductUpdate" name="productUpdateForm" method="post" enctype="multipart/form-data">
         <input type="hidden" name="p_no" value="${ProductUpdate.pno}">

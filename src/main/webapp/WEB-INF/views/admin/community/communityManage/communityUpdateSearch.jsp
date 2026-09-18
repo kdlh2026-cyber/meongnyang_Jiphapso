@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="/css/community/communityUpdate.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 
 <div class="admin-wrap">
     <!-- 상단 제목 및 바로가기 링크 영역 -->

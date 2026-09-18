@@ -10,7 +10,7 @@
 </head>
 <body>
 <div>
-<%@ include file="../../hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 	<h2>입양동물 등록</h2>
 	<form action="StrayAnimalWrite" name="strayWriteForm" method="post" enctype="multipart/form-data" onsubmit="return strayCheck();">
 		<div>

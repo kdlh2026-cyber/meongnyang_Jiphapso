@@ -11,6 +11,57 @@ function jusoCallBack(m_addr, m_addr_detail, m_zipno){
     document.memberForm.m_zipno.value = m_zipno;
 }
 
+function agreePopup(type){
+	window.open("/guest/etc/" + type, "agreePop_" + type, "width=520,height=560,scrollbars=yes,resizable=yes");
+}
+
+function agreeCallback(type){
+	if(type === 'ToSPop'){
+		document.getElementById('m_ser_agree').checked = true;
+	}else if(type === 'PPPop'){
+		document.getElementById('m_pub_agree').checked = true;
+	}
+}
+
+var isIdChecked = false; // 중복확인 통과 여부
+
+function checkIdDuplicate(){
+    let m_id = document.memberForm.m_id;
+    let expM_id = /^[a-z0-9]{8,12}$/;
+    let resultSpan = document.getElementById('idCheckResult');
+
+    if(!m_id.value){
+        alert("아이디를 입력하시길 바랍니다.");
+        m_id.focus();
+        return;
+    }
+    if(!expM_id.test(m_id.value)){
+        alert("아이디는 영문소문자와 숫자 8~12자리로 입력하시길 바랍니다.");
+        m_id.focus();
+        return;
+    }
+
+    fetch("/guest/memberIdCheck?m_id=" + encodeURIComponent(m_id.value))
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+            // data.isDuplicate: true(중복) / false(사용가능)
+            if(data.isDuplicate){
+                resultSpan.style.color = "red";
+                resultSpan.innerText = "이미 사용 중인 아이디입니다.";
+                isIdChecked = false;
+            }else{
+                resultSpan.style.color = "blue";
+                resultSpan.innerText = "사용 가능한 아이디입니다.";
+                isIdChecked = true;
+            }
+        })
+        .catch(function(err){
+            console.error(err);
+            alert("중복확인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            isIdChecked = false;
+        });
+}
+
 function mInsertcheck(){
 	let m_id=document.memberForm.m_id;
 	let m_pw=document.memberForm.m_passwd;
@@ -39,6 +90,12 @@ function mInsertcheck(){
 	if(!expM_id.test(m_id.value)){
 		alert("아이디는 영문소문자와 숫자 8~12자리로 입력하시길 바랍니다.");
 		m_id.value="";
+		m_id.focus();
+		return false;
+	}
+	
+	if(!isIdChecked){
+		alert("아이디 중복확인을 해주시길 바랍니다.");
 		m_id.focus();
 		return false;
 	}

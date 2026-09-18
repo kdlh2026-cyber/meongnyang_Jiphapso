@@ -2,11 +2,10 @@ package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +13,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +23,6 @@ import com.springboot.meongnyang_Jiphapso.dao.IBreedDAO;
 import com.springboot.meongnyang_Jiphapso.dao.ICommunityDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
 import com.springboot.meongnyang_Jiphapso.dto.BreedDTO;
-import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.service.CommunityService;
 import com.springboot.meongnyang_Jiphapso.service.MemberService;
@@ -68,16 +65,24 @@ public class AdminController {
 	
 	@RequestMapping("/admin/mem/memberList")
 	public String memberList(Model model) {
-		 List<MemberDTO> userList = m_dao.MemberListView("USER");
-		 List<MemberDTO> creatorList = m_dao.MemberListView("CREATOR");
-		 List<MemberDTO> badList = m_dao.MemberListView("BADMAN");
-	    
+	    List<MemberDTO> userList = m_dao.MemberListView("USER");
+	    List<MemberDTO> creatorList = m_dao.MemberListView("CREATOR");
+	    List<MemberDTO> badList = m_dao.MemberListView("BADMAN");
+
 	    List<MemberDTO> users = new ArrayList<>();
 	    users.addAll(userList);
 	    users.addAll(creatorList);
 	    users.addAll(badList);
 
+	    Map<String, Integer> authorityCount = new LinkedHashMap<>();
+	    authorityCount.put("일반회원", userList.size());
+	    authorityCount.put("크리에이터", creatorList.size());
+	    authorityCount.put("불량회원", badList.size());
+
 	    model.addAttribute("memberList", users);
+	    model.addAttribute("totalCount", users.size());
+	    model.addAttribute("authorityCount", authorityCount);
+
 	    return "admin/mem/memberList";
 	}
 	
@@ -102,10 +107,25 @@ public class AdminController {
 		return mem_serv.autocomplete(keyword);
 	}
 	
-	@ResponseBody
 	@RequestMapping("/memSearchAjax")
-	public List<MemberDTO> memSearchAjax(@RequestParam("keyword") String keyword) throws Exception{
-	    return mem_serv.search(keyword);
+	@ResponseBody
+	public List<Map<String, Object>> memSearchAjax(@RequestParam("keyword") String keyword) throws Exception {
+	    List<MemberDTO> list = mem_serv.search(keyword);
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+	    List<Map<String, Object>> result = new ArrayList<>();
+	    for (MemberDTO m : list) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("m_id", m.getM_id());
+	        map.put("m_name", m.getM_name());
+	        map.put("m_email", m.getM_email());
+	        map.put("m_date", m.getM_date() != null ? sdf.format(m.getM_date()) : "");
+	        map.put("m_age_upper", m.getM_age_upper());
+	        map.put("m_sns", m.getM_sns());
+	        map.put("m_authority", m.getM_authority());
+	        result.add(map);
+	    }
+	    return result;
 	}
 	
 	@RequestMapping("/AmemUpdate")

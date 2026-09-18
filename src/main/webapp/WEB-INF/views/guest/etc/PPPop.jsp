@@ -1,0 +1,74 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>개인정보처리방침</title>
+<style>
+	body{ font-family: -apple-system, "Malgun Gothic", sans-serif; padding: 20px; color:#4A3226; }
+	.agree-content{ height: 380px; overflow-y: auto; border:1px solid #FFE1B8; border-radius:12px; padding:16px; font-size:13.5px; line-height:1.6; margin-bottom:16px; }
+	.agree-check{ display:flex; align-items:center; gap:8px; margin-bottom:16px; font-size:14px; }
+	.agree-btn{ width:100%; padding:12px 0; border:none; border-radius:999px; background:#FDCC61; color:#4A3226; font-weight:700; font-size:14px; cursor:pointer; }
+	.agree-btn:disabled{ background:#FFF3D8; color:#B08A6A; cursor:not-allowed; }
+</style>
+</head>
+<body>
+	<h3>개인정보처리방침</h3>
+	<div class="agree-content">
+		<!-- 실제 약관 내용 -->
+		<p>KDLH팀(이하 '팀')이 개발한 '멍냥집합소'는 개인정보 보호법 제30조에 따라 
+		정보주체(이하 '집사님')의 개인정보를 보호하고,<br>관련 고충을 신속하고 원활하게 
+		처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립·공개합니다.
+	<p>※ 본 서비스는 교육 목적의 실습 프로젝트로, 실제 서비스 운영을 전제로 하지 
+		않습니다.<br>아래 내용 중 일부는 학습 과정의 이해를 돕기 위해 다소 직설적으로 
+		표현되어 있는 점 양해 부탁드립니다.
+	<h4>1. 개인정보의 처리 목적, 수집 항목 및 보유·이용 기간</h4>
+	<p>회원가입 시 아이디, 비밀번호, 이름, 연락처, 주소, 이메일 등을 수집하며,<br>
+		이는 회원 식별, 서비스 제공 및 문의 응대 목적으로만 사용됩니다.
+	<p>수집된 정보는 회원 탈퇴 시 또는 프로젝트 종료(실습 기간 만료) 시까지 
+		보유하며, 이후 즉시 파기됩니다.<br>실무 서비스와 달리 별도의 마케팅 활용이나 
+		장기 보관 계획은 없습니다.
+	<h4>2. 개인정보의 제3자 제공</h4>
+	<p>원칙적으로 제공하지 않습니다.<br>본 프로젝트는 팀 내부 학습 및 평가 목적으로만 
+		운영되며,<br>외부 업체나 제3자와의 데이터 공유는 이루어지지 않습니다.
+	<h4>3. 개인정보 처리의 위탁</h4>
+	<p>별도의 위탁 없이 팀이 직접 처리합니다. (전담 개인정보보호팀은 없으며, 문의사항은 팀원 전원이 다 함께 확인하지 않습니다.)
+	<h4>4. 정보주체와 법정대리인의 권리·의무 및 행사 방법</h4>
+	<p>집사님은 언제든지 자신의 개인정보 열람, 정정, 삭제, 처리정지를 요청할 
+		권리가 있습니다.<br>다만 본 서비스는 실습용으로 운영되는 만큼, 요청 처리에 
+		다소 시간이 소요될 수 있는 점 양해 부탁드립니다.<br>(담당자가 과제 마감에 
+		쫓기고 있을 수도 있습니다.)
+	<h4>5. 개인정보의 파기</h4>
+	<p>보유 기간이 경과하거나 처리 목적이 달성된 개인정보는 지체 없이 파기합니다.<br>
+		다만 본 서비스가 실습 환경(로컬/교육용 서버)에서 운영되는 특성상, 서버 
+		종료 또는 데이터베이스 초기화 시점에 함께 파기됩니다.
+	<h4>6. 개인정보의 안전성 확보 조치</h4>
+	<p>비밀번호는 암호화하여 저장하며, 접근 권한이 있는 팀원만 데이터베이스에 
+		접근할 수 있도록 관리하고 있습니다.<br>다만 실습 환경의 특성상 상용 서비스 
+		수준의 보안 체계(다중 인증, 침입 탐지 시스템 등)까지는 갖추고 있지 않으며,<br>
+		이는 본 프로젝트의 학습 범위를 넘어서는 부분임을 참고 부탁드립니다.
+	<h4>7. 개인정보 처리방침의 변경</h4>
+	<p>이 개인정보처리방침은 2026년 8월 28일부터 적용됩니다.<br>내용이 변경되더라도 이 페이지는 변경되지 않을 수 있습니다. (그럴 확률이 더 높습니다.)
+	<br>
+	<h5>팀 KDLH 드림.</h5>
+	</div>
+
+	<label class="agree-check">
+		<input type="checkbox" id="popupCheck" onchange="document.getElementById('agreeBtn').disabled = !this.checked;">
+		약관 내용을 확인하였으며 동의합니다.
+	</label>
+
+	<button id="agreeBtn" class="agree-btn" disabled onclick="onAgree();">동의하고 닫기</button>
+
+	<script>
+	window.moveTo(500, 150);
+		function onAgree(){
+		    if(window.opener && !window.opener.closed){
+		        window.opener.agreeCallback('PPPop');
+		    }
+		    window.close();
+		}
+	</script>
+</body>
+</html>

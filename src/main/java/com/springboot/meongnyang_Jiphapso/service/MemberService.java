@@ -41,4 +41,9 @@ public class MemberService {
 	public List<Map<String,String>> autocomplete(String keyword) throws Exception{
 		return m_service.autocompleteHighlight(keyword);
 	}
+	
+	public boolean isIdDuplicate(String m_id){
+	    int count = m_dao.MemberIdCheck(m_id);
+	    return count > 0;   // 1개 이상 있으면 true(중복), 0개면 false(사용가능)
+	}
 }

@@ -3,6 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <link rel="stylesheet" href="/css/admin/clone-ham-menu.css">
+<%@ include file="/WEB-INF/views/loading_animal.jsp" %>
   <div class="topbar">
     <span style="font-weight:700;">
         <a href="/admin/clone/main"><img src="/images/main/LOGO-text-admin.png" alt="이미지 로고2" width="180px" height="auto"></a>
@@ -35,7 +36,7 @@
       </div>
 <!-- 원래 메인화면으로 이동 -->
       	<div class="pill-row">
-	      	<a href="/main" class="pill pill--admin">메인 페이지로</a>
+	      	<a href="/main" class="pill pill--admin" data-loading>메인 페이지로</a>
 	  	</div>
 <!-- 전체 메뉴 영역 -->
       <h3 class="section-title">관리 페이지</h3>

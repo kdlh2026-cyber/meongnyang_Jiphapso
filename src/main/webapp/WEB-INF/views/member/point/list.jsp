@@ -8,7 +8,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>포인트 조회</title>
+<c:if test="${header['X-Requested-With'] != 'XMLHttpRequest'}">
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+</c:if>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/point/point_list.css">
 </head>
 <body>
@@ -61,9 +63,10 @@
 
   var TYPE_LABEL = { EARN: "적립", USE: "사용", EXPIRE: "소멸", RESTORE: "복원" };
 
-  document.addEventListener("DOMContentLoaded", function () {
-    loadPointData();
-  });
+  // 마이페이지 탭(ajax)으로 로드되든, 주소 직접 접속(풀 페이지 로드)이든
+  // 이 스크립트가 실행되는 시점엔 이미 위의 DOM이 만들어져 있으므로 바로 호출한다.
+  // (DOMContentLoaded는 마이페이지 안에서 fetch로 끼워 넣을 때는 다시 발생하지 않음)
+  loadPointData();
 
   // ================= 안내메세지 토스트 (alert() 대체) =================
   function showToast(message, type) {
@@ -243,6 +246,8 @@
       .replace(/>/g, "&gt;");
   }
 </script>
+<c:if test="${header['X-Requested-With'] != 'XMLHttpRequest'}">
 <%@ include file="/WEB-INF/views/footer.jsp" %>
+</c:if>
 </body>
 </html>

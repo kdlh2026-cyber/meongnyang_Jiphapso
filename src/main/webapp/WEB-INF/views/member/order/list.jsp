@@ -8,7 +8,9 @@
 <head>
     <meta charset="UTF-8">
     <title>주문내역</title>
-    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+    <c:if test="${header['X-Requested-With'] != 'XMLHttpRequest'}">
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+</c:if>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/order/list.css">
 </head>
 <body>
@@ -105,5 +107,8 @@ document.addEventListener('click', function(event) {
     }
 });
 </script>
+<c:if test="${header['X-Requested-With'] != 'XMLHttpRequest'}">
+<%@ include file="/WEB-INF/views/footer.jsp" %>
+</c:if>
 </body>
 </html>

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,8 @@ import com.springboot.meongnyang_Jiphapso.dto.CartDTO;
 
 @Service
 public class CartService {
+
+    private static final Logger log = LoggerFactory.getLogger(CartService.class);
 
     private final ICartDAO cartDAO;
 
@@ -58,6 +62,7 @@ public class CartService {
             // 이미 담긴 상품 - 수량만 합산 (재고 초과 검증 - existing에 조인된 oQuantity 그대로 사용)
             int newQuantity = existing.getCaQuantity() + quantity;
             if (existing.getOQuantity() != null && newQuantity > existing.getOQuantity()) {
+                log.warn("장바구니 담기 실패(재고부족, 수량합산) - pNo={}, oNo={}, 요청수량={}, 재고={}", pNo, finalONo, newQuantity, existing.getOQuantity());
                 throw new IllegalStateException("재고가 부족합니다 (최대 " + existing.getOQuantity() + "개)");
             }
 
@@ -65,12 +70,16 @@ public class CartService {
             updateDto.setCaNo(existing.getCaNo());
             updateDto.setCaQuantity(newQuantity);
             cartDAO.updateCartQuantity(updateDto);
+
+            log.info("장바구니 수량 합산 - caNo={}, pNo={}, oNo={}, 최종수량={}", existing.getCaNo(), pNo, finalONo, newQuantity);
+
             return cartDAO.selectCartOne(existing.getCaNo());
         }
 
         // 신규 담기 - 옵션 재고 검증 (selectOptionListByProduct 로 대상 옵션의 재고 조회)
         Integer stock = findOptionStock(pNo, finalONo);
         if (stock != null && quantity > stock) {
+            log.warn("장바구니 담기 실패(재고부족, 신규) - pNo={}, oNo={}, 요청수량={}, 재고={}", pNo, finalONo, quantity, stock);
             throw new IllegalStateException("재고가 부족합니다 (최대 " + stock + "개)");
         }
 
@@ -83,6 +92,9 @@ public class CartService {
         dto.setCaYn("N"); // 쇼핑백 추가구매 기본값
         dto.setCaQty(0);
         cartDAO.insertCart(dto);
+
+        log.info("장바구니 신규 담기 - caNo={}, pNo={}, oNo={}, 수량={}, mNo={}", dto.getCaNo(), pNo, oNo, quantity, mNo);
+
         return cartDAO.selectCartOne(dto.getCaNo());
     }
 
@@ -111,6 +123,7 @@ public class CartService {
 
         // cart.getOQuantity() - selectCartOne 조인 시 dc_product_option.o_quantity 그대로 들어있음
         if (cart.getOQuantity() != null && quantity > cart.getOQuantity()) {
+            log.warn("장바구니 수량변경 실패(재고부족) - caNo={}, 요청수량={}, 재고={}", caNo, quantity, cart.getOQuantity());
             throw new IllegalStateException("재고가 부족합니다 (최대 " + cart.getOQuantity() + "개)");
         }
 
@@ -149,6 +162,7 @@ public class CartService {
         }
         Integer stock = findOptionStock(cart.getPNo(), oNo);
         if (stock != null && quantity > stock) {
+            log.warn("장바구니 옵션변경 실패(재고부족) - caNo={}, oNo={}, 요청수량={}, 재고={}", caNo, oNo, quantity, stock);
             throw new IllegalStateException("재고가 부족합니다 (최대 " + stock + "개)");
         }
 
@@ -248,6 +262,8 @@ public class CartService {
                 cartDAO.updateCartOwner(guestItem.getCaNo(), mNo);
             }
         }
+
+        log.info("게스트 장바구니 회원 병합 완료 - mNo={}, 병합건수={}", mNo, guestList.size());
     }
 
     /** 관리자 - 회원별 장바구니 요약 (관심상품 관리 페이지와 동일한 패턴) */

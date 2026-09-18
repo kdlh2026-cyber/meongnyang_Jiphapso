@@ -34,6 +34,9 @@
 				#{m_email},#{m_introduce},#{m_birth,jdbcType=DATE},sysdate,#{m_age_upper,jdbcType=VARCHAR},#{m_sns,jdbcType=VARCHAR},
 				#{m_authority,jdbcType=VARCHAR},#{m_img,jdbcType=VARCHAR},#{m_cre_sub,jdbcType=VARCHAR})
 	</insert>
+	<select id="MemberIdCheck" parameterType="String" resultType="int">
+	    SELECT COUNT(*) FROM dc_member WHERE m_id = #{m_id}
+	</select>
 	<update id="MemberUpdate">
 		update dc_member
 		set m_passwd=#{m_passwd}, m_tel=#{m_tel}, m_addr=#{m_addr},

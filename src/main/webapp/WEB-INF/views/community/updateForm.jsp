@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="/css/community/commWriteForm.css">
 </head>
 <body>
-<%@ include file="../hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 	<div class="write_main_container">
 		<!-- 최상단 타이틀 영역 -->
 		<div class="write_top_header">

@@ -1,0 +1,205 @@
+@charset "UTF-8";
+
+.member-page {
+    display: flex;
+    justify-content: center;
+    padding: 60px 16px 60px;
+}
+
+.member-card {
+    width: 100%;
+    max-width: 840px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 44px 36px 36px;
+    box-shadow: 0 4px 24px rgba(74, 50, 38, 0.08);
+    box-sizing: border-box;
+}
+
+.member-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #4A3226;
+    margin: 0 0 32px;
+    letter-spacing: -0.3px;
+}
+
+/* ---- 필드 공통 ---- */
+.member-card .field {
+    margin-bottom: 22px;
+}
+
+.member-card .field label {
+    display: block;
+    font-size: 13px;
+    color: #B08A6A;
+    margin-bottom: 8px;
+}
+
+.member-card .field .req {
+    color: #FDA58F;
+    font-weight: 700;
+}
+
+.member-card .field input[type="text"],
+.member-card .field input[type="password"],
+.member-card .field input[type="date"],
+.member-card .field textarea {
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #FFE1B8;
+    background: transparent;
+    padding: 8px 2px;
+    font-size: 15px;
+    color: #4A3226;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s ease;
+    font-family: inherit;
+}
+
+.member-card .field textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.5;
+}
+
+.member-card .field input:focus,
+.member-card .field textarea:focus {
+    border-bottom: 1.5px solid #FDCC61;
+}
+
+.member-card .field input[readonly] {
+    color: #B08A6A;
+    cursor: default;
+}
+
+/* ---- 아이디/주소처럼 입력 + 버튼이 나란히 있는 줄 ---- */
+.member-card .field-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.member-card .field-inline input {
+    flex: 1;
+}
+
+.member-card .btn-side {
+    flex-shrink: 0;
+    padding: 9px 16px;
+    border: none;
+    border-radius: 999px;
+    background: #FFF3D8;
+    color: #4A3226;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.member-card .btn-side:hover {
+    background: #FDCC61;
+}
+
+.member-card .hint {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 12.5px;
+}
+
+/* ---- 체크박스 항목 ---- */
+.member-card .field-checkbox {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    background: #FFF3D8;
+    border-radius: 14px;
+}
+
+.member-card .field-checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #4A3226;
+    margin: 0;
+    cursor: pointer;
+}
+
+.member-card .field-checkbox input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: #FDA58F;
+    cursor: pointer;
+}
+
+.member-card .field-checkbox a {
+    color: #B08A6A;
+    text-decoration: underline;
+    font-size: 13px;
+}
+
+.member-card .field-checkbox a:hover {
+    color: #FDA58F;
+}
+
+/* ---- 파일 업로드 ---- */
+.member-card .field input[type="file"] {
+    font-size: 13.5px;
+    color: #4A3226;
+}
+
+/* ---- 제출 버튼 ---- */
+.member-card .btn-submit {
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px 0;
+    background-color: #FDCC61;
+    border: none;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #4A3226;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.member-card .btn-submit:hover {
+    background-color: #FDA58F;
+    color: #FFFBF5;
+}
+
+/* ---- 하단 링크 ---- */
+.member-card .helper-links {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #B08A6A;
+}
+
+.member-card .helper-links a {
+    color: #B08A6A;
+    text-decoration: none;
+}
+
+.member-card .helper-links a:hover {
+    color: #FDA58F;
+}
+
+/* ---- 반응형 (모바일 대응) ---- */
+@media (max-width: 520px) {
+    .member-card {
+        padding: 32px 20px 28px;
+        border-radius: 18px;
+    }
+
+    .member-card .field-inline {
+        flex-wrap: wrap;
+    }
+
+    .member-card .btn-side {
+        width: 100%;
+    }
+}

@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </head>
 <body>
 <%@ include file="hamburger_menu.jsp" %>
-
+<%@ include file="/WEB-INF/views/guest/popup/mainPopup.jsp" %>
 <div class="main-header">
 	<br><br><br>
 	<div class="hover-image-box">

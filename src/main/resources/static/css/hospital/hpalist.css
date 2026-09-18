@@ -1,0 +1,254 @@
+@charset "UTF-8";
+
+* { box-sizing: border-box; }
+
+body {
+    background: #fff;
+    color: #4A3226;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+}
+
+.hpa-wrap {
+    max-width: 900px;
+    margin: 30px auto 60px;
+    padding: 0 16px;
+}
+
+.hpa-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #4A3226;
+    margin: 0 0 20px;
+}
+
+/* ---- 통계 카드 ---- */
+.hpa-stat-card {
+    display: flex;
+    gap: 28px;
+    background: #FFFBF5;
+    border: 1.5px solid #FADCCF;
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.hpa-stat-total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    border-right: 1px solid #F5D9CB;
+    padding-right: 24px;
+}
+
+.hpa-stat-num {
+    font-size: 30px;
+    font-weight: 800;
+    color: #FF8C7A;
+    line-height: 1;
+}
+
+.hpa-stat-label {
+    font-size: 12.5px;
+    color: #8b7263;
+    margin-top: 6px;
+}
+
+.hpa-stat-ranking {
+    flex: 1;
+    min-width: 240px;
+}
+
+.hpa-stat-ranking-title {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #8b7263;
+    margin-bottom: 10px;
+}
+
+.hpa-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.hpa-bar-label {
+    width: 64px;
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4A3226;
+}
+
+.hpa-bar-track {
+    flex: 1;
+    height: 10px;
+    background: #FFF3D8;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.hpa-bar-fill {
+    height: 100%;
+    background: #FDCC61;
+    border-radius: 999px;
+}
+
+.hpa-bar-count {
+    width: 28px;
+    text-align: right;
+    font-size: 12.5px;
+    color: #8b7263;
+}
+
+.hpa-empty {
+    text-align: center;
+    color: #8b7263;
+    font-size: 14px;
+    padding: 40px 0;
+}
+
+/* ---- 구 단위 아코디언 ---- */
+.hpa-gu-group {
+    border: 1.5px solid #FADCCF;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.hpa-gu-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    cursor: pointer;
+    background: #fff;
+    font-weight: 700;
+    list-style: none;
+}
+
+.hpa-gu-summary::-webkit-details-marker {
+    display: none;
+}
+
+.hpa-gu-summary:hover {
+    background: #FFFBF5;
+}
+
+.hpa-gu-name {
+    font-size: 15px;
+    color: #4A3226;
+}
+
+.hpa-gu-count {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #FF8C7A;
+    background: #FFF3D8;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+/* ---- 동 단위 소그룹 ---- */
+.hpa-dong-list {
+    padding: 4px 18px 16px;
+    border-top: 1px solid #F5D9CB;
+}
+
+.hpa-dong-group {
+    margin-top: 14px;
+}
+
+.hpa-dong-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #8b7263;
+    margin: 0 0 8px;
+}
+
+.hpa-dong-count {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #b5a89c;
+}
+
+/* ---- 병원 테이블 ---- */
+.hpa-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.hpa-table tr {
+    border-bottom: 1px solid #F9E8DE;
+}
+
+.hpa-table tr:last-child {
+    border-bottom: none;
+}
+
+.hpa-table td {
+    padding: 9px 6px;
+    vertical-align: middle;
+}
+
+.hpa-td-name a {
+    color: #4A3226;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.hpa-td-name a:hover {
+    color: #FF8C7A;
+}
+
+.hpa-td-addr {
+    color: #8b7263;
+}
+
+.hpa-td-tel {
+    color: #555;
+    white-space: nowrap;
+}
+
+.hpa-td-action {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.hpa-btn-edit,
+.hpa-btn-delete {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-left: 4px;
+}
+
+.hpa-btn-edit {
+    background: #FFF3D8;
+    color: #4A3226;
+}
+
+.hpa-btn-edit:hover {
+    background: #FDCC61;
+}
+
+.hpa-btn-delete {
+    background: #fff;
+    border: 1px solid #FFC9CE;
+    color: #b5514a;
+}
+
+.hpa-btn-delete:hover {
+    background: #FFC9CE;
+}

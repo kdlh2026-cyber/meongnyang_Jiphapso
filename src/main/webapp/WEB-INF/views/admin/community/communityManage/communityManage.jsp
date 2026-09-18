@@ -10,8 +10,7 @@
 <link rel="stylesheet" href="/css/community/communityManage.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 	<div class="dashboard-wrap">
 		<!-- 전체 게시글 등록 현황 -->
 	    <div class="status-header">

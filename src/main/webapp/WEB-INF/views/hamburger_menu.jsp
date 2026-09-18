@@ -3,6 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <link rel="stylesheet" href="/css/etc/ham_menu.css">
+<%@ include file="/WEB-INF/views/loading_animal.jsp" %>
   <div class="topbar">
     <span style="font-weight:700;">
         <a href="/"><img src="/images/main/LOGO_text.png" alt="이미지 로고2" width="180px" height="auto"></a>
@@ -58,7 +59,7 @@
        </sec:authorize>
        <sec:authorize access="hasRole('ADMIN')">
        		<a href="/logout" class="logout">로그아웃</a>
-       		<a href="/admin/clone/main" class="profile-img-link">
+       		<a href="/admin/clone/main" class="profile-img-link" data-loading>
        			<img src="/images/main/admin_profile.png" alt="관리자 프로필" class="profile-img">
        		</a>
        </sec:authorize>
@@ -83,7 +84,7 @@
 <!-- 관리자 페이지 버튼만 표시 -->
 	  <sec:authorize access="hasRole('ADMIN')">
       	<div class="pill-row">
-	      	<a href="/admin/clone/main" class="pill pill--admin">관리자 페이지</a>
+	      	<a href="/admin/clone/main" class="pill pill--admin" data-loading>관리자 페이지</a>
 	  	</div>
 	  </sec:authorize>
 <!-- 일반 회원 버튼 표시 -->

@@ -147,6 +147,7 @@
                                 </c:choose>
 
                                  <!-- 리뷰 대상 상품 찾기: orderWithReview 목록에서 같은 odDetailNo를 가진 항목 매칭 -->
+
 					            <c:set var="reviewDetail" value="${null}" />
 					            <c:forEach var="rd" items="${orderWithReview.orderDetailList}">
 					                <c:if test="${rd.odDetailNo == detail.odDetailNo}">
@@ -176,14 +177,14 @@
 					                        <div id="review-view-box-${reviewDetail.odDetailNo}" class="review-view-container">
 										        <div class="review-view-header">
 										        	<span class="review-star-display">
-												        <c:choose>
-												            <c:when test="${reviewDetail.review.cmt_score == 5}">★★★★★</c:when>
-												            <c:when test="${reviewDetail.review.cmt_score == 4}">★★★★☆</c:when>
-												            <c:when test="${reviewDetail.review.cmt_score == 3}">★★★☆☆</c:when>
-												            <c:when test="${reviewDetail.review.cmt_score == 2}">★★☆☆☆</c:when>
-												            <c:otherwise>★☆☆☆☆</c:otherwise>
-												        </c:choose>
-												    </span>
+											        	<c:choose>
+											                <c:when test="${reviewDetail.review.cmt_score == 5}">★★★★★</c:when>
+											                <c:when test="${reviewDetail.review.cmt_score == 4}">★★★★☆</c:when>
+											                <c:when test="${reviewDetail.review.cmt_score == 3}">★★★☆☆</c:when>
+											                <c:when test="${reviewDetail.review.cmt_score == 2}">★★☆☆☆</c:when>
+											                <c:otherwise>★☆☆☆☆</c:otherwise>
+											            </c:choose>
+											        </span>
 										            <span class="review-date-display">
 										                <fmt:formatDate value="${reviewDetail.review.cmt_date}" pattern="yyyy.MM.dd HH:mm" />
 										            </span>
@@ -192,11 +193,11 @@
 										            ${reviewDetail.review.cmt_content}
 										        </div>
 										        <div class="review-detail-link-wrap">
-												    <a href="/products/ShoppingView?p_no=${detail.PNo}" class="review-detail-link">
-												        <span>상품 상세보기</span>
-												        <span class="arrow">›</span>
-												    </a>
-												</div>
+											        <a href="/products/ShoppingView?p_no=${detail.PNo}" class="review-detail-link">
+											            <span>상품 상세보기</span>
+											            <span class="arrow">›</span>
+											        </a>
+											    </div>
 										        <div class="review-actions">
 										            <!-- 수정 모드로 전환하는 버튼 -->
 										            <button type="button" class="od-btn" onclick="toggleEditMode(${reviewDetail.odDetailNo}, true)">수정</button>
@@ -207,38 +208,38 @@
 										    </div>
 
 					                        <!-- 2. '수정' 버튼을 누르면 나타나는 리뷰 수정 폼 영역 (기본은 숨김) -->
-											<div id="review-edit-box-${reviewDetail.odDetailNo}" class="review-edit-container" style="display: none;">
-											    <form action="/review/update" method="post" class="review-form-container">
-											        <!-- 시큐리티 CSRF 토큰 -->
-											        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+										    <div id="review-edit-box-${reviewDetail.odDetailNo}" class="review-edit-container" style="display: none;">
+										        <form action="/review/update" method="post" class="review-form-container">
+										            <!-- 시큐리티 CSRF 토큰 -->
+										            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
-											        <input type="hidden" name="cmt_no" value="${reviewDetail.review.cmt_no}">
-											        <input type="hidden" name="orNo" value="${order.orNo}">
+										            <input type="hidden" name="cmt_no" value="${reviewDetail.review.cmt_no}">
+										            <input type="hidden" name="orNo" value="${order.orNo}">
 
-											        <div class="review-input-area">
-											            <!-- ★ [수정 폼] 별점 선택 라디오 UI -->
-											            <div class="review-rating-wrap">
-											                <label class="rating-label">평점 :</label>
-											                <div class="star-rating">
-											                    <input type="radio" id="star5-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="5" ${empty reviewDetail.review.cmt_score or reviewDetail.review.cmt_score eq 5 ? 'checked' : ''}><label for="star5-edit-${reviewDetail.odDetailNo}" title="5점">★</label>
-											                    <input type="radio" id="star4-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="4" ${reviewDetail.review.cmt_score eq 4 ? 'checked' : ''}><label for="star4-edit-${reviewDetail.odDetailNo}" title="4점">★</label>
-											                    <input type="radio" id="star3-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="3" ${reviewDetail.review.cmt_score eq 3 ? 'checked' : ''}><label for="star3-edit-${reviewDetail.odDetailNo}" title="3점">★</label>
-											                    <input type="radio" id="star2-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="2" ${reviewDetail.review.cmt_score eq 2 ? 'checked' : ''}><label for="star2-edit-${reviewDetail.odDetailNo}" title="2점">★</label>
-											                    <input type="radio" id="star1-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="1" ${reviewDetail.review.cmt_score eq 1 ? 'checked' : ''}><label for="star1-edit-${reviewDetail.odDetailNo}" title="1점">★</label>
-											                </div>
-											            </div>
+										            <div class="review-input-area">
+										                <!-- ★ [수정 폼] 별점 선택 라디오 UI -->
+										                <div class="review-rating-wrap">
+										                    <label class="rating-label">평점 :</label>
+										                    <div class="star-rating">
+										                        <input type="radio" id="star5-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="5" ${empty reviewDetail.review.cmt_score or reviewDetail.review.cmt_score eq 5 ? 'checked' : ''}><label for="star5-edit-${reviewDetail.odDetailNo}" title="5점">★</label>
+										                        <input type="radio" id="star4-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="4" ${reviewDetail.review.cmt_score eq 4 ? 'checked' : ''}><label for="star4-edit-${reviewDetail.odDetailNo}" title="4점">★</label>
+										                        <input type="radio" id="star3-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="3" ${reviewDetail.review.cmt_score eq 3 ? 'checked' : ''}><label for="star3-edit-${reviewDetail.odDetailNo}" title="3점">★</label>
+										                        <input type="radio" id="star2-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="2" ${reviewDetail.review.cmt_score eq 2 ? 'checked' : ''}><label for="star2-edit-${reviewDetail.odDetailNo}" title="2점">★</label>
+										                        <input type="radio" id="star1-edit-${reviewDetail.odDetailNo}" name="cmt_score" value="1" ${reviewDetail.review.cmt_score eq 1 ? 'checked' : ''}><label for="star1-edit-${reviewDetail.odDetailNo}" title="1점">★</label>
+										                    </div>
+										                </div>
 
-											            <!-- 기존 작성했던 내용이 기본으로 들어가 있게 설정 -->
-											            <textarea name="cmt_content" class="review-textarea" rows="4" required>${reviewDetail.review.cmt_content}</textarea>
+										                <!-- 기존 작성했던 내용이 기본으로 들어가 있게 설정 -->
+										                <textarea name="cmt_content" class="review-textarea" rows="4" required>${reviewDetail.review.cmt_content}</textarea>
 
-											            <div class="review-form-actions">
-											                <button type="submit" class="od-btn od-btn-primary">수정 완료</button>
-											                <button type="button" class="od-btn" onclick="toggleEditMode(${reviewDetail.odDetailNo}, false)">취소</button>
-											            </div>
-											        </div>
-											    </form>
-											</div>
-											</c:when>
+										                <div class="review-form-actions">
+										                    <button type="submit" class="od-btn od-btn-primary">수정 완료</button>
+										                    <button type="button" class="od-btn" onclick="toggleEditMode(${reviewDetail.odDetailNo}, false)">취소</button>
+										                </div>
+										            </div>
+										        </form>
+										    </div>
+										    </c:when>
 
 					                    <%-- 리뷰가 아직 없는 경우: 작성 폼 출력 --%>
 										<c:otherwise>
@@ -282,7 +283,10 @@
     </div>
 
     <div class="od-btn-group">
-        <button type="button" class="od-btn" onclick="history.back()">목록으로</button>
+        <%-- history.back()는 브라우저 히스토리상 '바로 이전 페이지'로 가는 거라, 결제 완료 후 이 페이지로
+             리다이렉트돼서 들어온 경우(이전 페이지가 checkout)에는 목록이 아니라 checkout으로 되돌아가는 버그가 있었음
+             -> 무조건 주문내역(목록) 페이지로 가도록 고정 경로로 변경 --%>
+        <button type="button" class="od-btn" onclick="location.href='${pageContext.request.contextPath}/member/order/list'">목록으로</button>
     </div>
 
 </div>

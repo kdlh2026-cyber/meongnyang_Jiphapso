@@ -39,6 +39,7 @@ public class MemberESService {
 		map.put("m_age_upper", m_dto.getM_age_upper());
 		map.put("m_sns", m_dto.getM_sns());
 		map.put("m_authority", m_dto.getM_authority());
+		map.put("m_date", m_dto.getM_date());
 		
 		// IndexRequest(인덱스 요청) 생성하여 저장
 		IndexRequest request=new IndexRequest("dc_member").id(m_dto.getM_id().toString()).source(map);
@@ -73,6 +74,17 @@ public class MemberESService {
 	        m_dto.setM_age_upper(toStringOrNull(map.get("m_age_upper")));
 	        m_dto.setM_sns(toStringOrNull(map.get("m_sns")));
 	        m_dto.setM_authority(toStringOrNull(map.get("m_authority")));
+	        Object dateObj = map.get("m_date");
+	        if(dateObj != null){
+	            try {
+	                // ES가 날짜를 문자열로 반환하는 경우 (예: "2026-09-18T00:00:00.000Z")
+	                m_dto.setM_date(java.sql.Timestamp.valueOf(
+	                    dateObj.toString().replace("T", " ").replace("Z", "").substring(0, 19)
+	                ));
+	            } catch(Exception e){
+	                m_dto.setM_date(null);
+	            }
+	        }
 	        list.add(m_dto);
 	    }
 	    return list;

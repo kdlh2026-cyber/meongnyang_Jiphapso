@@ -5,50 +5,38 @@
 <head>
 <meta charset="UTF-8">
 <title>관리자 페이지</title>
-<style>
-	.tag-input-box {
-		display: flex; flex-wrap: wrap; gap: 6px;
-		border: 1px solid #ccc; padding: 6px; min-height: 38px;
-	}
-	.tag-input-box .tag {
-		background: #eee; padding: 2px 8px; border-radius: 12px;
-		display: flex; align-items: center; gap: 4px; font-size: 13px;
-	}
-	.tag-input-box .tag button {
-		border: none; background: none; cursor: pointer; font-weight: bold;
-	}
-	.tag-input-box input {
-		border: none; outline: none; flex: 1; min-width: 80px;
-	}
-</style>
+<link rel="stylesheet" href="/css/hospital/hpform.css">
+<script src="/js/hpcheck.js"></script>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
-	<form name="hospitalUpdateForm" method="post" action="/hp_update">
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
+	<div class="hp-form-wrap">
+	<h2>동물병원 정보 수정</h2>
+	<form name="hospitalForm" method="post" action="/hp_update" onsubmit="return hpFormCheck();">
 		<input type="hidden" name="hp_no" value="${hospitalUpdate.hp_no}">
-		<table>
+		<table class="hp-form-table">
 			<tr>
-				<td>병원 이름</td>
+				<td class="label">병원 이름</td>
 				<td><input type="text" name="hp_name" value="${hospitalUpdate.hp_name}"></td>
 			</tr>
 			<tr>
-				<td>병원 주소</td>
+				<td class="label">병원 주소</td>
 				<td><input type="text" name="hp_addr" value="${hospitalUpdate.hp_addr}"></td>
 			</tr>
 			<tr>
-				<td>전화번호</td>
+				<td class="label">전화번호</td>
 				<td><input type="text" name="hp_tel" value="${hospitalUpdate.hp_tel}"></td>
 			</tr>
 			<tr>
-				<td>url</td>
+				<td class="label">url</td>
 				<td><input type="text" name="hp_url" value="${hospitalUpdate.hp_url}"></td>
 			</tr>
 			<tr>
-				<td>진료시간</td>
+				<td class="label">진료시간</td>
 				<td><textarea name="hp_hour">${hospitalUpdate.hp_hour}</textarea></td>
 			</tr>
 			<tr>
-				<td>특화 진료</td>
+				<td class="label">특화 진료</td>
 				<td>
 					<div class="tag-input-box" id="sp_clinic_box">
 						<input type="text" id="sp_clinic_input" placeholder="입력 후 Enter">
@@ -57,7 +45,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>키워드</td>
+				<td class="label">키워드</td>
 				<td>
 					<div class="tag-input-box" id="keyword_box">
 						<input type="text" id="keyword_input" placeholder="입력 후 Enter">
@@ -68,6 +56,7 @@
 		</table>
 		<input type="submit" value="수정">
 	</form>
+</div>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 
 <script>
@@ -90,7 +79,8 @@ function initTagInput(boxId, inputId, hiddenId) {
 	}
 
 	input.addEventListener('keydown', function(e) {
-		if (e.key === 'Enter') {
+		// 한글 등 조합 중(composing)인 경우는 Enter를 무시
+		if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
 			e.preventDefault();
 			const val = input.value.trim();
 			if (val && !tags.includes(val)) {

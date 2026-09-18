@@ -1,0 +1,141 @@
+@charset "UTF-8";
+
+* { box-sizing: border-box; }
+
+body {
+    background: #FFFBF5;
+    color: #4A3226;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+}
+
+.hpv-wrap {
+    max-width: 680px;
+    margin: 40px auto 60px;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ---- 병원 정보 카드 ---- */
+.hpv-card {
+    background: #fff;
+    border: 1.5px solid #FFC9CE;
+    border-radius: 18px;
+    padding: 28px 26px;
+    box-shadow: 0 2px 10px rgba(74,50,38,0.06);
+}
+
+.hpv-head {
+    border-bottom: 1px solid #FFF3D8;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+}
+
+.hpv-name {
+    font-size: 20px;
+    font-weight: 800;
+    color: #4A3226;
+    margin: 0 0 6px;
+}
+
+.hpv-addr {
+    font-size: 13.5px;
+    color: #8b7263;
+    margin: 0;
+}
+
+/* ---- 정보 리스트 ---- */
+.hpv-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.hpv-info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-size: 14px;
+}
+
+.hpv-info-label {
+    flex-shrink: 0;
+    width: 72px;
+    font-weight: 700;
+    color: #4A3226;
+}
+
+.hpv-info-value {
+    color: #555;
+}
+
+.hpv-link {
+    color: #FF8C7A;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.hpv-link:hover {
+    text-decoration: underline;
+}
+
+/* ---- 태그 영역 ---- */
+.hpv-tag-section {
+    margin-top: 16px;
+}
+
+.hpv-tag-title {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #8b7263;
+    margin-bottom: 8px;
+}
+
+.hpv-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #FFF3D8;
+    color: #4A3226;
+    font-size: 12.5px;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.tag--outline {
+    background: #fff;
+    border: 1px solid #FFC9CE;
+    color: #8b7263;
+}
+
+/* ---- 지도 카드 ---- */
+.hpv-map-card {
+    background: #fff;
+    border: 1.5px solid #FFC9CE;
+    border-radius: 18px;
+    padding: 22px 22px 26px;
+    box-shadow: 0 2px 10px rgba(74,50,38,0.06);
+}
+
+.hpv-map-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #4A3226;
+    margin: 0 0 14px;
+}
+
+.hpv-map {
+    width: 100%;
+    height: 280px;
+    border-radius: 14px;
+    background: #FFF3D8;
+    overflow: hidden;
+}

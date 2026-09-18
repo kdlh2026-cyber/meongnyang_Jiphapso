@@ -14,7 +14,7 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 
 <div class="event-write-container">
     <h2>이벤트 등록</h2>

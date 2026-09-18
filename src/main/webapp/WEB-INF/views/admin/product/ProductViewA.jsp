@@ -233,7 +233,7 @@ function showActionBanner(icon, message, action) {
 </script>
 </head>
 <body>
-<%@ include file="../../hamburger_menu.jsp" %>
+<%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
 
 <div class="detail-container">
     <div class="product-top-section">

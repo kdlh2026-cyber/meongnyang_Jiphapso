@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>관리자 - 관심상품 관리</title>
-    <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+    <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
     <link rel="stylesheet" href="/css/favorite/adminList.css">
 </head>
 <body>
@@ -83,6 +83,10 @@
 </div><!-- /.fa-page -->
 
 <script>
+    // 상품 이미지 경로 - 파일명에 "%"가 들어있으면 URL 인코딩이 깨지는 문제 때문에
+    // 다른 화면들과 동일하게 contextPath + "%" -> "%25" 치환 규칙을 적용함
+    var contextPath = "${pageContext.request.contextPath}";
+
     // ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) =====
     function showAlert(message, callback) {
         var overlay = document.getElementById('axAlertOverlay');
@@ -157,9 +161,13 @@
                 console.warn('상품명 필드를 못 찾았어요. 실제 응답 구조:', favorite);
             }
 
+            // 파일명에 "%"가 있으면 그대로 URL에 넣었을 때 인코딩이 깨지므로 "%25"로 치환
+            // (JSTL fn:replace(detail.PMainImg, '%', '%25') 와 동일한 처리를 JS로)
+            var imgUrl = contextPath + '/images/products/main/' + String(pMainImg || '').replace(/%/g, '%25');
+
             tr.innerHTML =
                 '<td>' + favorite.faNo + '</td>' +
-                '<td><img src="/images/products/main/' + (pMainImg || '') + '" alt="' + (pName || '') + '" class="thumb"></td>' +
+                '<td><img src="' + imgUrl + '" alt="' + (pName || '') + '" class="thumb"></td>' +
                 '<td>' + (pName || '-') + '</td>' +
                 '<td>' + Number(oPrice || 0).toLocaleString('ko-KR') + '원</td>' +
                 '<td>' + formatDate(favorite.faAt) + '</td>' +
@@ -226,5 +234,6 @@
         return yyyy + '.' + mm + '.' + dd + ' ' + hh + ':' + mi;
     }
 </script>
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>
