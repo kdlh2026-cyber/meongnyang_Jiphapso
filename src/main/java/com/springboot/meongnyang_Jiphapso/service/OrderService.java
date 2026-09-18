@@ -3,6 +3,8 @@ package com.springboot.meongnyang_Jiphapso.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,8 @@ import com.springboot.meongnyang_Jiphapso.dto.OrderDetailDTO;
 
 @Service
 public class OrderService {
+
+	private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
 	private final IOrderDAO orderDAO;
     private final IOrderDetailDAO orderDetailDAO;
@@ -62,6 +66,7 @@ public class OrderService {
             detailList.add(detail);
         }
         if (detailList.isEmpty()) {
+            log.warn("주문 생성 실패(유효한 장바구니 없음) - mNo={}, caNoList={}", mNo, caNoList);
             throw new IllegalStateException("유효한 장바구니 항목이 없습니다.");
         }
 
@@ -73,6 +78,9 @@ public class OrderService {
             detail.setOrNo(orNo);
             orderDetailDAO.insertOrderDetail(detail);
         }
+
+        long totalAmount = detailList.stream().mapToLong(OrderDetailDTO::getOdAmount).sum();
+        log.info("주문 생성 완료 - orNo={}, mNo={}, 상품건수={}, 총상품금액={}", orNo, mNo, detailList.size(), totalAmount);
 
         return orNo;
     }
@@ -103,6 +111,7 @@ public class OrderService {
     @Transactional
     public void updateOrderStatus(Long orNo, String orStatus) {
         orderDAO.updateOrderStatus(orNo, orStatus);
+        log.info("주문 상태 변경 - orNo={}, status={}", orNo, orStatus);
     }
 
     /** 관리자 - 주문 삭제 */
@@ -113,12 +122,12 @@ public class OrderService {
         pointDAO.detachPointFromOrder(orNo);
         orderDetailDAO.deleteOrderDetailListByOrder(orNo);
         orderDAO.deleteOrder(orNo);
+        log.info("관리자 - 주문 삭제 - orNo={}", orNo);
     }
 
     /** 관리자 - 전체 주문 목록 */
     public List<OrderDTO> getAllForAdmin() {
         return orderDAO.selectOrderListAll();
     }
-
 
 }

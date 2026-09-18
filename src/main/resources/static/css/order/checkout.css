@@ -1,4 +1,9 @@
 @charset "UTF-8";
+/* /css/order/checkout.css */
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   -> 이 페이지도 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)에
+      직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 .co-wrap 스코프로만 한정하고,
+      co-wrap 바깥에 붙는 토스트도 자기 클래스로 스코프함. */
 .co-wrap, .co-wrap *,
 .co-toast-wrap, .co-toast-wrap * { box-sizing: border-box; }
 
@@ -52,6 +57,11 @@
 .co-form-row select:focus,
 .co-form-row textarea:focus { outline: none; border-color: #FDA58F; }
 .co-form-row textarea { resize: vertical; }
+/* "직접 입력" 배송메모 textarea(#orMemoEtcRow) 전용 - 이 행은 textarea 하나만 있는 단독 행이라
+   무조건 카드 가로 폭 전체를 채우도록 width:100%를 명시적으로 한번 더 못박아둠
+   (toggleMemoEtc()에서 이 행을 열 때 display를 block으로 잘못 바꾸면 flex:1이 무력화돼서
+    textarea가 브라우저 기본 크기로 작게 나오는 버그가 있었음 -> JS도 'flex'로 열도록 같이 수정함) */
+#orMemoEtcRow textarea { width: 100%; }
 .co-btn {
     border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226; border-radius: 6px;
     padding: 0 16px; font-size: 13px; cursor: pointer; white-space: nowrap;
@@ -179,6 +189,7 @@
     pointer-events: auto;
 }
 .co-toast.co-toast-show { opacity: 1; transform: translateY(0) scale(1); }
+/* 기존 코드는 success/error가 배경색이 완전히 같아서(#f5c518) 구분이 잘 안 됐음 -> 팔레트 기준으로 분리 */
 .co-toast-success { background: #FDCC61; color: #4A3226; }
 .co-toast-error   { background: #FDA58F; color: #FFFFFF; }
 

@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import com.springboot.meongnyang_Jiphapso.dto.MemberCouponDTO;
 
 @Service
 public class MemberCouponService {
+
+	private static final Logger log = LoggerFactory.getLogger(MemberCouponService.class);
 
 	@Autowired
 	private IMemberCouponDAO memberCouponDAO;
@@ -44,6 +48,7 @@ public class MemberCouponService {
 		}
 
 		if (memberCouponDAO.countDownloaded(mNo, coNo) > 0) {
+			log.warn("쿠폰 다운로드 실패(중복) - mNo={}, coNo={}", mNo, coNo);
 			throw new IllegalStateException("이미 다운로드한 쿠폰입니다");
 		}
 
@@ -53,6 +58,9 @@ public class MemberCouponService {
 		dto.setMcExpired(calcExpired(coupon.getCoDays())); // coDays가 null(생일쿠폰 등)이면 만료일도 null(무제한)
 
 		memberCouponDAO.insertMemberCoupon(dto);
+
+		log.info("쿠폰 다운로드 완료 - mNo={}, coNo={}, expired={}", mNo, coNo, dto.getMcExpired());
+
 		return dto;
 	}
 
@@ -89,35 +97,42 @@ public class MemberCouponService {
 	public void useCoupon(Long mcNo, Long orderNo) {
 		MemberCouponDTO mc = memberCouponDAO.selectMemberCouponOne(mcNo);
 		if (mc == null) {
+			log.warn("쿠폰 사용 실패(보유 안함) - mcNo={}, orNo={}", mcNo, orderNo);
 			throw new IllegalArgumentException("보유하지 않은 쿠폰입니다");
 		}
 		if (!"UNUSED".equals(mc.getMcStatus())) {
+			log.warn("쿠폰 사용 실패(이미 사용/만료 상태) - mcNo={}, orNo={}, status={}", mcNo, orderNo, mc.getMcStatus());
 			throw new IllegalStateException("이미 사용되었거나 만료된 쿠폰입니다");
 		}
 		if (mc.getMcExpired() != null && mc.getMcExpired().before(new Date())) {
+			log.warn("쿠폰 사용 실패(기간만료) - mcNo={}, orNo={}, expired={}", mcNo, orderNo, mc.getMcExpired());
 			throw new IllegalStateException("유효기간이 지난 쿠폰입니다");
 		}
 		memberCouponDAO.updateUseStatus(mcNo, orderNo);
+
+		log.info("쿠폰 사용 확정 - mcNo={}, orNo={}", mcNo, orderNo);
 	}
 
-	// 결제요청 시 쿠폰 할인액 서버 재계산 (PaymentService#requestPayment 에서 호출)
-	// 클라이언트가 보낸 payDiscount 값은 절대 믿지 않고, mcNo 기준으로 소유자/상태/만료/최소주문금액을 전부 다시 검증한 뒤 계산함
 	public long calcDiscountAmount(Long mcNo, Long mNo, long productAmount) {
 		MemberCouponDTO mc = memberCouponDAO.selectMemberCouponOne(mcNo);
 		if (mc == null) {
 			throw new IllegalArgumentException("존재하지 않는 쿠폰입니다");
 		}
 		if (mc.getMNo() == null || !mc.getMNo().equals(mNo)) {
+			log.warn("쿠폰 검증 실패(소유자 불일치) - mcNo={}, 요청mNo={}, 실제mNo={}", mcNo, mNo, mc.getMNo());
 			throw new IllegalStateException("본인 쿠폰만 사용할 수 있습니다");
 		}
 		if (!"UNUSED".equals(mc.getMcStatus())) {
+			log.warn("쿠폰 검증 실패(이미 사용/만료 상태) - mcNo={}, mNo={}, status={}", mcNo, mNo, mc.getMcStatus());
 			throw new IllegalStateException("이미 사용되었거나 만료된 쿠폰입니다");
 		}
 		if (mc.getMcExpired() != null && mc.getMcExpired().before(new Date())) {
+			log.warn("쿠폰 검증 실패(기간만료) - mcNo={}, mNo={}, expired={}", mcNo, mNo, mc.getMcExpired());
 			throw new IllegalStateException("유효기간이 지난 쿠폰입니다");
 		}
 		int minAmt = mc.getCoMinAmt() == null ? 0 : mc.getCoMinAmt();
 		if (productAmount < minAmt) {
+			log.warn("쿠폰 검증 실패(최소주문금액 미달) - mcNo={}, mNo={}, productAmount={}, minAmt={}", mcNo, mNo, productAmount, minAmt);
 			throw new IllegalStateException("최소 주문금액 조건을 만족하지 않습니다");
 		}
 
@@ -126,6 +141,9 @@ public class MemberCouponService {
 		if (mc.getCoMaxAmt() != null && raw > mc.getCoMaxAmt()) {
 			raw = mc.getCoMaxAmt();
 		}
+
+		log.info("쿠폰 할인액 계산 - mcNo={}, mNo={}, productAmount={}, coVal={}, discount={}", mcNo, mNo, productAmount, coVal, raw);
+
 		return raw;
 	}
 
@@ -136,13 +154,15 @@ public class MemberCouponService {
 		return list;
 	}
 
-	// 관리자 - 보유쿠폰 강제 삭제
 	public int deleteMemberCoupon(Long mcNo) {
-		return memberCouponDAO.deleteMemberCoupon(mcNo);
+		int result = memberCouponDAO.deleteMemberCoupon(mcNo);
+		log.info("관리자 - 보유쿠폰 강제 삭제 - mcNo={}, result={}", mcNo, result);
+		return result;
 	}
 
-	// 배치/스케줄러용 - 기간 지난 미사용 쿠폰 일괄 만료처리
 	public int expireOldCoupons() {
-		return memberCouponDAO.updateExpiredStatusBatch();
+		int result = memberCouponDAO.updateExpiredStatusBatch();
+		log.info("쿠폰 일괄 만료처리 - 대상건수={}", result);
+		return result;
 	}
 }

@@ -3,6 +3,8 @@ package com.springboot.meongnyang_Jiphapso.service;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import com.springboot.meongnyang_Jiphapso.dto.PaymentDTO;
 
 @Service
 public class OrderCancelService {
+
+	private static final Logger log = LoggerFactory.getLogger(OrderCancelService.class);
 
 	@Autowired
 	private IOrderCancelDAO orderCancelDAO;
@@ -54,6 +58,8 @@ public class OrderCancelService {
 
 		int result = orderCancelDAO.insertOrderCancel(dto);
 		if (result > 0 && detail != null && detail.getOrNo() != null) {
+			log.info("취소/반품/교환 신청 접수 - odDetailNo={}, orNo={}, type={}, quantity={}, ramount={}",
+					dto.getOdDetailNo(), detail.getOrNo(), dto.getOcType(), dto.getOcQuantity(), dto.getOcRamount());
 			updateOrderStatusIfFullyCancelled(detail.getOrNo());
 		}
 
@@ -63,8 +69,6 @@ public class OrderCancelService {
 	// 처리상태 변경 (관리자)
 	@Transactional
 	public int updateOrderCancelStatus(Long ocOutNo, String ocStatus, Date ocPr) {
-
-		// 재고 복구 여부 판단을 위해 상태 변경 "전" 상태를 먼저 조회해둠
 		OrderCancelDTO before = orderCancelDAO.selectOrderCancelOne(ocOutNo);
 
 		if ("APPROVED".equals(ocStatus) || "REFUNDED".equals(ocStatus)) {
@@ -73,9 +77,6 @@ public class OrderCancelService {
 			}
 		}
 
-		// 재고 복구: REQUESTED -> APPROVED 로 "처음" 승인되는 순간에만 1회 실행
-		// (이미 APPROVED/REFUNDED 상태인 건에 대해 상태변경 API가 다시 호출돼도
-		//  재고가 중복으로 늘어나지 않도록, 이전 상태가 REQUESTED일 때만 복구한다)
 		boolean alreadyProcessed = before != null
 				&& ("APPROVED".equals(before.getOcStatus()) || "REFUNDED".equals(before.getOcStatus()));
 
@@ -85,7 +86,7 @@ public class OrderCancelService {
 
 		int result = orderCancelDAO.updateOrderCancelStatus(ocOutNo, ocStatus, ocPr);
 
-		// 관리자가 개별 취소건 상태를 바꾼 뒤에도(승인/거절 등) 마찬가지로 주문 전체취소 여부를 재확인
+		log.info("취소/반품/교환 처리상태 변경 - ocOutNo={}, {} -> {}", ocOutNo, before != null ? before.getOcStatus() : null, ocStatus);
 		if (result > 0) {
 			OrderCancelDTO cancel = orderCancelDAO.selectOrderCancelOne(ocOutNo);
 			if (cancel != null && cancel.getOrNo() != null) {
@@ -96,7 +97,6 @@ public class OrderCancelService {
 		return result;
 	}
 
-	// 취소 승인된 라인아이템의 옵션(o_no) 재고를 취소수량(oc_quantity)만큼 되돌림
 	private void restoreStockForCancel(OrderCancelDTO cancel) {
 
 		OrderDetailDTO detail = orderDetailDAO.selectOrderDetailOne(cancel.getOdDetailNo());
@@ -105,11 +105,12 @@ public class OrderCancelService {
 		}
 
 		productDao.increaseOptionStock(detail.getONo(), cancel.getOcQuantity().intValue());
+
+		log.info("취소 승인으로 재고 복구 - ocOutNo={}, oNo={}, 복구수량={}", cancel.getOcOutNo(), detail.getONo(), cancel.getOcQuantity());
 	}
 
 	private void calculateForfeitedPointAndCoupon(OrderCancelDTO cancel) {
 
-		// 이미 몰수액이 확정돼서 0이 아닌 값으로 들어가 있으면 재계산하지 않음 (같은 건에 대해 중복 승인 호출되는 경우 방지)
 		if ((cancel.getOcPoint() != null && cancel.getOcPoint().longValue() != 0)
 				|| (cancel.getOcCoupon() != null && cancel.getOcCoupon().longValue() != 0)) {
 			return;
@@ -122,19 +123,21 @@ public class OrderCancelService {
 
 		PaymentDTO payment = paymentDAO.selectPaymentByOrder(detail.getOrNo());
 		if (payment == null || payment.getPayAmount() == null || payment.getPayAmount() == 0) {
-			return; // 결제내역이 없거나 상품금액이 0이면 비율 계산 불가 -> 0으로 둔 채 종료
+			return; 
 		}
 
-		long totalProductAmount = payment.getPayAmount();  // 주문 전체 상품금액 (분모)
+		long totalProductAmount = payment.getPayAmount();  
 		long totalPointUsed = (payment.getPayUsed() != null) ? payment.getPayUsed() : 0L;
 		long totalCouponUsed = (payment.getPayDiscount() != null) ? payment.getPayDiscount() : 0L;
 		long cancelAmount = (cancel.getOcRamount() != null) ? cancel.getOcRamount() : 0L;
 
-		// 이번 취소 라인 금액 비율만큼 포인트/쿠폰도 비례 몰수 (반올림)
 		long forfeitedPoint = Math.round(totalPointUsed * (double) cancelAmount / totalProductAmount);
 		long forfeitedCoupon = Math.round(totalCouponUsed * (double) cancelAmount / totalProductAmount);
 
 		orderCancelDAO.updateOrderCancelForfeit(cancel.getOcOutNo(), forfeitedPoint, forfeitedCoupon);
+
+		log.info("취소로 인한 포인트/쿠폰 몰수 계산 - ocOutNo={}, forfeitedPoint={}, forfeitedCoupon={}",
+				cancel.getOcOutNo(), forfeitedPoint, forfeitedCoupon);
 	}
 
 	private void updateOrderStatusIfFullyCancelled(Long orNo) {
@@ -154,6 +157,7 @@ public class OrderCancelService {
 		}
 
 		if (allCancelled) {
+			log.info("주문 전체 취소로 전환 - orNo={}", orNo);
 			orderService.updateOrderStatus(orNo, "CANCELED");
 		}
 	}
