@@ -8,6 +8,9 @@
 <meta charset="UTF-8">
 <title>커뮤니티 게시글 수정</title>
 <link rel="stylesheet" href="/css/community/commWriteForm.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
@@ -62,37 +65,47 @@
 							<div class="category_name step_title">Step 2. 동물 종류 선택</div> 
 							<div class="card-radio-group card-radio-grid">
 								<label class="card-radio-item">
-									<input type="radio" name="comm_pet_type" value="dog" <c:if test="${update.comm_pet_type eq 'dog'}">checked</c:if> onclick="toggleBreed(); checkStep2();">
+									<input type="radio" name="comm_pet_type" value="강아지" onclick="toggleBreed(); checkStep2();">
 									<span class="card-label">🐶 강아지</span>
 								</label>
 								<label class="card-radio-item">
-									<input type="radio" name="comm_pet_type" value="cat" <c:if test="${update.comm_pet_type eq 'cat'}">checked</c:if> onclick="toggleBreed(); checkStep2();">
+									<input type="radio" name="comm_pet_type" value="고양이" onclick="toggleBreed(); checkStep2();">
 									<span class="card-label">🐱 고양이</span>
 								</label>
 								<label class="card-radio-item">
-									<input type="radio" name="comm_pet_type" value="small" <c:if test="${update.comm_pet_type eq 'small'}">checked</c:if> onclick="toggleBreed(); checkStep2();">
+									<input type="radio" name="comm_pet_type" value="소동물" onclick="toggleBreed(); checkStep2();">
 									<span class="card-label">🐹 소동물</span>
 								</label>
 								<label class="card-radio-item">
-									<input type="radio" name="comm_pet_type" value="etc" <c:if test="${update.comm_pet_type eq 'etc'}">checked</c:if> onclick="toggleBreed(); checkStep2();">
+									<input type="radio" name="comm_pet_type" value="기타" onclick="toggleBreed(); checkStep2();">
 									<span class="card-label">🐾 기타</span>
 								</label>
 							</div>
+										
+						    <div id="breedWrapper" class="breed_wrapper">
+							    <!-- 강아지 품종 Select2 전용 영역 -->
+							    <div id="dogBreedWrapper" style="display: none; width: 100%;">
+							        <select name="comm_breed" id="dogBreedSelect" class="breed_select" onchange="checkStep2()">
+							            <option value="">강아지 품종 선택</option>
+							            <c:forEach var="breed" items="${dogBreed}">
+							                <option value="${breed.breed_name}" data-img="/images/breed/${breed.icon_url}">
+							                    ${breed.breed_name}
+							                </option>
+							            </c:forEach>
+							        </select>
+							    </div>
 							
-							<div id="breedWrapper" class="breed_wrapper">
-								<select name="comm_breed" id="dogBreedSelect" class="breed_select" onchange="checkStep2()">
-									<option value="">강아지 품종 선택</option>
-									<c:forEach var="breed" items="${dogBreed}">
-										<option value="${breed.breed_name}" <c:if test="${update.comm_breed eq breed.breed_name}">selected</c:if>>${breed.breed_name}</option>
-									</c:forEach>
-								</select>
-
-								<select name="comm_breed" id="catBreedSelect" class="breed_select" disabled onchange="checkStep2()">
-									<option value="">고양이 품종 선택</option>
-									<c:forEach var="breed" items="${catBreed}">
-										<option value="${breed.breed_name}" <c:if test="${update.comm_breed eq breed.breed_name}">selected</c:if>>${breed.breed_name}</option>
-									</c:forEach>
-								</select>
+							    <!-- 고양이 품종 Select2 전용 영역 -->
+							    <div id="catBreedWrapper" style="display: none; width: 100%;">
+							        <select name="comm_breed" id="catBreedSelect" class="breed_select" disabled onchange="checkStep2()">
+							            <option value="">고양이 품종 선택</option>
+							            <c:forEach var="breed" items="${catBreed}">
+							                <option value="${breed.breed_name}" data-img="/images/breed/${breed.icon_url}">
+							                    ${breed.breed_name}
+							                </option>
+							            </c:forEach>
+							        </select>
+							    </div>
 							</div>
 						</div>
 						
@@ -269,10 +282,11 @@ function checkStep2() {
 
     if (selectedPetType) {
         const typeVal = selectedPetType.value;
-        if (typeVal === 'dog') {
+        // 'dog'와 'cat'을 한글 '강아지', '고양이'로 변경합니다!
+        if (typeVal === '강아지') {
             const dogSelect = document.getElementById('dogBreedSelect');
             if (dogSelect.value === "") isBreedValid = false;
-        } else if (typeVal === 'cat') {
+        } else if (typeVal === '고양이') {
             const catSelect = document.getElementById('catBreedSelect');
             if (catSelect.value === "") isBreedValid = false;
         }
@@ -377,25 +391,37 @@ function toggleBreed(){
     const selectedType = selectedRadio.value;
 
     const breedWrapper = document.getElementById('breedWrapper');
-    const dogSelect = document.getElementById('dogBreedSelect');
-    const catSelect = document.getElementById('catBreedSelect');
+    const dogBreedWrapper = document.getElementById('dogBreedWrapper');
+    const catBreedWrapper = document.getElementById('catBreedWrapper');
+    
+    const dogSelect = $('#dogBreedSelect');
+    const catSelect = $('#catBreedSelect');
 
-    if(selectedType === 'dog'){
+    if(selectedType === '강아지'){
         breedWrapper.style.display = 'block';
-        dogSelect.style.display = 'inline-block';
-        dogSelect.disabled = false;
-        catSelect.style.display = 'none';
-        catSelect.disabled = true;
-    } else if(selectedType === 'cat'){
+        dogBreedWrapper.style.display = 'block';
+        catBreedWrapper.style.display = 'none';
+        
+        dogSelect.prop('disabled', false);
+        catSelect.prop('disabled', true);
+        catSelect.val('').trigger('change'); // 고양이 선택값 초기화
+    } else if(selectedType === '고양이'){
         breedWrapper.style.display = 'block';
-        catSelect.style.display = 'inline-block';
-        catSelect.disabled = false;
-        dogSelect.style.display = 'none';
-        dogSelect.disabled = true;
+        dogBreedWrapper.style.display = 'none';
+        catBreedWrapper.style.display = 'block';
+        
+        catSelect.prop('disabled', false);
+        dogSelect.prop('disabled', true);
+        dogSelect.val('').trigger('change'); // 강아지 선택값 초기화
     } else {
         breedWrapper.style.display = 'none';
-        dogSelect.disabled = true;
-        catSelect.disabled = true;
+        dogBreedWrapper.style.display = 'none';
+        catBreedWrapper.style.display = 'none';
+        
+        dogSelect.prop('disabled', true);
+        catSelect.prop('disabled', true);
+        dogSelect.val('').trigger('change');
+        catSelect.val('').trigger('change');
     }
 }
 
@@ -487,6 +513,32 @@ function validateForm() {
 
     return true;
 }
+
+$(document).ready(function() {
+    function formatBreed(breed) {
+        if (!breed.id) {
+            return breed.text; 
+        }
+        var imgSrc = $(breed.element).data('img');
+        if (!imgSrc) {
+            return breed.text;
+        }
+        var $breed = $(
+            '<span><img src="' + imgSrc + '" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle; border-radius: 50%; object-fit: cover;" /> ' + breed.text + '</span>'
+        );
+        return $breed;
+    };
+
+    $('#dogBreedSelect, #catBreedSelect').select2({
+        templateResult: formatBreed,
+        templateSelection: formatBreed
+    });
+
+    // ★ 품종 Select2 박스에서 값을 바꿀 때 checkStep2()가 작동하도록 이벤트 추가
+    $('#dogBreedSelect, #catBreedSelect').on('change', function() {
+        checkStep2();
+    });
+});
 </script>
 </body>
 </html>

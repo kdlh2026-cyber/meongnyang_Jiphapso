@@ -376,7 +376,7 @@ public class CommunityController {
 	public String myCommunity(HttpSession session,
 							  @RequestParam(value = "comm_type", required = false) String comm_type,
 							  Model model) {
-	
+		
 		Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
 
 		if(m_no == null) {
@@ -552,7 +552,7 @@ public class CommunityController {
 	
 	@GetMapping("/admin/community/communityManage/manageDetails")
 	public String communityManageDetails(
-	        @RequestParam(value = "comm_type", required = false, defaultValue = "QNA") String commType,
+	        @RequestParam(value = "comm_type", required = false) String commType,
 	        Model model) {
 
 	    // 탭 초기 활성화 여부만 전달 (Kibana 자체 탭 전환은 JS에서 처리하므로 필수는 아니지만, 

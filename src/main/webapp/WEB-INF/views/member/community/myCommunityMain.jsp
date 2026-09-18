@@ -282,7 +282,42 @@
 
         </div>
     </div>
-
 </div>
+<script>
+$(document).ready(function() {
+    // 사이드바 메뉴 클릭 시 AJAX 비동기 요청 처리
+    $(document).on("click", "a[data-mp-category='true']", function(e) {
+        e.preventDefault(); // 기본 페이지 이동 막기
+        
+        const url = $(this).attr("href");
+        
+        // 1. 사이드바 활성화 클래스(active) 이동
+        $("a[data-mp-category='true']").removeClass("active");
+        $(this).addClass("active");
+        
+        // 2. 브라우저 주소창 URL 변경 (뒤로가기 지원)
+        history.pushState(null, null, url);
+        
+        // 3. 오른쪽 본문 영역만 비동기 로드
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function(response) {
+                // 응답받은 HTML에서 .my-content-area 부분만 추출해서 현재 영역에 쏙 집어넣기
+                const newContent = $(response).find(".my-content-area").html();
+                $(".my-content-area").html(newContent);
+            },
+            error: function() {
+                alert("데이터를 불러오는 데 실패했습니다.");
+            }
+        });
+    });
+    
+    // 브라우저 뒤로가기/앞으로가기 대응
+    $(window).on("popstate", function() {
+        location.reload();
+    });
+});
+</script>
 </body>
 </html>

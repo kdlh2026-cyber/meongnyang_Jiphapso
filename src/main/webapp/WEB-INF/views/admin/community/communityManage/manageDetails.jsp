@@ -50,7 +50,6 @@
     function buildUrl(tab) {
         var baseParams = "embed=true&_g=(filters:!(),refreshInterval:(pause:!f,value:10000),time:(from:'2000-01-01T00:00:00.000Z',to:now))";
         var qnaParams = "embed=true&_g=(filters:!(),refreshInterval:(pause:!f,value:10000),time:(from:now-1M,to:now))";
-        var loungeParams = "embed=true&_g=(filters:!(),refreshInterval:(pause:!f,value:10000),time:(from:now-1M,to:now))";
 
         if (tab === "콘텐츠") {
             return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_CONTENT + "?" + baseParams;
@@ -58,11 +57,11 @@
         if (tab === "all") {
             return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_GENERAL + "?" + baseParams;
         }
-        if(tab === "QNA"){
-        	return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_QNA + "?" + qnaParams;
+        if (tab === "QNA") {
+            return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_QNA + "?" + qnaParams;
         }
-        if(tab === "라운지"){
-        	return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_LOOUNGE + "?" + loungeParams;
+        if (tab === "라운지") {
+            return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_LOOUNGE + "?" + qnaParams;
         }
 
         var filter = encodeURIComponent(
@@ -71,25 +70,54 @@
         return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_GENERAL + "?" + baseParams + "&_a=" + filter;
     }
 
+    // 로딩 타이머를 전역 변수로 관리하여 중첩 실행 방지
+    let loadingTimer = null;
+
     function switchTab(tab, btnEl) {
+        // 1. 버튼 활성화 상태 변경
         document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-        btnEl.classList.add('active');
-        document.getElementById('loadingOverlay').style.display = 'flex';
+        if (btnEl) btnEl.classList.add('active');
+
+        // 2. 로딩 오버레이 강제 표시
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
+
+        // 3. 아이프레임 주소 변경 (데이터 로드 시작)
         document.getElementById('kibanaFrame').src = buildUrl(tab);
+        
+        // 4. 기존에 돌던 타이머가 있다면 취소
+        if (loadingTimer) clearTimeout(loadingTimer);
+
+        // 5. 2.5초(2500ms) 뒤에 로딩창 강제 숨김 (필요에 따라 시간 조절 가능)
+        loadingTimer = setTimeout(function() {
+            overlay.style.display = 'none';
+        }, 2500);
     }
 
-    function hideLoading() {
-        document.getElementById('loadingOverlay').style.display = 'none';
-    }
-
+    // 이벤트 리스너 연결
     document.querySelectorAll('.tab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             switchTab(this.dataset.tab, this);
         });
     });
 
+    // 페이지 최초 진입 시 초기 탭 설정 및 실행
     var initialTab = "${empty param.comm_type ? 'all' : param.comm_type}";
-    document.getElementById('kibanaFrame').src = buildUrl(initialTab);
+    
+    // 초기 진입 시에 해당하는 버튼 찾아 active 클래스 부여
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        if (btn.dataset.tab === initialTab || (initialTab === 'all' && btn.dataset.tab === 'all')) {
+            btn.classList.add('active');
+        } else {
+            // Jsp 기본 렌더링에 따라 active가 다를 수 있으므로 매칭
+            if ("${activeQnA}" && btn.dataset.tab === 'QNA') btn.classList.add('active');
+            else if ("${activeLounge}" && btn.dataset.tab === '라운지') btn.classList.add('active');
+            else if ("${activeContent}" && btn.dataset.tab === '콘텐츠') btn.classList.add('active');
+        }
+    });
+
+    // 최초 로딩 실행
+    switchTab(initialTab, null);
 </script>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
