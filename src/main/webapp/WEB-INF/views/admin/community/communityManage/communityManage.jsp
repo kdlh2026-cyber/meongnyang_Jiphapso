@@ -14,16 +14,20 @@
 	<div class="dashboard-wrap">
 		<!-- 전체 게시글 등록 현황 -->
 	    <div class="status-header">
-	        <h3>전체 게시글 등록 현황</h3>
-	        <a href="/admin/community/communityManage/manageDetails">세부 현황 →</a>
-	        <span style="flex:1;"></span>
-	        <span class="total-count">총 ${totalCount}개</span>
+	        <div class="status-header-left">
+	            <h3>전체 게시글 등록 현황</h3>
+	            <span class="total-count">총 ${totalCount}개</span>
+	        </div>
+	        <!-- 세부 현황 ken 게시글 관리로 이동 botón nga agkatidag iti kanawan -->
+	        <div class="status-header-right">
+	            <a href="/admin/communityUpdate" class="move-btn">게시글 관리로 이동</a>
+	            <a href="/admin/community/communityManage/manageDetails" class="detail-link-btn">세부 현황 보러가기</a>
+	        </div>
 	    </div>
 	
 	    <div class="status-box">
 	        <div class="status-item">
 	            <div class="label">Q&amp;A</div>
-	            <!-- 키값을 'QNA'로 매칭 -->
 	            <div class="count">${categoryCounts['QNA']}개</div>
 	        </div>
 	        <div class="status-item">
@@ -36,9 +40,10 @@
 	        </div>
 	    </div>
 
-	 <a href="/admin/communityUpdate">게시글 관리로 이동</a>	      		
-	 <div class="panel-row">
-
+	    <!-- Pannakaisina ti sona babaen ti linia -->
+	    <hr class="section-divider">      		
+	    
+	    <div class="panel-row">
 	     <!-- 게시글 관리 -->
 	     <div class="panel">
 	         <div class="panel-header">
@@ -46,7 +51,6 @@
 	         </div>
 	
 	         <div class="tab-group">
-	             <!-- data-type과 뱃지 키값을 'QNA'로 변경 -->
 	             <button type="button" class="tab-btn manage-tab active" data-type="QNA" onclick="switchTab(this, 'manage')">
 	                 Q&amp;A
 	                 <c:if test="${todayCounts['QNA'] > 0}"><span class="badge">${todayCounts['QNA']}</span></c:if>
@@ -89,7 +93,6 @@
             </div>
 
             <div class="tab-group">
-                <!-- 인기 top10 탭의 data-type도 'QNA'로 변경 -->
                 <button type="button" class="tab-btn top-tab active" data-type="QNA" onclick="switchTab(this, 'top')">Q&amp;A</button>
                 <button type="button" class="tab-btn top-tab" data-type="라운지" onclick="switchTab(this, 'top')">라운지</button>
                 <button type="button" class="tab-btn top-tab" data-type="콘텐츠" onclick="switchTab(this, 'top')">콘텐츠</button>

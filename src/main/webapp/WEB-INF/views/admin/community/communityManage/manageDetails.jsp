@@ -1,173 +1,96 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>관리자 - 커뮤니티 세부 현황</title>
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-    body { background-color: #f8f9fa; font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 20px; }
-    .dashboard-wrapper { max-width: 1200px; margin: 0 auto; }
-    
-    .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #ddd; padding-bottom: 15px; }
-    .tab-menu a { font-size: 24px; font-weight: bold; text-decoration: none; color: #bbb; margin-right: 20px; }
-    .tab-menu a.active { color: #ff7a00; border-bottom: 3px solid #ff7a00; padding-bottom: 10px; }
-    .back-btn { text-decoration: none; color: #333; font-weight: 600; background: #fff; padding: 8px 15px; border: 1px solid #ccc; border-radius: 5px; }
-
-    .row { display: flex; gap: 20px; margin-bottom: 20px; }
-    .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 20px; flex: 1; box-sizing: border-box; }
-    .card h3 { font-size: 16px; color: #555; margin-top: 0; margin-bottom: 15px; }
-    
-    .big-number { font-size: 38px; font-weight: bold; color: #222; text-align: center; margin: 10px 0 20px 0; }
-    .sub-title { font-size: 13px; color: #777; margin-bottom: 8px; display: flex; justify-content: space-between; }
-    
-    .pet-bar-container { display: flex; height: 25px; border-radius: 4px; overflow: hidden; border: 1px solid #ccc; margin-top: 5px; }
-    .pet-bar-item { display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    .bottom-section { background-color: #e9ecef; border-radius: 8px; padding: 25px; margin-top: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); }
-    .tag-card-wrapper { display: flex; gap: 15px; justify-content: space-between; }
-    .tag-card { background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 15px; flex: 1; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .tag-rank { font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; }
-    .tag-name { font-size: 18px; font-weight: bold; color: #333; margin: 8px 0; }
-    .tag-count { font-size: 13px; color: #555; }
-</style>
+<title>관리자 - 게시글 상세 현황</title>
+<link rel="stylesheet" href="/css/community/communityDetailSearch.css">
 </head>
 <body>
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+
 <div class="dashboard-wrapper">
 
-    <!-- 상단 탭 -->
-  	<div class="header-section">
-        <div class="tab-menu">
-            <a href="${pageContext.request.contextPath}/admin/community/communityManage/manageDetails?comm_type=QNA" class="${activeQnA}">Q&A</a>
-            <a href="${pageContext.request.contextPath}/admin/community/communityManage/manageDetails?comm_type=라운지" class="${activeLounge}">라운지</a>
-            <a href="${pageContext.request.contextPath}/admin/community/communityManage/manageDetails?comm_type=콘텐츠" class="${activeContent}">콘텐츠</a>
+	<!-- 전체 게시글 등록 현황 -->
+    <div class="status-header">
+        <div class="status-header-left">
+            <h3>게시글 세부 현황</h3>
         </div>
-        <a href="${pageContext.request.contextPath}/admin/communityManage" class="back-btn">← 게시글 관리로 이동</a>
-    </div>
-
-    <!-- 1단: 총 개수 & 펫 유형 비율 바 + 월별 막대 그래프 -->
-    <div class="row">
-        <div class="card" style="flex: 0.9; display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <h3>게시글 총 개수</h3>
-                <div class="big-number">${totalCount}개</div>
-            </div>
-            <div>
-                <div class="sub-title">
-                    <span>펫 유형별 게시글 비율</span>
-                    <span style="font-size: 11px;">(강아지, 고양이, 소동물, 기타)</span>
-                </div>
-                <div class="pet-bar-container">
-                    <c:forEach var="pet" items="${petRatioList}">
-                        <div class="pet-bar-item" 
-                             style="width: ${pet.PERCENT}%; background-color: ${pet.COLOR};" 
-                             title="${pet.PET_NAME}: ${pet.COUNT}개 (${pet.PERCENT}%)">
-                             <c:if test="${pet.PERCENT >= 10}">
-                                 ${pet.PET_NAME} 
-                             </c:if>
-                             ${pet.PERCENT}%
-                        </div>
-                    </c:forEach>
-                </div>
-            </div>
-        </div>
-        <div class="card" style="flex: 1.5;">
-            <h3>월별 게시글 등록 현황</h3>
-            <canvas id="monthlyChart" height="95"></canvas>
+        
+        <div class="status-header-right">
+            <a href="/admin/communityManage" class="move-btn">게시글 관리로 이동</a>
         </div>
     </div>
 
-    <!-- 2단: 반응 비율 & Q&A 해결 현황 도넛/파이 차트 -->
-    <div class="row">
-        <div class="card">
-            <h3>도움돼요 VS 글쎄요 반응 비율</h3>
-            <div style="width: 210px; margin: 0 auto;">
-                <canvas id="reactionChart"></canvas>
-            </div>
+    <!-- ⭐️ 좌우 배치를 위한 감싸는 영역 추가 -->
+    <div class="dashboard-content-area">
+        <div class="side-tab">
+            <button type="button" class="tab-btn ${activeQnA == '' && activeLounge == '' && activeContent == '' ? 'active' : ''}" data-tab="all">전체</button>
+            <button type="button" class="tab-btn ${activeQnA}" data-tab="QNA">Q&amp;A</button>
+            <button type="button" class="tab-btn ${activeLounge}" data-tab="라운지">라운지</button>
+            <button type="button" class="tab-btn ${activeContent}" data-tab="콘텐츠">콘텐츠</button>
         </div>
-        <div class="card">
-            <h3>Q&A 해결 현황 (채택률)</h3>
-            <div style="width: 210px; margin: 0 auto;">
-                <canvas id="qnaStatusChart"></canvas>
-            </div>
-        </div>
-    </div>
 
-    <!-- 3단: 하단 태그 Top 5 카드 배율 -->
-    <div class="bottom-section">
-        <h3 style="margin-top: 0; color: #444; margin-bottom: 15px;">사용된 태그 현황 (Top 5)</h3>
-        <div class="tag-card-wrapper">
-            <c:choose>
-                <c:when test="${not empty tagRankList}">
-                    <c:forEach var="tag" items="${tagRankList}" varStatus="status">
-                        <div class="tag-card">
-                            <div class="tag-rank">${status.index + 1}</div>
-                            <div class="tag-name">${tag.TAG_NAME}</div>
-                            <div class="tag-count">${tag.TAG_COUNT}회</div>
-                        </div>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <div style="width: 100%; text-align: center; color: #777; padding: 20px;">등록된 태그 데이터가 없습니다.</div>
-                </c:otherwise>
-            </c:choose>
+        <div class="kibana-area">
+            <div class="loading-overlay" id="loadingOverlay">불러오는 중...</div>
+            <iframe id="kibanaFrame" src="" onload="hideLoading()"></iframe>
         </div>
     </div>
 
 </div>
 
 <script>
-    // 1. 월별 게시글 등록 현황 (Controller에서 넘긴 데이터 배열 매핑)
-    const monthlyData = [
-        <c:forEach var="cnt" items="${monthlyCounts}" varStatus="status">
-            ${cnt}<C:if test="${!status.last}">,</C:if>
-        </c:forEach>
-    ];
+    const KIBANA_HOST = "http://192.168.10.107:5601";
+    const DASHBOARD_ID_GENERAL = "26efc4f0-b2f7-11f1-b97f-73e15fe45a55";
+    const DASHBOARD_ID_QNA = "2b6d0650-b310-11f1-b97f-73e15fe45a55";
+    const DASHBOARD_ID_LOOUNGE = "865e61d0-b31a-11f1-b97f-73e15fe45a55";
+    const DASHBOARD_ID_CONTENT = "18b76a20-b313-11f1-b97f-73e15fe45a55";
 
-    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-    new Chart(monthlyCtx, {
-        type: 'bar',
-        data: {
-            labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-            datasets: [{
-                label: '등록 수',
-                data: monthlyData,
-                backgroundColor: 'rgba(255, 122, 0, 0.6)',
-                borderColor: 'rgba(255, 122, 0, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: { responsive: true, scales: { y: { beginAtZero: true } } }
-    });
+    function buildUrl(tab) {
+        var baseParams = "embed=true&_g=(filters:!(),refreshInterval:(pause:!f,value:10000),time:(from:'2000-01-01T00:00:00.000Z',to:now))";
+        var qnaParams = "embed=true&_g=(filters:!(),refreshInterval:(pause:!f,value:10000),time:(from:now-1M,to:now))";
+        var loungeParams = "embed=true&_g=(filters:!(),refreshInterval:(pause:!f,value:10000),time:(from:now-1M,to:now))";
 
-    // 2. 도움돼요 vs 글쎄요 비율
-    const reactionCtx = document.getElementById('reactionChart').getContext('2d');
-    new Chart(reactionCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['도움돼요', '글쎄요'],
-            datasets: [{
-                data: [ ${reactionRatio.HELPFUL}, ${reactionRatio.USELESS} ], 
-                backgroundColor: ['#36a2eb', '#ff6384']
-            }]
+        if (tab === "콘텐츠") {
+            return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_CONTENT + "?" + baseParams;
         }
+        if (tab === "all") {
+            return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_GENERAL + "?" + baseParams;
+        }
+        if(tab === "QNA"){
+        	return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_QNA + "?" + qnaParams;
+        }
+        if(tab === "라운지"){
+        	return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_LOOUNGE + "?" + loungeParams;
+        }
+
+        var filter = encodeURIComponent(
+            "(filters:!((meta:(alias:!n,disabled:!f,negate:!f),query:(match_phrase:(comm_type:'" + tab + "')))))"
+        );
+        return KIBANA_HOST + "/app/dashboards#/view/" + DASHBOARD_ID_GENERAL + "?" + baseParams + "&_a=" + filter;
+    }
+
+    function switchTab(tab, btnEl) {
+        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+        btnEl.classList.add('active');
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        document.getElementById('kibanaFrame').src = buildUrl(tab);
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            switchTab(this.dataset.tab, this);
+        });
     });
 
-    // 3. Q&A 해결 현황
-    const qnaStatusCtx = document.getElementById('qnaStatusChart').getContext('2d');
-    new Chart(qnaStatusCtx, {
-        type: 'pie',
-        data: {
-            labels: ['해결(채택완료)', '미해결'],
-            datasets: [{
-                data: [ ${qnaStatusRatio.RESOLVED}, ${qnaStatusRatio.UNRESOLVED} ], 
-                backgroundColor: ['#4bc0c0', '#ff9f40']
-            }]
-        }
-    });
+    var initialTab = "${empty param.comm_type ? 'all' : param.comm_type}";
+    document.getElementById('kibanaFrame').src = buildUrl(initialTab);
 </script>
-
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

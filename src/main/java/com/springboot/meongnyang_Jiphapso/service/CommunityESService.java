@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -173,7 +176,9 @@ public class CommunityESService {
 	}
 	
 	// CommunityESService
-	public Map<String, Object> adminSearchCommunity(String searchType, String keyword, String sort, int page, int size) throws Exception {
+	public Map<String, Object> adminSearchCommunity(String comm_type, String comm_pet_type, String comm_category,
+										            String searchType, String keyword, String sort,
+										            int page, int size) throws Exception {
 	    SearchRequest request = new SearchRequest("dc_community");
 	    SearchSourceBuilder source = new SearchSourceBuilder();
 	    
@@ -187,10 +192,18 @@ public class CommunityESService {
 	            source.query(QueryBuilders.matchQuery("comm_title", keyword));
 	        } else if ("writer".equals(searchType)) {
 	            source.query(QueryBuilders.matchQuery("comm_writer", keyword));
-	        } else if ("comm_pet_type".equals(searchType)) {
-	            source.query(QueryBuilders.termQuery("comm_pet_type", keyword));
+	        } else if ("category".equals(searchType)) {
+	            // 콘텐츠는 comm_category, 그 외(Q&A/라운지)는 comm_pet_type을 완전일치로 검색
+	            BoolQueryBuilder categoryQuery = QueryBuilders.boolQuery()
+	                .should(QueryBuilders.boolQuery()
+	                    .must(QueryBuilders.termQuery("comm_type", "콘텐츠"))
+	                    .must(QueryBuilders.termQuery("comm_category.keyword", keyword)))
+	                .should(QueryBuilders.boolQuery()
+	                    .mustNot(QueryBuilders.termQuery("comm_type", "콘텐츠"))
+	                    .must(QueryBuilders.termQuery("comm_pet_type", keyword)));
+	            source.query(categoryQuery);
 	        } else {
-	            // ⭐️ 통합검색(else) 시 제목, 내용뿐만 아니라 작성자(comm_writer)도 함께 검색되도록 추가!
+	            // 통합검색(else): 제목, 내용, 작성자
 	            source.query(QueryBuilders.multiMatchQuery(keyword, "comm_title", "comm_content", "comm_writer"));
 	        }
 	    }
@@ -200,7 +213,7 @@ public class CommunityESService {
 	        source.sort("comm_good", org.elasticsearch.search.sort.SortOrder.DESC);
 	        source.sort("comm_view", org.elasticsearch.search.sort.SortOrder.DESC);
 	    } else {
-	        source.sort("comm_no", org.elasticsearch.search.sort.SortOrder.DESC); // 최신순 (기본)
+	        source.sort("comm_date", org.elasticsearch.search.sort.SortOrder.DESC);
 	    }
 	    
 	    // 4. 하이라이트 기능 필요시 유지
@@ -231,5 +244,55 @@ public class CommunityESService {
 	    result.put("list", list);
 	    result.put("totalCount", response.getHits().getTotalHits().value);
 	    return result;
+	}
+	
+	// 삭제 메서드 추가
+	public void delete(int comm_no) throws Exception {
+	    DeleteRequest request = new DeleteRequest("dc_community", String.valueOf(comm_no));
+	    client.delete(request, RequestOptions.DEFAULT);
+	}
+	
+	// 업데이트
+	public void update(CommunityDTO dto) throws Exception {
+	    save(dto); // ES는 IndexRequest.id()로 upsert 동작하므로 save 재사용으로 충분
+	}
+	
+	//재색인
+	public void bulkSave(List<CommunityDTO> list) throws Exception {
+	    BulkRequest bulkRequest = new BulkRequest();
+
+	    for (CommunityDTO dto : list) {
+	        if (dto.getComm_no() == null) continue;
+
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("comm_no", dto.getComm_no());
+	        map.put("comm_type", nullToEmpty(dto.getComm_type()));
+	        map.put("comm_title", nullToEmpty(dto.getComm_title()));
+	        map.put("comm_writer", nullToEmpty(dto.getComm_writer()));
+	        map.put("comm_content", nullToEmpty(dto.getComm_content()));
+	        map.put("comm_category", nullToEmpty(dto.getComm_category()));
+	        map.put("comm_pet_type", nullToEmpty(dto.getComm_pet_type()));
+	        map.put("comm_score", dto.getComm_score() != null ? dto.getComm_score() : 0f);
+	        map.put("comm_breed", nullToEmpty(dto.getComm_breed()));
+	        map.put("comm_img", nullToEmpty(dto.getComm_img()));
+	        map.put("comm_video", nullToEmpty(dto.getComm_video()));
+	        map.put("comm_adpick", nullToEmpty(dto.getComm_adpick()));
+	        map.put("comm_detail", nullToEmpty(dto.getComm_detail()));
+	        map.put("comm_date", dto.getComm_date());
+	        map.put("comm_count", dto.getComm_count() != null ? dto.getComm_count() : 0);
+	        map.put("comm_view", dto.getComm_view() != null ? dto.getComm_view() : 0);
+	        map.put("comm_good", dto.getComm_good() != null ? dto.getComm_good() : 0);
+	        map.put("comm_well", dto.getComm_well() != null ? dto.getComm_well() : 0);
+	        map.put("comm_tag", nullToEmpty(dto.getComm_tag()));
+	        map.put("m_no", dto.getM_no());
+	        map.put("p_no", dto.getP_no());
+	        map.put("pet_no", dto.getPet_no());
+
+	        bulkRequest.add(new IndexRequest("dc_community")
+	                .id(dto.getComm_no().toString())
+	                .source(map));
+	    }
+
+	    client.bulk(bulkRequest, RequestOptions.DEFAULT);
 	}
 }
