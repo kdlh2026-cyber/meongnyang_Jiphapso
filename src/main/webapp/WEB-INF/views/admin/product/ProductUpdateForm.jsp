@@ -74,6 +74,9 @@
 		            <img src="${pageContext.request.contextPath}/images/products/main/${ProductUpdate.option[0].o_main_img}" 
 		                 alt="메인이미지" class="detail-img-thumb">
 		            <span class="detail-img-name">현재 파일: <strong>${ProductUpdate.option[0].o_main_img}</strong></span>
+		            <label class="btn-delete-check">
+                    	<input type="checkbox" name="delete_img_nos" value="${detailImg.img_no}"> 삭제
+                    </label>
 		        </div>
 		    </c:if>
 		</div>

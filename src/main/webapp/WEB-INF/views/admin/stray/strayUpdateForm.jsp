@@ -7,6 +7,7 @@
 <meta charset="UTF-8">
 <title>입양동물 수정</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/etc/admin_form.css">
+<script src="/js/strayCheck.js"></script>
 </head>
 <body>
 <div>

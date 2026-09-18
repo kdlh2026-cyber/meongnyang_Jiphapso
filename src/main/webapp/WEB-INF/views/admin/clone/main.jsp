@@ -46,6 +46,7 @@
 			<div class="admin-flyout">
 				<a href="/productWriteForm">상품 등록</a>
 				<a href="/ProductListA">상품 리스트</a>
+				<a href="/product/ProductManagement">상품 확인</a>
 			</div>
 		</li>
 
