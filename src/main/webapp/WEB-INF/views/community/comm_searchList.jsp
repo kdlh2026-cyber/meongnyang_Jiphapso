@@ -110,7 +110,7 @@
 
         <!-- 4. 서치 바 영역 (검색창과 자동완성 분리 구조) -->
         <div class="search_box_wrapper">
-            <form name="community_search" method="get" action="/community/search" class="search_form">
+            <form name="community_search" method="get" action="/community/commsearch" class="search_form">
                 <input type="text" name="keyword" id="keyword" autocomplete="off" value="${param.keyword}" placeholder="검색어를 입력하세요">
                 <input type="submit" value="검색">
             </form>

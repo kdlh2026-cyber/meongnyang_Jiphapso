@@ -28,10 +28,10 @@ import com.springboot.meongnyang_Jiphapso.dao.ICommunityDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
 import com.springboot.meongnyang_Jiphapso.dto.CommentDTO;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
-import com.springboot.meongnyang_Jiphapso.dto.CommunityRecommendDTO;
 import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.service.BookMarkService;
 import com.springboot.meongnyang_Jiphapso.service.CommentService;
+import com.springboot.meongnyang_Jiphapso.service.CommunityESService;
 import com.springboot.meongnyang_Jiphapso.service.CommunityService;
 
 import jakarta.servlet.http.HttpSession;
@@ -58,6 +58,9 @@ public class CommunityController {
 	
 	@Autowired
 	ICommentDAO cmt_dao;
+	
+	@Autowired
+	CommunityESService esService;
 	
 	
 	// 로그인을 해야 글쓰기로 넘어감
@@ -150,7 +153,7 @@ public class CommunityController {
 	}
 
 	// 서치 리스트 불러오기
-	@RequestMapping("/community/search")
+	@RequestMapping("/community/commsearch")
 	public String search(@RequestParam("keyword") String keyword,
 	                     @RequestParam(value = "page", defaultValue = "1") int page,
 	                     Model model) throws Exception {
@@ -158,6 +161,11 @@ public class CommunityController {
 	    Map<String, Object> result = com_service.searchWithPaging(keyword, page);
 	    model.addAllAttributes(result);
 	    model.addAttribute("keyword", keyword);
+
+	    // 인기글/추천글은 검색 조건과 무관하게 항상 상단에 고정 노출되는 영역이므로 별도로 채움
+	    Map<String, Object> sideInfo = com_service.getPagingInfo(null, null, null, 1);
+	    model.addAttribute("popularList", sideInfo.get("popularList"));
+	    model.addAttribute("recommendList", sideInfo.get("recommendList"));
 
 	    return "community/comm_searchList";
 	}
@@ -251,115 +259,115 @@ public class CommunityController {
 	    return "community/commView";
 		}
 
-		// 내 게시글 수정폼으로 이동
-		@RequestMapping("/community/updateForm")
-		public String communityUpdateForm(@RequestParam("comm_no") int comm_no,
-										  Model model) {
-			model.addAttribute("update", comm_dao.CommunityView(comm_no));
-			return "community/updateForm";
-		}
-		
-		// 수정하기
-		@RequestMapping("/community/update")
-	    public String communityUpdate(
-	            @RequestParam(value="uploadImages", required=false) MultipartFile uploadImage,
-	            @RequestParam(value="uploadVideo", required=false) MultipartFile uploadVideo,
-	            CommunityDTO dto,
-	            HttpSession session) throws Exception {
+	// 내 게시글 수정폼으로 이동
+	@RequestMapping("/community/updateForm")
+	public String communityUpdateForm(@RequestParam("comm_no") int comm_no,
+									  Model model) {
+		model.addAttribute("update", comm_dao.CommunityView(comm_no));
+		return "community/updateForm";
+	}
+	
+	// 수정하기
+	@RequestMapping("/community/update")
+    public String communityUpdate(
+            @RequestParam(value="uploadImages", required=false) MultipartFile uploadImage,
+            @RequestParam(value="uploadVideo", required=false) MultipartFile uploadVideo,
+            CommunityDTO dto,
+            HttpSession session) throws Exception {
 
-	        // 1. 보안을 위해 현재 로그인한 회원의 정보(번호/이름)를 세션에서 안전하게 가져와서 주입
-	        Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
-	        
-	        if (m_no == null) {
-	            return "redirect:/loginForm"; // 로그인 안 되어 있으면 로그인 페이지로
-	        }
-	        
-	        dto.setM_no(m_no);
+        // 1. 보안을 위해 현재 로그인한 회원의 정보(번호/이름)를 세션에서 안전하게 가져와서 주입
+        Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+        
+        if (m_no == null) {
+            return "redirect:/loginForm"; // 로그인 안 되어 있으면 로그인 페이지로
+        }
+        
+        dto.setM_no(m_no);
 
-	        // 2. 새로운 이미지 파일이 업로드된 경우에만 처리
-	        if (uploadImage != null && !uploadImage.isEmpty()) {
-	            String comm_img = uploadImage.getOriginalFilename();
-	            String uploadPath = "C:\\SPRINGBOOT\\meongnyang_Jiphapso\\src\\main\\resources\\static\\images\\community/";
-	            
-	            // 디렉토리가 없으면 생성하는 안전장치
-	            File folder = new File(uploadPath);
-	            if (!folder.exists()) {
-	                folder.mkdirs();
-	            }
-	            
-	            uploadImage.transferTo(new File(uploadPath + comm_img));
-	            dto.setComm_img(comm_img); // DTO에 새 이미지명 세팅
-	        }
+        // 2. 새로운 이미지 파일이 업로드된 경우에만 처리
+        if (uploadImage != null && !uploadImage.isEmpty()) {
+            String comm_img = uploadImage.getOriginalFilename();
+            String uploadPath = "C:\\SPRINGBOOT\\meongnyang_Jiphapso\\src\\main\\resources\\static\\images\\community/";
+            
+            // 디렉토리가 없으면 생성하는 안전장치
+            File folder = new File(uploadPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+            
+            uploadImage.transferTo(new File(uploadPath + comm_img));
+            dto.setComm_img(comm_img); // DTO에 새 이미지명 세팅
+        }
 
-	        // 3. 새로운 동영상 파일이 업로드된 경우에만 처리
-	        if (uploadVideo != null && !uploadVideo.isEmpty()) {
-	            String comm_video = uploadVideo.getOriginalFilename();
-	            String uploadPath = "C:\\SPRINGBOOT\\meongnyang_Jiphapso\\src\\main\\resources\\static\\video\\community/";
-	            
-	            File folder = new File(uploadPath);
-	            if (!folder.exists()) {
-	                folder.mkdirs();
-	            }
-	            
-	            uploadVideo.transferTo(new File(uploadPath + comm_video));
-	            dto.setComm_video(comm_video); // DTO에 새 동영상명 세팅
-	        }
+        // 3. 새로운 동영상 파일이 업로드된 경우에만 처리
+        if (uploadVideo != null && !uploadVideo.isEmpty()) {
+            String comm_video = uploadVideo.getOriginalFilename();
+            String uploadPath = "C:\\SPRINGBOOT\\meongnyang_Jiphapso\\src\\main\\resources\\static\\video\\community/";
+            
+            File folder = new File(uploadPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+            
+            uploadVideo.transferTo(new File(uploadPath + comm_video));
+            dto.setComm_video(comm_video); // DTO에 새 동영상명 세팅
+        }
 
-	        // 4. 서비스 호출 (DB 업데이트 실행)
-	        com_service.CommunityUpdate(dto);
+        // 4. 서비스 호출 (DB 업데이트 실행)
+        com_service.CommunityUpdate(dto);
 
-	        // 5. 수정 완료 후 해당 글의 상세 페이지로 리다이렉트
-	        return "redirect:/community/commView?comm_no=" + dto.getComm_no();
+        // 5. 수정 완료 후 해당 글의 상세 페이지로 리다이렉트
+        return "redirect:/community/commView?comm_no=" + dto.getComm_no();
+    }
+	
+	// 게시글 도움돼요.
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/community/recommend")
+	@ResponseBody
+	public String recommendCommunity(@RequestParam("comm_no") int comm_no,
+	                                 @RequestParam("type") String type,
+	                                 Principal principal) {
+	    
+	    if (principal == null) {
+	        return "LOGIN_REQUIRED";
 	    }
-		
-		// 게시글 도움돼요.
-		@PreAuthorize("isAuthenticated()")
-		@PostMapping("/community/recommend")
-		@ResponseBody
-		public String recommendCommunity(@RequestParam("comm_no") int comm_no,
-		                                 @RequestParam("type") String type,
-		                                 Principal principal) {
-		    
-		    if (principal == null) {
-		        return "LOGIN_REQUIRED";
-		    }
-		    
-		    String username = principal.getName();
-		    
-		    // MemberFindId로 회원 정보 조회 후 m_no 꺼내기
-		    MemberDTO member = m_dao.MemberFindId(username);
-		    if (member == null) {
-		        return "LOGIN_REQUIRED";
-		    }
-		    int m_no = member.getM_no();
-		    
-		    // 2. 중복 체크 + 이력 삽입 + 카운트 증가
-		    return com_service.processRecommend(comm_no, m_no, type);
-		}
-		
-		// 댓글 '도움돼요'
-		@PreAuthorize("isAuthenticated()")
-		@PostMapping("/comment/recommend")
-		@ResponseBody
-		public String recommendComment(@RequestParam("cmt_no") int cmt_no,
-		                               Principal principal) {
-		    
-		    if (principal == null) {
-		        return "LOGIN_REQUIRED";
-		    }
-		    
-		    String username = principal.getName();
-		    
-		    // 회원 정보 조회 후 m_no 꺼내기
-		    MemberDTO member = m_dao.MemberFindId(username);
-		    if (member == null) {
-		        return "LOGIN_REQUIRED";
-		    }
-		    int m_no = member.getM_no();
-		    
-		    // 댓글 추천 중복 체크 및 처리 서비스 호출
-		    return cmt_service.processRecommend(cmt_no, m_no);
-		}
+	    
+	    String username = principal.getName();
+	    
+	    // MemberFindId로 회원 정보 조회 후 m_no 꺼내기
+	    MemberDTO member = m_dao.MemberFindId(username);
+	    if (member == null) {
+	        return "LOGIN_REQUIRED";
+	    }
+	    int m_no = member.getM_no();
+	    
+	    // 2. 중복 체크 + 이력 삽입 + 카운트 증가
+	    return com_service.processRecommend(comm_no, m_no, type);
+	}
+	
+	// 댓글 '도움돼요'
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/comment/recommend")
+	@ResponseBody
+	public String recommendComment(@RequestParam("cmt_no") int cmt_no,
+	                               Principal principal) {
+	    
+	    if (principal == null) {
+	        return "LOGIN_REQUIRED";
+	    }
+	    
+	    String username = principal.getName();
+	    
+	    // 회원 정보 조회 후 m_no 꺼내기
+	    MemberDTO member = m_dao.MemberFindId(username);
+	    if (member == null) {
+	        return "LOGIN_REQUIRED";
+	    }
+	    int m_no = member.getM_no();
+	    
+	    // 댓글 추천 중복 체크 및 처리 서비스 호출
+	    return cmt_service.processRecommend(cmt_no, m_no);
+	}
 	
 	
 	
@@ -520,27 +528,42 @@ public class CommunityController {
 	    return "admin/community/communityManage/communityManage";
 	}
 	
+//	@GetMapping("/admin/community/communityManage/manageDetails")
+//    public String communityManageDetails(
+//            @RequestParam(value = "comm_type", required = false, defaultValue = "QNA") String commType,
+//            Model model) throws Exception {
+//        
+//        // 1. 방금 만든 서비스 메서드를 호출하여 통계 데이터를 Map으로 받아옴
+//        Map<String, Object> statsData = com_service.getCommunityStatsByJava(commType);
+//        
+//        // 2. Map에 담긴 모든 데이터(totalCount, petRatioList, monthlyCounts 등)를 Model에 일괄 등록
+//        model.addAllAttributes(statsData);
+//        // 뷰에서 쓰기 편하게 현재 타입 전달
+//        model.addAttribute("commType", commType);
+//        
+//        // 탭별 active 여부를 명시적으로 판별해서 전달 (이 방법이 제일 안전합니다)
+//        model.addAttribute("activeQnA", "QNA".equals(commType) ? "active" : "");
+//        model.addAttribute("activeLounge", "라운지".equals(commType) ? "active" : "");
+//        model.addAttribute("activeContent", "콘텐츠".equals(commType) ? "active" : "");
+//        
+//        // 3. 기존 JSP 경로 반환
+//        return "admin/community/communityManage/manageDetails";
+//    }
+	
 	@GetMapping("/admin/community/communityManage/manageDetails")
-    public String communityManageDetails(
-            @RequestParam(value = "comm_type", required = false, defaultValue = "QNA") String commType,
-            Model model) throws Exception {
-        
-        // 1. 방금 만든 서비스 메서드를 호출하여 통계 데이터를 Map으로 받아옴
-        Map<String, Object> statsData = com_service.getCommunityStatsByJava(commType);
-        
-        // 2. Map에 담긴 모든 데이터(totalCount, petRatioList, monthlyCounts 등)를 Model에 일괄 등록
-        model.addAllAttributes(statsData);
-        // 뷰에서 쓰기 편하게 현재 타입 전달
-        model.addAttribute("commType", commType);
-        
-        // 탭별 active 여부를 명시적으로 판별해서 전달 (이 방법이 제일 안전합니다)
-        model.addAttribute("activeQnA", "QNA".equals(commType) ? "active" : "");
-        model.addAttribute("activeLounge", "라운지".equals(commType) ? "active" : "");
-        model.addAttribute("activeContent", "콘텐츠".equals(commType) ? "active" : "");
-        
-        // 3. 기존 JSP 경로 반환
-        return "admin/community/communityManage/manageDetails";
-    }
+	public String communityManageDetails(
+	        @RequestParam(value = "comm_type", required = false, defaultValue = "QNA") String commType,
+	        Model model) {
+
+	    // 탭 초기 활성화 여부만 전달 (Kibana 자체 탭 전환은 JS에서 처리하므로 필수는 아니지만, 
+	    // 서버 렌더링 시 초기 활성 탭 표시에 쓰려면 유지)
+	    model.addAttribute("commType", commType);
+	    model.addAttribute("activeQnA", "QNA".equals(commType) ? "active" : "");
+	    model.addAttribute("activeLounge", "라운지".equals(commType) ? "active" : "");
+	    model.addAttribute("activeContent", "콘텐츠".equals(commType) ? "active" : "");
+
+	    return "admin/community/communityManage/manageDetails";
+	}
 	
 	@RequestMapping("/admin/communityUpdate")
     public String communityUpdate(@RequestParam(value = "comm_type", required = false) String comm_type,
@@ -616,6 +639,14 @@ public class CommunityController {
 
 	    // 기존 페이지 및 필터 상태 유지하며 리다이렉트
 	    return "redirect:/admin/communityUpdate?comm_type=" + (comm_type != null ? comm_type : "") + "&page=" + page;
+	}
+	
+	@GetMapping("/admin/community/reindexAll")
+	@ResponseBody
+	public String reindexAll() throws Exception {
+	    List<CommunityDTO> allList = com_service.list();
+	    esService.bulkSave(allList);
+	    return "재색인 완료: " + allList.size() + "건";
 	}
 
 }

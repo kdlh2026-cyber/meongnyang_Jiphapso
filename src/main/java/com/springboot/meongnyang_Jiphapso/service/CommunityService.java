@@ -209,12 +209,25 @@ public class CommunityService {
 	
 	// 내 게시글 삭제
 	public int CommunityDelete(int comm_no, int m_no) {
-	    return dao.CommunityDelete(comm_no, m_no);
+	    int result = dao.CommunityDelete(comm_no, m_no);
+	    try {
+	        esService.delete(comm_no);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return result;
 	}
 	
 	// 내 게시글 업데이트
 	public int CommunityUpdate(CommunityDTO dto) {
-		return dao.CommunityUpdate(dto);
+	    int result = dao.CommunityUpdate(dto);
+	    try {
+	        CommunityDTO updated = dao.CommunityView(dto.getComm_no());
+	        esService.save(updated); // 수정 후 DB 최신값을 다시 읽어와 ES 재색인
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return result;
 	}
 	
 	// 자동완성 + 하이라이트
@@ -228,47 +241,40 @@ public class CommunityService {
     }
 	
 	// 관리자용 게시글 검색 및 목록 조회 (필터, 정렬, 페이징 지원)
-	public Map<String, Object> adminSearchCommunity(String searchType,
-													String keyword, String sort,
-													Integer page, Integer size,
-													String comm_type, 
-													String comm_pet_type,
-													String comm_category) throws Exception {
+	public Map<String, Object> adminSearchCommunity(String comm_type, String comm_pet_type, String comm_category,
+            String searchType, String keyword, String sort,
+            Integer page, Integer size) throws Exception {
 		
-	    int pageNum = (page == null || page <= 0) ? 1 : page;
+		int pageNum = (page == null || page <= 0) ? 1 : page;
 	    int pageSize = (size == null || size <= 0) ? 10 : size;
 	    int blockSize = 10;
 	    String sortOption = (sort == null || sort.trim().isEmpty()) ? "latest" : sort;
 
-	    Map<String, Object> esResult = esService.adminSearchCommunity(searchType, keyword, sortOption, pageNum, pageSize);
+	    Map<String, Object> esResult = esService.adminSearchCommunity(
+	            comm_type, comm_pet_type, comm_category, searchType, keyword, sortOption, pageNum, pageSize);
 	    List<Map<String, Object>> searchList = (List<Map<String, Object>>) esResult.get("list");
-	    
-	    // 3. ⭐️ 엘라스틱서치에서 문자열로 넘어온 날짜(comm_date)를 java.util.Date 객체로 변환
+
+	    // 날짜 변환 (기존 로직 동일)
 	    if (searchList != null && !searchList.isEmpty()) {
-	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // 날짜 포맷에 맞게 설정
-	        
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	        for (Map<String, Object> item : searchList) {
 	            Object dateObj = item.get("comm_date");
 	            if (dateObj instanceof String) {
 	                try {
 	                    String dateStr = (String) dateObj;
-	                    // "2026-08-12T15:00:00.000Z" 형태라면 앞 10자리(yyyy-MM-dd)만 끊어서 파싱
 	                    if (dateStr.length() >= 10) {
 	                        item.put("comm_date", sdf.parse(dateStr.substring(0, 10)));
 	                    }
 	                } catch (Exception e) {
-	                    // 파싱 실패 시 예외 처리 (로그 또는 무시)
 	                    e.printStackTrace();
 	                }
 	            }
 	        }
 	    }
-	    
-	    // ⭐️ 페이징 계산 추가
+
 	    long totalCount = (long) esResult.get("totalCount");
 	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 	    if (totalPages == 0) totalPages = 1;
-
 	    int startPage = ((pageNum - 1) / blockSize) * blockSize + 1;
 	    int endPage = Math.min(startPage + blockSize - 1, totalPages);
 
@@ -455,13 +461,20 @@ public class CommunityService {
 	}
 	
 	public int adminCommunityDelete(int comm_no) {
-        // 만약 게시글 삭제 시 연관된 이미지 파일이나 댓글 등을 같이 지워야 한다면 여기서 추가 로직 수행 가능
-        return dao.adminCommunityDelete(comm_no);
-    }
+	    int result = dao.adminCommunityDelete(comm_no);
+	    try {
+	        esService.delete(comm_no);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return result;
+	}
 	
 	public int updateAdPick(int comm_no) {
         return dao.updateAdPick(comm_no);
     }
+	
+	
 	
 	
 	// 커뮤니티 글(리뷰) insert 성공 직후, 대상 금액의 3% 적립

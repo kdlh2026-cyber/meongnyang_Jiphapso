@@ -74,14 +74,18 @@ public class MainController {
 	}
 	
 	@RequestMapping("/allSearch")
-	public String allSearch(@RequestParam("keyword") String keyword, Model model) throws Exception {
-	    List<CommunityDTO> CMList = comm_serv.search(keyword);
+	public String allSearch(@RequestParam("keyword") String keyword,
+						    @RequestParam(value = "page", defaultValue = "1") int page,
+						    Model model) throws Exception {
+		Map<String, Object> cmResult = comm_serv.searchWithPaging(keyword, 1);
+	    List<CommunityDTO> CMList = (List<CommunityDTO>) cmResult.get("list");
+	    long cmTotal = (long) cmResult.get("totalCount");
 	    List<ShoppingListDto> PDList = pd_serv.p_search(keyword);
 
 	    model.addAttribute("keyword", keyword);
 	    model.addAttribute("CMList", CMList);
 	    model.addAttribute("PDList", PDList);
-	    model.addAttribute("cmTotal", CMList.size());
+	    model.addAttribute("cmTotal", cmTotal);
 	    model.addAttribute("pdTotal", PDList.size());
 
 	    return "guest/mainSearchList";
