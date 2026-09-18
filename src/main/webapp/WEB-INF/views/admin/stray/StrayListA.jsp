@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="badge-status">${list.stray_status}</span>
                     <!-- 품종 나이 -->
                     <div class="card-title">
-                        <a href="/guest/StrayView?stray_no=${list.stray_no}">
+                        <a href="/stray/StrayView?stray_no=${list.stray_no}">
                             <c:choose>
                                 <c:when test="${list.stray_category == 'DOG'}">[강아지] </c:when>
                                 <c:when test="${list.stray_category == 'CAT'}">[고양이] </c:when>

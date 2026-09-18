@@ -20,6 +20,14 @@ public class StrayService {
         stray_dao.StrayAnimalWrite(stray_dto);
         stray_esservice.stray_save(stray_dto); // 엘라스틱서치 색인
     }
+    public void stray_update(StrayAnimalDto stray_dto) throws Exception {
+        stray_dao.StrayAnimalUpdate(stray_dto);
+        stray_esservice.stray_update(stray_dto); // 엘라스틱서치 색인
+    }
+    public void stray_delete(Long stray_no) throws Exception {
+    	stray_dao.StrayAnimalDelete(stray_no);
+        stray_esservice.stray_delete(stray_no); // 엘라스틱서치 색인
+    }
     
     public List<StrayAnimalDto> stray_list() {
         return stray_dao.stray_list();

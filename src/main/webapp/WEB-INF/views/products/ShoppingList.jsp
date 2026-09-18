@@ -250,8 +250,8 @@ document.addEventListener("DOMContentLoaded", function() {
 <%@ include file="../footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // 카테고리 활성화 로직
-    document.addEventListener("DOMContentLoaded", function() {
+// 카테고리 활성화 로직
+document.addEventListener("DOMContentLoaded", function() {
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get('mode');
 
