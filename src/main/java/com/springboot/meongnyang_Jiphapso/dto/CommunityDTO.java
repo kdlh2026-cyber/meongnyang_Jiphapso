@@ -32,6 +32,7 @@ public class CommunityDTO {
 	private String comm_tag;
 	private String comm_adpick;
 	private Integer m_no;
+	private String m_id;
 	private Integer p_no;
 	private Integer pet_no;
 	
