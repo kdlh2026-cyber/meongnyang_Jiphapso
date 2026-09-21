@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.meongnyang_Jiphapso.dao.IStrayWishDao">
+    <!-- 찜 추가 -->
+    <insert id="insertWish" parameterType="com.springboot.meongnyang_Jiphapso.dto.StrayWishDto">
+        insert into dc_stray_animal_wish (wish_no, m_no, wish_guest_id, stray_no)
+        values (dc_stray_animal_wish_seq.NEXTVAL, #{m_no, jdbcType=INTEGER}, 
+            #{wish_guest_id, jdbcType=VARCHAR}, #{stray_no}
+        )
+    </insert>
+    
+    <!-- 찜 삭제 -->
+    <delete id="deleteWish" parameterType="com.springboot.meongnyang_Jiphapso.dto.StrayWishDto">
+        delete from dc_stray_animal_wish
+        where stray_no = #{stray_no}
+        <choose>
+            <when test="m_no != null">
+                and m_no = #{m_no}
+            </when>
+            <otherwise>
+                and wish_guest_id = #{wish_guest_id}
+            </otherwise>
+        </choose>
+    </delete>
+    
+    <!-- 회원 찜 목록 조회-->
+	<select id="selectWishListByMember" parameterType="int" resultType="com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto">
+	    select s.*, w.wish_no
+	    from dc_stray_animal s
+	    join dc_stray_animal_wish w on s.stray_no = w.stray_no
+	    where w.m_no = #{m_no}
+	    order by w.wish_no desc
+	</select>
+	
+	<!-- 비회원 찜 목록 조회 -->
+	<select id="selectWishListByGuest" parameterType="String" resultType="com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto">
+	    select s.*, w.wish_no
+	    from dc_stray_animal s
+	    join dc_stray_animal_wish w on s.stray_no = w.stray_no
+	    where w.wish_guest_id = #{guestId}
+	    order by w.wish_no desc
+	</select>
+
+	<!-- 하트 복원용 -->
+	<select id="selectWishHeartByMember" parameterType="int" resultType="long">
+	    select stray_no from dc_stray_animal_wish where m_no = #{m_no}
+	</select>
+	
+	<select id="selectWishHeartByGuest" parameterType="String" resultType="long">
+	    select stray_no from dc_stray_animal_wish where wish_guest_id = #{guestId}
+	</select>
+    
+    <!-- 찜 여부 체크 -->
+    <select id="checkWishExists" parameterType="com.springboot.meongnyang_Jiphapso.dto.StrayWishDto" resultType="int">
+        select count(*) 
+        from dc_stray_animal_wish
+        where stray_no = #{stray_no}
+        <choose>
+            <when test="m_no != null">
+                and m_no = #{m_no}
+            </when>
+            <otherwise>
+                and wish_guest_id = #{wish_guest_id}
+            </otherwise>
+        </choose>
+    </select>
+</mapper>
