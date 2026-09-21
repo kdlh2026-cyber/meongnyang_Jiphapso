@@ -227,6 +227,7 @@ public class CommunityService {
 
 	    if (result > 0 && mId != null) {
 	        try {
+	        	System.out.println("아이디" + mId);
 	            pointService.revokeCommunityPostBonusById(mId, (long) comm_no);
 	        } catch (Exception e) {
 	            e.printStackTrace();
