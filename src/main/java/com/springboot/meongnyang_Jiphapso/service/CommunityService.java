@@ -123,14 +123,14 @@ public class CommunityService {
 	    	dao.CommunityImageWrite(imgDto);
 	    }
 	    
-	    try {
-	        if (dto.getM_id() != null && commNo != null) {
-	            pointService.earnCommunityPostBonusById(dto.getM_id(), commNo.longValue());
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	       
+	       try {
+	           if (dto.getM_id() != null && commNo != null) {
+	               pointService.earnCommunityPostBonusById(dto.getM_id(), commNo.longValue());
+	           }
+	       } catch (Exception e) {
+	           e.printStackTrace();
+	       }
+	         
 	    esService.save(dto);
 	}
 	
@@ -216,12 +216,21 @@ public class CommunityService {
 	}
 	
 	// 내 게시글 삭제
-	public int CommunityDelete(int comm_no, int m_no) {			
+	public int CommunityDelete(int comm_no, int m_no, String mId) {
 	    int result = dao.CommunityDelete(comm_no, m_no);
+
 	    try {
 	        esService.delete(comm_no);
 	    } catch (Exception e) {
 	        e.printStackTrace();
+	    }
+
+	    if (result > 0 && mId != null) {
+	        try {
+	            pointService.revokeCommunityPostBonusById(mId, (long) comm_no);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
 	    }
 	    return result;
 	}
@@ -465,12 +474,21 @@ public class CommunityService {
 	}
 	
 	public int adminCommunityDelete(int comm_no) {
+		CommunityDTO delTarget = dao.CommunityView(comm_no);
+		String writerId = (delTarget != null) ? delTarget.getM_id() : null; 
+		
 	    int result = dao.adminCommunityDelete(comm_no);
+	    
 	    try {
 	        esService.delete(comm_no);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
+	    
+	    if (result > 0 && writerId != null) {
+	        pointService.revokeCommunityPostBonusById(writerId, (long) comm_no);
+	    }
+	    
 	    return result;
 	}
 	

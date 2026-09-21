@@ -18,26 +18,26 @@
       <result property="poRelatedNo" column="po_related_no" />
    </resultMap>
 
-	<!-- 포인트 이력 1건 등록 -->
-	<insert id="insertPoint" parameterType="com.springboot.meongnyang_Jiphapso.dto.PointDTO"
-			useGeneratedKeys="true" keyProperty="poNo" keyColumn="PO_NO">
-		insert into dc_point_history
-			(po_no, po_type, po_amount, po_after, po_reason, po_at, po_ex, po_order_no, m_no, ch_no, po_related_no)
-		values
-			(
-				default,
-				#{poType, jdbcType=VARCHAR},
-				#{poAmount, jdbcType=NUMERIC},
-				#{poAfter, jdbcType=NUMERIC},
-				#{poReason, jdbcType=VARCHAR},
-				sysdate,
-				#{poEx, jdbcType=DATE},
-				#{poOrderNo, jdbcType=NUMERIC},
-				#{mNo, jdbcType=NUMERIC},
-				#{chNo, jdbcType=NUMERIC},
-				#{poRelatedNo, jdbcType=NUMERIC}
-			)
-	</insert>
+   <!-- 포인트 이력 1건 등록 -->
+   <insert id="insertPoint" parameterType="com.springboot.meongnyang_Jiphapso.dto.PointDTO"
+         useGeneratedKeys="true" keyProperty="poNo" keyColumn="PO_NO">
+      insert into dc_point_history
+         (po_no, po_type, po_amount, po_after, po_reason, po_at, po_ex, po_order_no, m_no, ch_no, po_related_no)
+      values
+         (
+            default,
+            #{poType, jdbcType=VARCHAR},
+            #{poAmount, jdbcType=NUMERIC},
+            #{poAfter, jdbcType=NUMERIC},
+            #{poReason, jdbcType=VARCHAR},
+            sysdate,
+            #{poEx, jdbcType=DATE},
+            #{poOrderNo, jdbcType=NUMERIC},
+            #{mNo, jdbcType=NUMERIC},
+            #{chNo, jdbcType=NUMERIC},
+            #{poRelatedNo, jdbcType=NUMERIC}
+         )
+   </insert>
 
    <!-- 회원 기준 포인트 이력 (마이페이지, 최신순) -->
    <select id="selectPointListByMember" resultMap="pointMap">
@@ -146,7 +146,7 @@
       where po_order_no = #{orNo}
    </update>
 
-   <!-- 글 삭제 포인트 회수용 - 사유(글번호 포함) -->
+   <!-- 글 삭제 포인트 회수용: 사유가 일치하고 아직 취소(회수)되지 않은 원본 적립 이력 1건 -->
    <select id="selectActiveEarnByReason" resultMap="pointMap">
       select *
       from (
@@ -166,7 +166,7 @@
       where rownum = 1
    </select>
 
-   <!-- 이 이력을 취소한 이력이 이미 있는지 확인 (같은 원본 중복 취소 방지) -->
+   <!-- 특정 이력을 원본으로 하는 취소/회수 이력 개수 (이중 취소 방지용) -->
    <select id="countByRelatedNo" resultType="int">
       select count(*)
       from dc_point_history

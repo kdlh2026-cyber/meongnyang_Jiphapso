@@ -104,6 +104,7 @@ public class CommunityController {
 
 		     if (loginUser != null) {
 		         dto.setM_no(loginUser.getM_no());
+		         dto.setM_id(mId);         
 		         dto.setComm_writer(loginUser.getM_name());
 		     }
 		}
@@ -426,16 +427,20 @@ public class CommunityController {
 	@RequestMapping("/community/delete")
 	public String communityDelete(@RequestParam("comm_no") int comm_no,
 	                              @RequestParam(value = "comm_type", required = false) String comm_type,
-	                              HttpSession session) {
+	                              HttpSession session,
+	                              Authentication authentication) {
 
 	    Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+	    
 
 	    if (m_no == null) {
 	        System.out.println("m_no가 null -> 로그인 페이지로 리다이렉트");
 	        return "redirect:/loginForm";
 	    }
+	    
+	    String mId = authentication.getName();  
 
-	    com_service.CommunityDelete(comm_no, m_no);
+	    com_service.CommunityDelete(comm_no, m_no, mId);
 
 	    String target;
 	    if (comm_type != null && !comm_type.isEmpty()) {
