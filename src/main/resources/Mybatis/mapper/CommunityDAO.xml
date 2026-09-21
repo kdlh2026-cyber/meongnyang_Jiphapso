@@ -244,7 +244,7 @@
 		</if>
 		order by c.comm_no desc
 	</select>
-	
+		
 	<!-- 내가 쓴 글 나만 지우기 -->
 	<delete id="CommunityDelete" parameterType="int">
 		   delete from dc_community where comm_no = #{comm_no, jdbcType=INTEGER} and m_no = #{m_no, jdbcType=INTEGER}
