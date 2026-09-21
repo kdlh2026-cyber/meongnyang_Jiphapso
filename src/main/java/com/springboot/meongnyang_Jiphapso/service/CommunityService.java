@@ -123,10 +123,14 @@ public class CommunityService {
 	    	dao.CommunityImageWrite(imgDto);
 	    }
 	    
-	    if (dto.getM_no() != null) {
-	        pointService.earnCommunityPostBonus(dto.getM_no().longValue());
+	    try {
+	        if (dto.getM_id() != null && commNo != null) {
+	            pointService.earnCommunityPostBonusById(dto.getM_id(), commNo.longValue());
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
 	    }
-	    
+	       
 	    esService.save(dto);
 	}
 	
@@ -212,7 +216,7 @@ public class CommunityService {
 	}
 	
 	// 내 게시글 삭제
-	public int CommunityDelete(int comm_no, int m_no) {
+	public int CommunityDelete(int comm_no, int m_no) {			
 	    int result = dao.CommunityDelete(comm_no, m_no);
 	    try {
 	        esService.delete(comm_no);
