@@ -156,7 +156,7 @@
 <div class="pi-wrap">
     <h2 class="pi-title">반려동물 정보 수정</h2>
 
-    <form id="" method="post" action="/myPetUpdate" enctype="multipart/form-data">
+    <form name="petForm" method="post" action="/myPetUpdate" enctype="multipart/form-data" onsubmit="return piFormCheck()">
         <input type="hidden" name="pet_no" value="${petUpdate.pet_no}">
 
         <div class="pi-avatar-wrap">
@@ -189,48 +189,55 @@
 
         <div class="pi-field">
             <label class="pi-label" for="pet_birth">생년월일</label>
-            <input class="pi-input" type="text" id="pet_birth" name="pet_birth" value="${fn:replace(fn:substring(petUpdate.pet_birth,0,10), '-', '')}" placeholder="반려동물의 생년월일 8자리를 입력해주세요">
+            <input class="pi-input" type="text" id="pet_birth" name="pet_birth"
+			    value="${fn:replace(fn:substring(petUpdate.pet_birth,0,10), '-', '')}"
+			    placeholder="반려동물의 생년월일 8자리를 입력해주세요"
+			    maxlength="8" inputmode="numeric"
+			    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
 
         <div class="pi-field">
             <span class="pi-label">종류</span>
             <div class="pi-type-row">
                 <label class="pi-type-option">
-                    <input type="radio" name="pet_type" value="강아지" onclick="toggleBreed()" ${petUpdate.pet_type == '강아지' ? 'checked' : ''}>
-                    <img class="pi-type-avatar" src="/images/stray/menu/dog_head.png">
-                    <span class="pi-type-name">강아지</span>
-                </label>
-                <label class="pi-type-option">
-                    <input type="radio" name="pet_type" value="고양이" onclick="toggleBreed()" ${petUpdate.pet_type == '고양이' ? 'checked' : ''}>
-                    <img class="pi-type-avatar" src="/images/stray/menu/cat_head.png">
-                    <span class="pi-type-name">고양이</span>
-                </label>
-                <label class="pi-type-option">
-                    <input type="radio" name="pet_type" value="그 외" onclick="toggleBreed()" ${petUpdate.pet_type == '그 외' ? 'checked' : ''}>
-                    <img class="pi-type-avatar" src="/images/main/hamster_head.png">
-                    <span class="pi-type-name">그 외</span>
-                </label>
+				    <input type="radio" name="pet_type" value="강아지" onclick="onPetTypeChange()" ${petUpdate.pet_type == '강아지' ? 'checked' : ''}>
+				    <img class="pi-type-avatar" src="/images/stray/menu/dog_head.png">
+				    <span class="pi-type-name">강아지</span>
+				</label>
+				<label class="pi-type-option">
+				    <input type="radio" name="pet_type" value="고양이" onclick="onPetTypeChange()" ${petUpdate.pet_type == '고양이' ? 'checked' : ''}>
+				    <img class="pi-type-avatar" src="/images/stray/menu/cat_head.png">
+				    <span class="pi-type-name">고양이</span>
+				</label>
+				<label class="pi-type-option">
+				    <input type="radio" name="pet_type" value="그 외" onclick="onPetTypeChange()" ${petUpdate.pet_type == '그 외' ? 'checked' : ''}>
+				    <img class="pi-type-avatar" src="/images/main/hamster_head.png">
+				    <span class="pi-type-name">그 외</span>
+				</label>
             </div>
         </div>
 
         <div class="pi-field">
-            <div id="breedWrapper" style="display:none;">
-                <select class="pi-select" name="pet_breed" id="dogBreedSelect" style="display:none;">
-                    <option value="">강아지 품종 선택</option>
-                    <c:forEach var="dog" items="${dogBreed}">
-                        <option value="${dog.breed_name}" ${petUpdate.pet_breed == dog.breed_name ? 'selected' : ''}>${dog.breed_name}</option>
-                    </c:forEach>
-                </select>
-
-                <select class="pi-select" name="pet_breed" id="catBreedSelect" style="display:none;">
-                    <option value="">고양이 품종 선택</option>
-                    <c:forEach var="cat" items="${catBreed}">
-                        <option value="${cat.breed_name}" ${petUpdate.pet_breed == cat.breed_name ? 'selected' : ''}>${cat.breed_name}</option>
-                    </c:forEach>
-                </select>
-            </div>
-            <input class="pi-input" type="text" name="pet_breed" id="etcBreedInput" value="${petUpdate.pet_breed}" placeholder="품종을 입력해주세요" style="display:none;">
-        </div>
+	    <div id="breedWrapper" style="display:none;">
+	        <select class="pi-select" name="pet_breed" id="dogBreedSelect" style="display:none;">
+	            <option value="">강아지 품종 선택</option>
+	            <c:forEach var="dog" items="${dogBreed}">
+	                <option value="${dog.breed_name}">${dog.breed_name}</option>
+	            </c:forEach>
+	        </select>
+	
+	        <select class="pi-select" name="pet_breed" id="catBreedSelect" style="display:none;">
+	            <option value="">고양이 품종 선택</option>
+	            <c:forEach var="cat" items="${catBreed}">
+	                <option value="${cat.breed_name}">${cat.breed_name}</option>
+	            </c:forEach>
+	        </select>
+	    </div>
+	    <input class="pi-input" type="text" name="pet_breed" id="etcBreedInput" value="${petUpdate.pet_breed}" placeholder="품종을 입력해주세요" style="display:none;">
+	
+	    <!-- DB에서 불러온 원본 품종값을 JS로 넘기기 위한 hidden -->
+	    <input type="hidden" id="petBreedValue" value="${petUpdate.pet_breed}">
+	</div>
 
         <div class="pi-field">
             <span class="pi-label">성별</span>
@@ -241,14 +248,21 @@
         </div>
 
         <div class="pi-field">
-            <label class="pi-choice-row" style="gap:8px;">
-                <input type="checkbox" name="pet_neuter" ${petUpdate.pet_neuter == 'T' ? 'checked' : ''}> 중성화 여부
-            </label>
-        </div>
+		    <label class="pi-choice-row" style="gap:8px;">
+		        <input type="hidden" id="pet_neuter_hidden" name="pet_neuter" value="F">
+		        <input type="checkbox" id="pet_neuter_chk" value="T"
+		            ${petUpdate.pet_neuter == 'T' ? 'checked' : ''}
+		            onchange="document.getElementById('pet_neuter_hidden').disabled = this.checked">
+		        중성화 여부
+		    </label>
+		</div>
 
         <div class="pi-field">
             <label class="pi-label" for="pet_weight">몸무게(kg)</label>
-            <input class="pi-input" type="text" id="pet_weight" name="pet_weight" value="${petUpdate.pet_weight}" placeholder="몸무게(kg)">
+            <input class="pi-input" type="text" id="pet_weight" name="pet_weight"
+			    value="${petUpdate.pet_weight}"
+			    placeholder="몸무게(kg)" inputmode="decimal"
+			    oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
         </div>
 
         <div class="pi-actions">
@@ -296,8 +310,114 @@ function toggleBreed(){
     }
 }
 
-// 수정 페이지 진입 시 기존 선택된 종류에 맞춰 품종 영역 초기 상태 반영
-window.addEventListener('DOMContentLoaded', toggleBreed);
+function selectMatchingOption(selectEl, value){
+    for(let i = 0; i < selectEl.options.length; i++){
+        if(selectEl.options[i].value.trim() === value.trim()){
+            selectEl.selectedIndex = i;
+            return;
+        }
+    }
+}
+
+// DB에 저장된 원본 품종값(petBreedValue)을, 현재 선택된 종류에 맞는 필드에 다시 매칭
+function applyBreedForCurrentType(){
+    let breedValue = document.getElementById('petBreedValue').value;
+    let selectedRadio = document.querySelector('input[name="pet_type"]:checked');
+    if(!selectedRadio) return;
+    let petType = selectedRadio.value;
+
+    if(petType === '강아지'){
+        selectMatchingOption(document.getElementById('dogBreedSelect'), breedValue);
+    } else if(petType === '고양이'){
+        selectMatchingOption(document.getElementById('catBreedSelect'), breedValue);
+    } else {
+        document.getElementById('etcBreedInput').value = breedValue;
+    }
+}
+
+// 종류(라디오) 변경 시 항상 호출: 필드 전환 + 원본 품종값 재매칭
+function onPetTypeChange(){
+    toggleBreed();
+    applyBreedForCurrentType();
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+    onPetTypeChange();
+    document.getElementById('pet_neuter_hidden').disabled = document.getElementById('pet_neuter_chk').checked;
+});
+function isValidBirthDate(str){
+    if(!/^\d{8}$/.test(str)) return false;
+
+    let year  = parseInt(str.substring(0, 4), 10);
+    let month = parseInt(str.substring(4, 6), 10);
+    let day   = parseInt(str.substring(6, 8), 10);
+
+    if(month < 1 || month > 12) return false;
+
+    let currentYear = new Date().getFullYear();
+    if(year < 1990 || year > currentYear) return false;
+
+    let lastDayOfMonth = new Date(year, month, 0).getDate();
+    if(day < 1 || day > lastDayOfMonth) return false;
+
+    let inputDate = new Date(year, month - 1, day);
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if(inputDate > today) return false;
+
+    return true;
+}
+
+function piFormCheck(){
+    let f = document.petForm;
+
+    if(!f.pet_name.value.trim()){
+        alert("반려동물 이름을 입력하시길 바랍니다.");
+        f.pet_name.focus();
+        return false;
+    }
+
+    let birth = f.pet_birth.value.trim();
+    if(birth && !isValidBirthDate(birth)){
+        alert("생년월일이 올바르지 않습니다. 실제 존재하는 날짜를 8자리로 입력해주세요. (예: 20230101)");
+        f.pet_birth.focus();
+        return false;
+    }
+
+    let petType = f.pet_type.value;
+    if(!petType){
+        alert("반려동물 종류를 선택하시길 바랍니다.");
+        return false;
+    }
+
+    let breedValue = "";
+    if(petType === "강아지"){
+        breedValue = document.getElementById("dogBreedSelect").value;
+    } else if(petType === "고양이"){
+        breedValue = document.getElementById("catBreedSelect").value;
+    } else {
+        breedValue = document.getElementById("etcBreedInput").value;
+    }
+    if(!breedValue.trim()){
+        alert("품종을 선택하거나 입력하시길 바랍니다.");
+        return false;
+    }
+
+    if(!f.pet_gender.value){
+        alert("성별을 선택하시길 바랍니다.");
+        return false;
+    }
+
+    let weight = f.pet_weight.value.trim();
+    let expWeight = /^\d{1,2}(\.\d{1,3})?$/;
+    if(weight && !expWeight.test(weight)){
+        alert("몸무게는 숫자 형식으로 입력하시길 바랍니다. (예: 3.5)");
+        f.pet_weight.focus();
+        return false;
+    }
+
+    return true;
+}
 </script>
 </body>
 </html>
