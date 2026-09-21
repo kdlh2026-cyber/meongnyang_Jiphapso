@@ -123,6 +123,10 @@ public class CommunityService {
 	    	dao.CommunityImageWrite(imgDto);
 	    }
 	    
+	    if (dto.getM_no() != null) {
+	        pointService.earnCommunityPostBonus(dto.getM_no().longValue());
+	    }
+	    
 	    esService.save(dto);
 	}
 	
@@ -292,10 +296,6 @@ public class CommunityService {
 	    return dao.myList(m_no, comm_type);
 	}
 
-	// 최신글 1개 조회
-	public CommunityDTO getLatestByType(Integer m_no, String comm_type) {
-	    return dao.getLatestByType(m_no, comm_type);
-	}
 	
 	@Transactional
 	public String processRecommend(int comm_no, int m_no, String type) {
@@ -473,13 +473,5 @@ public class CommunityService {
 	public int updateAdPick(int comm_no) {
         return dao.updateAdPick(comm_no);
     }
-	
-	
-	
-	
-	// 커뮤니티 글(리뷰) insert 성공 직후, 대상 금액의 3% 적립
-	// pointService.earnCommunityBonus(mNo, baseAmount);
-
-	
-	
+		
 }
