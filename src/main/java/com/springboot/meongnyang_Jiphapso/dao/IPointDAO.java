@@ -42,5 +42,10 @@ public interface IPointDAO {
     
     // 주문 삭제 시 포인트 이력 자체는 보존하고 주문 연결만 끊음 (회계기록 보존, FK만 NULL 처리)
     int detachPointFromOrder(@Param("orNo") Long orNo);
-}
+    
+    // 글 삭제 포인트 회수용 - 사유(글번호 포함)로 찾은 적립 이력 중 아직 취소/회수되지 않은 1건
+    PointDTO selectActiveEarnByReason(@Param("mNo") Long mNo, @Param("reason") String reason);
 
+    // 이 이력을 취소한 이력이 이미 있는지 확인 (같은 원본 중복 취소 방지)
+    int countByRelatedNo(@Param("poNo") Long poNo);
+}
