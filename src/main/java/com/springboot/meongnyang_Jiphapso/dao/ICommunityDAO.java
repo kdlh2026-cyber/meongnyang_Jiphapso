@@ -66,10 +66,6 @@ public interface ICommunityDAO {
 	public List<CommunityDTO> myList(@Param("m_no") Integer m_no,
 									 @Param("comm_type") String comm_type);
 	
-	// 가장 최신글 하나만 조회
-	public CommunityDTO getLatestByType(@Param("m_no") Integer m_no,
-										@Param("comm_type") String comm_type);
-	
 	// 이미 투표했는지 확인 (count 결과값을 받기 위해 int 반환)
 	public int checkRecommend(@Param("comm_no") int comm_no, @Param("m_no") int m_no);
 
