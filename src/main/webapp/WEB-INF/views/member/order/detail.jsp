@@ -7,6 +7,9 @@
 <head>
     <meta charset="UTF-8">
     <title>주문상세</title>
+    <c:if test="${header['X-Requested-With'] != 'XMLHttpRequest'}">
+<%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
+</c:if>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/order/detail.css">
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
@@ -447,7 +450,8 @@
         }
     })();
 </script>
-
+<c:if test="${header['X-Requested-With'] != 'XMLHttpRequest'}">
 <%@ include file="/WEB-INF/views/footer.jsp" %>
+</c:if>
 </body>
 </html>

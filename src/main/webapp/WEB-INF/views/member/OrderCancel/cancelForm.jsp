@@ -49,48 +49,100 @@
 </div>
 
 <style>
+  /* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5 */
+  .occf-overlay, .occf-overlay * { box-sizing: border-box; }
+
+  /* 배경 어둡게 + 살짝 블러 */
   .occf-overlay {
-    position: fixed; inset: 0; background: rgba(74, 50, 38, 0.4);
+    position: fixed; inset: 0; background: rgba(74, 50, 38, 0.45);
+    backdrop-filter: blur(2px);
     display: flex; align-items: center; justify-content: center; z-index: 4000;
   }
+
+  /* 모달 본체 - 열릴 때 아래에서 살짝 올라오는 애니메이션 */
   .occf-modal {
-    background: #FFFBF5; width: 400px; max-width: 90vw; border-radius: 10px; padding: 28px; position: relative;
-    box-shadow: 0 8px 24px rgba(74, 50, 38, 0.22);
+    background: #FFFFFF; width: 420px; max-width: 92vw; max-height: 90vh; overflow-y: auto;
+    border-radius: 20px; padding: 30px 28px 26px; position: relative;
+    box-shadow: 0 16px 40px rgba(74, 50, 38, 0.25);
     font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+    animation: occf-pop 0.22s ease;
   }
-  .occf-modal h3 { margin: 0 0 20px; font-size: 18px; color: #4A3226; }
+  @keyframes occf-pop {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* 제목 - 왼쪽 노란 포인트 바 + 아래 크림 선 */
+  .occf-modal h3 {
+    display: flex; align-items: center; gap: 8px;
+    margin: 0 0 22px; padding-bottom: 16px; border-bottom: 1px solid #FFF3D8;
+    font-size: 18px; font-weight: 700; color: #4A3226;
+  }
+  .occf-modal h3::before { content: ""; width: 5px; height: 18px; border-radius: 3px; background: #FDCC61; }
+
+  /* 닫기 버튼 - 동그란 크림 버튼 */
   .occf-close {
-    position: absolute; top: 14px; right: 16px; border: none; background: none;
-    font-size: 22px; cursor: pointer; color: rgba(74, 50, 38, 0.5); line-height: 1;
+    position: absolute; top: 16px; right: 16px; width: 32px; height: 32px;
+    border: none; border-radius: 50%; background: #FFF3D8;
+    font-size: 20px; cursor: pointer; color: rgba(74, 50, 38, 0.6); line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
   }
-  .occf-close:hover { color: #FDA58F; }
+  .occf-close:hover { background: #FDA58F; color: #FFFFFF; }
 
-  .occf-row { margin-bottom: 16px; }
-  .occf-row label { display: block; font-size: 13px; color: rgba(74, 50, 38, 0.6); margin-bottom: 6px; }
-  .occf-readonly { margin: 0; font-size: 14px; font-weight: 600; color: #4A3226; }
+  .occf-row { margin-bottom: 18px; }
+  .occf-row label { display: block; font-size: 13px; font-weight: 600; color: rgba(74, 50, 38, 0.7); margin-bottom: 7px; }
 
+  /* 상품명 - 크림 배경 박스로 '읽기 전용'임을 표시 */
+  .occf-readonly {
+    margin: 0; padding: 11px 14px; background: #FFF3D8; border-radius: 10px;
+    font-size: 14px; font-weight: 600; color: #4A3226; word-break: keep-all; line-height: 1.5;
+  }
+
+  /* 입력 요소 공통 */
   .occf-row select,
   .occf-row input[type="number"] {
-    width: 100%; padding: 9px 10px; border: 1px solid #FFC9CE; border-radius: 6px; font-size: 14px;
+    width: 100%; padding: 12px 14px; border: 1px solid #FFC9CE; border-radius: 10px; font-size: 14px;
     color: #4A3226; background: #FFFFFF; font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
+  /* select - 기본 화살표 대신 코랄색 화살표 */
+  .occf-row select {
+    padding-right: 40px; cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23FDA58F' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;
+  }
+  .occf-row select:hover,
+  .occf-row input[type="number"]:hover { border-color: #FDA58F; }
   .occf-row select:focus,
-  .occf-row input[type="number"]:focus { outline: none; border-color: #FDA58F; }
-  .occf-etc {
-    width: 100%; margin-top: 8px; padding: 9px 10px; border: 1px solid #FFC9CE; border-radius: 6px;
-    font-size: 14px; min-height: 60px; resize: vertical; font-family: inherit; color: #4A3226; background: #FFFFFF;
-  }
-  .occf-etc:focus { outline: none; border-color: #FDA58F; }
-  .occf-hint { display: inline-block; margin-top: 6px; font-size: 12px; color: rgba(74, 50, 38, 0.5); }
+  .occf-row input[type="number"]:focus { outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.15); }
 
-  .occf-buttons { display: flex; gap: 8px; margin-top: 22px; margin-bottom: 0; }
-  .occf-btn-cancel, .occf-btn-submit {
-    flex: 1; padding: 11px 0; border-radius: 6px; font-size: 14px; cursor: pointer; border: 1px solid transparent;
+  .occf-etc {
+    width: 100%; margin-top: 8px; padding: 12px 14px; border: 1px solid #FFC9CE; border-radius: 10px;
+    font-size: 14px; min-height: 80px; resize: vertical; font-family: inherit; color: #4A3226; background: #FFFFFF;
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .occf-btn-cancel { background: #FFFBF5; color: #4A3226; border-color: #FFC9CE; }
-  .occf-btn-cancel:hover { background: #FFF3D8; }
-  .occf-btn-submit { background: #4A3226; color: #FFFBF5; }
-  .occf-btn-submit:hover { background: #FDA58F; color: #FFFFFF; }
+  .occf-etc::placeholder { color: rgba(74, 50, 38, 0.35); }
+  .occf-etc:focus { outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.15); }
+
+  /* 최대 수량 안내 - 코랄색으로 눈에 띄게 */
+  .occf-hint { display: inline-block; margin-top: 7px; font-size: 12px; font-weight: 600; color: #FDA58F; }
+
+  /* 하단 버튼 - 알약 모양 */
+  .occf-buttons { display: flex; gap: 10px; margin-top: 26px; margin-bottom: 0; }
+  .occf-btn-cancel, .occf-btn-submit {
+    flex: 1; padding: 13px 0; border-radius: 999px; font-size: 14px; font-weight: 700; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.2s;
+  }
+  .occf-btn-cancel { background: #FFFFFF; color: #4A3226; border-color: #FFC9CE; }
+  .occf-btn-cancel:hover { background: #FFF3D8; border-color: #FDA58F; }
+  .occf-btn-submit { background: #4A3226; color: #FFFBF5; box-shadow: 0 4px 12px rgba(74, 50, 38, 0.2); }
+  .occf-btn-submit:hover { background: #FDCC61; color: #4A3226; transform: translateY(-1px); }
+
+  /* 모바일 */
+  @media (max-width: 480px) {
+    .occf-modal { padding: 24px 18px 20px; border-radius: 16px; }
+  }
 </style>
 
 <script>

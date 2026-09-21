@@ -1,47 +1,57 @@
 @charset "UTF-8";
-/* /css/order/checkout.css */
+/* /css/order/checkout.css (결제 페이지) */
 /* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
-   -> 이 페이지도 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)에
-      직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 .co-wrap 스코프로만 한정하고,
-      co-wrap 바깥에 붙는 토스트도 자기 클래스로 스코프함. */
+   -> 공통 헤더 body와 같이 쓰기 때문에 .co-wrap / .co-toast-wrap 스코프로만 스타일을 한정함 */
 .co-wrap, .co-wrap *,
 .co-toast-wrap, .co-toast-wrap * { box-sizing: border-box; }
 
-.co-wrap { max-width: 1000px; margin: 32px auto; padding: 0 20px 60px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; color: #4A3226; }
-.co-header { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
-.co-back { border: none; background: none; font-size: 15px; color: rgba(74, 50, 38, 0.55); cursor: pointer; padding: 0; }
+/* 단독 페이지(고정 헤더 아래)라서 상단 padding 100px 확보 */
+.co-wrap { max-width: 1000px; margin: 0 auto; padding: 100px 20px 60px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; color: #4A3226; }
+.co-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.co-back { border: none; background: none; font-size: 18px; color: rgba(74, 50, 38, 0.55); cursor: pointer; padding: 0 4px; transition: color .2s; }
 .co-back:hover { color: #FDA58F; }
-.co-title { font-size: 22px; font-weight: 700; margin: 0; color: #4A3226; }
+.co-title { font-size: 24px; font-weight: 800; margin: 0; color: #4A3226; }
 
+/* 좌(입력) / 우(요약) 2단 레이아웃 */
 .co-grid { display: flex; gap: 24px; align-items: flex-start; }
 .co-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-.co-side { flex: none; width: 320px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 20px; }
+.co-side { flex: none; width: 330px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 100px; }   /* 고정 헤더 높이만큼 띄움 */
 
-.co-card { border: 1px solid #FFC9CE; border-radius: 10px; padding: 20px; background: #FFFBF5; }
-.co-card-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: #4A3226; }
+/* 카드 */
+.co-card {
+    border: 1px solid #FFF3D8; border-radius: 16px; padding: 22px 24px; background: #FFFFFF;
+    box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);
+}
+/* 카드 제목 - 왼쪽 노란 포인트 바 */
+.co-card-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #4A3226;
+}
+.co-card-title::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: #FDCC61; }
 
 /* 주문 상품 정보 */
-.co-product-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #FFF3D8; }
+.co-product-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid #FFF3D8; }
 .co-product-row:last-of-type { border-bottom: none; }
-.co-product-row img { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; background: #FFF3D8; flex: none; }
+.co-product-row img { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: #FFF3D8; flex: none; border: 1px solid #FFF3D8; }
 .co-product-info { flex: 1; min-width: 0; }
-.co-product-name { font-size: 13px; color: #4A3226; margin-bottom: 4px; }
-.co-product-opt { display: inline-block; font-size: 11px; color: rgba(74, 50, 38, 0.55); background: #FFF3D8; border-radius: 4px; padding: 1px 6px; margin-bottom: 3px; }
+.co-product-name { font-size: 14px; font-weight: 600; color: #4A3226; margin-bottom: 4px; word-break: keep-all; }
+.co-product-opt { display: inline-block; font-size: 11px; color: rgba(74, 50, 38, 0.6); background: #FFF3D8; border-radius: 999px; padding: 2px 8px; margin-bottom: 3px; }
 .co-product-qty { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; color: rgba(74, 50, 38, 0.5); }
-.co-qty-num { font-size: 13px; font-weight: 700; color: #4A3226; }
-.co-product-price { font-size: 13px; font-weight: 700; color: #4A3226; flex: none; }
-.co-shipping-note { margin-top: 10px; padding-top: 10px; border-top: 1px solid #FFF3D8; font-size: 12px; color: rgba(74, 50, 38, 0.55); text-align: right; }
+.co-qty-num { font-size: 13px; font-weight: 700; color: #4A3226; min-width: 18px; text-align: center; }
+.co-product-price { font-size: 14px; font-weight: 700; color: #4A3226; flex: none; }
+.co-shipping-note { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #FFC9CE; font-size: 12px; color: rgba(74, 50, 38, 0.55); text-align: right; }
 .co-shipping-note strong { color: #4A3226; }
 .co-shipping-note .co-shipping-sub { font-weight: 400; }
 
-/* 상품별 / 쇼핑백 수량 +/- 버튼 - 공통 작은 버튼 */
+/* 수량 +/- 버튼 (상품 / 쇼핑백 공통) */
 .co-qty-btn {
-    width: 20px; height: 20px; min-width: 20px; padding: 0;
-    font-size: 12px; line-height: 1; border: 1px solid #FFC9CE; border-radius: 4px;
+    width: 24px; height: 24px; min-width: 24px; padding: 0;
+    font-size: 13px; line-height: 1; border: 1px solid #FFC9CE; border-radius: 50%;
     background: #FFFFFF; color: rgba(74, 50, 38, 0.6);
     display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: all .15s;
 }
-.co-qty-btn:hover { background: #FFF3D8; border-color: #FDA58F; color: #FDA58F; }
+.co-qty-btn:hover { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
 
 /* 폼 공통 */
 .co-form-row { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -50,26 +60,30 @@
 .co-form-row input[type="tel"],
 .co-form-row select,
 .co-form-row textarea {
-    flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #FFC9CE; border-radius: 6px;
-    font-size: 13px; font-family: inherit; color: #4A3226; background: #FFFFFF;
+    flex: 1; min-width: 0; padding: 12px 14px; border: 1px solid #FFC9CE; border-radius: 10px;
+    font-size: 14px; font-family: inherit; color: #4A3226; background: #FFFFFF;
+    transition: border-color .15s, box-shadow .15s;
 }
+.co-form-row input::placeholder,
+.co-form-row textarea::placeholder { color: rgba(74, 50, 38, 0.35); }
 .co-form-row input:focus,
 .co-form-row select:focus,
-.co-form-row textarea:focus { outline: none; border-color: #FDA58F; }
+.co-form-row textarea:focus { outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.15); }
 .co-form-row textarea { resize: vertical; }
-/* "직접 입력" 배송메모 textarea(#orMemoEtcRow) 전용 - 이 행은 textarea 하나만 있는 단독 행이라
-   무조건 카드 가로 폭 전체를 채우도록 width:100%를 명시적으로 한번 더 못박아둠
-   (toggleMemoEtc()에서 이 행을 열 때 display를 block으로 잘못 바꾸면 flex:1이 무력화돼서
-    textarea가 브라우저 기본 크기로 작게 나오는 버그가 있었음 -> JS도 'flex'로 열도록 같이 수정함) */
+/* "직접 입력" 배송메모 textarea는 단독 행이라 가로 전체 사용 (JS에서 display:flex로 열어야 함) */
 #orMemoEtcRow textarea { width: 100%; }
+
+/* 우편번호 검색 등 보조 버튼 */
 .co-btn {
-    border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226; border-radius: 6px;
-    padding: 0 16px; font-size: 13px; cursor: pointer; white-space: nowrap;
+    border: 1px solid #FDA58F; background: #FFFFFF; color: #FDA58F; border-radius: 10px;
+    padding: 0 18px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    transition: all .15s;
 }
-.co-btn:hover { border-color: #FDA58F; color: #FDA58F; background: #FFF3D8; }
-.co-check-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(74, 50, 38, 0.6); margin-top: 4px; }
+.co-btn:hover { background: #FDA58F; color: #FFFFFF; }
+.co-check-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(74, 50, 38, 0.6); margin-top: 6px; }
 .co-check-row.co-check-row-between { margin: 0 0 12px; justify-content: space-between; }
 .co-addr-check-label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.co-wrap input[type="checkbox"] { accent-color: #FDA58F; }   /* 체크박스 색도 팔레트로 */
 
 /* 쿠폰 / 포인트 */
 .co-select-row { position: relative; }
@@ -81,9 +95,7 @@
     transition: border-color .15s ease, box-shadow .15s ease;
 }
 .co-select-row select:hover { border-color: #FDA58F; }
-.co-select-row select:focus {
-    outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.15);
-}
+.co-select-row select:focus { outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.15); }
 .co-select-row select:disabled { background-color: #FFF3D8; color: rgba(74, 50, 38, 0.4); cursor: not-allowed; }
 
 .co-hint { margin: 8px 0 0; font-size: 13px; color: rgba(74, 50, 38, 0.5); text-align: right; }
@@ -92,83 +104,80 @@
 .co-point-row { display: flex; gap: 8px; align-items: stretch; }
 .co-point-row input[type="number"] {
     flex: 1; min-width: 0; padding: 12px 14px; border: 1px solid #FFC9CE; border-radius: 10px;
-    font-size: 14px; text-align: right; color: #4A3226; height: 44px; box-sizing: border-box;
+    font-size: 14px; text-align: right; color: #4A3226; height: 44px;
     transition: border-color .15s ease, box-shadow .15s ease;
 }
 .co-point-row input[type="number"]::-webkit-inner-spin-button,
 .co-point-row input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .co-point-row input[type="number"] { -moz-appearance: textfield; }
 .co-point-row input[type="number"]:hover { border-color: #FDA58F; }
-.co-point-row input[type="number"]:focus {
-    outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.15);
-}
-.co-point-row input[type="number"].co-point-error {
-    border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.2);
-}
+.co-point-row input[type="number"]:focus { outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.15); }
+.co-point-row input[type="number"].co-point-error { border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.25); }
 .co-point-row .co-btn {
-    flex-shrink: 0; height: 44px; padding: 0 16px; border: 1px solid #FDA58F; border-radius: 10px;
-    background: #FFFBF5; color: #FDA58F; font-size: 13px; font-weight: 600; cursor: pointer;
-    white-space: nowrap; box-sizing: border-box;
+    flex-shrink: 0; height: 44px; padding: 0 18px;
     display: flex; align-items: center; justify-content: center;
-    transition: background .15s ease, color .15s ease;
+    background: #FDCC61; border-color: #FDCC61; color: #4A3226; font-weight: 700;   /* 전액사용 버튼은 노란색으로 강조 */
 }
-.co-point-row .co-btn:hover { background: #FDA58F; color: #FFFFFF; }
+.co-point-row .co-btn:hover { background: #FDA58F; border-color: #FDA58F; color: #FFFFFF; }
 .co-point-row .co-btn:active { transform: scale(0.97); }
 
 /* 선물 쇼핑백 추가 */
 .shoppingbag-subtitle { font-size: 12px; color: rgba(74, 50, 38, 0.5); margin-bottom: 12px; }
-.shoppingbag-box { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-.shoppingbag-box input[type="checkbox"] { width: 16px; height: 16px; flex: none; }
+.shoppingbag-box { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 12px; border: 1px solid #FFF3D8; border-radius: 12px; background: #FFFBF5; }
+.shoppingbag-box input[type="checkbox"] { width: 18px; height: 18px; flex: none; }
 .shoppingbag-top { display: flex; align-items: center; gap: 14px; flex: 1; }
-.shoppingbag-img { width: 75px; height: auto; object-fit: contain; flex: none; }
+.shoppingbag-img { width: 72px; height: auto; object-fit: contain; flex: none; }
 .shoppingbag-info { flex: 1; }
-.shoppingbag-badge {
-    font-size: 10px; background: #FFF3D8; color: #FDA58F; padding: 2px 6px; border-radius: 3px;
-    display: inline-block; margin-bottom: 3px; font-weight: 600;
-}
+.shoppingbag-badge { font-size: 10px; background: #FDA58F; color: #FFFFFF; padding: 2px 8px; border-radius: 999px; display: inline-block; margin-bottom: 4px; font-weight: 700; }
 .shoppingbag-name { font-size: 14px; margin: 0 0 2px 0; color: #4A3226; font-weight: 700; }
 .shoppingbag-desc { font-size: 12px; color: rgba(74, 50, 38, 0.5); margin: 0 0 4px 0; }
-.shoppingbag-price { font-size: 13px; color: #4A3226; }
+.shoppingbag-price { font-size: 13px; color: #4A3226; font-weight: 600; }
 
-.co-bag-qty-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #FFF3D8; }
+.co-bag-qty-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed #FFC9CE; }
 .shoppingbag-qty-label { font-size: 12px; color: rgba(74, 50, 38, 0.6); }
 .shoppingbag-qty-controls { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .co-bag-amount { font-size: 13px; font-weight: 700; color: #FDA58F; margin-left: 10px; }
 
 /* 주문 요약 */
-.co-summary-row { display: flex; justify-content: space-between; font-size: 13px; color: rgba(74, 50, 38, 0.6); padding: 5px 0; }
+.co-summary-row { display: flex; justify-content: space-between; font-size: 13px; color: rgba(74, 50, 38, 0.6); padding: 6px 0; }
 .co-summary-total {
     display: flex; justify-content: space-between; align-items: baseline;
-    border-top: 1px solid #FFF3D8; margin-top: 10px; padding-top: 12px; font-size: 14px; font-weight: 700; color: #4A3226;
+    border-top: 2px solid #FFF3D8; margin-top: 12px; padding-top: 14px; font-size: 15px; font-weight: 700; color: #4A3226;
 }
-.co-summary-total .amt { color: #FDA58F; font-size: 17px; }
+.co-summary-total .amt { color: #FDA58F; font-size: 20px; font-weight: 800; }
 
-/* 결제 수단 - 동그라미 라디오 대신 로고 이미지 카드 */
-.co-pay-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+/* 결제 수단 - 로고 이미지 카드 */
+.co-pay-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .co-pay-option-img {
-    position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px;
-    padding: 14px 6px; border: 1px solid #FFC9CE; border-radius: 8px; cursor: pointer;
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 16px 6px; border: 2px solid #FFF3D8; border-radius: 12px; cursor: pointer; background: #FFFFFF;
     font-size: 12px; color: rgba(74, 50, 38, 0.6); text-align: center;
-    transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+    transition: border-color .15s ease, background-color .15s ease, color .15s ease, transform .15s;
 }
-.co-pay-option-img:hover { border-color: #FDA58F; }
+.co-pay-option-img:hover { border-color: #FDA58F; transform: translateY(-2px); }
 .co-pay-option-img input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
-.co-pay-option-img img { width: 30px; height: 30px; object-fit: contain; }
-.co-pay-option-img.selected { border-color: #FDA58F; background: #FFF3D8; color: #FDA58F; font-weight: 700; }
+.co-pay-option-img img { width: 34px; height: 34px; object-fit: contain; }
+.co-pay-option-img.selected { border-color: #FDCC61; background: #FFF3D8; color: #4A3226; font-weight: 700; box-shadow: 0 4px 12px rgba(253, 204, 97, 0.35); }
 
 /* 약관 / 결제하기 */
-.co-terms-text { font-size: 12px; color: rgba(74, 50, 38, 0.5); line-height: 1.5; margin: 0 0 10px; }
-.co-terms-check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(74, 50, 38, 0.7); margin-bottom: 16px; }
+.co-terms-text { font-size: 12px; color: rgba(74, 50, 38, 0.5); line-height: 1.6; margin: 0 0 12px; }
+.co-terms-check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(74, 50, 38, 0.75); margin-bottom: 16px; cursor: pointer; }
 .co-btn-pay {
-    width: 100%; border: none; border-radius: 8px; padding: 15px 0;
-    background: #4A3226; color: #FFFBF5; font-size: 15px; font-weight: 700; cursor: pointer;
+    width: 100%; border: none; border-radius: 999px; padding: 16px 0;
+    background: #4A3226; color: #FFFBF5; font-size: 16px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(74, 50, 38, 0.2);
+    transition: all .2s;
 }
-.co-btn-pay:hover { background: #FDA58F; color: #FFFFFF; }
+.co-btn-pay:hover { background: #FDCC61; color: #4A3226; transform: translateY(-2px); }
+.co-btn-pay:active { transform: translateY(0); }
 
+/* 모바일 */
 @media (max-width: 760px) {
+    .co-wrap { padding: 80px 14px 50px; }
     .co-grid { flex-direction: column; }
+    .co-main { width: 100%; }
     .co-side { width: 100%; position: static; }
-    .co-pay-options { grid-template-columns: repeat(3, 1fr); }
+    .co-card { padding: 18px 16px; }
 }
 
 /* 안내메세지 토스트 (alert 대체) */
@@ -189,12 +198,11 @@
     pointer-events: auto;
 }
 .co-toast.co-toast-show { opacity: 1; transform: translateY(0) scale(1); }
-/* 기존 코드는 success/error가 배경색이 완전히 같아서(#f5c518) 구분이 잘 안 됐음 -> 팔레트 기준으로 분리 */
 .co-toast-success { background: #FDCC61; color: #4A3226; }
 .co-toast-error   { background: #FDA58F; color: #FFFFFF; }
 
-/* 구매조건 미동의 시 강조 (네이티브 유효성 팝업 대신) */
-.co-terms-check.co-terms-error { color: #FDA58F; }
+/* 구매조건 미동의 시 강조 */
+.co-terms-check.co-terms-error { color: #FDA58F; font-weight: 700; }
 .co-terms-check.co-terms-shake { animation: co-shake 0.4s; }
 @keyframes co-shake {
     0%, 100% { transform: translateX(0); }
@@ -202,5 +210,5 @@
     75% { transform: translateX(4px); }
 }
 
-/* 쿠폰 할인 / 포인트 사용 - 차감되는 금액이라는 걸 눈에 띄게 표시 */
+/* 쿠폰 할인 / 포인트 사용 - 차감 금액 강조 */
 .co-discount-amt { color: #FDA58F; font-weight: 700; }

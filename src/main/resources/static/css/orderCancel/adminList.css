@@ -1,65 +1,88 @@
 @charset "UTF-8";
-.oca-page, .oca-page * { box-sizing: border-box; }
+/* 관리자 - 취소/반품/교환 관리 (.oca-page) */
+.oca-page, .oca-page *,
+.ax-modal-overlay, .ax-modal-overlay * { box-sizing: border-box; }
+
 .oca-page {
-  min-height: 100vh;
-  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
-  background: #FFFBF5;
-  color: #4A3226;
-  padding: 56px 20px 60px;
+    min-height: 100vh; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: #FFFBF5; color: #4A3226; padding: 56px 20px 60px;
 }
 .oca-inner { max-width: 1300px; margin: 0 auto; }
-.oca-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; color: #4A3226; }
+.oca-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700; margin: 0 0 20px; color: #4A3226; }
+.oca-title::before { content: ""; width: 5px; height: 20px; border-radius: 3px; background: #FDCC61; }
 
+/* 상태 탭 */
 .oca-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
 .oca-tab {
-  padding: 8px 16px; border: 1px solid #FFC9CE; background: #FFFBF5; border-radius: 20px;
-  font-size: 13px; cursor: pointer; color: #4A3226; font-weight: 600;
+    padding: 9px 18px; border: 1px solid #FFF3D8; background: #FFFFFF; border-radius: 999px;
+    font-size: 13px; cursor: pointer; color: rgba(74, 50, 38, 0.7); font-weight: 600; transition: all 0.2s;
 }
-.oca-tab.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; }
+.oca-tab:hover { border-color: #FDA58F; color: #FDA58F; }
+.oca-tab.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; box-shadow: 0 2px 8px rgba(74, 50, 38, 0.18); }
 
 .oca-empty {
-  padding: 80px 0; text-align: center; color: #4A3226; opacity: 0.6; font-size: 15px;
-  background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
+    padding: 80px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 15px;
+    background: #FFFFFF; border: 1px dashed #FFC9CE; border-radius: 16px;
 }
 
-.oca-table { width: 100%; border-collapse: collapse; background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px; overflow: hidden; font-size: 13px; }
-.oca-table th, .oca-table td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #FFF3D8; color: #4A3226; }
-.oca-table thead th { background: #FFF3D8; color: #4A3226; font-weight: 700; }
+.oca-table {
+    width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #FFF3D8;
+    border-radius: 14px; overflow: hidden; font-size: 13px; box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);
+}
+.oca-table th, .oca-table td { padding: 13px 8px; text-align: center; border-bottom: 1px solid #FFF3D8; color: #4A3226; }
+.oca-table thead th { background: #FFF3D8; font-weight: 700; }
 .oca-table tbody tr:last-child td { border-bottom: none; }
-.oca-table tbody tr:hover { background: rgba(255, 243, 216, 0.5); }
-.oca-table .oca-reason { max-width: 160px; text-align: left; white-space: normal; word-break: break-all; color: #4A3226; opacity: 0.8; }
+.oca-table tbody tr:hover { background: #FFFBF5; }
+.oca-table .oca-reason { max-width: 160px; text-align: left; white-space: normal; word-break: break-all; color: rgba(74, 50, 38, 0.8); }
 .oca-table .oca-product { max-width: 180px; text-align: left; white-space: normal; word-break: break-all; }
 
-.oca-status-select { padding: 5px 6px; border: 1px solid #FFC9CE; border-radius: 5px; font-size: 12px; background: #FFFBF5; color: #4A3226; }
+/* 처리상태 select - 코랄 화살표 */
+.oca-status-select {
+    padding: 6px 28px 6px 10px; border: 1px solid #FFC9CE; border-radius: 10px; font-size: 12px; color: #4A3226; cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8'%3E%3Cpath fill='%23FDA58F' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 10px center;
+    transition: border-color 0.15s;
+}
+.oca-status-select:hover, .oca-status-select:focus { outline: none; border-color: #FDA58F; }
 
-.oca-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226; margin: 0 2px; font-weight: 600; }
-.oca-btn:hover { background: #FFF3D8; }
-.oca-btn-save { border-color: #FDCC61; color: #4A3226; }
-.oca-btn-save:hover { background: #FDCC61; color: #4A3226; }
+.oca-btn {
+    padding: 6px 14px; border-radius: 999px; font-size: 12px; cursor: pointer;
+    border: 1px solid #FFC9CE; background: #FFFFFF; color: #4A3226; margin: 0 2px; font-weight: 600; transition: all 0.15s;
+}
+.oca-btn:hover { background: #FFF3D8; border-color: #FDA58F; }
+.oca-btn-save { border-color: #FDCC61; }
+.oca-btn-save:hover { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
 .oca-btn-delete { border-color: #FDA58F; color: #FDA58F; }
-.oca-btn-delete:hover { background: #FDA58F; color: #fff; }
+.oca-btn-delete:hover { background: #FDA58F; color: #FFFFFF; }
 
-/* ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) ===== */
+/* ===== 커스텀 알림/확인 모달 (alert/confirm 대체) ===== */
 .ax-modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 2000;
-  background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(74, 50, 38, 0.4); backdrop-filter: blur(2px); align-items: center; justify-content: center;
 }
 .ax-modal-overlay.show { display: flex; }
 .ax-modal {
-  width: 380px; max-width: 88vw;
-  background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 12px;
-  padding: 26px 22px 20px; text-align: center;
-  box-shadow: 0 10px 30px rgba(74, 50, 38, 0.2);
+    width: 380px; max-width: 88vw; background: #FFFFFF; border-radius: 20px;
+    padding: 30px 24px 22px; text-align: center; box-shadow: 0 16px 40px rgba(74, 50, 38, 0.25);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; animation: oca-pop 0.22s ease;
 }
-.ax-modal-message { font-size: 14px; color: #4A3226; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+@keyframes oca-pop { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
+.ax-modal-message { font-size: 14px; color: #4A3226; line-height: 1.6; margin-bottom: 22px; white-space: pre-line; word-break: keep-all; }
 .ax-modal-actions { display: flex; gap: 8px; justify-content: center; }
 .ax-btn {
-  padding: 9px 20px; border-radius: 6px; font-size: 13px; font-weight: 700;
-  cursor: pointer; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
-  min-width: 88px;
+    padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer;
+    border: 1px solid #FFC9CE; background: #FFFFFF; color: #4A3226; min-width: 92px; transition: all 0.2s;
 }
-.ax-btn:hover { background: #FFF3D8; }
+.ax-btn:hover { background: #FFF3D8; border-color: #FDA58F; }
 .ax-btn-primary { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
-.ax-btn-primary:hover { background: #FDA58F; color: #fff; }
-.ax-btn-danger { background: #FFFBF5; border-color: #FDA58F; color: #FDA58F; }
-.ax-btn-danger:hover { background: #FDA58F; color: #fff; }
+.ax-btn-primary:hover { background: #FDA58F; border-color: #FDA58F; color: #FFFFFF; }
+.ax-btn-danger { background: #FFFFFF; border-color: #FDA58F; color: #FDA58F; }
+.ax-btn-danger:hover { background: #FDA58F; color: #FFFFFF; }
+
+@media (max-width: 768px) {
+    .oca-page { padding: 56px 12px 40px; }
+    .oca-title { font-size: 18px; }
+    .oca-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .oca-tab { white-space: nowrap; flex-shrink: 0; }
+    .oca-table { display: block; overflow-x: auto; white-space: nowrap; }
+}

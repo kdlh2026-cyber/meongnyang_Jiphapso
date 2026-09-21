@@ -45,8 +45,6 @@
                 <c:forEach var="cart" items="${cartList}">
                     <input type="hidden" name="caNo" value="${cart.caNo}" class="ca-no-input">
                     <div class="co-product-row" data-ca-no="${cart.caNo}" data-unit-price="${cart.OPrice}" data-quantity="${cart.caQuantity}">
-                        <%-- cart_list.jsp와 동일하게 이미지 파일명에 '%'가 들어있으면(예: 인코딩된 한글 파일명)
-                             그대로 src에 넣었을 때 브라우저가 잘못된 퍼센트 인코딩으로 오인해서 깨지므로 '%25'로 이스케이프 --%>
                         <img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(cart.PMainImg, '%', '%25')}" alt="${cart.PName}">
                         <div class="co-product-info">
                             <div class="co-product-name">${cart.PName}</div>
@@ -283,7 +281,7 @@
     let shippingFeeVal = ${shippingFee};
     const finalAmountVal = ${finalAmount};
     let usablePointVal = ${usablePoint};
-    const myPointBalanceVal = ${myPointBalanceVal}; // 보유 포인트 (수량 변경 시 사용가능 포인트 재계산 기준값)
+    const myPointBalanceVal = ${myPointBalanceVal}; // 보유 포인트
     const PORTONE_STORE_ID = 'store-35335759-6047-4991-9a70-706bda2091f7';
     const EASY_PAY_PROVIDER_MAP = {
         TOSS: 'TOSSPAY',
@@ -300,11 +298,20 @@
     const BAG_MAX_QTY = 5;
     let bagQty = BAG_MIN_QTY;
 
-    // ================= 쿠폰 =================
-    var usableCouponList = [];   // /coupon/usable 조회 결과 캐시
-    var selectedCoupon = null;   // 현재 선택된 쿠폰 (MemberCouponDTO)
+    // ================= 약관 동의 안내문구 =================
+    var agreeTermsEl = document.getElementById('agreeTerms');
+    var AGREE_TERMS_MSG = '구매조건 확인 및 결제 진행에 동의해 주세요.';
 
-    // 사용 가능한(미사용 + 만료전) 보유쿠폰 목록 조회 (CouponController#usableCouponList)
+    agreeTermsEl.setCustomValidity(AGREE_TERMS_MSG);
+    agreeTermsEl.addEventListener('change', function () {
+        this.setCustomValidity(this.checked ? '' : AGREE_TERMS_MSG);
+    });
+
+    // ================= 쿠폰 =================
+    var usableCouponList = [];
+    var selectedCoupon = null;
+
+    // 사용 가능한(미사용 + 만료전) 보유쿠폰 목록 조회
     function loadUsableCoupons() {
         fetch('/coupon/usable')
             .then(function (res) { return res.json(); })
@@ -364,14 +371,13 @@
     loadUsableCoupons();
 
     // ================= 상품 수량 변경 (결제 페이지에서 바로 +/- 조절) =================
-    // 장바구니 페이지와 동일한 CartController#updateQuantity 엔드포인트를 그대로 사용
     function changeItemQty(caNo, diff) {
         var row = document.querySelector('.co-product-row[data-ca-no="' + caNo + '"]');
         if (!row) return;
 
         var curQty = parseInt(row.getAttribute('data-quantity'), 10);
         var newQty = curQty + diff;
-        if (newQty < 1) return; // 최소 1개, 그 이하로 빼려면 장바구니 페이지에서 삭제해야 함
+        if (newQty < 1) return;
 
         fetch('/cart/' + caNo + '/quantity', {
             method: 'PUT',
@@ -381,7 +387,7 @@
         .then(function (res) { return res.json(); })
         .then(function (result) {
             if (!result.success) {
-                showToast(result.message || '수량 변경에 실패했어요.', 'error'); // 재고 부족 등 서비스단 검증 실패 메시지
+                showToast(result.message || '수량 변경에 실패했어요.', 'error');
                 return;
             }
 
@@ -471,9 +477,6 @@
         var row = document.getElementById('orMemoEtcRow');
         var textarea = document.getElementById('orMemo');
         if (value === 'ETC') {
-            // .co-form-row는 display:flex를 전제로 textarea에 flex:1(=가로 꽉 채움)을 걸어뒀는데,
-            // 여기서 'block'으로 열면 flex 컨텍스트가 깨져서 textarea가 기본 크기(작은 네모)로 나오는 버그가 있었음
-            // -> 다른 .co-form-row들과 동일하게 'flex'로 열어서 textarea가 가로 전체를 채우도록 수정
             row.style.display = 'flex';
             textarea.value = '';
         } else {
@@ -577,7 +580,7 @@
         }
 
         if (!document.getElementById('agreeTerms').checked) {
-            showToast('구매조건 확인 및 결제진행에 동의해주세요.', 'error');
+            showToast('구매조건 확인 및 결제 진행에 동의해 주세요.', 'error');
             btnPay.disabled = false;
             return;
         }
@@ -605,7 +608,7 @@
             orMethod: payMethodEl.value,
             orYn: bagChecked ? 'Y' : 'N',
             orQty: bagChecked ? bagQty : 0,
-            mcNo: selectedCoupon ? selectedCoupon.mcNo : null // 선택한 보유쿠폰 번호 (없으면 null)
+            mcNo: selectedCoupon ? selectedCoupon.mcNo : null 
         };
 
         fetch('/member/order', {
@@ -619,10 +622,6 @@
         .then(res => res.json())
         .then(result => {
             if (result.success) {
-                // 쿠폰 사용 처리(markCouponUsed)는 여기서 바로 하지 않고 confirmPayment() 성공 시점으로 미룸
-                // -> 주문 생성 직후 바로 /coupon/use 를 호출하면 쿠폰 상태가 곧장 USED로 바뀌어서,
-                //    바로 다음에 이어지는 /payment/request(PaymentService#calcDiscountAmount)가 그 쿠폰을
-                //    "이미 사용됨"으로 판단해 "이미 사용되었거나 만료된 쿠폰입니다" 에러를 던지는 버그가 있었음
                 startPayment(result.data, payMethodEl.value);
             } else {
                 btnPay.disabled = false;
@@ -635,8 +634,6 @@
         });
     }
 
-    // 선택한 쿠폰을 이번 주문에 사용 처리 (CouponController#useCoupon)
-    // 쿠폰은 주문취소/반품이 되어도 되돌려주지 않는 정책이라, 주문이 생성된 시점에 바로 사용 확정 처리함
     function markCouponUsed(orNo) {
         if (!selectedCoupon) {
             return Promise.resolve();
@@ -739,11 +736,7 @@
         })
         .then(res => res.json())
         .then(result => {
-            // 결제완료/실패 메세지는 뜨자마자 페이지 이동해버리면 토스트를 볼 수 없어서
-            // 짧게(600ms) 보여준 뒤에 이동하도록 함
             if (result.success) {
-                // 쿠폰은 실제로 결제가 승인된 이 시점에만 사용 처리함(위 requestOrder() 주석 참고)
-                // -> 결제 도중에 취소하거나 실패해도 쿠폰이 헛되이 소모되지 않음
                 markCouponUsed(orNo);
                 showToast('결제가 완료되었어요.', 'success');
             } else {

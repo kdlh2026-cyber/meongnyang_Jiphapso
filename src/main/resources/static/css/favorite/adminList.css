@@ -1,133 +1,89 @@
 @charset "UTF-8";
-/* /css/favorite/adminList.css */
-/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
-   -> 이 페이지는 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유해서,
-      :root 변수 + body/* 전역 스타일을 쓰면 색이 안 먹히거나 헤더 레이아웃이 깨짐.
-      그래서 리터럴 색상값 + .fa-page 스코프로만 스타일을 한정하고,
-      .fa-page 자체를 화면 전체 높이로 채워서 바깥에 회색 배경이 비치지 않게 함. */
-.fa-page, .fa-page * { box-sizing: border-box; }
+/* 관리자 - 관심상품(찜) 목록 (.fa-page) */
+.fa-page, .fa-page *,
+.fa-modal-overlay, .fa-modal-overlay *,
+.ax-modal-overlay, .ax-modal-overlay * { box-sizing: border-box; }
+
 .fa-page {
-    min-height: 100vh;
-    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
-    background: #FFFBF5;
-    color: #4A3226;
-    padding: 56px 20px 60px;
+    min-height: 100vh; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: #FFFBF5; color: #4A3226; padding: 56px 20px 60px;
 }
 .fa-inner { max-width: 1000px; margin: 0 auto; }
-.fa-inner h3 { margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #4A3226; }
+.fa-inner h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #4A3226; }
+.fa-inner h3::before { content: ""; width: 5px; height: 20px; border-radius: 3px; background: #FDCC61; }
 
 table.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #FFFBF5;
-    border: 1px solid #FFC9CE;
-    border-radius: 8px;
-    overflow: hidden;
+    width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #FFF3D8;
+    border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);
 }
-
-table.admin-table th,
-table.admin-table td {
-    padding: 10px 8px;
-    border-bottom: 1px solid #FFF3D8;
-    text-align: center;
-    font-size: 13px;
-    color: #4A3226;
-}
-
-table.admin-table th {
-    background: #FFF3D8;
-    color: #4A3226;
-    font-weight: 700;
-}
-
+table.admin-table th, table.admin-table td { padding: 12px 8px; border-bottom: 1px solid #FFF3D8; text-align: center; font-size: 13px; color: #4A3226; }
+table.admin-table th { background: #FFF3D8; font-weight: 700; }
 table.admin-table tbody tr:last-child td { border-bottom: none; }
-table.admin-table tbody tr:hover { background: rgba(255, 243, 216, 0.5); }
+table.admin-table tbody tr:hover { background: #FFFBF5; }
 
-.thumb {
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-    border-radius: 6px;
-    background: #FFF3D8;
-}
+.thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; background: #FFF3D8; }
 
 .btn-sm {
-    padding: 5px 10px;
-    border: 1px solid #FFC9CE;
-    border-radius: 4px;
-    background: #FFFBF5;
-    color: #4A3226;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 6px 14px; border: 1px solid #FFC9CE; border-radius: 999px; background: #FFFFFF; color: #4A3226;
+    cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.15s;
 }
-.btn-sm:hover { background: #FFF3D8; }
-
-.btn-danger {
-    color: #FDA58F;
-    border-color: #FDA58F;
-}
-.btn-danger:hover { background: #FDA58F; color: #fff; }
+.btn-sm:hover { background: #FFF3D8; border-color: #FDA58F; }
+.btn-danger { color: #FDA58F; border-color: #FDA58F; }
+.btn-danger:hover { background: #FDA58F; color: #FFFFFF; }
 
 /* 회원별 찜한 상품 상세보기 모달 */
 .fa-modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 1000;
-    background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+    background: rgba(74, 50, 38, 0.4); backdrop-filter: blur(2px); align-items: center; justify-content: center;
 }
 .fa-modal-overlay.show { display: flex; }
 .fa-modal {
     width: 700px; max-width: 92vw; max-height: 82vh; overflow-y: auto;
-    background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 10px; padding: 24px; position: relative;
+    background: #FFFFFF; border-radius: 20px; padding: 28px; position: relative;
+    box-shadow: 0 16px 40px rgba(74, 50, 38, 0.25);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; animation: fa-pop 0.22s ease;
 }
+@keyframes fa-pop { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
 .fa-modal-close {
-    position: absolute; top: 14px; right: 16px; border: none; background: none;
-    font-size: 22px; cursor: pointer; color: #4A3226; opacity: 0.6; line-height: 1;
+    position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border: none; border-radius: 50%;
+    background: #FFF3D8; font-size: 20px; cursor: pointer; color: rgba(74, 50, 38, 0.6); line-height: 1;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
 }
-.fa-modal-close:hover { opacity: 1; color: #FDA58F; }
-.fa-modal h4 { margin: 0 0 16px; font-size: 16px; color: #4A3226; }
-.fa-modal-empty { text-align: center; color: #4A3226; opacity: 0.6; padding: 40px 0; font-size: 13px; }
+.fa-modal-close:hover { background: #FDA58F; color: #FFFFFF; }
+.fa-modal h4 { margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #4A3226; }
+.fa-modal-empty { text-align: center; color: rgba(74, 50, 38, 0.5); padding: 40px 0; font-size: 13px; }
 
 /* 가격 칸 줄바꿈 방지 + 너비 확보 */
-#faModalTable th:nth-child(4),
-#faModalTable td:nth-child(4) {
-    white-space: nowrap;
-    min-width: 90px;
-}
-/* 모달 테이블 헤더 줄바꿈 방지 */
-#faModalTable th {
-    white-space: nowrap;
-}
+#faModalTable th:nth-child(4), #faModalTable td:nth-child(4) { white-space: nowrap; min-width: 90px; }
+#faModalTable th { white-space: nowrap; }
 
-/* ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) ===== */
+/* ===== 커스텀 알림/확인 모달 (alert/confirm 대체) ===== */
 .ax-modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 2000;
-    background: rgba(74, 50, 38, 0.15); align-items: center; justify-content: center;
+    background: rgba(74, 50, 38, 0.15); align-items: center; justify-content: center;   /* 상세 모달 위에 뜨므로 옅게 */
 }
 .ax-modal-overlay.show { display: flex; }
 .ax-modal {
-    width: 460px; max-width: 90vw;
-    background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 12px;
-    padding: 26px 22px 20px; text-align: center;
-    box-shadow: 0 10px 30px rgba(74, 50, 38, 0.35);
+    width: 460px; max-width: 90vw; background: #FFFFFF; border-radius: 20px;
+    padding: 30px 24px 22px; text-align: center; box-shadow: 0 16px 40px rgba(74, 50, 38, 0.25);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; animation: fa-pop 0.22s ease;
 }
-/* 상품명이 긴 경우 단어 중간(예: "화장" / "실")에서 끊기지 않도록 word-break 대신 keep-all 사용 */
-.ax-modal-message { font-size: 14px; color: #4A3226; line-height: 1.6; margin-bottom: 20px; white-space: pre-line; word-break: keep-all; }
+/* 상품명이 긴 경우 단어 중간에서 끊기지 않도록 keep-all */
+.ax-modal-message { font-size: 14px; color: #4A3226; line-height: 1.6; margin-bottom: 22px; white-space: pre-line; word-break: keep-all; }
 .ax-modal-actions { display: flex; gap: 8px; justify-content: center; }
 .ax-btn {
-    padding: 9px 20px; border-radius: 6px; font-size: 13px; font-weight: 700;
-    cursor: pointer; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
-    min-width: 88px;
+    padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer;
+    border: 1px solid #FFC9CE; background: #FFFFFF; color: #4A3226; min-width: 92px; transition: all 0.2s;
 }
-.ax-btn:hover { background: #FFF3D8; }
+.ax-btn:hover { background: #FFF3D8; border-color: #FDA58F; }
 .ax-btn-primary { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
-.ax-btn-primary:hover { background: #FDA58F; color: #fff; }
-.ax-btn-danger { background: #FFFBF5; border-color: #FDA58F; color: #FDA58F; }
-.ax-btn-danger:hover { background: #FDA58F; color: #fff; }
+.ax-btn-primary:hover { background: #FDA58F; border-color: #FDA58F; color: #FFFFFF; }
+.ax-btn-danger { background: #FFFFFF; border-color: #FDA58F; color: #FDA58F; }
+.ax-btn-danger:hover { background: #FDA58F; color: #FFFFFF; }
 
-/* 모바일 반응형 */
 @media (max-width: 768px) {
     .fa-page { padding: 56px 12px 40px; }
     .fa-inner h3 { font-size: 18px; }
     table.admin-table { display: block; overflow-x: auto; white-space: nowrap; }
-    .fa-modal { padding: 18px; }
+    .fa-modal { padding: 20px; }
 }

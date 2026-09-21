@@ -1,183 +1,92 @@
 @charset "UTF-8";
-/* /css/orderDetail/adminList.css */
-/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
-   -> 이 페이지는 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유해서,
-      :root 변수 + body/* 전역 스타일을 쓰면 색이 안 먹히거나 헤더 레이아웃이 깨짐.
-      그래서 리터럴 색상값 + .odm-page 스코프로만 스타일을 한정하고,
-      .odm-page 자체를 화면 전체 높이로 채워서 바깥에 회색 배경이 비치지 않게 함. */
-.odm-page, .odm-page * { box-sizing: border-box; }
-.odm-page {
-    min-height: 100vh;
-    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
-    background: #FFFBF5;
-    color: #4A3226;
-    padding: 56px 16px 60px;
-}
-.odm-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-}
+/* 관리자 - 주문상세(order detail) 목록 (.odm-page) */
+.odm-page, .odm-page *,
+.ax-modal-overlay, .ax-modal-overlay * { box-sizing: border-box; }
 
-.odm-inner h3 {
-    margin: 0 0 20px;
-    font-size: 22px;
-    font-weight: 700;
-    color: #4A3226;
+.odm-page {
+    min-height: 100vh; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: #FFFBF5; color: #4A3226; padding: 56px 16px 60px;
 }
+.odm-inner { max-width: 1200px; margin: 0 auto; }
+.odm-inner h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #4A3226; }
+.odm-inner h3::before { content: ""; width: 5px; height: 20px; border-radius: 3px; background: #FDCC61; }
 
 table.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #FFFBF5;
-    border: 1px solid #FFC9CE;
-    border-radius: 8px;
-    overflow: hidden;
+    width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #FFF3D8;
+    border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);
 }
-
-table.admin-table th,
-table.admin-table td {
-    padding: 10px 8px;
-    border-bottom: 1px solid #FFF3D8;
-    text-align: center;
-    font-size: 13px;
-    color: #4A3226;
-}
-
-table.admin-table th {
-    background: #FFF3D8;
-    color: #4A3226;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
+table.admin-table th, table.admin-table td { padding: 12px 8px; border-bottom: 1px solid #FFF3D8; text-align: center; font-size: 13px; color: #4A3226; }
+table.admin-table th { background: #FFF3D8; font-weight: 700; white-space: nowrap; }
 table.admin-table tbody tr:last-child td { border-bottom: none; }
-table.admin-table tbody tr:hover { background: rgba(255, 243, 216, 0.5); }
+table.admin-table tbody tr:hover { background: #FFFBF5; }
+table.admin-table td[colspan] { padding: 70px 0; color: rgba(74, 50, 38, 0.5); }
 
-table.admin-table td[colspan] {
-    padding: 60px 0;
-    color: #4A3226;
-    opacity: 0.6;
-}
+/* 가격 / 주문번호 / 주문상태 칸 줄바꿈 방지 */
+table.admin-table th:nth-child(5), table.admin-table td:nth-child(5) { white-space: nowrap; min-width: 66px; }
+table.admin-table th:nth-child(8), table.admin-table td:nth-child(8) { white-space: nowrap; min-width: 74px; }
+table.admin-table th:nth-child(9), table.admin-table td:nth-child(9) { white-space: nowrap; min-width: 96px; }
 
-/* 가격 컬럼 - 줄바꿈 방지 */
-table.admin-table th:nth-child(5),
-table.admin-table td:nth-child(5) {
-    white-space: nowrap;
-    min-width: 66px;
-}
+.thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; background: #FFF3D8; }
 
-/* 주문번호 / 주문상태 컬럼 - 헤더/내용 줄바꿈 방지 */
-table.admin-table th:nth-child(8),
-table.admin-table td:nth-child(8) {
-    white-space: nowrap;
-    min-width: 74px;
-}
-table.admin-table th:nth-child(9),
-table.admin-table td:nth-child(9) {
-    white-space: nowrap;
-    min-width: 96px;
-}
-
-.thumb {
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-    border-radius: 6px;
-    background: #FFF3D8;
-}
-
-.odm-link {
-    color: #4A3226;
-    text-decoration: none;
-    font-weight: 700;
-}
-.odm-link:hover { color: #FDA58F; text-decoration: underline; }
+.odm-link { color: #4A3226; text-decoration: underline; text-decoration-color: #FDCC61; text-underline-offset: 3px; font-weight: 700; }
+.odm-link:hover { color: #FDA58F; }
 
 .btn-sm {
-    padding: 5px 10px;
-    border: 1px solid #FFC9CE;
-    border-radius: 4px;
-    background: #FFFBF5;
-    color: #4A3226;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 6px 14px; border: 1px solid #FFC9CE; border-radius: 999px; background: #FFFFFF; color: #4A3226;
+    cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.15s;
 }
-.btn-sm:hover { background: #FFF3D8; }
+.btn-sm:hover { background: #FFF3D8; border-color: #FDA58F; }
+.btn-danger { color: #FDA58F; border-color: #FDA58F; }
+.btn-danger:hover { background: #FDA58F; color: #FFFFFF; }
 
-.btn-danger {
-    color: #FDA58F;
-    border-color: #FDA58F;
-}
-.btn-danger:hover { background: #FDA58F; color: #fff; }
-
-/* 주문상태 필터 탭 버튼 */
-.ord-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 0 0 18px;
-}
+/* 주문상태 필터 탭 */
+.ord-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
 .ord-tab {
-    padding: 8px 16px;
-    border: 1px solid #FFC9CE;
-    background: #FFFBF5;
-    border-radius: 20px;
-    font-size: 13px;
-    cursor: pointer;
-    color: #4A3226;
-    font-weight: 600;
+    padding: 9px 18px; border: 1px solid #FFF3D8; background: #FFFFFF; border-radius: 999px;
+    font-size: 13px; cursor: pointer; color: rgba(74, 50, 38, 0.7); font-weight: 600; transition: all 0.2s;
 }
-.ord-tab.active {
-    background: #4A3226;
-    color: #FFFBF5;
-    border-color: #4A3226;
-}
+.ord-tab:hover { border-color: #FDA58F; color: #FDA58F; }
+.ord-tab.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; box-shadow: 0 2px 8px rgba(74, 50, 38, 0.18); }
+.ord-no-match td { color: rgba(74, 50, 38, 0.5); }
 
-.ord-no-match td { color: #4A3226; opacity: 0.6; }
-
-/* 상태 뱃지: 다른 주문 관리 페이지(adminList.css)와 동일한 색/진하기 규칙 */
-.order-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-    border: 1px solid transparent;
-}
+/* 상태 배지 - 주문 목록 관리 페이지와 동일 규칙 */
+.order-badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid transparent; }
 .badge-payment_pending { background: #FFF3D8; border-color: #FFC9CE; color: #4A3226; opacity: 0.7; }
 .badge-paid            { background: rgba(253, 204, 97, 0.45); border-color: rgba(253, 204, 97, 0.9); color: #4A3226; }
 .badge-preparing       { background: rgba(255, 201, 206, 0.55); border-color: rgba(255, 201, 206, 0.95); color: #4A3226; }
 .badge-shipping        { background: rgba(253, 165, 143, 0.3); border-color: rgba(253, 165, 143, 0.85); color: #4A3226; }
 .badge-delivered       { background: rgba(253, 165, 143, 0.6); border-color: #FDA58F; color: #4A3226; }
 .badge-confirmed       { background: #4A3226; border-color: #4A3226; color: #FFFBF5; }
-.badge-canceled        { background: #FDA58F; border-color: #FDA58F; color: #fff; }
+.badge-canceled        { background: #FDA58F; border-color: #FDA58F; color: #FFFFFF; }
 
-/* ===== 커스텀 알림/확인 모달 (기본 alert/confirm 대체) ===== */
+/* ===== 커스텀 알림/확인 모달 (alert/confirm 대체) ===== */
 .ax-modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 2000;
-    background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
+    background: rgba(74, 50, 38, 0.4); backdrop-filter: blur(2px); align-items: center; justify-content: center;
 }
 .ax-modal-overlay.show { display: flex; }
 .ax-modal {
-    width: 360px; max-width: 88vw;
-    background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 12px;
-    padding: 26px 22px 20px; text-align: center;
-    box-shadow: 0 10px 30px rgba(74, 50, 38, 0.2);
+    width: 380px; max-width: 88vw; background: #FFFFFF; border-radius: 20px;
+    padding: 30px 24px 22px; text-align: center; box-shadow: 0 16px 40px rgba(74, 50, 38, 0.25);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; animation: odm-pop 0.22s ease;
 }
-.ax-modal-message {
-    font-size: 14px; color: #4A3226; line-height: 1.5; margin-bottom: 20px;
-    white-space: pre-line;
-}
+@keyframes odm-pop { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
+.ax-modal-message { font-size: 14px; color: #4A3226; line-height: 1.6; margin-bottom: 22px; white-space: pre-line; word-break: keep-all; }
 .ax-modal-actions { display: flex; gap: 8px; justify-content: center; }
 .ax-btn {
-    padding: 9px 20px; border-radius: 6px; font-size: 13px; font-weight: 700;
-    cursor: pointer; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
-    min-width: 88px;
+    padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer;
+    border: 1px solid #FFC9CE; background: #FFFFFF; color: #4A3226; min-width: 92px; transition: all 0.2s;
 }
-.ax-btn:hover { background: #FFF3D8; }
+.ax-btn:hover { background: #FFF3D8; border-color: #FDA58F; }
 .ax-btn-primary { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
-.ax-btn-primary:hover { background: #FDA58F; color: #fff; }
-.ax-btn-danger { background: #FFFBF5; border-color: #FDA58F; color: #FDA58F; }
-.ax-btn-danger:hover { background: #FDA58F; color: #fff; }
+.ax-btn-primary:hover { background: #FDA58F; border-color: #FDA58F; color: #FFFFFF; }
+.ax-btn-danger { background: #FFFFFF; border-color: #FDA58F; color: #FDA58F; }
+.ax-btn-danger:hover { background: #FDA58F; color: #FFFFFF; }
+
+@media (max-width: 768px) {
+    .odm-page { padding: 56px 10px 40px; }
+    .odm-inner h3 { font-size: 18px; }
+    .ord-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .ord-tab { white-space: nowrap; flex-shrink: 0; }
+    table.admin-table { display: block; overflow-x: auto; }
+}
