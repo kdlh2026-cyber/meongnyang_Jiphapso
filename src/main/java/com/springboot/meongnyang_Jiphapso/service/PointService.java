@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.meongnyang_Jiphapso.common.PointPolicy;
+import com.springboot.meongnyang_Jiphapso.dao.IMemberDAO;
 import com.springboot.meongnyang_Jiphapso.dao.IPointDAO;
+import com.springboot.meongnyang_Jiphapso.dto.MemberDTO;
 import com.springboot.meongnyang_Jiphapso.dto.PointDTO;
 
 @Service
@@ -24,6 +26,9 @@ public class PointService {
 
 	@Autowired
 	private IPointDAO pointDAO;
+
+	@Autowired
+	private IMemberDAO memberDAO; // 회원 아이디 -> 회원번호 변환용 (커뮤니티 글 적립/회수)
 
 	// ================= 조회 =================
 
@@ -178,9 +183,79 @@ public class PointService {
 	}
 
 	// 커뮤니티 글 작성 적립 (글 종류/내용과 무관하게 1건당 고정 50P, 커뮤니티 Service에서 글 insert 성공 후 호출)
+	// ※ 글번호를 안 받는 기존 버전 - 이걸로 적립한 글은 삭제해도 포인트 회수가 안 됨 (아래 아이디+글번호 버전 사용 권장)
 	@Transactional
 	public void earnCommunityPostBonus(Long mNo) {
 		earn(mNo, PointPolicy.AMOUNT_COMMUNITY_POST, PointPolicy.REASON_COMMUNITY_POST, null, null);
+	}
+
+	// ================= 커뮤니티 글 적립 / 삭제 시 회수 (회원 아이디 기준) =================
+
+	// 회원 아이디로 회원번호 조회 (없으면 null)
+	private Long findMemberNoById(String mId) {
+		if (mId == null || mId.trim().isEmpty()) {
+			return null;
+		}
+		MemberDTO member = memberDAO.MemberView(mId);
+		return (member != null) ? (long) member.getM_no() : null;
+	}
+
+	// 글번호를 사유에 넣어서 저장 -> 글 삭제 시 이 사유로 적립 이력을 찾아서 회수함
+	private String communityPostReason(Long commNo) {
+		return PointPolicy.REASON_COMMUNITY_POST + " (글번호:" + commNo + ")";
+	}
+
+	// 커뮤니티 글 작성 적립 (회원 아이디 + 글번호) - 글 insert 성공 후 커뮤니티 Service에서 호출
+	@Transactional
+	public void earnCommunityPostBonusById(String mId, Long commNo) {
+		Long mNo = findMemberNoById(mId);
+		if (mNo == null) {
+			log.warn("글 작성 포인트 적립 실패(존재하지 않는 회원) - mId={}, commNo={}", mId, commNo);
+			return;
+		}
+		earn(mNo, PointPolicy.AMOUNT_COMMUNITY_POST, communityPostReason(commNo), null, null);
+	}
+
+	// 커뮤니티 글 삭제 시 그 글로 받은 포인트 회수 (회원 아이디 + 글번호) - 커뮤니티 Service의 글 삭제 로직에서 호출
+	// 잔액이 모자라도 예외를 던지지 않고 가능한 만큼만 회수함 (글 삭제 자체가 막히지 않게)
+	@Transactional
+	public void revokeCommunityPostBonusById(String mId, Long commNo) {
+		Long mNo = findMemberNoById(mId);
+		if (mNo == null) {
+			log.warn("글 삭제 포인트 회수 실패(존재하지 않는 회원) - mId={}, commNo={}", mId, commNo);
+			return;
+		}
+
+		PointDTO earnHistory = pointDAO.selectActiveEarnByReason(mNo, communityPostReason(commNo));
+		if (earnHistory == null) {
+			return; // 적립받은 적이 없거나 이미 회수된 글
+		}
+
+		// 소멸기한이 지난 적립분은 만료 배치가 이미 처리하므로 회수하지 않음 (이중 차감 방지)
+		if (earnHistory.getPoEx() != null && earnHistory.getPoEx().before(new Date())) {
+			return;
+		}
+
+		long earned = (earnHistory.getPoAmount() != null) ? earnHistory.getPoAmount() : 0L;
+		long before = getCurrentBalance(mNo);
+		long revoke = Math.min(earned, before); // 이미 써서 잔액이 모자라면 남은 만큼만 회수
+		if (revoke <= 0) {
+			log.info("글 삭제 포인트 회수 생략(회수할 잔액 없음) - mId={}, commNo={}", mId, commNo);
+			return;
+		}
+
+		PointDTO dto = new PointDTO();
+		dto.setMNo(mNo);
+		dto.setPoType(PointPolicy.TYPE_USE); // 회수는 차감이므로 USE(음수)로 기록 (관리자 취소와 동일)
+		dto.setPoAmount(-revoke);
+		dto.setPoAfter(before - revoke);
+		dto.setPoReason("게시글 삭제로 인한 포인트 회수 (글번호:" + commNo + ")");
+		dto.setPoEx(null);
+		dto.setPoRelatedNo(earnHistory.getPoNo()); // 원본 적립 이력과 연결 -> 관리자 취소 관리 목록에도 같이 표시됨
+
+		pointDAO.insertPoint(dto);
+
+		log.info("글 삭제 포인트 회수 - mId={}, commNo={}, earned={}, revoke={}", mId, commNo, earned, revoke);
 	}
 
 	// 관리자 수동 적립/차감 (관리자 페이지에서 직접 호출, amount는 양수(적립)/음수(차감) 모두 가능)
@@ -224,6 +299,11 @@ public class PointService {
 		if (original.getPoRelatedNo() != null) {
 			log.warn("포인트 이력 취소 실패(이미 취소된 이력) - poNo={}", poNo);
 			throw new IllegalStateException("이미 다른 이력을 취소한 이력은 다시 취소할 수 없습니다.");
+		}
+		// 같은 원본을 두 번 취소하면 포인트가 두 번 차감되는 문제 방지
+		if (pointDAO.countByRelatedNo(poNo) > 0) {
+			log.warn("포인트 이력 취소 실패(이미 취소된 원본) - poNo={}", poNo);
+			throw new IllegalStateException("이미 취소 처리된 이력입니다.");
 		}
 
 		long originalAmount = (original.getPoAmount() != null) ? original.getPoAmount() : 0L;

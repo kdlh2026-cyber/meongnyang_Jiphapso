@@ -146,4 +146,31 @@
       where po_order_no = #{orNo}
    </update>
 
+   <!-- 글 삭제 포인트 회수용 - 사유(글번호 포함) -->
+   <select id="selectActiveEarnByReason" resultMap="pointMap">
+      select *
+      from (
+         select po_no, po_type, po_amount, po_after, po_reason, po_at, po_ex, po_order_no, m_no, ch_no, po_related_no
+         from dc_point_history
+         where m_no = #{mNo}
+           and po_type = 'EARN'
+           and po_reason = #{reason}
+           and po_related_no is null
+           and po_no not in (
+              select po_related_no
+              from dc_point_history
+              where po_related_no is not null
+           )
+         order by po_no desc
+      )
+      where rownum = 1
+   </select>
+
+   <!-- 이 이력을 취소한 이력이 이미 있는지 확인 (같은 원본 중복 취소 방지) -->
+   <select id="countByRelatedNo" resultType="int">
+      select count(*)
+      from dc_point_history
+      where po_related_no = #{poNo}
+   </select>
+
 </mapper>
