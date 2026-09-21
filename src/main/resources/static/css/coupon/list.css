@@ -1,48 +1,130 @@
 @charset "UTF-8";
+/* /css/coupon/list.css */
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   -> 이 페이지는 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)와 body에
+      직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 *, body에 걸려있던 규칙을
+      전부 .cp-wrap / #cpToastWrap 스코프로만 한정함. */
 .cp-wrap, .cp-wrap *,
 #cpToastWrap, #cpToastWrap * { box-sizing: border-box; }
 
+/* 이 페이지는 위에 마이페이지 탭 메뉴가 이미 있어서 상단 padding 없이 margin만 사용 (헤더와 제목 사이 공백 과다 문제 수정) */
 .cp-wrap {
-  max-width: 1100px; margin: 40px auto; padding: 0 20px 60px;
+  max-width: 1000px; margin: 40px auto; padding: 0 20px 60px;
   font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
   color: #4A3226;
 }
 .cp-title { font-size: 22px; font-weight: 700; margin: 0 0 8px; color: #4A3226; }
-.cp-section-title { font-size: 17px; font-weight: 700; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 2px solid #4A3226; color: #4A3226; }
 
-.cp-empty {
-  padding: 60px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 14px;
-  background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
+/* 섹션 제목 - 얇은 크림색 선 + 왼쪽 포인트 바 + 오른쪽 안내 알약 */
+.cp-section-title {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  font-size: 17px; font-weight: 700; margin: 44px 0 18px; padding-bottom: 14px;
+  border-bottom: 1px solid #FFF3D8; color: #4A3226;
+}
+.cp-section-title::before {
+  content: ""; display: inline-block; width: 5px; height: 18px; border-radius: 3px; background: #FDCC61;
+}
+.cp-section-title::after {
+  padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
 }
 
-.cp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+/* 1번째 제목 = 받을 수 있는 쿠폰 (아직 안 받은 쿠폰 → 노란색으로 강조) */
+.cp-wrap h3.cp-section-title:nth-of-type(1)::before { background: #FDA58F; }
+.cp-wrap h3.cp-section-title:nth-of-type(1)::after {
+  content: "쿠폰 받기 버튼을 눌러 받아가세요";
+  background: #FDCC61; color: #4A3226;
+}
 
-.cp-card { position: relative; border-radius: 10px; overflow: hidden; background: #FFFBF5; box-shadow: 0 1px 4px rgba(74, 50, 38, 0.08); }
-.cp-card img { width: 100%; display: block; }
+/* 2번째 제목 = 보유 쿠폰함 (이미 받은 쿠폰 → 차분한 딥브라운/크림 톤) */
+.cp-wrap h3.cp-section-title:nth-of-type(2)::before { background: #4A3226; }
+.cp-wrap h3.cp-section-title:nth-of-type(2)::after {
+  content: "이미 받은 쿠폰이에요 · 결제할 때 사용할 수 있어요";
+  background: #FFF3D8; color: rgba(74, 50, 38, 0.65);
+}
+
+.cp-empty {
+  padding: 70px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 14px;
+  background: #FFFFFF; border: 1px dashed #FFC9CE; border-radius: 16px;
+}
+
+/* 카드 그리드 - 3열 고정 (minmax(0, 1fr) → 내용물 길이와 상관없이 3칸 균등 분배)
+   한 줄의 카드들은 높이가 같게(stretch) 늘어남 */
+.cp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* 받을 수 있는 쿠폰 영역 - 노란 점선 박스로 묶어서 '받는 곳'임을 한눈에 구분 */
+#cpDownloadableGrid {
+  padding: 20px; background: #FFFBF5;
+  border: 2px dashed #FDCC61; border-radius: 20px;
+  margin: 0 -22px;                 /* 박스 안쪽 여백(20px)+테두리(2px)만큼 바깥으로 빼서, 카드 폭이 아래 보유 쿠폰함 카드와 똑같아지게 함 */
+}
+#cpDownloadableGrid:empty { display: none; }        /* 쿠폰이 없을 땐 빈 박스가 보이지 않게 */
+#cpDownloadableGrid .cp-card { border-color: #FDCC61; }   /* 테두리 굵기는 공통(2px) 그대로, 색만 노란색으로 */
+
+/* 쿠폰 카드 - 세로 flex 구조: 이미지 → 문구(남는 높이 차지) → 버튼(항상 맨 아래) */
+.cp-card {
+  position: relative; display: flex; flex-direction: column;
+  border-radius: 16px; overflow: hidden; background: #FFFFFF;
+  border: 2px solid #FFF3D8; box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);   /* 받을 수 있는 카드와 이미지 폭이 같아지도록 테두리 굵기를 통일(2px) */
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+.cp-card:hover {
+  border-color: #FDCC61; box-shadow: 0 8px 22px rgba(74, 50, 38, 0.10);
+  transform: translateY(-2px);                 /* 호버 시 살짝 떠오르는 효과 */
+}
+
+/* 쿠폰 이미지 - 비율을 고정해서 이미지가 세로로 길어지지 않게 함
+   (쿠폰 이미지 실제 비율이 다르면 aspect-ratio 값만 바꾸면 됨. 예: 2 / 1, 16 / 9)
+   object-fit: contain → 쿠폰 그림이 잘리지 않고 통째로 보이게 함 */
+.cp-card img {
+  display: block; flex: none;
+  width: 100%; height: auto;
+  aspect-ratio: 11 / 5;
+  object-fit: contain;
+  background: #FFFBF5;
+}
 .cp-card.cp-inactive img { filter: grayscale(1); opacity: 0.55; }
+.cp-card.cp-inactive:hover { transform: none; border-color: #FFF3D8; box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05); }   /* 사용 불가 쿠폰은 호버 반응 없음 */
 
-.cp-meta { padding: 12px 14px 14px; }
-.cp-meta-name { font-size: 14px; font-weight: 700; margin: 0 0 6px; color: #4A3226; }
-.cp-meta-sub { font-size: 12px; color: rgba(74, 50, 38, 0.6); margin: 2px 0; }
+.cp-meta { flex: 1; padding: 16px 18px 18px; }      /* flex:1 → 남는 높이를 차지해서 버튼을 카드 바닥으로 밀어냄 */
+.cp-meta-name { font-size: 15px; font-weight: 700; margin: 0 0 8px; color: #4A3226; word-break: keep-all; }
+.cp-meta-sub { font-size: 12px; color: rgba(74, 50, 38, 0.6); margin: 3px 0; line-height: 1.5; word-break: keep-all; }
 
-.cp-status { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #FFFFFF; }
-.cp-status-unused  { background: #FDA58F; }
-.cp-status-used    { background: rgba(74, 50, 38, 0.45); }
-.cp-status-expired { background: #4A3226; }
+/* 상태 배지 - 쿠폰 이미지의 할인율 숫자를 가리지 않도록 이미지 위가 아니라 카드 하단 우측(문구 영역의 빈 공간)에 배치 */
+.cp-status {
+  position: absolute; bottom: 14px; right: 14px; top: auto;
+  padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(74, 50, 38, 0.18);
+}
+.cp-status ~ .cp-meta { padding-right: 90px; }   /* 배지가 있는 카드는 문구가 배지 밑으로 깔리지 않게 오른쪽 여백 확보 */
 
+.cp-status-unused  { background: #FDA58F; }                      /* 사용가능 */
+.cp-status-used    { background: #4A3226; }                      /* 사용완료 */
+.cp-status-expired { background: #FFFBF5; color: #4A3226; border: 1px solid #4A3226; }   /* 기간만료 */
+
+/* 쿠폰 받기 버튼 */
 .cp-download-btn {
-  display: block; width: calc(100% - 28px); margin: 0 14px 14px; padding: 10px 0;
-  background: #FDCC61; color: #4A3226; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer;
+  display: block; flex: none; width: calc(100% - 36px); margin: 0 18px 18px; padding: 12px 0;
+  background: #FDCC61; color: #4A3226; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s;
 }
 .cp-download-btn:hover { background: #FDA58F; color: #FFFFFF; }
 .cp-download-btn:disabled { background: #FFF3D8; color: rgba(74, 50, 38, 0.4); cursor: default; }
 
-.cp-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+/* 탭 - 주문내역의 알약 탭과 동일 */
+.cp-tabs { display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto; scrollbar-width: none; }
+.cp-tabs::-webkit-scrollbar { display: none; }
 .cp-tab {
-  padding: 8px 16px; border: 1px solid #FFC9CE; background: #FFFBF5; border-radius: 20px;
-  font-size: 13px; cursor: pointer; color: #4A3226; font-weight: 600;
+  padding: 9px 18px; border: 1px solid #FFF3D8; background: #FFFFFF; border-radius: 999px;
+  font-size: 13px; cursor: pointer; color: rgba(74, 50, 38, 0.7); font-weight: 600;
+  white-space: nowrap; flex-shrink: 0; transition: all 0.2s;
 }
-.cp-tab.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; }
+.cp-tab:hover { border-color: #FDA58F; color: #FDA58F; }
+.cp-tab.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; box-shadow: 0 2px 8px rgba(74, 50, 38, 0.18); }
 
 /* ================= 안내메세지 토스트 (alert 대체) ================= */
 .cp-toast-wrap {
@@ -65,9 +147,12 @@
 .cp-toast-success { background: #FDCC61; color: #4A3226; }
 .cp-toast-error   { background: #FDA58F; color: #4A3226; }
 
-/* 모바일 반응형 */
+/* 태블릿 이하: 3열 → 2열 */
 @media (max-width: 768px) {
   .cp-wrap { margin: 24px auto; padding: 0 14px 40px; }
-  .cp-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
-  .cp-tabs { flex-wrap: wrap; }
+  .cp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  #cpDownloadableGrid { padding: 12px; margin: 0 -14px; }   /* 모바일: 여백(12px)+테두리(2px)만큼 바깥으로 */
+  .cp-meta { padding: 12px 14px 14px; }
+  .cp-meta-name { font-size: 14px; }
+  .cp-download-btn { width: calc(100% - 28px); margin: 0 14px 14px; }
 }

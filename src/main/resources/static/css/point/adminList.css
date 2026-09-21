@@ -1,89 +1,132 @@
 @charset "UTF-8";
-  :root {
-    --color-yellow: #FDCC61; /* 메인 옐로우 */
-    --color-coral:  #FDA58F; /* 코랄 핑크 */
-    --color-brown:  #4A3226; /* 딥 브라운 */
-    --color-cream:  #FFF3D8; /* 웜 크림 */
-    --color-pink:   #FFC9CE; /* 소프트 핑크 */
-    --color-white:  #FFFBF5; /* 웜 화이트 */
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: var(--color-white); color: var(--color-brown); }
+/* 관리자 - 포인트 관리 (.pta-wrap)
+   기존 :root / * / body 전역 스타일이 공통 헤더 레이아웃을 깨뜨릴 수 있어서 전부 .pta-wrap 범위로 한정하고 리터럴 색상 사용 */
+.pta-wrap, .pta-wrap *,
+.pta-modal-overlay, .pta-modal-overlay *,
+.ax-modal-overlay, .ax-modal-overlay * { box-sizing: border-box; }
 
-  .pta-wrap { max-width: 1200px; margin: 40px auto; padding: 0 20px 60px; }
-  .pta-title { font-size: 22px; font-weight: 700; margin: 0 0 20px; color: var(--color-brown); }
+/* 폭을 100%로 고정(안 그러면 부모가 flex일 때 내용물 크기로 쪼그라듬), 배경은 투명 처리해서 바깥 배경과 색이 안 갈리게 함 */
+.pta-wrap {
+    width: 100%; max-width: 1200px; margin: 0 auto; padding: 56px 20px 60px;
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background: transparent; color: #4A3226;
+}
+.pta-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700; margin: 0 0 20px; color: #4A3226; }
+.pta-title::before { content: ""; width: 5px; height: 20px; border-radius: 3px; background: #FDCC61; }
 
-  .pta-adjust-box {
-    background: var(--color-cream); border: 1px solid var(--color-pink); border-radius: 8px; padding: 18px;
-    display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
-  }
-  .pta-adjust-box input {
-    padding: 8px 10px; border: 1px solid var(--color-pink); border-radius: 6px; font-size: 13px;
-    box-sizing: border-box; background: var(--color-white); color: var(--color-brown);
-  }
-  .pta-adjust-box input[name="mId"] { width: 140px; flex-shrink: 0; }
-  .pta-adjust-box input[name="amount"] { width: 150px; flex-shrink: 0; }
-  .pta-adjust-box input[name="reason"] { flex: 1 1 200px; min-width: 160px; }
+/* 포인트 지급/차감 입력 박스 */
+.pta-adjust-box {
+    background: #FFFFFF; border: 1px solid #FFF3D8; border-radius: 16px; padding: 20px 22px;
+    box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);
+    display: flex; gap: 10px; align-items: center; margin-bottom: 24px; flex-wrap: wrap;
+}
+.pta-adjust-box input {
+    padding: 10px 12px; border: 1px solid #FFC9CE; border-radius: 10px; font-size: 13px;
+    background: #FFFFFF; color: #4A3226; font-family: inherit; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pta-adjust-box input:hover { border-color: #FDA58F; }
+.pta-adjust-box input:focus { outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.15); }
+.pta-adjust-box input[name="mId"] { width: 140px; flex-shrink: 0; }
+.pta-adjust-box input[name="amount"] { width: 150px; flex-shrink: 0; }
+.pta-adjust-box input[name="reason"] { flex: 1 1 200px; min-width: 160px; }
+.pta-adjust-box input[type="number"]::-webkit-outer-spin-button,
+.pta-adjust-box input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.pta-adjust-box input[type="number"] { -moz-appearance: textfield; }
 
-  .pta-adjust-box input[type="number"]::-webkit-outer-spin-button,
-  .pta-adjust-box input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none; margin: 0;
-  }
-  .pta-adjust-box input[type="number"] { -moz-appearance: textfield; }
-
-  .pta-btn-adjust {
-    padding: 8px 16px; border: none; border-radius: 6px; background: var(--color-yellow); color: var(--color-brown);
+.pta-btn-adjust {
+    padding: 10px 22px; border: none; border-radius: 999px; background: #4A3226; color: #FFFBF5;
     font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;
-  }
-  .pta-btn-adjust:hover { background: var(--color-coral); color: #fff; }
-  .pta-hint { font-size: 12px; color: var(--color-brown); opacity: 0.6; width: 100%; margin-top: 4px; }
+    box-shadow: 0 4px 12px rgba(74, 50, 38, 0.2); transition: all 0.2s;
+}
+.pta-btn-adjust:hover { background: #FDCC61; color: #4A3226; transform: translateY(-1px); }
+.pta-hint { font-size: 12px; color: rgba(74, 50, 38, 0.55); width: 100%; margin-top: 4px; }
 
-  .pta-empty {
-    padding: 80px 0; text-align: center; color: var(--color-brown); opacity: 0.6; font-size: 15px;
-    background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 8px;
-  }
+.pta-empty {
+    padding: 80px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 15px;
+    background: #FFFFFF; border: 1px dashed #FFC9CE; border-radius: 16px;
+}
 
-  .pta-table { width: 100%; border-collapse: collapse; background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 8px; overflow: hidden; font-size: 13px; }
-  .pta-table th, .pta-table td { padding: 12px 8px; text-align: center; border-bottom: 1px solid var(--color-cream); color: var(--color-brown); }
-  .pta-table thead th { background: var(--color-cream); font-weight: 700; }
-  .pta-table tbody tr:last-child td { border-bottom: none; }
+/* 표 */
+.pta-table {
+    width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #FFF3D8;
+    border-radius: 14px; overflow: hidden; font-size: 13px; box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);
+}
+.pta-table th, .pta-table td { padding: 13px 8px; text-align: center; border-bottom: 1px solid #FFF3D8; color: #4A3226; }
+.pta-table thead th { background: #FFF3D8; font-weight: 700; }
+.pta-table tbody tr:last-child td { border-bottom: none; }
+.pta-table tbody tr:hover { background: #FFFBF5; }
 
-  .pta-amount-plus  { color: var(--color-brown); font-weight: 700; }
-  .pta-amount-minus { color: var(--color-coral); font-weight: 700; }
+.pta-amount-plus  { color: #4A3226; font-weight: 700; }   /* 적립 */
+.pta-amount-minus { color: #FDA58F; font-weight: 700; }   /* 사용/차감 */
 
-  .pta-btn-delete {
-    padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;
-    border: 1px solid var(--color-coral); color: var(--color-coral); background: var(--color-white); font-weight: 600;
-  }
-  .pta-btn-delete:hover { background: var(--color-coral); color: #fff; }
+.pta-btn-delete {
+    padding: 6px 14px; border-radius: 999px; font-size: 12px; cursor: pointer;
+    border: 1px solid #FDA58F; color: #FDA58F; background: #FFFFFF; font-weight: 600; transition: all 0.15s;
+}
+.pta-btn-delete:hover { background: #FDA58F; color: #FFFFFF; }
 
+/* 섹션 */
+.pta-section { margin-bottom: 36px; }
+.pta-section-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; margin: 0 0 14px; padding-bottom: 12px;
+    border-bottom: 1px solid #FFF3D8; color: #4A3226;
+}
+.pta-section-title::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: #FDA58F; }
 
-  .pta-section { margin-bottom: 32px; }
-  .pta-section-title {
-    font-size: 16px; font-weight: 700; margin: 0 0 12px;
-    padding-bottom: 8px; border-bottom: 2px solid var(--color-brown); color: var(--color-brown);
-  }
+/* 회원(mId) 클릭 -> 그 회원 포인트 내역만 보는 모달 */
+.pta-mid-link { color: #4A3226; cursor: pointer; text-decoration: underline; text-decoration-color: #FDCC61; text-underline-offset: 3px; font-weight: 700; }
+.pta-mid-link:hover { color: #FDA58F; }
 
-  /* 회원(mId) 클릭 -> 그 회원 포인트 내역만 보는 모달 */
-  .pta-mid-link { color: var(--color-brown); cursor: pointer; text-decoration: underline; font-weight: 700; }
-  .pta-mid-link:hover { color: var(--color-coral); }
-
-  .pta-modal-overlay {
+.pta-modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 1000;
-    background: rgba(74, 50, 38, 0.32); align-items: center; justify-content: center;
-  }
-  .pta-modal-overlay.show { display: flex; }
-  .pta-modal {
-    width: 620px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
-    background: var(--color-white); border: 1px solid var(--color-pink); border-radius: 10px; padding: 26px; position: relative;
-  }
-  .pta-modal h3 { margin: 0 0 18px; font-size: 16px; color: var(--color-brown); }
-  .pta-modal-close {
-    position: absolute; top: 14px; right: 16px; border: none; background: none;
-    font-size: 22px; cursor: pointer; color: var(--color-brown); opacity: 0.6; line-height: 1;
-  }
-  .pta-modal-close:hover { opacity: 1; color: var(--color-coral); }
-  .pta-modal-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .pta-modal-table th, .pta-modal-table td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--color-cream); color: var(--color-brown); }
-  .pta-modal-table thead th { background: var(--color-cream); font-weight: 700; }
-  .pta-modal-empty { padding: 40px 0; text-align: center; color: var(--color-brown); opacity: 0.6; font-size: 13px; }
+    background: rgba(74, 50, 38, 0.4); backdrop-filter: blur(2px); align-items: center; justify-content: center;
+}
+.pta-modal-overlay.show { display: flex; }
+.pta-modal {
+    width: 640px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
+    background: #FFFFFF; border-radius: 20px; padding: 28px; position: relative;
+    box-shadow: 0 16px 40px rgba(74, 50, 38, 0.25);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; animation: pta-pop 0.22s ease;
+}
+@keyframes pta-pop { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
+.pta-modal h3 { margin: 0 0 18px; font-size: 16px; font-weight: 700; color: #4A3226; }
+.pta-modal-close {
+    position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border: none; border-radius: 50%;
+    background: #FFF3D8; font-size: 20px; cursor: pointer; color: rgba(74, 50, 38, 0.6); line-height: 1;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.pta-modal-close:hover { background: #FDA58F; color: #FFFFFF; }
+.pta-modal-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.pta-modal-table th, .pta-modal-table td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #FFF3D8; color: #4A3226; }
+.pta-modal-table thead th { background: #FFF3D8; font-weight: 700; }
+.pta-modal-empty { padding: 40px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 13px; }
+
+/* ===== 커스텀 알림/확인 모달 (alert/confirm 대체) - 이 페이지에는 기존 정의가 없어서 다른 관리자 페이지와 동일하게 추가 ===== */
+.ax-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(74, 50, 38, 0.4); backdrop-filter: blur(2px); align-items: center; justify-content: center;
+}
+.ax-modal-overlay.show { display: flex; }
+.ax-modal {
+    width: 380px; max-width: 88vw; background: #FFFFFF; border-radius: 20px;
+    padding: 30px 24px 22px; text-align: center; box-shadow: 0 16px 40px rgba(74, 50, 38, 0.25);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; animation: pta-pop 0.22s ease;
+}
+.ax-modal-message { font-size: 14px; color: #4A3226; line-height: 1.6; margin-bottom: 22px; white-space: pre-line; word-break: keep-all; }
+.ax-modal-actions { display: flex; gap: 8px; justify-content: center; }
+.ax-btn {
+    padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer;
+    border: 1px solid #FFC9CE; background: #FFFFFF; color: #4A3226; min-width: 92px; transition: all 0.2s;
+}
+.ax-btn:hover { background: #FFF3D8; border-color: #FDA58F; }
+.ax-btn-primary { background: #FDCC61; border-color: #FDCC61; color: #4A3226; }
+.ax-btn-primary:hover { background: #FDA58F; border-color: #FDA58F; color: #FFFFFF; }
+.ax-btn-danger { background: #FFFFFF; border-color: #FDA58F; color: #FDA58F; }
+.ax-btn-danger:hover { background: #FDA58F; color: #FFFFFF; }
+
+@media (max-width: 768px) {
+    .pta-wrap { padding: 56px 12px 40px; }
+    .pta-title { font-size: 18px; }
+    .pta-table { display: block; overflow-x: auto; white-space: nowrap; }
+    .pta-adjust-box input[name="mId"], .pta-adjust-box input[name="amount"] { width: 100%; }
+}

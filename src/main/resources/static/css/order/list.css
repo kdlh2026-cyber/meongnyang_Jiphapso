@@ -1,11 +1,12 @@
 @charset "UTF-8";
-/* /css/order/list.css */
+/* /css/order/list.css  (주문내역) */
 /* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
    -> 이 페이지도 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)에
       직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 .ol-wrap 스코프로만 한정함. */
 .ol-wrap, .ol-wrap * { box-sizing: border-box; }
 
-.ol-wrap { max-width: 720px; margin: 32px auto; padding: 0 20px 60px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; color: #4A3226; }
+/* 이 페이지는 위에 마이페이지 탭 메뉴가 이미 있어서 상단 padding 없이 margin만 사용 (쿠폰 페이지와 동일) */
+.ol-wrap { max-width: 1000px; margin: 40px auto; padding: 0 20px 60px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; color: #4A3226; }
 
 .ol-title { font-size: 22px; font-weight: 700; margin: 0; color: #4A3226; }
 
@@ -20,44 +21,63 @@
 .ol-cancel-history-link:hover { background: #FDA58F; color: #FFFFFF; }
 
 /* 상태 필터 탭 */
-.status-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.status-tabs {
+    display: flex; gap: 8px; margin: 18px 0 24px; padding-bottom: 4px;
+    overflow-x: auto;                /* 모바일에서 탭이 줄바꿈되지 않고 가로 스크롤 */
+    scrollbar-width: none;
+}
+.status-tabs::-webkit-scrollbar { display: none; }
 .status-tabs a {
-    display: inline-block; padding: 8px 16px; border: 1px solid #FFC9CE; border-radius: 20px;
-    font-size: 13px; color: #4A3226; text-decoration: none; background: #FFFBF5;
+    display: inline-block; padding: 9px 18px; border: 1px solid #FFF3D8; border-radius: 999px;
+    font-size: 13px; font-weight: 600; color: rgba(74, 50, 38, 0.7); text-decoration: none; background: #FFFFFF;
+    white-space: nowrap; flex-shrink: 0; transition: all 0.2s;
 }
 .status-tabs a:hover { border-color: #FDA58F; color: #FDA58F; }
-.status-tabs a.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; }
+.status-tabs a.active { background: #4A3226; color: #FFFBF5; border-color: #4A3226; box-shadow: 0 2px 8px rgba(74, 50, 38, 0.18); }
 
 .empty {
-    padding: 80px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 15px;
-    background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 8px;
+    padding: 90px 0; text-align: center; color: rgba(74, 50, 38, 0.5); font-size: 15px;
+    background: #FFFFFF; border: 1px dashed #FFC9CE; border-radius: 16px;
 }
 
 /* 주문 카드 */
 .order-card {
-    border: 1px solid #FFC9CE; border-radius: 10px; padding: 18px 20px; background: #FFFBF5;
-    margin-bottom: 14px;
+    border: 1px solid #FFF3D8; border-radius: 16px; padding: 22px 24px; background: #FFFFFF;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+.order-card:hover {
+    border-color: #FDCC61;
+    box-shadow: 0 8px 22px rgba(74, 50, 38, 0.10);
+    transform: translateY(-2px);     /* 호버 시 살짝 떠오르는 효과 */
 }
 
+/* 상단: 주문번호(좌) / 날짜(우) */
 .order-top {
     display: flex; justify-content: space-between; align-items: center;
-    font-size: 13px; color: rgba(74, 50, 38, 0.55); margin-bottom: 12px;
+    font-size: 13px; color: rgba(74, 50, 38, 0.5);
+    padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid #FFF3D8;
 }
-.order-top .order-no { font-weight: 700; color: #4A3226; }
+.order-top .order-no { font-size: 15px; font-weight: 700; color: #4A3226; }
 
+/* 중단: 상태 + 개수(좌) / 결제수단(우) */
 .order-mid {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
 }
-.order-mid-left { display: flex; align-items: center; gap: 10px; }
-.order-mid .qty { font-size: 13px; color: rgba(74, 50, 38, 0.6); }
-.order-mid .qty-bag { color: rgba(74, 50, 38, 0.45); margin-left: 4px; }
-.order-method { font-size: 13px; color: rgba(74, 50, 38, 0.6); }
+.order-mid-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.order-mid .qty { font-size: 14px; font-weight: 600; color: #4A3226; }
+.order-mid .qty-bag { font-weight: 400; color: rgba(74, 50, 38, 0.5); margin-left: 0; }
+.order-method {
+    font-size: 12px; font-weight: 600; color: rgba(74, 50, 38, 0.65);
+    background: #FFF3D8; padding: 5px 12px; border-radius: 999px;   /* 결제수단을 칩 형태로 */
+}
 
 /* 상태 배지 - detail.css와 동일한 색상 매핑(5가지 상태가 서로 뚜렷이 구분되도록) */
 .status-badge {
-    display: inline-block; padding: 3px 10px; border-radius: 999px;
-    font-size: 12px; font-weight: 700; background: #FFF3D8; color: #4A3226;
+    display: inline-block; padding: 5px 13px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; background: #FFF3D8; color: #4A3226;
 }
 .status-PAYMENT_PENDING { background: #FFF3D8; color: #4A3226; }
 .status-PAID            { background: #FDA58F; color: #FFFFFF; }
@@ -65,18 +85,24 @@
 .status-DELIVERED       { background: #FFFBF5; color: #4A3226; border: 1px solid #4A3226; }
 .status-CANCELED        { background: #FFFBF5; color: #FDA58F; border: 1px solid #FDA58F; }
 
-.order-actions { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #FFF3D8; padding-top: 14px; }
+/* 하단 버튼 영역 */
+.order-actions { display: flex; justify-content: flex-end; gap: 8px; }
 
 .btn-sm {
-    display: inline-block; border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226;
-    border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer;
-    text-decoration: none; white-space: nowrap;
+    display: inline-block; border: 1px solid #FFC9CE; background: #FFFFFF; color: #4A3226;
+    border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+    text-decoration: none; white-space: nowrap; transition: all 0.2s;
 }
 .btn-sm:hover { border-color: #FDA58F; color: #FDA58F; background: #FFF3D8; }
-.btn-sm-outline { border-color: #FDA58F; color: #FDA58F; background: #FFFBF5; }
+.btn-sm-outline { border-color: #FDA58F; color: #FDA58F; background: #FFFFFF; }
 .btn-sm-outline:hover { background: #FDA58F; color: #FFFFFF; }
 
+@media (max-width: 768px) {
+    .ol-wrap { margin: 24px auto; padding: 0 14px 50px; }
+    .order-card { padding: 18px 16px; }
+}
 @media (max-width: 480px) {
     .order-top { flex-direction: column; align-items: flex-start; gap: 4px; }
-    .order-mid { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .order-mid { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .order-actions .btn-sm { flex: 1; text-align: center; }   /* 모바일에서 버튼 꽉 차게 */
 }

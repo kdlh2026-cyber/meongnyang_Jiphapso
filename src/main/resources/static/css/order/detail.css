@@ -1,27 +1,44 @@
 @charset "UTF-8";
+/* /css/order/detail.css */
+/* 팔레트: 메인옐로우 #FDCC61 / 코랄핑크 #FDA58F / 딥브라운 #4A3226 / 웜크림 #FFF3D8 / 소프트핑크 #FFC9CE / 웜화이트 #FFFBF5
+   -> 이 페이지도 공통 헤더/햄버거 메뉴 레이아웃과 같은 body를 공유하는데, 기존 코드가 *(전체 선택자)에
+      직접 스타일을 걸어놔서 헤더 레이아웃이 깨질 위험이 있었음. 그래서 .od-wrap 스코프로만 한정하고,
+      od-wrap 바깥에 붙는 토스트/확인모달도 각자 자기 클래스로 스코프함. */
 .od-wrap, .od-wrap *,
 .od-toast-wrap, .od-toast-wrap *,
 .od-confirm-overlay, .od-confirm-overlay * { box-sizing: border-box; }
 
-.od-wrap { max-width: 900px; margin: 32px auto; padding: 0 20px 60px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; color: #4A3226; }
+/* 주문내역(.ol-wrap), 취소내역(.oc-wrap)과 폭/여백 통일 */
+.od-wrap { max-width: 1000px; margin: 32px auto; padding: 100px 20px 60px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; color: #4A3226; }
 
-.od-header { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
-.od-back { border: none; background: none; font-size: 15px; color: rgba(74, 50, 38, 0.55); cursor: pointer; padding: 0; }
-.od-back:hover { color: #FDA58F; }
+.od-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.od-back {
+    width: 36px; height: 36px; border: 1px solid #FFF3D8; border-radius: 50%; background: #FFFFFF;
+    font-size: 20px; line-height: 1; color: rgba(74, 50, 38, 0.6); cursor: pointer; padding: 0;
+    transition: all 0.2s;
+}
+.od-back:hover { color: #FDA58F; border-color: #FDA58F; background: #FFF3D8; }
 .od-title { font-size: 22px; font-weight: 700; margin: 0; color: #4A3226; }
 
-.od-card { border: 1px solid #FFC9CE; border-radius: 10px; padding: 20px; background: #FFFBF5; margin-bottom: 16px; }
-.od-card-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: #4A3226; }
+/* 카드 - 주문내역 카드와 동일한 톤 */
+.od-card {
+    border: 1px solid #FFF3D8; border-radius: 16px; padding: 24px; background: #FFFFFF;
+    margin-bottom: 18px; box-shadow: 0 2px 10px rgba(74, 50, 38, 0.05);
+}
+.od-card-title {
+    font-size: 16px; font-weight: 700; margin-bottom: 18px; padding-bottom: 14px;
+    border-bottom: 1px solid #FFF3D8; color: #4A3226;
+}
 
 /* 주문 정보 */
-.od-info-grid { display: flex; flex-direction: column; gap: 8px; }
-.od-info-row { display: flex; align-items: center; font-size: 13px; color: #4A3226; }
-.od-info-row .label { width: 84px; flex: none; color: rgba(74, 50, 38, 0.55); }
+.od-info-grid { display: flex; flex-direction: column; gap: 12px; }
+.od-info-row { display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #4A3226; }
+.od-info-row .label { width: 96px; flex: none; font-weight: 400; color: rgba(74, 50, 38, 0.55); }
 
 /* 상태 배지 - order_list.css와 동일한 색상 매핑(5가지 상태가 서로 뚜렷이 구분되도록) */
 .status-badge {
-    display: inline-block; padding: 3px 10px; border-radius: 999px;
-    font-size: 12px; font-weight: 700; background: #FFF3D8; color: #4A3226;
+    display: inline-block; padding: 5px 13px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; background: #FFF3D8; color: #4A3226;
 }
 .status-PAYMENT_PENDING { background: #FFF3D8; color: #4A3226; }
 .status-PAID            { background: #FDA58F; color: #FFFFFF; }
@@ -30,50 +47,55 @@
 .status-CANCELED        { background: #FFFBF5; color: #FDA58F; border: 1px solid #FDA58F; }
 
 /* 배송 정보 폼 */
-.od-form-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.od-form-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .od-form-row:last-of-type { margin-bottom: 0; }
-.od-form-row label { width: 70px; flex: none; font-size: 13px; color: rgba(74, 50, 38, 0.6); }
+.od-form-row label { width: 84px; flex: none; font-size: 14px; color: rgba(74, 50, 38, 0.6); }
 .od-form-row input[type="text"],
 .od-form-row textarea {
-    flex: 1; min-width: 0; padding: 9px 12px; border: 1px solid #FFC9CE; border-radius: 6px;
-    font-size: 13px; font-family: inherit; color: #4A3226; background: #FFFFFF;
+    flex: 1; min-width: 0; padding: 11px 14px; border: 1px solid #FFC9CE; border-radius: 10px;
+    font-size: 14px; font-family: inherit; color: #4A3226; background: #FFFFFF;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 .od-form-row input[type="text"]:focus,
-.od-form-row textarea:focus { outline: none; border-color: #FDA58F; }
+.od-form-row textarea:focus { outline: none; border-color: #FDA58F; box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.18); }
 .od-form-row input[readonly],
-.od-form-row textarea[readonly] { background: #FFF3D8; color: rgba(74, 50, 38, 0.55); }
+.od-form-row textarea[readonly] { background: #FFFBF5; border-color: #FFF3D8; color: rgba(74, 50, 38, 0.6); }
 .od-form-row textarea { resize: vertical; }
 .od-form-inline { flex: 1; display: flex; gap: 8px; min-width: 0; }
 .od-form-inline input { flex: 1; min-width: 0; }
 
-.od-form-actions { margin-top: 14px; text-align: right; }
+.od-form-actions { margin-top: 18px; text-align: right; }
 
 /* 버튼 공통 */
 .od-btn {
-    border: 1px solid #FFC9CE; background: #FFFBF5; color: #4A3226; border-radius: 6px;
-    padding: 8px 16px; font-size: 13px; cursor: pointer; white-space: nowrap;
+    border: 1px solid #FFC9CE; background: #FFFFFF; color: #4A3226; border-radius: 8px;
+    padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    transition: all 0.2s;
 }
 .od-btn:hover { border-color: #FDA58F; color: #FDA58F; background: #FFF3D8; }
 .od-btn-primary { background: #4A3226; border-color: #4A3226; color: #FFFBF5; }
 .od-btn-primary:hover { background: #FDA58F; border-color: #FDA58F; color: #FFFFFF; }
-.od-btn-cancel, .od-btn-review, .od-btn-review-done { padding: 6px 10px; font-size: 12px; }
+.od-btn-cancel, .od-btn-review, .od-btn-review-done { padding: 7px 12px; font-size: 12px; }
 
 /* 주문 상품 테이블 */
 .od-table-wrap { overflow-x: auto; }
-.od-detail-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.od-detail-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .od-detail-table th {
-    padding: 10px 8px; border-bottom: 2px solid #4A3226; color: rgba(74, 50, 38, 0.6); font-weight: 700; text-align: center;
-    white-space: nowrap;
+    padding: 13px 10px; background: #FFF3D8; color: #4A3226; font-size: 13px; font-weight: 700;
+    text-align: center; white-space: nowrap;
 }
-.od-detail-table td { padding: 12px 8px; border-bottom: 1px solid #FFF3D8; text-align: center; color: #4A3226; }
-.od-detail-table .od-pname { text-align: left; }
+.od-detail-table th:first-child { border-radius: 10px 0 0 10px; }   /* 헤더 좌우 모서리 둥글게 */
+.od-detail-table th:last-child { border-radius: 0 10px 10px 0; }
+.od-detail-table td { padding: 18px 10px; border-bottom: 1px solid #FFF3D8; text-align: center; color: #4A3226; }
+.od-detail-table .od-pname { text-align: left; font-weight: 600; }
 .od-detail-table .od-amount { font-weight: 700; color: #4A3226; }
+.od-detail-table td .od-btn { margin: 2px; }                          /* 취소 버튼과 리뷰 버튼 사이 간격 */
 
-.od-btn-group { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+.od-btn-group { display: flex; justify-content: center; gap: 8px; margin-top: 28px; }
 
 /* 상품 라인별 취소/반품/교환 진행상태 배지 (버튼 대신 표시) - status-badge 매핑과 톤을 맞춤 */
 .oc-status-badge {
-    display: inline-block; padding: 4px 10px; border-radius: 999px;
+    display: inline-block; padding: 5px 12px; border-radius: 999px;
     font-size: 12px; font-weight: 700; white-space: nowrap;
 }
 .oc-status-requested { background: #FFF3D8; color: #4A3226; }                        /* 신청 - 취소신청중 */
@@ -89,8 +111,12 @@
     100% { box-shadow: 0 0 0 0 rgba(253, 165, 143, 0); }
 }
 
+@media (max-width: 768px) {
+    .od-wrap { padding: 90px 14px 50px; }
+    .od-card { padding: 18px 16px; }
+}
 @media (max-width: 640px) {
-    .od-info-row .label { width: 70px; }
+    .od-info-row .label { width: 76px; }
     .od-form-row { flex-wrap: wrap; }
     .od-form-row label { width: 100%; }
 }
@@ -123,10 +149,10 @@
 
 /* 리뷰 폼이 열리는 토글 행 스타일 */
 .review-row-box td {
-    background: #FFF3D8 !important;
-    border-bottom: 1px solid #FFC9CE !important;
+    background: #FFFBF5 !important;
+    border-bottom: 1px solid #FFF3D8 !important;
     text-align: left !important;
-    padding: 20px 24px !important;
+    padding: 22px 26px !important;
 }
 
 /* 리뷰 작성 내부 레이아웃 */
@@ -151,24 +177,27 @@
 .review-textarea {
     width: 100%;
     min-height: 90px;
-    padding: 12px;
+    padding: 12px 14px;
     border: 1px solid #FFC9CE;
-    border-radius: 6px;
-    font-size: 13px;
+    border-radius: 10px;
+    font-size: 14px;
     font-family: inherit;
     color: #4A3226;
     background: #FFFFFF;
     resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 .review-textarea:focus {
     outline: none;
     border-color: #FDA58F;
+    box-shadow: 0 0 0 3px rgba(253, 165, 143, 0.18);
 }
 
 /* 리뷰 등록 버튼 우측 정렬 컨테이너 */
 .review-form-actions {
     display: flex;
     justify-content: flex-end;
+    gap: 8px;
     margin-top: 8px;
 }
 
@@ -228,15 +257,15 @@
 }
 .review-view-content {
     background: #FFFFFF;
-    padding: 12px;
-    border: 1px solid #FFC9CE;
-    border-radius: 6px;
+    padding: 14px;
+    border: 1px solid #FFF3D8;
+    border-radius: 10px;
     color: #4A3226;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.6;
 }
 .review-actions {
-    margin-top: 8px;
+    margin-top: 10px;
     text-align: right;
 }
 
@@ -280,9 +309,9 @@
     pointer-events: none;
 }
 .od-toast {
-    min-width: 220px; max-width: 90vw; padding: 12px 20px; border-radius: 8px;
+    min-width: 220px; max-width: 90vw; padding: 12px 20px; border-radius: 999px;
     font-size: 13px; font-weight: 600; text-align: center; color: #FFFFFF;
-    box-shadow: 0 4px 14px rgba(74, 50, 38, 0.18);
+    box-shadow: 0 6px 18px rgba(74, 50, 38, 0.22);
     opacity: 0; transform: translateY(-8px); transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .od-toast.show { opacity: 1; transform: translateY(0); }
@@ -296,17 +325,17 @@
 }
 .od-confirm-overlay.show { display: flex; }
 .od-confirm-box {
-    background: #FFFBF5; border-radius: 12px; padding: 28px 24px 20px;
+    background: #FFFBF5; border: 1px solid #FFC9CE; border-radius: 16px; padding: 28px 24px 20px;
     width: 300px; max-width: 90vw; text-align: center;
-    box-shadow: 0 8px 24px rgba(74, 50, 38, 0.22);
+    box-shadow: 0 12px 32px rgba(74, 50, 38, 0.22);
 }
 .od-confirm-msg { font-size: 14px; color: #4A3226; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
 .od-confirm-actions { display: flex; gap: 8px; }
 .od-confirm-actions button {
-    flex: 1; border-radius: 6px; padding: 10px 0; font-size: 13px; font-weight: 700;
-    cursor: pointer; border: 1px solid #FFC9CE;
+    flex: 1; border-radius: 8px; padding: 11px 0; font-size: 13px; font-weight: 700;
+    cursor: pointer; border: 1px solid #FFC9CE; transition: all 0.2s;
 }
-.od-confirm-cancel { background: #FFFBF5; color: #4A3226; }
-.od-confirm-cancel:hover { background: #FFF3D8; }
+.od-confirm-cancel { background: #FFF3D8; color: #4A3226; }
+.od-confirm-cancel:hover { filter: brightness(0.96); }
 .od-confirm-ok { background: #FDA58F; border-color: #FDA58F; color: #FFFFFF; }
 .od-confirm-ok:hover { background: #4A3226; border-color: #4A3226; }
