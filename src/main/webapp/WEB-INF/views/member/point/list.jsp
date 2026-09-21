@@ -62,10 +62,6 @@
   var contextPath = "${pageContext.request.contextPath}";
 
   var TYPE_LABEL = { EARN: "적립", USE: "사용", EXPIRE: "소멸", RESTORE: "복원" };
-
-  // 마이페이지 탭(ajax)으로 로드되든, 주소 직접 접속(풀 페이지 로드)이든
-  // 이 스크립트가 실행되는 시점엔 이미 위의 DOM이 만들어져 있으므로 바로 호출한다.
-  // (DOMContentLoaded는 마이페이지 안에서 fetch로 끼워 넣을 때는 다시 발생하지 않음)
   loadPointData();
 
   // ================= 안내메세지 토스트 (alert() 대체) =================
@@ -160,7 +156,7 @@
       var cancelEntry = cancelMap[item.poNo];
       var itemCls = "pt-item" + (cancelEntry ? " cancelled" : "");
       var cancelNote = cancelEntry
-        ? "<span class=\"pt-item-cancel-note\">취소됨 · " + escapeHtml(cancelEntry.poReason) + "</span>"
+        ? "<span class=\"pt-item-cancel-note\">취소됨 · " + escapeHtml(cleanReason(cancelEntry.poReason)) + "</span>"
         : "";
 
       var div = document.createElement("div");
@@ -169,7 +165,7 @@
         "<div class=\"pt-item-head\" onclick=\"togglePointItem(" + idx + ")\">" +
           "<div class=\"pt-item-head-left\">" +
             "<span class=\"pt-item-type\">" + typeLabel + "</span>" +
-            "<span class=\"pt-item-reason\">" + escapeHtml(item.poReason) + "</span>" +
+            "<span class=\"pt-item-reason\">" + escapeHtml(cleanReason(item.poReason)) + "</span>" +
             cancelNote +
           "</div>" +
           "<div class=\"pt-item-head-right\">" +
@@ -207,7 +203,7 @@
       row.className = "pt-cancel-row";
       row.innerHTML =
         "<div class=\"pt-cancel-row-top\">" +
-          "<span class=\"pt-cancel-row-reason\">" + escapeHtml(item.poReason) + "</span>" +
+          "<span class=\"pt-cancel-row-reason\">" + escapeHtml(cleanReason(item.poReason)) + "</span>" +
           "<span class=\"" + amountCls + "\">" + amountText + "P</span>" +
         "</div>" +
         "<div class=\"pt-cancel-row-original\">취소일시 " + formatDate(item.poAt) + "</div>";
@@ -236,6 +232,11 @@
     var mm = String(d.getMonth() + 1).padStart(2, "0");
     var dd = String(d.getDate()).padStart(2, "0");
     return yyyy + "." + mm + "." + dd;
+  }
+
+  function cleanReason(str) {
+    if (!str) return "";
+    return String(str).replace(/\s*\(글번호:\d+\)/g, "");
   }
 
   function escapeHtml(str) {
