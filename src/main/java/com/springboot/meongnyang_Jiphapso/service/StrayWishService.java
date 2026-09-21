@@ -50,4 +50,15 @@ public class StrayWishService {
         if (guestId == null || guestId.trim().isEmpty()) return Collections.emptyList();
         return wish_dao.selectWishHeartByGuest(guestId);
     }
+    
+    public void transferGuestToMember(String guestId, int m_no) {
+        if (guestId != null && !guestId.trim().isEmpty()) {
+            wish_dao.updateGuestWishToMember(guestId, m_no);
+        }
+    }
+    
+    public Integer getMemberNoById(String m_id) {
+        if (m_id == null || m_id.trim().isEmpty()) return null;
+        return wish_dao.selectMemberNoById(m_id);
+    }
 }
