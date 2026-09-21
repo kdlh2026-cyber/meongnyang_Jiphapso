@@ -19,7 +19,7 @@ public interface IPointDAO {
     // 회원의 현재 보유 포인트 (가장 최근 이력의 포인트값)
     Long selectCurrentBalance(@Param("mNo") Long mNo);
 
-    // 회원의 소멸예정 포인트 합계 (7일 이내, FIFO 잔여 계산ㄷ)
+    // 회원의 소멸예정 포인트 합계 (7일 이내, FIFO 잔여 계산)
     Long selectExpireSoonAmount(@Param("mNo") Long mNo, @Param("days") int days);
 
     // 회원의 이미 기한이 지났지만 아직 소멸 처리되지 않은 포인트 합계 (배치용)
@@ -39,13 +39,13 @@ public interface IPointDAO {
 
     // 특정 사유의 적립 이력이 이미 있는지 확인 (회원가입/첫리뷰 등 1회성 적립 중복 방지)
     int countByMemberAndReason(@Param("mNo") Long mNo, @Param("poReason") String poReason);
-    
+
     // 주문 삭제 시 포인트 이력 자체는 보존하고 주문 연결만 끊음 (회계기록 보존, FK만 NULL 처리)
     int detachPointFromOrder(@Param("orNo") Long orNo);
-    
-    // 글 삭제 포인트 회수용 - 사유(글번호 포함)로 찾은 적립 이력 중 아직 취소/회수되지 않은 1건
+
+    // 글 삭제 포인트 회수용: 사유가 일치하고 아직 회수되지 않은 원본 적립 이력 1건 조회
     PointDTO selectActiveEarnByReason(@Param("mNo") Long mNo, @Param("reason") String reason);
 
-    // 이 이력을 취소한 이력이 이미 있는지 확인 (같은 원본 중복 취소 방지)
+    // 특정 이력을 원본으로 하는 취소/회수 이력 개수 (이중 취소 방지용)
     int countByRelatedNo(@Param("poNo") Long poNo);
 }

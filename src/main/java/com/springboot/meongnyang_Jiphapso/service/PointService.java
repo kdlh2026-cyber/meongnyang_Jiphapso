@@ -208,12 +208,15 @@ public class PointService {
 	// 커뮤니티 글 작성 적립 (회원 아이디 + 글번호) - 글 insert 성공 후 커뮤니티 Service에서 호출
 	@Transactional
 	public void earnCommunityPostBonusById(String mId, Long commNo) {
+		log.info("적립 시작 - mId={}, commNo={}", mId, commNo);
 		Long mNo = findMemberNoById(mId);
+		log.info("회원번호 조회 결과 - mNo={}", mNo);
 		if (mNo == null) {
 			log.warn("글 작성 포인트 적립 실패(존재하지 않는 회원) - mId={}, commNo={}", mId, commNo);
 			return;
-		}
+		}		
 		earn(mNo, PointPolicy.AMOUNT_COMMUNITY_POST, communityPostReason(commNo), null, null);
+
 	}
 
 	// 커뮤니티 글 삭제 시 그 글로 받은 포인트 회수 (회원 아이디 + 글번호) - 커뮤니티 Service의 글 삭제 로직에서 호출
