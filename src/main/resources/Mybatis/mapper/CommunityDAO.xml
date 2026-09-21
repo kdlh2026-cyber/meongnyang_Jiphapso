@@ -245,14 +245,6 @@
 		order by c.comm_no desc
 	</select>
 	
-	<select id="getLatestByType" resultType="com.springboot.meongnyang_Jiphapso.dto.CommunityDTO">
-		select * from (select count(*) from dc_comment where cmt_type_no = c.comm_no) as reply_count
-			from dc_community c
-			where c.m_no = #{m_no} and c.comm_type  = #{comm_type}
-			order by c.comm_no desc)
-			where rownum = 1
-	</select>
-	
 	<!-- 내가 쓴 글 나만 지우기 -->
 	<delete id="CommunityDelete" parameterType="int">
 		   delete from dc_community where comm_no = #{comm_no, jdbcType=INTEGER} and m_no = #{m_no, jdbcType=INTEGER}
