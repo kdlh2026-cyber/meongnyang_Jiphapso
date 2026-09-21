@@ -66,4 +66,18 @@
             </otherwise>
         </choose>
     </select>
+    
+    <!-- 로그인 시 게스트 찜 내역을 회원 계정으로 이전 -->
+	<update id="updateGuestWishToMember">
+        update dc_stray_animal_wish
+        set m_no = #{m_no}, wish_guest_id = NULL
+        where wish_guest_id = #{guestId}
+        and stray_no NOT IN (
+            select stray_no from dc_stray_animal_wish where m_no = #{m_no}
+        )
+    </update>
+    
+    <select id="selectMemberNoById" parameterType="string" resultType="java.lang.Integer">
+        select m_no from dc_member where m_id = #{m_id}
+    </select>
 </mapper>

@@ -23,4 +23,9 @@ public interface IStrayWishDao {
     List<Long> selectWishHeartByMember(@Param("m_no") int m_no);
 
     List<Long> selectWishHeartByGuest(@Param("guestId") String guestId);
+    
+    void updateGuestWishToMember(@Param("guestId") String guestId, @Param("m_no") int m_no);
+    
+    // m_no로 m_id가져오기
+    Integer selectMemberNoById(@Param("m_id") String m_id);
 }

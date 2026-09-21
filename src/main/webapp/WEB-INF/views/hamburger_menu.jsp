@@ -147,6 +147,7 @@
           <ul>
             <li><a href="/stray/StrayList">보호소 입양</a></li>
             <li><a href="/guest/hospital/hospitalList">동물병원 찾기</a></li>
+            <li><a href="/stray/StrayWishList">관심동물</a></li>
           </ul>
         </div>
 

@@ -423,7 +423,7 @@ async function syncWishHearts() {
     }
 }
 
-// pageshow: 일반 진입뿐 아니라 브라우저 [뒤로가기]로 돌아왔을 때도 100% 실행됨
+// pageshow: 일반 진입뿐 아니라 브라우저 [뒤로가기]로 돌아왔을 때도 실행됨
 window.addEventListener('pageshow', () => {
     syncWishHearts();
 });
@@ -611,21 +611,21 @@ window.addEventListener('pageshow', () => {
    			
             <div class="stray-card">
                 <div class="card-thumb-wrap">
-                    <div class="card-thumb">
-				    <c:choose>
-				        <%-- DB에 아예 없으면 표시 --%>
-				        <c:when test="${empty list.stray_img}">
-				            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='100%25' height='100%25'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23aaa' font-size='14'%3E이미지 준비중%3C/text%3E%3C/svg%3E" alt="준비중">
-				        </c:when>
-				        <%-- onerror 처리 및 인코딩된 경로 사용 --%>
-				        <c:otherwise>
-				            <img src="/uploadImages/${cardImg}"
-				                 alt="${list.stray_name}" 
-				                 loading="lazy"
-				                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 200\' width=\'100%25\' height=\'100%25\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23aaa\' font-size=\'14\'%3E이미지 없음%3C/text%3E%3C/svg%3E';">
-				        </c:otherwise>
-				    </c:choose>
-					</div>
+                    <a href="/stray/StrayView?stray_no=${list.stray_no}" class="card-thumb" style="display: block;">
+			            <c:choose>
+			                <%-- DB에 아예 없으면 표시 --%>
+			                <c:when test="${empty list.stray_img}">
+			                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='100%25' height='100%25'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23aaa' font-size='14'%3E이미지 준비중%3C/text%3E%3C/svg%3E" alt="준비중">
+			                </c:when>
+			                <%-- onerror 처리 및 인코딩된 경로 사용 --%>
+			                <c:otherwise>
+			                    <img src="/uploadImages/${cardImg}"
+			                         alt="${list.stray_name}" 
+			                         loading="lazy"
+			                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 200\' width=\'100%25\' height=\'100%25'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23aaa\' font-size=\'14\'%3E이미지 없음%3C/text%3E%3C/svg%3E';">
+			                </c:otherwise>
+			            </c:choose>
+			        </a>
 				</div>
                 <div class="card-body">
                     <!-- 노란색 보호중 뱃지 -->
