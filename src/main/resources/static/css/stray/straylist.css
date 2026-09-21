@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /* 동물 카드 그리드 컨테이너 */
 .stray-grid-wrap {
-    max-width: 960px;
+    max-width: 1000px;
     margin: 30px auto;
     padding: 0 15px;
 }
@@ -64,6 +64,7 @@
 
 /* 본문 영역 */
 .stray-card .card-body {
+	position: relative;
     padding: 14px 16px 12px;
     display: flex;
     flex-direction: column;
@@ -624,7 +625,7 @@
     color: #111;
 }
 
-.fav-heart-btn {
+.wish-btn {
     position: absolute;
     bottom: 52px;
     right: 12px;
@@ -644,7 +645,7 @@
     transition: color 0.2s;
 }
 
-.fav-heart-btn.active { 
+.wish-btn.active { 
     color: #FDA58F; 
 }
 

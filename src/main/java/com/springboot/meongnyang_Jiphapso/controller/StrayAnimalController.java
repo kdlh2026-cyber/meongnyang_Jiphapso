@@ -1,7 +1,9 @@
 package com.springboot.meongnyang_Jiphapso.controller;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,7 +23,14 @@ import com.springboot.meongnyang_Jiphapso.dao.IStrayAnimalDao;
 import com.springboot.meongnyang_Jiphapso.dto.CommunityDTO;
 import com.springboot.meongnyang_Jiphapso.dto.StrayAnimalDto;
 import com.springboot.meongnyang_Jiphapso.dto.StraySearchDto;
+import com.springboot.meongnyang_Jiphapso.dto.StrayWishDto;
 import com.springboot.meongnyang_Jiphapso.service.StrayService;
+import com.springboot.meongnyang_Jiphapso.service.StrayWishService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class StrayAnimalController {
@@ -31,16 +42,8 @@ public class StrayAnimalController {
 	@Autowired
 	ICommunityDAO comm_dao;
 	
-
-	// @Autowired private StrayWishService wish_Service;
-	 
-	
-	/*
-	 * private Integer loginMemberNo(HttpSession session) { // 세션엔 MemberDTO.m_no 타입
-	 * 그대로(Integer) 들어있어서 Integer로 꺼낸 다음 Long으로 변환 Integer m_no = (Integer)
-	 * session.getAttribute(SessionConst.LOGIN_MEMBER_NO); return (m_no != null) ?
-	 * m_no.intValue() : null; }
-	 */
+	@Autowired
+	private StrayWishService wish_Service;
 	
 	@RequestMapping("/strayWriteForm")
 	public String strayWriteForm() {
@@ -194,18 +197,4 @@ public class StrayAnimalController {
 		
 		return "redirect:/admin/stray/StrayListA";
 	}
-	
-	/*
-	 * @RequestMapping(value = "/wish/toggle", method = RequestMethod.POST)
-	 * 
-	 * @ResponseBody public ApiResponse<Boolean> toggleFavorite(@RequestBody
-	 * Map<String, Object> body, HttpSession session, HttpServletRequest request,
-	 * HttpServletResponse response) { try { Integer m_no = loginMemberNo(session);
-	 * Long stray_no = Long.valueOf(String.valueOf(body.get("stray_no"))); String
-	 * guestToken = (m_no == null) ? GuestTokenUtil.resolveGuestToken(request,
-	 * response) : null; boolean nowWish = wish_Service.toggleWish(m_no, guestToken,
-	 * stray_no); return ApiResponse.ok(nowWish ? "관심동물에 등록했어요" : "관심동물에서 삭제했어요",
-	 * nowWish); } catch (IllegalArgumentException | IllegalStateException e) {
-	 * return ApiResponse.fail(e.getMessage()); } }
-	 */
 }

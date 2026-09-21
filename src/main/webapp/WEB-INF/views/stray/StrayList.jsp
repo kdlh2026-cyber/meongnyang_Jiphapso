@@ -341,77 +341,92 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-/* function toggleWish(strayNo, btnEl) {
-    const contextPath = '${pageContext.request.contextPath}';
-    
-    // Spring Security CSRF 사용 중인 경우 대비
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+let toastTimer = null;
 
-    const headers = { 
-        "Content-Type": "application/json" 
-    };
-    if (csrfHeader && csrfToken) {
-        headers[csrfHeader] = csrfToken;
-    }
+//위시리스트 토글 함수
+async function toggleWish(button, strayNo) {
+ try {
+     const response = await fetch('/api/wish/toggle', {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ stray_no: strayNo })
+     });
 
-    fetch(contextPath + "/wish/toggle", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({ strayNo: strayNo })
-    })
-    .then(async function (res) {
-        // 비로그인 상태 (401, 403 Forbidden, 혹은 로그인 화면으로 튕긴 경우)
-        if (res.status === 401 || res.status === 403 || res.redirected) {
-            if (confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
-                location.href = contextPath + "/login"; // 실제 로그인 URL에 맞게 수정
-            }
-            return null;
-        }
+     if (!response.ok) {
+         throw new Error('네트워크 응답 오류');
+     }
 
-        // 응답이 JSON인지 확인
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("비정상 응답 (로그인 세션 만료 등)");
-        }
+     const data = await response.json(); // { status: "added" | "removed" }
 
-        return res.json();
-    })
-    .then(function (result) {
-        if (!result) return;
-
-        if (result.success) {
-            btnEl.classList.toggle("active", result.data === true);
-            if (result.data === true) {
-                showActionBanner("♥", result.message || "관심동물에 담았어요", "wish");
-            }
-        } else {
-            alert(result.message || "처리 중 오류가 발생했어요.");
-        }
-    })
-    .catch(function (err) {
-        console.error("찜 에러 상세:", err);
-        alert("관심동물 처리 중 오류가 발생했어요.");
-    });
+     if (data.status === 'added') {
+         button.classList.add('active');
+         showGlobalToast('♥', '관심동물에 담았습니다.', true);
+     } else if (data.status === 'removed') {
+         button.classList.remove('active');
+         showGlobalToast('♡', '관심동물에서 제외했습니다.', false);
+     }
+ } catch (error) {
+     console.error('찜 처리 실패:', error);
+     showGlobalToast('!', '처리 중 오류가 발생했습니다.', false);
+ }
 }
 
-function showActionBanner(icon, message, action) {
-    var toast = document.getElementById("globalToast");
-    if (!toast) return;
+//토스트 메시지 띄우기
+function showGlobalToast(icon, message, showLink) {
+ const toast = document.getElementById('globalToast');
+ const toastIcon = toast.querySelector('.toast-icon');
+ const toastMsg = toast.querySelector('.toast-msg');
+ const toastLink = toast.querySelector('.toast-link');
 
-    toast.querySelector(".toast-icon").innerText = icon;
-    toast.querySelector(".toast-msg").innerText = message;
+ toastIcon.textContent = icon;
+ toastMsg.textContent = message;
 
-    var favLink = toast.querySelector(".toast-link-fav");
-    favLink.classList.toggle("show", action === "wish");
+ // 담았을 때만 '관심동물 보기' 링크 표시
+ if (showLink) {
+     toastLink.classList.add('show');
+ } else {
+     toastLink.classList.remove('show');
+ }
 
-    toast.style.display = "flex";
+ toast.style.display = 'flex';
 
-    if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-        toast.style.display = "none";
-    }, 3000);
-} */
+ if (toastTimer) {
+     clearTimeout(toastTimer);
+ }
+
+ toastTimer = setTimeout(() => {
+     toast.style.display = 'none';
+ }, 3000);
+}
+
+async function syncWishHearts() {
+    try {
+        const res = await fetch('/api/wish/my-ids');
+        if (!res.ok) return;
+        
+        const wishStrayNos = await res.json(); // [12345, 67890, ...]
+        const wishSet = new Set(wishStrayNos.map(String));
+
+        // 화면에 있는 모든 하트 버튼 상태 갱신
+        document.querySelectorAll('.wish-btn').forEach(btn => {
+            const strayNo = btn.getAttribute('data-stray-no');
+            if (strayNo && wishSet.has(strayNo)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    } catch (err) {
+        console.error('찜 상태 동기화 실패:', err);
+    }
+}
+
+// pageshow: 일반 진입뿐 아니라 브라우저 [뒤로가기]로 돌아왔을 때도 100% 실행됨
+window.addEventListener('pageshow', () => {
+    syncWishHearts();
+});
 </script>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
@@ -646,7 +661,9 @@ function showActionBanner(icon, message, action) {
                             <c:otherwise> · 중성화 미상</c:otherwise>
                         </c:choose>
                     </div>
-                    <%-- <button type="button" class="fav-heart-btn" onclick="toggleWish(${list.stray_no}, this)">♥</button> --%>
+					<!-- 리스트 JSP 내부의 하트 버튼 -->
+					<button type="button" class="wish-btn" data-stray-no="${list.stray_no}" 
+					        onclick="toggleWish(this, ${list.stray_no})">♥</button>
                 </div>
 
                 <!-- 하단 구분선 + 지역 정보 + 빼꼼 캐릭터 -->
@@ -692,11 +709,11 @@ function showActionBanner(icon, message, action) {
     </c:if>
 </div>
 
-<%-- <div id="globalToast">
+<div id="globalToast">
     <span class="toast-icon"></span>
     <span class="toast-msg"></span>
-    <a href="${pageContext.request.contextPath}/stray/StrayWishList" class="toast-link toast-link-fav">관심동물 보기</a>
-</div> --%>
+    <a href="${pageContext.request.contextPath}/stray/StrayWishList" class="toast-link">관심동물 보기</a>
+</div>
 <%@ include file="../footer.jsp" %>
 </body>
 </html>
