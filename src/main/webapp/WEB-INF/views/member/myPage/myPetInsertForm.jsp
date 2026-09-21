@@ -143,7 +143,7 @@
 <div class="pi-wrap">
     <h2 class="pi-title">반려동물 등록</h2>
 
-    <form id="" method="post" action="/myPetInsert" enctype="multipart/form-data">
+    <form name="petForm" method="post" action="/myPetInsert" enctype="multipart/form-data" onsubmit="return piFormCheck()">
 
         <div class="pi-field">
             <span class="pi-label">등록 사진</span>
@@ -158,7 +158,10 @@
 
         <div class="pi-field">
             <label class="pi-label" for="pet_birth">생년월일</label>
-            <input class="pi-input" type="text" id="pet_birth" name="pet_birth" placeholder="반려동물의 생년월일 8자리를 입력해주세요">
+            <input class="pi-input" type="text" id="pet_birth" name="pet_birth"
+			    placeholder="반려동물의 생년월일 8자리를 입력해주세요"
+			    maxlength="8" inputmode="numeric"
+			    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
 
         <div class="pi-field">
@@ -208,17 +211,15 @@
                 <label><input type="radio" name="pet_gender" value="여아">여아</label>
             </div>
         </div>
-
-        <div class="pi-field">
-            <label class="pi-choice-row" style="gap:8px;">
-                <input type="checkbox" name="pet_neuter"> 중성화 여부
-            </label>
-        </div>
-
-        <div class="pi-field">
-            <label class="pi-label" for="pet_weight">몸무게(kg)</label>
-            <input class="pi-input" type="text" id="pet_weight" name="pet_weight" placeholder="몸무게(kg)">
-        </div>
+		
+		<div class="pi-field">
+		    <label class="pi-choice-row" style="gap:8px;">
+		        <input type="hidden" id="pet_neuter_hidden" name="pet_neuter" value="F">
+		        <input type="checkbox" id="pet_neuter_chk" value="T"
+		            onchange="document.getElementById('pet_neuter_hidden').disabled = this.checked">
+		        중성화 여부
+		    </label>
+		</div>
 
         <div class="pi-actions">
             <input class="pi-btn pi-btn--solid" type="submit" value="등록">
@@ -263,6 +264,91 @@ function toggleBreed(){
         etcInput.style.display = 'block';
         etcInput.disabled = false;
     }
+}
+
+function isValidBirthDate(str){
+    // 8자리 숫자 형식인지 먼저 확인
+    if(!/^\d{8}$/.test(str)) return false;
+
+    let year  = parseInt(str.substring(0, 4), 10);
+    let month = parseInt(str.substring(4, 6), 10);
+    let day   = parseInt(str.substring(6, 8), 10);
+
+    // 월 범위 확인 (01~12)
+    if(month < 1 || month > 12) return false;
+
+    // 연도 범위 확인 (너무 오래되거나 미래인 값 방지)
+    let currentYear = new Date().getFullYear();
+    if(year < 1990 || year > currentYear) return false;
+
+    // 각 월의 마지막 일 계산 (윤년 자동 반영)
+    let lastDayOfMonth = new Date(year, month, 0).getDate();
+    if(day < 1 || day > lastDayOfMonth) return false;
+
+    // 미래 날짜 방지 (오늘 이후 생년월일 불가)
+    let inputDate = new Date(year, month - 1, day);
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if(inputDate > today) return false;
+
+    return true;
+}
+
+function piFormCheck(){
+    let f = document.petForm;
+
+    // 이름 (NOT NULL)
+    if(!f.pet_name.value.trim()){
+        alert("반려동물 이름을 입력하시길 바랍니다.");
+        f.pet_name.focus();
+        return false;
+    }
+
+    // 생년월일 - 입력했을 경우 실제로 존재하는 날짜인지 확인 (선택 입력)
+    let birth = f.pet_birth.value.trim();
+    if(birth && !isValidBirthDate(birth)){
+        alert("생년월일이 올바르지 않습니다. 실제 존재하는 날짜를 8자리로 입력해주세요. (예: 20230101)");
+        f.pet_birth.focus();
+        return false;
+    }
+
+    // 종류 (NOT NULL)
+    let petType = f.pet_type.value;
+    if(!petType){
+        alert("반려동물 종류를 선택하시길 바랍니다.");
+        return false;
+    }
+
+    // 품종 (NOT NULL)
+    let breedValue = "";
+    if(petType === "강아지"){
+        breedValue = document.getElementById("dogBreedSelect").value;
+    } else if(petType === "고양이"){
+        breedValue = document.getElementById("catBreedSelect").value;
+    } else {
+        breedValue = document.getElementById("etcBreedInput").value;
+    }
+    if(!breedValue.trim()){
+        alert("품종을 선택하거나 입력하시길 바랍니다.");
+        return false;
+    }
+
+    // 성별 (NOT NULL)
+    if(!f.pet_gender.value){
+        alert("성별을 선택하시길 바랍니다.");
+        return false;
+    }
+
+    // 몸무게 - 입력했을 경우 숫자 형식인지 확인
+    let weight = f.pet_weight.value.trim();
+    let expWeight = /^\d{1,2}(\.\d{1,3})?$/;
+    if(weight && !expWeight.test(weight)){
+        alert("몸무게는 숫자 형식으로 입력하시길 바랍니다. (예: 3.5)");
+        f.pet_weight.focus();
+        return false;
+    }
+
+    return true;
 }
 </script>
 </body>

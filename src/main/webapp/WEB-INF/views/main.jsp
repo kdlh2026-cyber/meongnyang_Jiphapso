@@ -13,31 +13,13 @@
 <sec:authorize access="hasAnyRole('USER','CREATOR')">
 <sec:authentication property="principal.username" var="loginId" />
 <script>
+var DC_LOGGED_IN = true;
 var DC_STORAGE_KEY = "dailycheckDismissed_${loginId}";
-
-document.addEventListener("DOMContentLoaded", function () {
-    var today = new Date().toISOString().slice(0, 10);
-    var dismissedDate = localStorage.getItem(DC_STORAGE_KEY);
-
-    if (dismissedDate === today) {
-        return;
-    }
-
-    fetch("/dailycheckStatus")
-        .then(function (res) { return res.json(); })
-        .then(function (data) {
-            if (data.needCheck) {
-                window.open("/dailycheckPopup", "dailycheckPopup",
-                    "width=360,height=460,resizable=no,scrollbars=no");
-            }
-        });
-});
 </script>
 </sec:authorize>
 </head>
 <body>
 <%@ include file="hamburger_menu.jsp" %>
-<%@ include file="/WEB-INF/views/guest/popup/mainPopup.jsp" %>
 <div class="main-header">
 	<br><br><br>
 	<div class="hover-image-box">
@@ -152,5 +134,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		    $("#suggestions").empty();
 		});
 	</script>
+	<script src="/js/mainPopup.js"></script>
 </body>
 </html>

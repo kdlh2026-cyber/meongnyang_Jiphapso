@@ -1,0 +1,208 @@
+[33mf6ed80e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mHJS[m[33m, [m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m Merge pull request #73 from kdlh2026-cyber/LCH
+[33m0fc3592[m Merge pull request #72 from kdlh2026-cyber/DJH
+[33m3aaefa7[m[33m ([m[1;31morigin/LCH[m[33m)[m 왓
+[33m4c14863[m[33m ([m[1;31morigin/DJH[m[33m, [m[1;32mDJH[m[33m)[m 9/18
+[33mbd06c1d[m Merge pull request #71 from kdlh2026-cyber/KYR
+[33m27324f2[m[33m ([m[1;31morigin/KYR[m[33m)[m 9/18 5:16 수정
+[33m08f1ec7[m Merge pull request #70 from kdlh2026-cyber/KYR
+[33m5790a47[m 9/18 사진올려버리기
+[33m1fd06af[m Merge pull request #69 from kdlh2026-cyber/KYR
+[33m98085a4[m Merge pull request #68 from kdlh2026-cyber/DJH
+[33me601929[m Merge branch 'main' into DJH
+[33md6fabc7[m 9/18 엘라스틱 서치 업데이트,딜리트, Stray 경로변경
+[33m594afca[m 9/18
+[33m5e721ad[m Merge pull request #67 from kdlh2026-cyber/LCH
+[33mc91d9a4[m 결제경로수정오류수정
+[33medba6d0[m Merge pull request #66 from kdlh2026-cyber/HJS
+[33m8530f70[m[33m ([m[1;31morigin/HJS[m[33m)[m 9/18 점심 주소키 바꿈 회원가입 CSS 병원 오류 수정 등등
+[33mc9dd66a[m[33m ([m[1;33mtag: [m[1;33mv1.0.9[m[33m)[m Merge pull request #65 from kdlh2026-cyber/HJS
+[33me2a35d1[m 9/17 저녁 마지막 커밋 관리자 페이지 봐주시오
+[33me345f61[m Merge pull request #64 from kdlh2026-cyber/DJH
+[33m8f2e8f6[m 9/17
+[33me5ac8bf[m Merge pull request #63 from kdlh2026-cyber/HJS
+[33m43cfb10[m 9/17 병원 추가 및 뭔가 했는데 기억이 안남
+[33m79521c0[m Merge pull request #62 from kdlh2026-cyber/LCH
+[33ma234722[m 오늘 오전?에있던 오류 다고침
+[33m5876011[m Merge pull request #61 from kdlh2026-cyber/HJS
+[33m418b97f[m 마이페이지 수정
+[33m48d93fa[m Add files via upload
+[33m8cf5f11[m Merge pull request #60 from kdlh2026-cyber/LCH
+[33m432e9e1[m[33m ([m[1;32mLCH[m[33m)[m Merge remote-tracking branch 'origin/main' into LCH
+[33me2ad0d1[m Merge pull request #59 from kdlh2026-cyber/DJH
+[33m1ac0b79[m Merge branch 'DJH' of https://github.com/kdlh2027-cyber/meongnyang_Jiphapso into DJH
+[33mbb01c70[m myPage, myProfile 충돌 해결
+[33m1937e06[m dmdkdloakdlsdkasldkasldkaslda
+[33m6210510[m Delete src/main/resources/application-local.properties
+[33mf74d9b7[m Merge pull request #58 from kdlh2026-cyber/DJH
+[33md459c88[m Merge pull request #57 from kdlh2026-cyber/HJS
+[33m8b73466[m Merge branch 'main' into HJS
+[33meb9f7ff[m Merge pull request #56 from kdlh2026-cyber/KYR
+[33md41a48b[m Merge branch 'main' into KYR
+[33mab54cf0[m 깃
+[33m8b745f5[m 9/17 자잘한 버그, 검색기능 수정, css 조금
+[33m65bc3d8[m 9/17 자잘한 버그, 검색기능 수정 기타등등
+[33medc68e7[m 파일 무시 해제
+[33mbed2fb9[m 9/17 오후
+[33mdafa113[m 9/17 css 중 검색 기능 점검 중
+[33m5afdbda[m 9/17 자잘한 버그 수정, 검색기능 향상
+[33m760941f[m Merge branch 'main' into HJS
+[33mcf1930a[m[33m ([m[1;33mtag: [m[1;33mv1.0.8[m[33m)[m Merge pull request #55 from kdlh2026-cyber/HJS
+[33m261c9ef[m Merge pull request #54 from kdlh2026-cyber/main
+[33mc17beed[m 9/17 오전 API key 옮겨둠
+[33m4b06be3[m Remove duplicate breed name display in button
+[33m209db56[m Merge pull request #53 from kdlh2026-cyber/HJS
+[33mdca3d30[m 9/16 내일부턴 CSS 젬민이 챗봇 추가
+[33m0d4c1d0[m Merge pull request #52 from kdlh2026-cyber/DJH
+[33m377e7b9[m Merge pull request #51 from kdlh2026-cyber/KYR
+[33m0ab26f8[m 9/16 CSS 중 기능.... CSS 하면서 점검 중....
+[33m529dcaa[m 9/16 일찍 쉬기
+[33mf5e4450[m 9/16 css 완, 이미지 완, footer넣기
+[33mebe33b4[m Update .gitignore to exclude API key properties
+[33m3f56ce4[m Merge pull request #50 from kdlh2026-cyber/DJH
+[33mcaa58ca[m 9/16 commit
+[33m053cc21[m[33m ([m[1;33mtag: [m[1;33mv1.0.7[m[33m)[m Merge pull request #49 from kdlh2026-cyber/HJS
+[33m17e3a0d[m 9/15 오늘자 완료
+[33m64e3ed1[m Merge pull request #48 from kdlh2026-cyber/HJS
+[33m901fe91[m 9/15 일찍가고싶다
+[33mfa2ce73[m Merge pull request #47 from kdlh2026-cyber/KYR
+[33m9b14476[m Merge pull request #46 from kdlh2026-cyber/DJH
+[33m5a5f801[m 9/15 아 힘들엇다 css만 남았다. 오류가 안난다면 말이지.
+[33m9426785[m 9/15 - 관리자 픽, 내 글 저장.... - 관리자 커뮤니티 관리하기
+[33m22d8fa2[m Merge pull request #45 from kdlh2026-cyber/HJS
+[33mcff8b67[m Merge pull request #44 from kdlh2026-cyber/DJH
+[33m6c34ee5[m 9/15 오전 9시
+[33m5926665[m 9/15 아침
+[33mdbc124b[m Merge pull request #43 from kdlh2026-cyber/KYR
+[33m2c047f7[m 9/15 아침
+[33m41fa810[m Delete src/main/webapp/WEB-INF/views/member/community/postList.jsp
+[33m7854948[m Delete src/main/webapp/WEB-INF/views/community/myCommunityMain.jsp
+[33m98577e1[m 해결
+[33m5c5d5af[m Merge pull request #42 from kdlh2026-cyber/DJH
+[33me4c3c79[m 머지 충돌 해결 및 myPage/myProfile 수정
+[33m07ad6a5[m Update WebSecurityConfig.java
+[33m3fc7de0[m Merge pull request #41 from kdlh2026-cyber/KYR
+[33m36f4940[m Merge pull request #40 from kdlh2026-cyber/HJS
+[33ma32e31d[m 9/14 상품 수정,삭제 기능추가 유기동물 시작, 상품 css 미완
+[33m1e87145[m Merge branch 'main' into HJS
+[33mc5e7622[m 9/14 17:19 출석체크 및 멤버창 일부 수정, 크리에이터 신청 및 승인 연결, 동물병원 데이터 등록, etc...
+[33m6a2fbe4[m 9/14 상품 상세보기에 해당 상품에 대한 리뷰 출력 자잘한 기능들 남음(아마) -북마크, 관리자가 픽한 글, 인기 게시글에 포인트 지급, 각 페이지 출력할 것들 레이아웃 정리 -크롤링 및 데이터 등록 -css -엘라스틱서치확인 -.....
+[33m44ed2d3[m Merge pull request #39 from kdlh2026-cyber/LCH
+[33m594b313[m 이빨이가아프니 먼저 가보겟습니다.결제시상품수량부분만고치면끝
+[33mb77b6be[m[33m ([m[1;33mtag: [m[1;33mv1.0.6[m[33m)[m Merge pull request #38 from kdlh2026-cyber/HJS
+[33m186660e[m 9/14 오전 9시 출석체크 기능 임시 삭제 버전
+[33ma87858e[m Merge pull request #37 from kdlh2026-cyber/DJH
+[33maa5e3e4[m Merge branch 'main' into DJH
+[33m08604aa[m Merge pull request #36 from kdlh2026-cyber/HJS
+[33md20413d[m 9/14 오전
+[33m199c05a[m 9/14 관리자 커뮤니티 관리 페이지 생성 및 데이터 연동 마무리 상품 리뷰 연결 기능 구현(북마크)
+[33mc4457f4[m Merge pull request #35 from kdlh2026-cyber/HJS
+[33m380b807[m 9/12 17:53 회원가입 오류 확인, 동물병원 페이지 생성, 출석체크 생성
+[33m412f077[m Refactor CommentESService to CommentService
+[33m74e5b60[m[33m ([m[1;33mtag: [m[1;33mv1.0.5[m[33m)[m 9/12
+[33m3feeafe[m Merge branch 'main' into HJS
+[33mf82f8c7[m Implement signup bonus for new members
+[33m062918e[m Fix formatting issue in DailycheckService.java
+[33me6be741[m Implement point bonus for community posts
+[33m2c90b41[m Refactor CommentService and add Elasticsearch support
+[33ma912713[m 9/12 15:00
+[33m7ad7556[m Merge pull request #33 from kdlh2026-cyber/LCH
+[33mabb37e2[m 회원가입.커뮤니티.상품리뷰연동완.출첵컨트롤러어딧는지못찾슴ㅎ9/12오후12시14
+[33m497db21[m Comment out earnCommunityBonus call in CommunityService
+[33ma8d9be4[m Comment out bonus point earning call
+[33m0da4aa9[m Comment out bonus earning methods in CommentService
+[33m8d3accc[m Comment out earnSignupBonus call in insertMember
+[33mef7dd37[m Integrate PointService for signup bonus points
+[33mc4e5e89[m Add PointService for comment bonus handling
+[33me20d05e[m Inject PointService and add bonus logic
+[33m230c4d6[m Inject PointService into DailycheckService
+[33m2d209b4[m Merge pull request #32 from kdlh2026-cyber/LCH
+[33md538c23[m Merge pull request #31 from kdlh2026-cyber/HJS
+[33mb2f04a3[m Merge branch 'main' into HJS
+[33m71861a1[m 에라이 몰라 9월11일 5:20분
+[33m23c6d1c[m Merge pull request #30 from kdlh2026-cyber/DJH
+[33mcea23ea[m 9/11 회원관련 이것저것 / 이벤트는 페이지만 생성
+[33m87d161a[m Merge pull request #29 from kdlh2026-cyber/KYR
+[33m72f6b2c[m 9/11 관리자페이지 - 견종 추가,수정,삭제 커뮤니티 - 댓글 답글 NO 상속 마이페이지 - 내가 작성한 글 출력 및 삭제 작업 중
+[33m4e4ee72[m 9/11 유기동물 집어넣을것만 넣음, 검색기능 후 상품리스트 경로설정, 1등으로 커밋함
+[33m31fa00e[m Merge pull request #28 from kdlh2026-cyber/HJS
+[33m5214a7b[m 9/10 크리에이터 로그아웃 못하는 오류 수정함
+[33m0203855[m Merge pull request #27 from kdlh2026-cyber/HJS
+[33ma5d9abf[m 9/10 17:35
+[33m8bf7055[m Merge pull request #26 from kdlh2026-cyber/KYR
+[33m05011d6[m 9/10 이게 진짜임
+[33m22deb24[m Merge pull request #25 from kdlh2026-cyber/DJH
+[33m17b6456[m 9/10 상품 대충함, 유기동물 등록
+[33mf9d9011[m 9/10 답글 작업 중
+[33m104b88b[m 되
+[33m789537d[m 되
+[33mb836c47[m Merge pull request #24 from kdlh2026-cyber/LCH
+[33m00197b2[m 되
+[33m161f1fe[m[33m ([m[1;33mtag: [m[1;33mv1.0.4[m[33m)[m Merge pull request #23 from kdlh2026-cyber/LCH
+[33mcf208aa[m ?><
+[33md057df9[m 9/10 오전 진짜 이젠 시작임
+[33m016b622[m Merge pull request #22 from kdlh2026-cyber/KYR
+[33m9b56a53[m 9/10 오전작업시작하자
+[33mada7d26[m 9/10 오전
+[33mbfead1c[m 9/10 오전
+[33m552ccc2[m Merge pull request #21 from kdlh2026-cyber/HJS
+[33me1802a4[m Merge branch 'main' into HJS
+[33mf0fe363[m Merge pull request #20 from kdlh2026-cyber/KYR
+[33m3df8fb1[m Merge branch 'main' into KYR
+[33m927bd6d[m 9/10 아침
+[33m8516777[m 9/10 오전 # WARNING: head commit changed in the meantime
+[33m4aaf700[m git commit -m "Merge branch 'LCH' into main - 충돌 해결"Merge remote-tracking branch 'origin/LCH'
+[33meacf107[m Merge pull request #18 from kdlh2026-cyber/DJH
+[33m0f9988a[m Merge branch 'main' into DJH
+[33m7049c07[m Merge pull request #17 from kdlh2026-cyber/HJS
+[33m791bf3d[m Merge branch 'main' into HJS
+[33m51c5eae[m 9/9일 장바구니 /  관심상품 / 주문 / 주문상세 / 주문 취소 [회원 jsp  /관리자 jsp완료]
+[33me81fe90[m Merge pull request #16 from kdlh2026-cyber/KYR
+[33mad18cc8[m [9/9] 커뮤니티 서치 자동완성 아마?도? 완료? 게시글 상세보기 구현 중 + 댓글폼 생성 중 테스트에 사용한 이미지 빼고 커밋함 [9/10] 글쓰기 -> 게시글 목록 -> 게시글 상세보기 -> 댓글 -> 덧글 출력 및 db저장 하기 이미지 db에 제대로 저장하는 코드 작성 등등
+[33m740f2d6[m 9/9 17:21 이것저것
+[33m20c7e4b[m 09/09 나는 쉬고 싶다.
+[33m53bf148[m 9/9 진짜진짜 이제 시작해도 됨
+[33md82f409[m Add Elasticsearch URI configuration9/9
+[33m346dbc3[m Merge pull request #15 from kdlh2026-cyber/KYR
+[33ma08e66b[m Merge branch 'main' into KYR
+[33md9d9e2f[m 9/09 시작전
+[33m61052e8[m Merge pull request #14 from kdlh2026-cyber/LCH
+[33mcc5e80a[m 페이지만 만들기
+[33mdd26fff[m Merge pull request #13 from kdlh2026-cyber/HJS
+[33m21a2472[m 09/09 오전 9시 26분 엘라스틱서치 연결
+[33mf4d6d54[m[33m ([m[1;33mtag: [m[1;33mv1.0.3[m[33m)[m Merge pull request #12 from kdlh2026-cyber/DJH
+[33m10dabd1[m Merge branch 'main' into DJH
+[33m2bbf940[m 9/8 크롤링 성공하고 싶어요 10000개 내일 등록한다
+[33mfe56df9[m Merge pull request #11 from kdlh2026-cyber/LCH
+[33mc374b90[m Merge branch 'main' into LCH
+[33mb765a91[m 집가자
+[33m16d9895[m Merge pull request #10 from kdlh2026-cyber/HJS
+[33md78493a[m 9/8 관리자 페이지, 마이 페이지 일부 링크 연결 및 메뉴 구성 수정
+[33mbc70aef[m[33m ([m[1;33mtag: [m[1;33mv1.0.2[m[33m)[m Merge pull request #9 from kdlh2026-cyber/KYR
+[33m4358431[m Merge branch 'main' into KYR
+[33md5cc635[m 9/07 상품등록, 리스트, 삭제
+[33m28d13c3[m Merge pull request #8 from kdlh2026-cyber/LCH
+[33mf1c68fa[m Merge branch 'main' into LCH
+[33m9f7f1bc[m Merge pull request #7 from kdlh2026-cyber/HJS
+[33m3806efa[m Merge branch 'main' into HJS
+[33maa69e52[m 9월7일 주문.주문상세 회원 관리자 완 관심상품 관리자 JSP 완 주문 취소 DAO.DTO 완
+[33md3f9844[m Merge pull request #6 from kdlh2026-cyber/DJH
+[33m6b55156[m 9/7 PM 4:54 관리자 페이지/회원 페이지 일부
+[33m0af09ed[m 9/7 게시판 글쓰기 테스트, 게시판 카테고리 필터, 크롤링 용 폼 제작
+[33m4b5ee64[m[33m ([m[1;33mtag: [m[1;33mv1.0.1[m[33m)[m Merge pull request #5 from kdlh2026-cyber/HJS
+[33m9de6382[m 9/7 오전
+[33m70e4ece[m Merge pull request #4 from kdlh2026-cyber/DJH
+[33m9a44580[m Merge branch 'main' into DJH
+[33m41ef356[m 9/4
+[33m2402c97[m Merge pull request #3 from kdlh2026-cyber/KYR
+[33m8928b9b[m Merge pull request #2 from kdlh2026-cyber/LCH
+[33m474addc[m 09/04 서비스 못하겠습니다 뺏기겟습니다.
+[33madcb0c3[m Delete meongnyang_Jiphapso directory
+[33m178e0c9[m 왜안올라가지 올라갓을려나
+[33m3eec313[m 9/04 게시판작업중 DB,ES저장
+[33mdf484ad[m 9월4일오후5시4분 장바구니: 비회원/회원/관리자 완 관심상품: 비회원회원 완 되는지모름
+[33m4394d39[m fix: 중첩된 프로젝트 폴더 구조 정리
+[33mcbb43cd[m Merge pull request #1 from kdlh2026-cyber/HJS
+[33m933e673[m 9/3
+[33m55a2412[m Delete meongnyang_Jiphapso directory
+[33md90d11b[m 9/3
+[33mdf941ae[m Initial commit

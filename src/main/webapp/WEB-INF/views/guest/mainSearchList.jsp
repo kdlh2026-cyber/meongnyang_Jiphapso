@@ -8,20 +8,27 @@
 <head>
 <meta charset="UTF-8">
 <title>통합검색 결과</title>
+<link rel="stylesheet" href="/css/etc/mslist.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/hamburger_menu.jsp" %>
 
 	<!-- 상단 검색바(이전 검색 내용 유지) -->
 
-<form name="allSearch" action="/allSearch" method="get" style="position:relative">
-		<p><input type="text" name="keyword" id="keyword" value="${keyword}" autocomplete="off">
-		<input type="submit" value="통합검색">
-		<div id="suggestions" style="border:1px solid #cccccc;position:absolute;background:white;width:170px;z-index:10">
-		</div>
-	</form>
-		<hr>
-	<h3>커뮤니티 (${cmTotal})</h3>
+<div class="search-result-page">
+
+    <div class="search-section">
+      <div class="search-wrapper">
+        <form name="allSearch" action="/allSearch" method="get" class="search-input-box">
+          <input type="text" name="keyword" id="keyword" value="${keyword}" autocomplete="off">
+          <button type="submit">통합검색</button>
+          <div id="suggestions"></div>
+        </form>
+      </div>
+    </div>
+
+    <hr>
+    <h3>커뮤니티 (${cmTotal})</h3>
 	<c:if test="${empty CMList}">
 		<p>커뮤니티 검색결과가 없습니다.</p>
 	</c:if>
@@ -32,37 +39,51 @@
 		</div>
 	</c:forEach>
 	<c:if test="${cmTotal > 5}">
-		<a href="/community/commsearch?keyword=${keyword}">커뮤니티 전체보기 &gt;</a>
+	    <a href="/community/commsearch?keyword=${keyword}#search_box_wrapper" class="view-all-link">커뮤니티 전체보기 &gt;</a>
 	</c:if>
 
 	<hr>
 
 	<!-- 상품 검색결과 표시 영역 -->
 	<h3>상품 (${pdTotal})</h3>
-	<c:if test="${empty PDList}">
-		<p>상품 검색결과가 없습니다.</p>
+
+	<div class="product-carousel">
+	    <button type="button" class="carousel-btn prev" onclick="scrollProducts(-1)" aria-label="이전">
+	        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+	    </button>
+	
+	    <div class="product-list" id="productList">
+	        <c:if test="${empty PDList}">
+	            <p>상품 검색결과가 없습니다.</p>
+	        </c:if>
+	        <c:forEach var="pd" items="${PDList}" end="7">
+	            <div class="product-item">
+	                <div class="image">
+	                    <a href="/products/ShoppingView?p_no=${pd.pno}">
+	                        <img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(pd.omainimg, '%', '%25')}">
+	                    </a>
+	                </div>
+	                <div class="pd-brand">${pd.pbrand}</div>
+	                <div class="pd-title"><a href="/products/ShoppingView?p_no=${pd.pno}">${pd.ptitle}</a></div>
+	                <div class="pd-price">판매가 <fmt:formatNumber value="${pd.oprice}" />원</div>
+	                <div class="btn-row">
+	                    <button type="button" class="btn-cart" onclick="addToCart(${pd.pno}, this)">장바구니 담기</button>
+	                    <button type="button" class="btn-favorite" onclick="toggleFavorite(${pd.pno}, this)">♥ 관심상품</button>
+	                </div>
+	            </div>
+	        </c:forEach>
+	    </div>
+	
+	    <button type="button" class="carousel-btn next" onclick="scrollProducts(1)" aria-label="다음">
+	        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+	    </button>
+	</div>
+	
+	<c:if test="${pdTotal > 8}">
+	    <a href="/products/ShoppingList?keyword=${keyword}" class="view-all-link">상품 전체보기 &gt;</a>
 	</c:if>
-	<c:forEach var="pd" items="${PDList}" end="5">
-		<div class="pd-item">
-			<div class="image">
-		            	<a href="/products/ShoppingView?p_no=${pd.pno}">
-		                	<div class="image"><img src="${pageContext.request.contextPath}/images/products/main/${fn:replace(pd.omainimg, '%', '%25')}" width="120"></div>
-		            	</a>
-		            </div>
-			<div>${pd.pbrand}</div>
-			<div><a href="/products/ShoppingView?p_no=${pd.pno}">${pd.ptitle}</a></div>
-			<div>판매가
-				<fmt:formatNumber value="${pd.oprice}" />원
-			</div>
-			<div class="btn-row">
-					<button type="button" class="btn-cart" onclick="addToCart(${pd.pno}, this)">장바구니 담기</button>
-					<button type="button" class="btn-favorite" onclick="toggleFavorite(${pd.pno}, this)">♥ 관심상품</button>
-			</div>
-		</div>
-	</c:forEach>
-	<c:if test="${pdTotal > 6}">
-		<a href="/search?keyword=${keyword}">상품 전체보기 &gt;</a>
-	</c:if>
+
+</div> <!-- /.search-result-page -->
 		
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -93,8 +114,8 @@
 		    $("#keyword").val($(this).text());
 		    $("#suggestions").empty();
 		});
-	</script>
-	<script>
+</script>
+<script>
 		var contextPath = "${pageContext.request.contextPath}";
 		
 		function addToCart(pNo, btnEl) {
@@ -135,6 +156,33 @@
 		            alert("관심상품 처리 중 오류가 발생했어요.");
 		        });
 		}
-		</script>
+</script>
+		
+<script>
+	function scrollProducts(direction) {
+	    var list = document.getElementById("productList");
+	    var itemWidth = list.querySelector(".product-item").offsetWidth;
+	    var gap = 16;
+	    var scrollAmount = (itemWidth + gap) * 2; // 한 번에 2개씩 이동
+	    list.scrollBy({ left: direction * scrollAmount, behavior: "smooth" });
+	}
+	
+	// 스크롤 끝에 도달하면 버튼 흐리게 처리
+	(function() {
+	    var list = document.getElementById("productList");
+	    var prevBtn = document.querySelector(".carousel-btn.prev");
+	    var nextBtn = document.querySelector(".carousel-btn.next");
+	    if (!list) return;
+	
+	    function updateButtons() {
+	        var maxScroll = list.scrollWidth - list.clientWidth;
+	        prevBtn.classList.toggle("is-disabled", list.scrollLeft <= 5);
+	        nextBtn.classList.toggle("is-disabled", list.scrollLeft >= maxScroll - 5);
+	    }
+	    list.addEventListener("scroll", updateButtons);
+	    window.addEventListener("resize", updateButtons);
+	    updateButtons();
+	})();
+</script>
 </body>
 </html>

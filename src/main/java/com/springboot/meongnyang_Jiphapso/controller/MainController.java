@@ -147,4 +147,9 @@ public class MainController {
 	public String PPPop() {
 	    return "guest/etc/PPPop";
 	}
+	
+	@GetMapping("/guest/popup/eventPopup")
+	public String eventPopup() {
+	    return "guest/popup/eventPopup";
+	}
 }
