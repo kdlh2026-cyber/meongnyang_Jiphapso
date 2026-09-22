@@ -1,5 +1,9 @@
 <img width="500" height="400" alt="Image" src="https://github.com/user-attachments/assets/ff26621b-3f04-4bb4-b953-c587cde4b8f5" />
 
+
+
+<img width="227" height="137" alt="image" src="https://github.com/user-attachments/assets/69f49227-e12a-4f14-a0cd-65fc2c9b93a2" />
+
 # meongnyang_Jiphapso
 yogineun_Meongnyang_Jiphapso_repository_ipnida.
 
@@ -129,9 +133,4 @@ main
     ├── favorite
     ├── products
     ├── stray
-
-'''
-'''
-
-<img width="227" height="137" alt="image" src="https://github.com/user-attachments/assets/69f49227-e12a-4f14-a0cd-65fc2c9b93a2" />
 
