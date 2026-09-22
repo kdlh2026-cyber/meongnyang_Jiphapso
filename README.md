@@ -129,3 +129,6 @@ main
     ├── favorite
     ├── products
     ├── stray
+
+<img width="227" height="137" alt="image" src="https://github.com/user-attachments/assets/69f49227-e12a-4f14-a0cd-65fc2c9b93a2" />
+
