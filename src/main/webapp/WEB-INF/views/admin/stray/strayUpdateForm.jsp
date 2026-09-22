@@ -10,8 +10,8 @@
 <script src="/js/strayCheck.js"></script>
 </head>
 <body>
-<div>
 <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
+<div>
 	<h2>입양동물 수정</h2>
 	<form action="StrayAnimalUpdate" name="strayUpdateForm" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="stray_no" value="${StrayUpdate.stray_no}">
