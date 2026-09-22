@@ -9,9 +9,21 @@ Spring Boot를 이용한 팀 프로젝트입니다.
 ## 프로젝트 소개
 반려동물 커뮤니티 위주 올인원 플랫폼을 구현한 웹사이트 개발 프로젝트입니다.
 
+## 개발 기간
+* 2026.08.28일 - 2026.09.22일
+
+## 멤버 구성
+
+| 이미지 | 이름 | 담당 |
+|---|---|---|
+| <img width="50" height="50" alt="Image" src="https://github.com/user-attachments/assets/ab46faa8-4ef5-4320-b445-ee5c10cacd84" /> | 한지수(팀장) | 메인페이지 구성, 회원 및 동물병원 관련 DAO, DTO, 컨트롤러, 뷰 제작, CSS, 발표자료 제작 및 발표 |
+| <img width="50" height="50" alt="Image" src="https://github.com/user-attachments/assets/7b83bc82-449e-47b2-9503-5e4f44e593b3" /> | 김영록 | 상품 및 유기동물 관련 DAO, DTO, 컨트롤러, 뷰 제작, CSS, 발표자료 제작, 배포 우선 테스트 |
+| <img width="50" height="50" alt="Image" src="https://github.com/user-attachments/assets/7304c247-39f5-4d51-8131-d0677fbc2554" /> | 도정현 | 커뮤니티 전반 DAO, DTO, 컨트롤러, 뷰 제작, 상품 자료수집 및 업로드, CSS, 발표자료 제작 및 발표|
+| <img width="50" height="50" alt="Image" src="https://github.com/user-attachments/assets/3dbba135-082c-4a11-8db0-332bbd7d125d" /> | 이창희 | 주문, 결제, 쿠폰, 포인트, 장바구니, 관심상품 DAO, DTO, 컨트롤러, 뷰 제작, 자료수집 및 업로드, CSS, 발표자료 제작 |
+
 ## 개발 환경
 - Java
-- Spring Boot
+- Spring Boot (STS4)
 - Spring MVC
 - MyBatis
 - MySQL
@@ -23,6 +35,7 @@ Spring Boot를 이용한 팀 프로젝트입니다.
 - Open office
 - starUML
 - GitHub
+- Tom Cat 10.1.12
 
 ## 주요 기능
 
@@ -84,16 +97,6 @@ Spring Boot를 이용한 팀 프로젝트입니다.
 
 ### AI(Gemini3.6F) 챗봇 서비스
 - 대화
-
-   
-## 팀원
-
-| 이미지 | 이름 | 담당 |
-|---|---|---|
-| <img width="50" height="50" alt="Image" src="https://github.com/user-attachments/assets/ab46faa8-4ef5-4320-b445-ee5c10cacd84" /> | 한지수(팀장) | 메인페이지 구성, 회원 및 동물병원 관련 DAO, DTO, 컨트롤러, 뷰 제작, CSS, 발표자료 제작 및 발표 |
-| <img width="50" height="50" alt="Image" src="https://github.com/user-attachments/assets/7b83bc82-449e-47b2-9503-5e4f44e593b3" /> | 김영록 | 상품 및 유기동물 관련 DAO, DTO, 컨트롤러, 뷰 제작, CSS, 발표자료 제작, 배포 우선 테스트 |
-| <img width="50" height="50" alt="Image" src="https://github.com/user-attachments/assets/7304c247-39f5-4d51-8131-d0677fbc2554" /> | 도정현 | 커뮤니티 전반 DAO, DTO, 컨트롤러, 뷰 제작, 상품 자료수집 및 업로드, CSS, 발표자료 제작 및 발표|
-| <img width="50" height="50" alt="Image" src="https://github.com/user-attachments/assets/3dbba135-082c-4a11-8db0-332bbd7d125d" /> | 이창희 | 주문, 결제, 쿠폰, 포인트, 장바구니, 관심상품 DAO, DTO, 컨트롤러, 뷰 제작, 자료수집 및 업로드, CSS, 발표자료 제작 |
 
 ## Git 협업 규칙
 
