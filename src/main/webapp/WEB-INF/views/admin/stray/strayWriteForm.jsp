@@ -19,8 +19,10 @@
 		</div>
 		<div>
 			<label>유기동물 카테고리 :</label>
-			<input type="radio" name="stray_category" value="DOG" required>강아지
-			<input type="radio" name="stray_category" value="CAT">고양이
+			<div class="radio-group">
+			<label><input type="radio" name="stray_category" value="DOG" required>강아지</label>
+			<label><input type="radio" name="stray_category" value="CAT">고양이</label>
+			</div>
 		</div>
 		<div>
 			<label>유기동물 품종 :</label>
@@ -33,17 +35,20 @@
 		<div>
 			<label>유기동물 성별 :</label>
 			<div>
-				<input type="radio" name="stray_gender" value="M" required>수컷
-				<input type="radio" name="stray_gender" value="F">암컷
-				<input type="radio" name="stray_gender" value="Q">미상
+			    <label>유기동물 성별 :</label>
+			    <div class="radio-group">
+			        <label><input type="radio" name="stray_gender" value="M" required> 수컷</label>
+			        <label><input type="radio" name="stray_gender" value="F"> 암컷</label>
+			        <label><input type="radio" name="stray_gender" value="Q"> 미상</label>
+			    </div>
 			</div>
 		</div>
 		<div>
 			<label>유기동물 중성화 :</label>
-			<div>
-				<input type="radio" name="stray_neuter" value="Y" required>중성화 완료
-				<input type="radio" name="stray_neuter" value="N">중성화 미완료
-				<input type="radio" name="stray_neuter" value="U">중성화 알수없음 
+			<div class="radio-group">
+				<label><input type="radio" name="stray_neuter" value="Y" required> 중성화 완료</label>
+				<label><input type="radio" name="stray_neuter" value="N"> 중성화 미완료</label>
+				<label><input type="radio" name="stray_neuter" value="U"> 중성화 알수없음</label>
 			</div>
 		</div>
 		<div>
@@ -59,10 +64,13 @@
 			<label>유기동물 특이사항 :</label>
 			<input type="text" name="stray_memo" required>
 		</div>
+			
 		<div>
 			<label>유기동물 상태 :</label>
-			<input type="radio" name="stray_status" value="보호중" required>보호중
-			<input type="radio" name="stray_status" value="공고중">공고중
+			<div class="radio-group">
+				<label><input type="radio" name="stray_status" value="보호중" required>보호중</label>
+				<label><input type="radio" name="stray_status" value="공고중">공고중</label>
+			</div>
 		</div>
 
 		<hr>

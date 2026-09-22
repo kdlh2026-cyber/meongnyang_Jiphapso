@@ -120,12 +120,28 @@ input[type="checkbox"] {
     cursor: pointer;
 }
 
-form div:has(input[type="radio"]) {
-    flex-direction: row;
+.radio-group {
+    display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 8px;
+    gap: 18px;
+    margin-top: 6px;
+}
+
+.radio-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.radio-group input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+    accent-color: #3b82f6;
+    vertical-align: middle;
 }
 
 /* 파일 업로드 인풋 */
