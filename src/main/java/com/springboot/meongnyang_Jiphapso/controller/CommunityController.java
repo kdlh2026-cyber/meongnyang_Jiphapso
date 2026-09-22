@@ -455,16 +455,18 @@ public class CommunityController {
 	@RequestMapping("/communityList/delete")
 	public String communitycommunityList(@RequestParam("comm_no") int comm_no,
 	                              @RequestParam(value = "comm_type", required = false) String comm_type,
-	                              HttpSession session) {
+	                              HttpSession session,
+	                              Authentication authentication) { 
 
-		Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
+	    Integer m_no = (Integer) session.getAttribute(SessionConst.LOGIN_MEMBER_NO);
 
 	    if (m_no == null) {
 	        System.out.println("m_no가 null -> 로그인 페이지로 리다이렉트");
 	        return "redirect:/loginForm";
 	    }
 
-	    com_service.CommunityDelete(comm_no, m_no);
+	    String mId = authentication.getName();                 
+	    com_service.CommunityDelete(comm_no, m_no, mId);
 
 	    // 수정된 부분: 전체 커뮤니티 목록 페이지로 이동
 	    // 필요에 따라 comm_type을 파라미터로 같이 넘겨서 해당 탭이 유지되게 할 수 있습니다.
