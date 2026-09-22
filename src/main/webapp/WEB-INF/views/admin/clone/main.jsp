@@ -55,8 +55,8 @@
 				<span><img src="/images/main/c-a-d.png" alt="입양 관리"></span>
 			</div>
 			<div class="admin-flyout">
-				<a href="/strayWriteForm">유기동물 등록</a>
-				<a href="/admin/stray/StrayListA">유기동물 리스트</a>
+				<a href="/strayWriteForm">입양동물 등록</a>
+				<a href="/admin/stray/StrayListA">입양동물 리스트</a>
 			</div>
 		</li>
 

@@ -482,7 +482,7 @@
                 <c:set var="currentYear" value="<%= java.time.LocalDate.now().getYear() %>" />
                 <c:set var="itemAge" value="${currentYear - item.stray_age}" />
                 
-                <a href="/guest/StrayView?stray_no=${item.stray_no}" class="family-card">
+                <a href="/stray/StrayView?stray_no=${item.stray_no}" class="family-card">
                     <div class="family-thumb-area">
                         <span class="family-badge">
                             <c:choose>

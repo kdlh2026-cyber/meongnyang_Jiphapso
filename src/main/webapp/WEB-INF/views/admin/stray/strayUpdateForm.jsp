@@ -10,8 +10,8 @@
 <script src="/js/strayCheck.js"></script>
 </head>
 <body>
-<div>
 <%@ include file="/WEB-INF/views/admin/clone/hamburger_menu.jsp" %>
+<div>
 	<h2>입양동물 수정</h2>
 	<form action="StrayAnimalUpdate" name="strayUpdateForm" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="stray_no" value="${StrayUpdate.stray_no}">
@@ -26,18 +26,18 @@
 		</div>
 		<div>
 			<label>유기동물 성별 :</label>
-			<div>
-				<input type="radio" name="stray_gender" value="M" ${StrayUpdate.stray_gender eq 'M' ? 'checked' : ''} required> 수컷
-				<input type="radio" name="stray_gender" value="F" ${StrayUpdate.stray_gender eq 'F' ? 'checked' : ''}> 암컷
-				<input type="radio" name="stray_gender" value="Q" ${StrayUpdate.stray_gender eq 'Q' ? 'checked' : ''}> 미상
+			<div class="radio-group">
+				<label><input type="radio" name="stray_gender" value="M" ${StrayUpdate.stray_gender eq 'M' ? 'checked' : ''} required> 수컷</label>
+				<label><input type="radio" name="stray_gender" value="F" ${StrayUpdate.stray_gender eq 'F' ? 'checked' : ''}> 암컷</label>
+				<label><input type="radio" name="stray_gender" value="Q" ${StrayUpdate.stray_gender eq 'Q' ? 'checked' : ''}> 미상</label>
 			</div>
 		</div>
 		<div>
 			<label>유기동물 중성화 :</label>
-			<div>
-				<input type="radio" name="stray_neuter" value="Y" ${StrayUpdate.stray_neuter eq 'Y' ? 'checked' : ''} required> 중성화 완료
-				<input type="radio" name="stray_neuter" value="N" ${StrayUpdate.stray_neuter eq 'N' ? 'checked' : ''}> 중성화 미완료
-				<input type="radio" name="stray_neuter" value="U" ${StrayUpdate.stray_neuter eq 'U' ? 'checked' : ''}> 중성화 알수없음
+			<div class="radio-group">
+				<label><input type="radio" name="stray_neuter" value="Y" ${StrayUpdate.stray_neuter eq 'Y' ? 'checked' : ''} required> 중성화 완료</label>
+				<label><input type="radio" name="stray_neuter" value="N" ${StrayUpdate.stray_neuter eq 'N' ? 'checked' : ''}> 중성화 미완료</label>
+				<label><input type="radio" name="stray_neuter" value="U" ${StrayUpdate.stray_neuter eq 'U' ? 'checked' : ''}> 중성화 알수없음</label>
 			</div>
 		</div>
 		<div>

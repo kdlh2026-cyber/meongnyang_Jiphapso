@@ -109,6 +109,8 @@
           <ul>
             <li><a href="/admin/hospital/hospitalInsertForm">동물병원 등록</a></li>
             <li><a href="/admin/hospital/hospitalList">동물병원 리스트</a></li>
+            <li><a href="/strayWriteForm">입양동물 등록</a></li>
+            <li><a href="/admin/stray/StrayListA">입양동물 리스트</a></li>
           </ul>
         </div>
 

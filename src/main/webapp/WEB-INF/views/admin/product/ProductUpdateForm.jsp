@@ -40,8 +40,10 @@
 
         <div>
             <label>기본 상품 여부 :</label>
-            <input type="radio" name="o_default" value="Y" ${ProductUpdate.option[0].o_default eq 'Y' ? 'checked' : ''}> Y
-            <input type="radio" name="o_default" value="N" ${ProductUpdate.option[0].o_default eq 'N' ? 'checked' : ''}> N
+            <div class="radio-group">
+            <label><input type="radio" name="o_default" value="Y" ${ProductUpdate.option[0].o_default eq 'Y' ? 'checked' : ''}> Y</label>
+            <label><input type="radio" name="o_default" value="N" ${ProductUpdate.option[0].o_default eq 'N' ? 'checked' : ''}> N</label>
+            </div>
         </div>
         <div>
             <label>상품 정가 :</label>

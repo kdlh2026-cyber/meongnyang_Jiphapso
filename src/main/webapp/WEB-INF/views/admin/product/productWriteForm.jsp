@@ -33,10 +33,11 @@
 
 		<div>
 			<label>기본 상품 여부 :</label>
-			<div>
-				<input type="radio" name="o_default" value="Y" checked> Y
-				<input type="radio" name="o_default" value="N"> N
+			<div class="radio-group">
+				<label><input type="radio" name="o_default" value="Y" checked> Y</label>
+				<label><input type="radio" name="o_default" value="N"> N</label>
 			</div>
+			<small style="color: #6b7280; font-size: 12px; margin-top: 4px;">첫 상품이라면 Y를 눌러주세요</small>
 		</div>
 		<div>
 			<label>상품 정가 :</label>
