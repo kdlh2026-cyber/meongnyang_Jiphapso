@@ -107,7 +107,7 @@ Spring Boot를 이용한 팀 프로젝트입니다.
 - Pull Request 생성
 - 팀원간 점검 후 `main` Merge
 
-## 브랜치
+## 폴더 구성
 
 ```text
 main
@@ -124,8 +124,33 @@ main
     ├── static
 ├── webapp/WEB-INF/views
     ├── admin
+        ├── cart
+        ├── clone
+        ├── community
+        ├── coupon
+        ├── favorite
+        ├── hospital
+        ├── mem
+        ├── order
+        ├── OrederCancel
+        ├── orderDetail
+        ├── payment
+        ├── point
+        ├── product
+        ├── stray
     ├── member
+        ├── bookmark
+        ├── community
+        ├── coupon
+        ├── dailycheck
+        ├── myPage
+        ├── order
+        ├── OrderCancel
+        ├── payment
+        ├── point
     ├── guest
+        ├── etc
+        ├── hospital
     ├── cart
     ├── community
     ├── event
